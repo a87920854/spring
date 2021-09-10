@@ -1,0 +1,280 @@
+/**20180523-個人資料頁**/
+.user-profile{
+	padding: 20px 0px;
+	background: #43a0b5;
+}
+.user-profile .nav-tabs>li.active>a{
+	color: #000 !important;
+	background: #fff;
+		box-shadow: 5px 0px 5px rgba(0,0,0,0.2);
+}
+.user-profile .box-calendar{
+	background: rgba(255,255,255,1);
+	border: 2px solid rgba(67,160,181,0.5)
+}
+.user-profile #schedule .box-light{
+	background: rgba(255,255,255,0.5);
+}
+.user-profile #mycalendar .box-light{
+	background: rgba(255,255,255,0.5);
+}
+.user-profile #mycalendar .box-light .box-inner{
+	background: rgba(255,255,255,0.5);
+}
+.profile-wrap{
+	padding: 0px 100px;
+}
+.profile-wrap:after, .profile-wrap ol.rank:after, .profile-photo-box:after, .user-profile #profile:after, .user-profile #schedule:after, .user-profile #mycalendar:after, .user-menu-btn:after, .user-menu-btn .menu:after{
+	content: '';
+	display: table;
+	clear: both;
+}
+.profile-wrap ol.rank{
+	list-style: none;
+	padding: 0;
+	margin: 0 0 5px 0;
+}
+.profile-wrap ol.rank > li.type{
+	float: left;
+	color: #fff;
+	font-size: 18px;
+}
+.profile-wrap ol.rank > li.type span{
+	font-size: 30px;
+}
+.profile-wrap ol.rank > li.go{
+	float: right;
+}
+.btn-upgrade{
+	font-size: 18px;
+	color: #FFFF00;
+	background: #000;
+}
+.btn-upgrade:hover, .btn-upgrade:focus, .btn-upgrade:active{
+	color: #FFF;
+}
+#schedule .notice-list{
+	margin-bottom: 0;
+}
+#schedule .pagination>li.active>a:hover, #schedule .pagination>li.active>a:active, #schedule .pagination>li.active>a:focus{
+	background: #e7315b;
+	border:1px solid #e7315b;
+}
+#schedule .pagination>li>a:hover{
+	background: #cacaca;
+	border:1px solid #cacaca;
+}
+#schedule .pagination>li>a:active, #schedule .pagination>li>a:focus{
+	background: #f2f2f2;
+}
+.user-profile .nav-tabs{
+	margin-top: 10px;
+}
+.user-profile .nav-tabs > li > a{	
+	border-top-right-radius: 10px !important;
+	border-top-left-radius: 10px !important;
+}
+.user-profile .tab-content{
+	margin-top: 40px;
+}
+.profile-photo-box{
+	border-radius: 8px;
+	background: #428395;
+	border: 1px solid #fff;
+	padding: 20px; 
+	margin-bottom: 20px;
+}
+.profile-photo-box .photo-box{
+	text-align: center;
+}
+.profile-photo-box .photo{	
+	width: 200px;
+	height: 200px;
+	margin: auto;
+	overflow: hidden;
+	border-radius: 50%; 
+}
+.profile-photo-box .photo img{
+	max-width: 100%;
+}
+.profile-photo-box .txt-box{
+
+}
+.profile-photo-box .txt-box .txt{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.profile-photo-box .txt-box .txt > li{
+	color: #fff;
+	font-size: 20px;
+	margin-bottom: 5px;
+}
+.profile-photo-box .txt-box .txt > li.match{
+	margin-bottom: 10px;
+}
+.profile-photo-box .txt-box .txt > li.match > span{
+	color: #FFFF00;
+	font-size: 33px;
+}
+.profile-photo-box .txt-box .txt > li.update > a{
+	color: #FFFF00;
+	text-decoration: underline;
+}
+.profile-photo-box .txt-box .txt > li.update > a:hover{
+	color: #ffff9e;
+}
+.user-profile .profile-message{
+	color: #fff;
+}
+.user-profile .profile-message h3{
+	font-size: 27px;
+	color: #fff;
+	font-weight: normal;
+	margin-bottom: 20px;
+}
+.user-profile .profile-message .message h5{
+	font-size: 17px;
+	color: #fff;
+	font-weight: normal;
+	margin-bottom: 5px;
+}
+.user-profile .profile-message .message > ol{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.user-profile .profile-message .message > ol > li{
+	font-size: 17px;
+	color: #fff;
+	font-weight: normal;
+	margin-bottom: 5px;
+}
+.user-profile .profile-message .message > ol > li > a{
+	color: #FFF100;
+	text-decoration: underline;
+}
+.user-profile .profile-message .message > ol > li:before{
+	display: block;
+	float: left;
+	content: "\f0da";
+	padding: 4px 4px 0px 2px;
+	font: normal normal normal 17px/1 FontAwesome;
+	color: #fff;
+	font-weight: normal;
+}
+.user-menu-btn{
+	display: block;
+	width: 100%;
+}
+.user-menu-btn .menu{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+}
+.user-menu-btn .menu > li{
+	display: block;
+	float: left;
+}
+.user-menu-btn .menu > li > a{
+	display: table-cell;
+	vertical-align: middle;
+	width: 234px;
+	height: 80px;
+	background: url(../images/user-btn-bg.jpg);
+	background-size: cover;
+	color: #fff;
+	font-size: 17px;
+	font-weight: bold;
+	text-align: center;
+}
+.user-menu-btn .menu > li > a:hover{
+	filter: brightness(120%);
+}
+.user-menu-btn .menu > li > a > span{
+	display: block;
+	color: #EACC85;
+	font-size: 13px;
+	font-weight: normal;
+}
+.new-message{
+	background-color: #ea565e;
+	margin-left: 5px;
+	position: relative;
+	top: -5px;
+}
+
+@media only screen and (max-width: 768px) {
+	.profile-wrap{
+		padding: 0px 0px;
+	}
+	.user-profile .nav-tabs>li>a :focus, .user-profile .nav-tabs>li.active>a{
+		background: #fff;
+	}
+	.user-profile .nav-tabs.nav-justified > li{
+		float: left;
+		width: 33.33%;
+	}
+	.user-profile .nav-tabs.nav-justified > li > a{
+		border-bottom: 1px solid #fff !important; 
+	}
+	.user-profile .profile-message .message{
+		margin-bottom: 30px;
+	}
+	.user-menu-btn .menu{
+		margin: 0px -15px 20px -15px;
+		background-color: #c33866;
+	}
+	.user-menu-btn .menu > li{
+		width: 20%;
+		height: 80px;
+	}
+	.user-menu-btn .menu > li > a{
+		font-size: 14px;
+		font-weight: normal;
+	}
+	.user-profile .tab-content{
+		margin-top: 10px;
+	}
+	.profile-wrap ol.rank > li.type{
+		font-size: 15px;
+	}
+	.profile-wrap ol.rank > li.type span{
+		font-size: 24px;
+	}
+	.btn-upgrade{
+		font-size: 15px;
+	}
+
+}
+
+
+
+/**20180523-活動內頁**/
+.event-path {
+	padding: 15px 0px;
+}
+.event-path .path{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.event-path .path li{
+	position: relative;
+	float: left;
+}
+.event-path .path li > a.back{
+	color: #666;
+}
+.event-path .path li > a.event-a{
+
+}
+.event-path .path li +li{
+	margin-left: 20px;
+}
+.event-path .path li +li:before{
+	position: absolute;
+	display: block;
+	left: -20px;
+}

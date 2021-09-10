@@ -1,0 +1,55 @@
+table {
+	font-size:13px;
+}
+table td {
+	height:30px;
+}
+table select {
+	height:30px;
+	border:#ddd 1px solid;		
+	padding-left:5px;
+}
+table input {
+	height:30px;	
+	color:#555;
+	border:#ddd 1px solid;
+	padding-left:5px;	
+}
+.ttable td {
+	padding:3px;
+	padding-left:5px;
+}
+.btn {
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.4);
+	height: 33px;
+	color: #333;
+  background-color: #fff;
+  border:#666 1px solid !important;
+    display: inline-block;
+    padding: 6px 12px !important;;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.btn:hover {
+	color: #000;
+	background-color: #ddd;
+}
+table input[type=radio], table input[type=checkbox] {
+	height:auto;
+	margin-top:10px;
+}

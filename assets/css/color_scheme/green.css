@@ -1,0 +1,85 @@
+/** Green	#00ccff
+			#36a9e1
+ **************************************************************** **/
+	::selection {
+		background: #00ccff;
+	}
+	::-moz-selection {
+		background: #00ccff; /* Firefox */
+	}
+	::-webkit-selection {
+		background: #00ccff; /* Safari */
+	}
+
+	#aside nav ul li a:active,
+	#aside nav ul li.menu-open,
+	#aside nav ul li.always-open,
+	#aside nav>ul>li>a:hover,
+	#aside nav>ul>li>a:focus,
+	#aside nav ul li.active,
+	#aside nav ul li a.dashboard,
+	#aside .logo,
+	body.min #aside ul.nav>li>ul li,
+	body.min #aside ul.nav li.menu-open,
+	body.min #aside ul.nav>li:hover>ul,
+	body.min #asidesize,
+	#aside, #asidebg {
+		background-color: #fff;
+	}
+	.fancy-file-upload.fancy-file-primary>span.button,
+	.datepicker table tr td.active.active,
+	.btn-primary,	
+	.popular .plan-title
+	 {
+		background-color: #3f9fd9;
+	 }
+	#header
+	 {
+		background-color: #3f9fd9;
+	 }
+	body.min #aside ul.nav>li:hover:before {
+		border-right-color: #fff;
+	}
+
+	.panel>.panel-heading strong {
+		color:#31708f;
+	}
+	
+	.btn-primary {
+		border-color:#31708f;
+	}
+
+	.popular {
+		border-color:#36a9e1 !important;
+	}
+	
+	/**
+		IMPORTANT
+	**/
+	.btn-primary,
+	.alert-theme-color,
+	.panel-primary>.panel-heading {
+		background-color: ##36a9e1 !important;
+	}
+	.panel-primary,
+	.panel-primary>.panel-heading {
+		border-color: #00ccff !important;
+	}
+	
+	@media only screen and (min-width: 768px) {
+		body.min #aside ul.nav>li:hover>a span {
+			background-color: #fff;
+			color:#337ab7;
+			text-align:center;
+			font-weight:bold;
+		}
+	}
+	
+.btn-black {
+	background-color: #444444;
+	color:#ffffff;
+}
+.btn-blue {
+	background-color: #0000AA;
+	color:#ffffff;
+}
