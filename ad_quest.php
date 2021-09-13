@@ -1,5 +1,6 @@
 <?php
-include("top.php");
+ require("./include/_top.php");
+ require("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -179,7 +180,7 @@ include("top.php");
 <!-- /MIDDLE -->
 
 <?php
-include("bottom.php");
+ require("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">

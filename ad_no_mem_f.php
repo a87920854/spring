@@ -1,5 +1,6 @@
 <?php
-    include("top.php");
+ require("./include/_top.php");
+ require("./include/_sidebar.php");
 ?>
 
 <link href="css/select2.min.css" rel="stylesheet">
@@ -1638,7 +1639,7 @@
 </div>
 
 <?php
-    include("bottom.php");
+ require("./include/_bottom.php");
 ?>
 
 <script src="js/select2.min.js"></script>
