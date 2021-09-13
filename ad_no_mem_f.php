@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <link href="css/select2.min.css" rel="stylesheet">
@@ -1606,7 +1606,7 @@
                             </tr>
                             <tr>
                                 <td><input type="submit" value="開始搜尋" style="height:28px"></td>
-                            </tr>                         
+                            </tr>
                     </table>
                 </form>
                 </td>
@@ -1639,15 +1639,14 @@
 </div>
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script src="js/select2.min.js"></script>
 <script>
-
-$mtu = "ad_no_mem.";
-$(function() {
-	/*
+    $mtu = "ad_no_mem.";
+    $(function() {
+        /*
 $("#s98").multiselect({
 	  columns: 5,
 	  minSelect:2,	  
@@ -1657,178 +1656,194 @@ $("#s98").multiselect({
     }
   });
 */
-$("option:selected", $("#s98")).remove();
-$("#s98").select2();
-$("#s11").on( "change", function() {
-personnel_get_find("s11", "s7");
-});
-$("#s30").on( "change", function() {
-personnel_get_find("s30", "s31");
-});
-$("#s19").on( "change", function() {
-personnel_get_find("s19", "s20");
-});
-$("#s8").on( "change", function() {
-	$("#s8_1_sel").remove();
-  $("#s8_1").val("");
-	switch($(this).val()) {
-		case "DMN網站":
+        $("option:selected", $("#s98")).remove();
+        $("#s98").select2();
+        $("#s11").on("change", function() {
+            personnel_get_find("s11", "s7");
+        });
+        $("#s30").on("change", function() {
+            personnel_get_find("s30", "s31");
+        });
+        $("#s19").on("change", function() {
+            personnel_get_find("s19", "s20");
+        });
+        $("#s8").on("change", function() {
+            $("#s8_1_sel").remove();
+            $("#s8_1").val("");
+            switch ($(this).val()) {
+                case "DMN網站":
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome2"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;
-		case "行銷活動":
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome2"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome3"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;	
-		case "通路合作":
+                    break;
+                case "行銷活動":
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome6"}
-  }).done(function( msg ) {
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome3"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
 
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x.split("|o|")[0]).text(x.split("|o|")[1]));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_6").val($(this).val());
-    });
+                    break;
+                case "通路合作":
 
-  });
-		
-		break;	
-		case "約會專家":
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome6"
+                        }
+                    }).done(function(msg) {
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome4"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;
-		
-		case "春天網站":
+                        var $nsel = $("<select>");
+                        $nsel.attr("id", "s8_1_sel");
+                        $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                        $.each(msg.split(","), function(i, x) {
+                            if (x) $nsel.append($("<option></option>").attr("value", x.split("|o|")[0]).text(x.split("|o|")[1]));
+                        });
+                        $("#s8_1_div").append($nsel);
+                        $nsel.on("change", function() {
+                            $("#s8_6").val($(this).val());
+                        });
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome5", r:"春天網站"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;
-		case "FB名單":
+                    });
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome5", r:"FB名單"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;	
-		case "迷你約":
+                    break;
+                case "約會專家":
 
-  $.ajax({
-  method: "POST",
-  url: "ad_no_mem_f.asp",
-  data: { st: "getcome5", r:"迷你約"}
-  }).done(function( msg ) {
-    if(msg.indexOf(",") > 0) {
-    var $nsel = $("<select>");
-    $nsel.attr("id", "s8_1_sel");    
-    $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
-    $.each(msg.split(","), function(i, x) {
-    	if(x) $nsel.append($("<option></option>").attr("value", x).text(x));
-    });
-    $("#s8_1_div").append($nsel);
-    $nsel.on("change", function() {
-    	$("#s8_1").val($(this).val());
-    });
-    } else alert(msg);
-  });
-		
-		break;	
-  }
-});
-});
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome4"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
 
+                    break;
+
+                case "春天網站":
+
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome5",
+                            r: "春天網站"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
+
+                    break;
+                case "FB名單":
+
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome5",
+                            r: "FB名單"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
+
+                    break;
+                case "迷你約":
+
+                    $.ajax({
+                        method: "POST",
+                        url: "ad_no_mem_f.asp",
+                        data: {
+                            st: "getcome5",
+                            r: "迷你約"
+                        }
+                    }).done(function(msg) {
+                        if (msg.indexOf(",") > 0) {
+                            var $nsel = $("<select>");
+                            $nsel.attr("id", "s8_1_sel");
+                            $nsel.append($("<option></option>").attr("value", "").text("所有小類"));
+                            $.each(msg.split(","), function(i, x) {
+                                if (x) $nsel.append($("<option></option>").attr("value", x).text(x));
+                            });
+                            $("#s8_1_div").append($nsel);
+                            $nsel.on("change", function() {
+                                $("#s8_1").val($(this).val());
+                            });
+                        } else alert(msg);
+                    });
+
+                    break;
+            }
+        });
+    });
 </script>

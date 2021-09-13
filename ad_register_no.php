@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <section id="middle">
@@ -663,147 +663,153 @@
 <!-- /MIDDLE -->
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-$mtu = "ad_no_mem.";
-function mem_note_edit() {
-	$("#mem_note_a,#mem_note_div").hide();	
-	$("#mem_note").show();
-}
-$(function() {
-  $("#pay1").on( "change", function() {
-     personnel_get("pay1", "pay2");
-     personnel_get("pay1", "single");
-     personnel_get("pay1", "single2");          
-});
+    $mtu = "ad_no_mem.";
 
-$("#mem_come").on("change", function() {
-	var $cc_div = $("#mem_cc_div");
-	switch($(this).val()) {
-		case "DMN網站":
-		var $sel = $("<select>");
-		$sel.attr("name","mem_ccs");
-		$sel.attr("id","mem_ccs");
-		$sel.append($("<option></option>").attr("value", "").text("請選擇"));
-		$sel.append($("<option></option>").attr("value", "談情說愛").text("談情說愛"));
-		$sel.append($("<option></option>").attr("value", "許願池").text("許願池"));
-		$sel.append($("<option></option>").attr("value", "一對一約會").text("一對一約會"));
-		$sel.append($("<option></option>").attr("value", "閃婚專案").text("閃婚專案"));
-		$sel.append($("<option></option>").attr("value", "活動通Accupass").text("活動通Accupass"));
-		$cc_div.append($sel);
-		$sel.on("change", function() {
-			$("#mem_come2").val($(this).val());
-		}).attr("required","required");
-		break;
-		
-		case "通路合作":
-		var $sel = $("<select>");
-		$sel.attr("name","mem_ccs");
-		$sel.attr("id","mem_ccs");
-		$sel.append($("<option></option>").attr("value", "").text("請選擇"));
-		$sel.append($("<option></option>").attr("value", "ninesun").text("向日葵"));
-		$cc_div.append($sel);
-		$sel.on("change", function() {
-			$("#mem_come6").val($(this).val());
-			$("#mem_come6_name").val($(this).find(":selected").text());
-		}).attr("required","required");
-		break;
-		
-		case "FB名單":
-		var $sel = $("<select>");
-		$sel.attr("name","mem_ccs");
-		$sel.attr("id","mem_ccs");
-		$sel.append($("<option></option>").attr("value", "").text("請選擇"));
-		$sel.append($("<option></option>").attr("value", "台北會館FB").text("台北會館FB"));
-		$sel.append($("<option></option>").attr("value", "八德會館FB").text("八德會館FB"));
-		$sel.append($("<option></option>").attr("value", "桃園會館FB").text("桃園會館FB"));
-		$sel.append($("<option></option>").attr("value", "新竹會館FB").text("新竹會館FB"));
-		$sel.append($("<option></option>").attr("value", "台中會館FB").text("台中會館FB"));
-		$sel.append($("<option></option>").attr("value", "台南會館FB").text("台南會館FB"));
-		$sel.append($("<option></option>").attr("value", "高雄會館FB").text("高雄會館FB"));
-		$sel.append($("<option></option>").attr("value", "春天會館FB").text("春天會館FB"));
-		$sel.append($("<option></option>").attr("value", "DateMeNowFB").text("DateMeNowFB"));
-		$sel.append($("<option></option>").attr("value", "約專FB").text("約專FB"));
-		$sel.append($("<option></option>").attr("value", "迷你約FB").text("迷你約FB"));
-		$sel.append($("<option></option>").attr("value", "企劃FB名單").text("企劃FB名單"));
-		$sel.append($("<option></option>").attr("value", "會計FB名單").text("會計FB名單"));
-		$cc_div.append($sel);
-		$sel.on("change", function() {
-			$("#mem_come2").val($(this).val());
-		}).attr("required","required");
-		break;
-		
-		default:
-		  $cc_div.find("select").remove();
-		break;
-	}
-});
+    function mem_note_edit() {
+        $("#mem_note_a,#mem_note_div").hide();
+        $("#mem_note").show();
+    }
+    $(function() {
+        $("#pay1").on("change", function() {
+            personnel_get("pay1", "pay2");
+            personnel_get("pay1", "single");
+            personnel_get("pay1", "single2");
+        });
 
-  $("#branch3").on( "change", function() {
-     personnel_get("branch3", "single3");
-     wgo();
-});
-  $("#addform").on( "submit", function() {  	
-    var $result = true,
-	    $resultv = true;
+        $("#mem_come").on("change", function() {
+            var $cc_div = $("#mem_cc_div");
+            switch ($(this).val()) {
+                case "DMN網站":
+                    var $sel = $("<select>");
+                    $sel.attr("name", "mem_ccs");
+                    $sel.attr("id", "mem_ccs");
+                    $sel.append($("<option></option>").attr("value", "").text("請選擇"));
+                    $sel.append($("<option></option>").attr("value", "談情說愛").text("談情說愛"));
+                    $sel.append($("<option></option>").attr("value", "許願池").text("許願池"));
+                    $sel.append($("<option></option>").attr("value", "一對一約會").text("一對一約會"));
+                    $sel.append($("<option></option>").attr("value", "閃婚專案").text("閃婚專案"));
+                    $sel.append($("<option></option>").attr("value", "活動通Accupass").text("活動通Accupass"));
+                    $cc_div.append($sel);
+                    $sel.on("change", function() {
+                        $("#mem_come2").val($(this).val());
+                    }).attr("required", "required");
+                    break;
 
-	var $allc2 = {"mem_he":"身高","mem_we":"體重","mem_bmi":"BMI"};    
-$.each($allc2, function(v, k) {
-   if ($("#"+v).val() && !$.isNumeric($("#"+v).val())) {
-     alert(k+"只能輸入數字。");
-	 $("#"+v).focus();	 
-     $result = false;
-   }
-});
+                case "通路合作":
+                    var $sel = $("<select>");
+                    $sel.attr("name", "mem_ccs");
+                    $sel.attr("id", "mem_ccs");
+                    $sel.append($("<option></option>").attr("value", "").text("請選擇"));
+                    $sel.append($("<option></option>").attr("value", "ninesun").text("向日葵"));
+                    $cc_div.append($sel);
+                    $sel.on("change", function() {
+                        $("#mem_come6").val($(this).val());
+                        $("#mem_come6_name").val($(this).find(":selected").text());
+                    }).attr("required", "required");
+                    break;
 
-	if($("#single").val()) {
-		if(!$("#single2").val()) {
-			alert("請選擇邀約秘書。"+$("#single2").val());
-			return false;
-		}
-		if(!$("#branch3").val()) {
-			alert("請選擇受理會館。");
-			return false;
-		}
-		if(!$("#single3").val()) {
-			alert("請選擇受理秘書。");
-			return false;
-		}
-		if(!$("#n11h").val()) {
-			alert("請輸入小時。");
-			$("#n11h").focus();	 
-			return false;
-		}
-   var $re = /^\d+$/;
-   if(!$re.test($("#n11h").val())) {
-     alert("小時只能輸入數字。");
-     $("#n11h").val("");
-	 $("#n11h").focus();	 
-     return false;
-   }
-	}
-	
-    return $result;
-  });  
+                case "FB名單":
+                    var $sel = $("<select>");
+                    $sel.attr("name", "mem_ccs");
+                    $sel.attr("id", "mem_ccs");
+                    $sel.append($("<option></option>").attr("value", "").text("請選擇"));
+                    $sel.append($("<option></option>").attr("value", "台北會館FB").text("台北會館FB"));
+                    $sel.append($("<option></option>").attr("value", "八德會館FB").text("八德會館FB"));
+                    $sel.append($("<option></option>").attr("value", "桃園會館FB").text("桃園會館FB"));
+                    $sel.append($("<option></option>").attr("value", "新竹會館FB").text("新竹會館FB"));
+                    $sel.append($("<option></option>").attr("value", "台中會館FB").text("台中會館FB"));
+                    $sel.append($("<option></option>").attr("value", "台南會館FB").text("台南會館FB"));
+                    $sel.append($("<option></option>").attr("value", "高雄會館FB").text("高雄會館FB"));
+                    $sel.append($("<option></option>").attr("value", "春天會館FB").text("春天會館FB"));
+                    $sel.append($("<option></option>").attr("value", "DateMeNowFB").text("DateMeNowFB"));
+                    $sel.append($("<option></option>").attr("value", "約專FB").text("約專FB"));
+                    $sel.append($("<option></option>").attr("value", "迷你約FB").text("迷你約FB"));
+                    $sel.append($("<option></option>").attr("value", "企劃FB名單").text("企劃FB名單"));
+                    $sel.append($("<option></option>").attr("value", "會計FB名單").text("會計FB名單"));
+                    $cc_div.append($sel);
+                    $sel.on("change", function() {
+                        $("#mem_come2").val($(this).val());
+                    }).attr("required", "required");
+                    break;
 
-});
-function wgo() {
-  var $outdiv = $("#obranch"),
-  $b1v = $("#pay1").val(),
-  $b2v = $("#branch3").val();
-  if($b1v && $b2v) {
-    if($b1v == $b2v) {
-	  $outdiv.html("至 " + $b1v);
-      return false;
-	}
-    $outdiv.html("由 " + $b1v +" 約至 " + $b2v + " ");
-  } else if($b1v) {
-    $outdiv.html("至 " + $b1v);
-  } else {
-  $("#pay1").val("");
-  $outdiv.html("至 待選擇");
-  }
-}
+                default:
+                    $cc_div.find("select").remove();
+                    break;
+            }
+        });
+
+        $("#branch3").on("change", function() {
+            personnel_get("branch3", "single3");
+            wgo();
+        });
+        $("#addform").on("submit", function() {
+            var $result = true,
+                $resultv = true;
+
+            var $allc2 = {
+                "mem_he": "身高",
+                "mem_we": "體重",
+                "mem_bmi": "BMI"
+            };
+            $.each($allc2, function(v, k) {
+                if ($("#" + v).val() && !$.isNumeric($("#" + v).val())) {
+                    alert(k + "只能輸入數字。");
+                    $("#" + v).focus();
+                    $result = false;
+                }
+            });
+
+            if ($("#single").val()) {
+                if (!$("#single2").val()) {
+                    alert("請選擇邀約秘書。" + $("#single2").val());
+                    return false;
+                }
+                if (!$("#branch3").val()) {
+                    alert("請選擇受理會館。");
+                    return false;
+                }
+                if (!$("#single3").val()) {
+                    alert("請選擇受理秘書。");
+                    return false;
+                }
+                if (!$("#n11h").val()) {
+                    alert("請輸入小時。");
+                    $("#n11h").focus();
+                    return false;
+                }
+                var $re = /^\d+$/;
+                if (!$re.test($("#n11h").val())) {
+                    alert("小時只能輸入數字。");
+                    $("#n11h").val("");
+                    $("#n11h").focus();
+                    return false;
+                }
+            }
+
+            return $result;
+        });
+
+    });
+
+    function wgo() {
+        var $outdiv = $("#obranch"),
+            $b1v = $("#pay1").val(),
+            $b2v = $("#branch3").val();
+        if ($b1v && $b2v) {
+            if ($b1v == $b2v) {
+                $outdiv.html("至 " + $b1v);
+                return false;
+            }
+            $outdiv.html("由 " + $b1v + " 約至 " + $b2v + " ");
+        } else if ($b1v) {
+            $outdiv.html("至 " + $b1v);
+        } else {
+            $("#pay1").val("");
+            $outdiv.html("至 待選擇");
+        }
+    }
 </script>
