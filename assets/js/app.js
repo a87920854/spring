@@ -170,7 +170,7 @@ function _checkreservation() {
 	  if($nexttime) {	
 	  	$nexttime_diff_mi = parseInt($nexttime_diff_mi);
 	  	//console.log($nexttime_diff_mi);
-      if($isshowtime != $nexttime_diff_mi && ($nexttime_diff_mi == 1 || $nexttime_diff_mi == 5)) {  //¦pªG¬O 1, 5 ¤À¤~´£¿ô
+      if($isshowtime != $nexttime_diff_mi && ($nexttime_diff_mi == 1 || $nexttime_diff_mi == 5)) {  //ï¿½pï¿½Gï¿½O 1, 5 ï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½ï¿½
        setTimeout(function(){
 	       $reservation_alert_modal_time = $nexttime.split("|a|")[0].replace("|s|", " ");	
 	       $reservation_alert_modal_us = $nexttime.split("|a|")[1];
@@ -189,7 +189,7 @@ function _checkreservation() {
 	  
   }
   
-	setTimeout(function(){ //¨C¤ÀÄÁ¦AÀË¬d¤@¦¸
+	setTimeout(function(){ //ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Ë¬dï¿½@ï¿½ï¿½
 		_checkreservation();		
 	}, 50000); //60000
 

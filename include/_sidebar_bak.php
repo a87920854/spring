@@ -2,51 +2,64 @@
 <aside id="aside" class="no-print">
     <nav id="sideNav">
         <ul class="nav nav-list">
+        <?php 
+            //正則取得檔名
+            $nav_filename = preg_replace('/^\/|(new_springsystem\/)/', '', $_SERVER['PHP_SELF']);
+            //產生li標籤function
+            function nav_list( $url , $title , $icon ="fa-angle-double-right" , $num = "" ){
+                $active = "";
+                $url == $GLOBALS["nav_filename"] ? $active = "active" : "";
+                $num ? $num = "<font color=red>(" . $num . ")</font>" : "";
+                return "<li class='" . $active . "'><a href='" . $url . "'><i class='main-icon fa " . $icon . "'></i><span>" . $title . $num . "</span></a></li>";
+            }
+            
+        
+            echo nav_list("index.php","個人頁面","fa-dashboard");
+            echo nav_list("ad_system_report_list.php","意見反映","fa-exchange");
+            echo nav_list("ad_action_note.php","工作日誌","fa-book");
+            echo nav_list("ad_announce.php","公告訊息","fa-bullhorn");
 
-            <li><a href="index.php"><i class="main-icon fa fa-dashboard"></i><span> 個人頁面</span></a></li>
-            <li><a href="ad_system_report_list.php"><i class="main-icon fa fa-exchange"></i><span> 意見反映</span></a></li>
-            <li><a href="ad_action_note.php"><i class="main-icon fa fa-book"></i><span> 工作日誌</span></a></li>
-            <li><a href="ad_announce.php"><i class="main-icon fa fa-bullhorn"></i><span> 公告訊息</span></a></li>
+            echo "<h3> --- 名單處理 ---</h3>";
 
-            <h3> --- 名單處理---</h3>
+            echo nav_list("ad_no_mem.php","未入會資料");
+            echo nav_list("ad_invite.php","約見紀錄表");
+            echo nav_list("ad_action.php","活動報名資料");
+            echo nav_list("ad_quest.php","問卷報名資料");
 
-            <li><a href="ad_no_mem.php"><i class="main-icon fa fa-angle-double-right"></i><span> 未入會資料</span></a></li>
-            <li><a href="ad_invite.php"><i class="main-icon fa fa-angle-double-right"></i><span> 約見紀錄表</span></a></li>
-            <li><a href="ad_action.php"><i class="main-icon fa fa-angle-double-right"></i><span> 活動報名資料</span></a></li>
-            <li><a href="ad_quest.php"><i class="main-icon fa fa-angle-double-right"></i><span> 問卷報名資料</span></a></li>
+            echo "<h3> --- 會員服務 ---</h3>";
 
-            <h3> --- 會員服務---</h3>
+            echo nav_list("ad_single_optimization.php","優化單身資料庫");
+            echo nav_list("ad_single_atm.php","分期服務記錄");
+            echo nav_list("ad_mem.php","會員管理系統");
+            echo nav_list("ad_advisory.php","諮詢紀錄表");
+            echo nav_list("ad_advisory_invite.php","諮詢預訂表");
+            echo nav_list("ad_action_service.php","會員服務紀錄查詢");
+            echo nav_list("ad_mem_action_re_list.php","活動明細表");
+            echo nav_list("springweb_fun3.php","愛情見證");
 
-            <li><a href="ad_single_optimization.php"><i class="main-icon fa fa-angle-double-right"></i><span> 優化單身資料庫</span></a></li>
-            <li><a href="ad_single_atm.php"><i class="main-icon fa fa-angle-double-right"></i><span> 分期服務記錄</span></a></li>
-            <li><a href="ad_mem.php"><i class="main-icon fa fa-angle-double-right"></i><span> 會員管理系統</span></a></li>
-            <li><a href="ad_advisory.php"><i class="main-icon fa fa-angle-double-right"></i><span> 諮詢紀錄表</span></a></li>
-            <li><a href="ad_advisory_invite.php"><i class="main-icon fa fa-angle-double-right"></i><span> 諮詢預訂表</span></a></li>
-            <li><a href="ad_action_service.php"><i class="main-icon fa fa-angle-double-right"></i><span> 會員服務紀錄查詢</span></a></li>
-            <li><a href="ad_mem_action_re_list.php"><i class="main-icon fa fa-angle-double-right"></i><span> 活動明細表</span></a></li>
-            <li><a href="springweb_fun3.php"><i class="main-icon fa fa-angle-double-right"></i><span> 愛情見證</span></a></li>
+            echo "<h3> --- 其他功能 ---</h3>";
 
-            <h3> --- 其他功能---</h3>
+            echo nav_list("teach_video.php","教學影片");
+            echo nav_list("ad_action_list.php","網站活動上傳");
+            echo nav_list("ad_single_list.php","秘書履歷");
+            echo nav_list("ad_action_list_sign_manager.php","活動異動單列表");
+            echo nav_list("ad_action_note.php","工作日誌");
+            echo nav_list("singleweb_fun6.php","講師資料");
 
-            <li><a href="teach_video.php"><i class="main-icon fa fa-angle-double-right"></i><span> 教學影片</span></a></li>
-            <li><a href="ad_action_list.php"><i class="main-icon fa fa-angle-double-right"></i><span> 網站活動上傳</span></a></li>
-            <li><a href="ad_single_list.php"><i class="main-icon fa fa-angle-double-right"></i><span> 秘書履歷</span></a></li>
-            <li><a href="ad_action_list_sign_manager.php"><i class="main-icon fa fa-angle-double-right"></i><span> 活動異動單列表</span></a></li>
-            <li><a href="ad_action_note.php"><i class="main-icon fa fa-angle-double-right"></i><span> 工作日誌</span></a></li>
-            <li><a href="singleweb_fun6.php"><i class="main-icon fa fa-angle-double-right"></i><span> 講師資料</span></a></li>
+            echo "<h3> --- 約會專家功能 ---</h3>";
 
-            <h3> --- 約會專家功能---</h3>
+            echo nav_list("ad_photo_check.php","網站照片審核", "fa-angle-double-right" , 24);
+            echo nav_list("web_mem.php","網站認證專區");
 
-            <li><a href="ad_photo_check.php"><i class="main-icon fa fa-angle-double-right"></i><span> 網站照片審核<font color=red>(24)</font></span></a></li>
-            <li><a href="web_mem.php?c=1"><i class="main-icon fa fa-angle-double-right"></i><span> 網站認證專區</span></a></li>
+            echo "<h3> --- 好好玩管理系統 ---</h3>";
 
-            <h3> --- 好好玩管理系統---</h3>
+            echo nav_list("ad_fun_mem.php","好好玩會員資料");
+            echo nav_list("ad_fun_action1.php","好好玩國內報名");
+            echo nav_list("ad_fun_action2.php","好好玩國外報名");
+            echo nav_list("ad_fun_gmem.php","金卡俱樂部(舊)");
+        ?>
 
-            <li><a href="ad_fun_mem.php"><i class="main-icon fa fa-angle-double-right"></i><span> 好好玩會員資料</span></a></li>
-            <li><a href="ad_fun_action1.php"><i class="main-icon fa fa-angle-double-right"></i><span> 好好玩國內報名</span></a></li>
-            <li><a href="ad_fun_action2.php"><i class="main-icon fa fa-angle-double-right"></i><span> 好好玩國外報名</span></a></li>
-            <li><a href="ad_fun_gmem.php"><i class="main-icon fa fa-angle-double-right"></i><span> 金卡俱樂部(舊)</span></a></li>
-
+        
         </ul>
     </nav>
 
