@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -90,7 +90,7 @@
 <!-- /MIDDLE -->
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
@@ -98,9 +98,10 @@
     $(function() {
 
     });
+
     function chk_form() {
-        if($("d1").val() || $("d2").val()) {
-            if(!$("d1").val() || !$("d2").val()) {
+        if ($("d1").val() || $("d2").val()) {
+            if (!$("d1").val() || !$("d2").val()) {
                 alert("請選擇起始日期和結束日期。");
                 return false;
             }

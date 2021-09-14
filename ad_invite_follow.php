@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -94,31 +94,31 @@
 <!-- /MIDDLE -->
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script language="JavaScript">
-$mtu = "ad_invite.";
-$(function() {
+    $mtu = "ad_invite.";
+    $(function() {
 
-});	
+    });
 
-function printthis() {
-var $allnum = [];
-$("input[name='nums']").each(function() {
-	if($(this).val() && $(this).prop("checked")) $allnum.push($(this).val());
-});
-if($allnum.length <= 0) {
-	alert("請勾選要列印的資料。");
-	return false;
-} else {		
-	location.href = 'ad_invite_d_print.asp?nums='+$allnum+'';	
-}
-}
+    function printthis() {
+        var $allnum = [];
+        $("input[name='nums']").each(function() {
+            if ($(this).val() && $(this).prop("checked")) $allnum.push($(this).val());
+        });
+        if ($allnum.length <= 0) {
+            alert("請勾選要列印的資料。");
+            return false;
+        } else {
+            location.href = 'ad_invite_d_print.asp?nums=' + $allnum + '';
+        }
+    }
 
-function openreportmodal($an) {
-	$("#fixstat_modal").modal("show");
-	$("#report_an").val($an);
-	
-}
+    function openreportmodal($an) {
+        $("#fixstat_modal").modal("show");
+        $("#report_an").val($an);
+
+    }
 </script>

@@ -380,42 +380,52 @@ require("./include/_sidebar.php");
 					<ul class="list-unstyled list-hover slimscroll height-200" data-slimscroll-visible="true">
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=423" target="_self">2021年9月網站行銷相關名單恢復原本比例（9/1更新）<small class="margin-left-20">[2021/9/1 下午06:52:58]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=423" target="_self">2021年9月網站行銷相關名單恢復原本比例（9/1更新）<small class="margin-left-20">[2021/9/1
+									下午06:52:58]</small></a>
 						</li>
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=421" target="_self">110年企字第001號 調整說明如下：<small class="margin-left-20">[2021/8/9 下午03:56:17]</small></a>
-						</li>
-
-						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=420" target="_self">疫情後：鼓勵大家善用行銷資源（8/31止，全省各會館適用）<small class="margin-left-20">[2021/8/1 下午02:11:50]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=421" target="_self">110年企字第001號 調整說明如下：<small class="margin-left-20">[2021/8/9
+									下午03:56:17]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=419" target="_self">疫情7/27降二級：會館全員恢復正常上班！<small class="margin-left-20">[2021/7/23 下午03:10:46]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=420" target="_self">疫情後：鼓勵大家善用行銷資源（8/31止，全省各會館適用）<small class="margin-left-20">[2021/8/1
+									下午02:11:50]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=418" target="_self">總公司講師課程，相關場次認領會館及相關事宜公告<small class="margin-left-20">[2021/7/23 下午02:29:36]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=419" target="_self">疫情7/27降二級：會館全員恢復正常上班！<small class="margin-left-20">[2021/7/23
+									下午03:10:46]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=417" target="_self">總公司諮商師、講師相關合作、預約辦法及注意事項<small class="margin-left-20">[2021/7/20 下午04:07:20]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=418" target="_self">總公司講師課程，相關場次認領會館及相關事宜公告<small class="margin-left-20">[2021/7/23
+									下午02:29:36]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=416" target="_self">說明目前各品牌邀約訪客到春天會館串聯與注意事項：<small class="margin-left-20">[2021/7/2 下午03:13:57]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=417" target="_self">總公司諮商師、講師相關合作、預約辦法及注意事項<small class="margin-left-20">[2021/7/20
+									下午04:07:20]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=415" target="_self">約會專家新增功能&調整<small class="margin-left-20">[2021/6/29 下午04:51:23]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=416" target="_self">說明目前各品牌邀約訪客到春天會館串聯與注意事項：<small class="margin-left-20">[2021/7/2
+									下午03:13:57]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=414" target="_self">疫情期間：鼓勵大家善用行銷資源（7/31止，全省各會館適用）<small class="margin-left-20">[2021/6/29 下午04:36:43]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=415" target="_self">約會專家新增功能&調整<small class="margin-left-20">[2021/6/29
+									下午04:51:23]</small></a>
 						</li>
 
 						<li>
-							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=413" target="_self">公告：6/28起 北部三會館及總公司恢復正常上班<small class="margin-left-20">[2021/6/22 下午06:07:27]</small></a>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=414" target="_self">疫情期間：鼓勵大家善用行銷資源（7/31止，全省各會館適用）<small class="margin-left-20">[2021/6/29
+									下午04:36:43]</small></a>
+						</li>
+
+						<li>
+							<span class="label label-danger">未讀</span>公告訊息 - <a href="ad_announce_view.php?id=413" target="_self">公告：6/28起 北部三會館及總公司恢復正常上班<small class="margin-left-20">[2021/6/22
+									下午06:07:27]</small></a>
 						</li>
 					</ul>
 					<a class="btn btn-success col-md-12 col-sm-12 col-xs-12 margin-top-10 margin-bottom-10" href="ad_announce.php">點此查看所有公告訊息</a>
@@ -427,7 +437,8 @@ require("./include/_sidebar.php");
 						<li><span class="label label-warning"><i class="fa fa-exclamation size-15"></i></span> 系統訊息 -
 							照片審核 - <a href="ad_photo_check.php">目前有 24 筆網站照片待審核，請點此前往審核照片。</a><small class="margin-left-20">[2021/9/8 下午 01:55:52]</small></li>
 					</ul>
-					<a href="#" data-remote="false" data-toggle="modal" data-backdrop="static" data-keyboard="true" data-target="#ajax_load_modal" class="btn btn-success col-md-12 col-sm-12 col-xs-12 margin-top-10 margin-bottom-10">點此查看 50筆訊息通知</a>
+					<a href="#" data-remote="false" data-toggle="modal" data-backdrop="static" data-keyboard="true" data-target="#ajax_load_modal" class="btn btn-success col-md-12 col-sm-12 col-xs-12 margin-top-10 margin-bottom-10">點此查看
+						50筆訊息通知</a>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
@@ -823,66 +834,85 @@ require("./include/_bottom.php");
 		loadScript(plugin_path + "chart.flot/jquery.flot.resize.min.js", function() {
 			loadScript(plugin_path + "chart.flot/jquery.flot.time.min.js", function() {
 				loadScript(plugin_path + "chart.flot/jquery.flot.fillbetween.min.js", function() {
-					loadScript(plugin_path + "chart.flot/jquery.flot.orderBars.min.js", function() {
-						loadScript(plugin_path + "chart.flot/jquery.flot.pie.min.js", function() {
-							loadScript(plugin_path + "chart.flot/jquery.flot.tooltip.min.js", function() {
+					loadScript(plugin_path + "chart.flot/jquery.flot.orderBars.min.js",
+						function() {
+							loadScript(plugin_path +
+								"chart.flot/jquery.flot.pie.min.js",
+								function() {
+									loadScript(plugin_path +
+										"chart.flot/jquery.flot.tooltip.min.js",
+										function() {
 
-								if (jQuery("#flot-sin").length > 0) {
-									var plot = jQuery.plot(jQuery("#flot-sin"), dataSet, {
-										series: {
-											lines: {
-												show: true
-											},
-											points: {
-												show: true
-											}
-										},
-										grid: {
-											hoverable: true,
-											clickable: false,
-											borderWidth: 1,
-											borderColor: "#633200",
-											backgroundColor: {
-												colors: ["#ffffff", "#EDF5FF"]
-											}
-										},
-										tooltip: true,
-										tooltipOpts: {
-											content: "(%s) %x 月<br/><strong>%y</strong>",
-											defaultTheme: false
-										},
-										colors: [$color_second, $color_fourth],
-										yaxes: {
-											axisLabelPadding: 3,
-											tickFormatter: function(v, axis) {
-												return $.formatNumber(v, {
-													format: "#,###",
-													locale: "nt"
-												});
-											}
-										},
-										xaxis: {
-											ticks: [
-												[1, "一月"],
-												[2, "二月"],
-												[3, "三月"],
-												[4, "四月"],
-												[5, "五月"],
-												[6, "六月"],
-												[7, "七月"],
-												[8, "八月"],
-												[9, "九月"],
-												[10, "十月"],
-												[11, "十一月"],
-												[12, "十二月"]
-											]
-										}
-									});
+											if (jQuery("#flot-sin").length >
+												0) {
+												var plot = jQuery.plot(jQuery(
+														"#flot-sin"),
+													dataSet, {
+														series: {
+															lines: {
+																show: true
+															},
+															points: {
+																show: true
+															}
+														},
+														grid: {
+															hoverable: true,
+															clickable: false,
+															borderWidth: 1,
+															borderColor: "#633200",
+															backgroundColor: {
+																colors: [
+																	"#ffffff",
+																	"#EDF5FF"
+																]
+															}
+														},
+														tooltip: true,
+														tooltipOpts: {
+															content: "(%s) %x 月<br/><strong>%y</strong>",
+															defaultTheme: false
+														},
+														colors: [
+															$color_second,
+															$color_fourth
+														],
+														yaxes: {
+															axisLabelPadding: 3,
+															tickFormatter: function(
+																v, axis
+															) {
+																return $
+																	.formatNumber(
+																		v, {
+																			format: "#,###",
+																			locale: "nt"
+																		}
+																	);
+															}
+														},
+														xaxis: {
+															ticks: [
+																[1, "一月"],
+																[2, "二月"],
+																[3, "三月"],
+																[4, "四月"],
+																[5, "五月"],
+																[6, "六月"],
+																[7, "七月"],
+																[8, "八月"],
+																[9, "九月"],
+																[10, "十月"],
+																[11, "十一月"],
+																[12, "十二月"]
+															]
+														}
+													});
 
-								}
-							});
+											}
+										});
+								});
 						});
-					});
 				});
 			});
 		});

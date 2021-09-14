@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -214,7 +214,7 @@
 <!-- /MIDDLE -->
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script language="JavaScript">

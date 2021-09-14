@@ -1,6 +1,6 @@
 <?php
- require("./include/_top.php");
- require("./include/_sidebar.php");
+require("./include/_top.php");
+require("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -78,49 +78,55 @@
 <!-- /MIDDLE -->
 
 <?php
- require("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 
 <script language="JavaScript">
-var $nowmtu = "ad_mem_reservation.";
-$(function() {
-	$("#branch").on( "change", function() {
-   personnel_get("branch", "single");
-  });
-  
-  
-});
+    var $nowmtu = "ad_mem_reservation.";
+    $(function() {
+        $("#branch").on("change", function() {
+            personnel_get("branch", "single");
+        });
 
-function cancel_res(an) {
-	$.ajax({
-                url: "ad_mem_reservation_v.asp",
-                data: {st:"cancel", an:an},
-                type:"POST",
-                dataType:"text",
-                success: function(msg){          	                	
-                  $(".tr_"+msg).remove();
-                },                   
-                 error:function(xhr, ajaxOptions, thrownError){ 
-                    alert(xhr.status); 
-                    alert(thrownError); 
-                 }
-            });
-}
 
-function hiden_res(an) {
-	$.ajax({
-                url: "ad_mem_reservation_v.asp",
-                data: {st:"hiden", an:an},
-                type:"POST",
-                dataType:"text",
-                success: function(msg){          	                	
-                  $(".tr_"+msg).remove();
-                },                   
-                 error:function(xhr, ajaxOptions, thrownError){ 
-                    alert(xhr.status); 
-                    alert(thrownError); 
-                 }
-            });
-}
+    });
+
+    function cancel_res(an) {
+        $.ajax({
+            url: "ad_mem_reservation_v.asp",
+            data: {
+                st: "cancel",
+                an: an
+            },
+            type: "POST",
+            dataType: "text",
+            success: function(msg) {
+                $(".tr_" + msg).remove();
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+
+    function hiden_res(an) {
+        $.ajax({
+            url: "ad_mem_reservation_v.asp",
+            data: {
+                st: "hiden",
+                an: an
+            },
+            type: "POST",
+            dataType: "text",
+            success: function(msg) {
+                $(".tr_" + msg).remove();
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
 </script>

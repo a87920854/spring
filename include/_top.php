@@ -22,10 +22,6 @@
 	<link rel="icon" type="image/ico" href="assets/images/crm_favicon.ico">
 
 </head>
-<!--
-		.boxed = boxed version
-	-->
-
 <body>
 
 
