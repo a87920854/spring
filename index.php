@@ -128,56 +128,10 @@ require("./include/_sidebar.php");
 				</div>
 				<div class="clearfix height-10"></div>
 
-
-				<!-- 精英榜 -->
-				<div class="row">
-					<div class="week_full_div">
-						<div class="week_inside_title_div animated zoomInDown"><img src="img/index_top_week_title.png"><br>2021/8/31 ~ 2021/9/7</div>
-						<div class="week_inside_div">
-							<div class="week_main_div animated bounceInUp">
-								<div class="week_imgbg_div"><img src="img/index_top_week_no1.png"></div>
-								<div class="week_bg_text">
-									<div class="week_text1">高雄</div>
-									<div class="week_text2">覃秋紅</div>
-									<div class="week_text3">193,338</div>
-								</div>
-							</div>
-							<div class="week_main_div week_mobile_hide hidden-sm hidden-xs animated bounceInDown">
-								<div class="week_imgbg_div"><img src="img/index_top_week_no2.png"></div>
-								<div class="week_bg_text">
-									<div class="week_text1">台南</div>
-									<div class="week_text2">杜佳倩</div>
-									<div class="week_text3">171,050</div>
-								</div>
-							</div>
-							<div class="week_main_div week_mobile_hide hidden-sm hidden-xs animated bounceInUp">
-								<div class="week_imgbg_div"><img src="img/index_top_week_no3.png"></div>
-								<div class="week_bg_text">
-									<div class="week_text1">台南</div>
-									<div class="week_text2">黃琪雅</div>
-									<div class="week_text3">169,002</div>
-								</div>
-							</div>
-							<div class="week_main_div week_mobile_hide hidden-sm hidden-xs animated bounceInDown">
-								<div class="week_imgbg_div"><img src="img/index_top_week_no4.png"></div>
-								<div class="week_bg_text">
-									<div class="week_text1">台南</div>
-									<div class="week_text2">周淑華</div>
-									<div class="week_text3">103,760</div>
-								</div>
-							</div>
-							<div class="week_main_div week_mobile_hide hidden-sm hidden-xs animated bounceInUp">
-								<div class="week_imgbg_div"><img src="img/index_top_week_no5.png"></div>
-								<div class="week_bg_text">
-									<div class="week_text1">八德</div>
-									<div class="week_text2">周靖雯</div>
-									<div class="week_text3">81,782</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="clearfix height-10"></div>
+				<!-- 精英榜new -->
+				<?php 
+					require_once("./include/_weekly_rank.php");
+				?>				
 
 				<div class="table-responsive hidden-sm hidden-xs">
 					<p class="hidden-md hidden-lg">手機版可往右滑動</p>

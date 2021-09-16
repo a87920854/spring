@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">秘書履歷</li>
         </ol>
     </header>
@@ -60,9 +60,9 @@ require("./include/_sidebar.php");
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td><a href="ad_no_mem.asp">xxx</a></td>
+                            <td><a href="ad_no_mem.php">xxx</a></td>
 
-                            <td><a href="ad_single_view.asp">履歷</a></td>
+                            <td><a href="ad_single_view.php">履歷</a></td>
 
                         </tr>
 
@@ -96,7 +96,7 @@ require("./include/_bottom.php");
                 alert("have error。");
                 return false;
             }
-            location.href = "ad_single_list.asp?sear=1&vst=full&branch=" + $("#branch").val() + "&" + $("#keyword_type").val() + "=" + $("#keyword").val();
+            location.href = "ad_single_list.php?sear=1&vst=full&branch=" + $("#branch").val() + "&" + $("#keyword_type").val() + "=" + $("#keyword").val();
         });
 
 
