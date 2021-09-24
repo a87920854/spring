@@ -21,7 +21,7 @@
 	$thisday = date("D");
 	$thismonth = date("M");
 	$thisyear = date("Y");
-	$thisdate = date("Y-M-D");
+	$thisdate = date("Y/m/d");
 					
 	//會員人數
 	$memsize = 0; //變數(會員人數)
@@ -961,154 +961,127 @@
 				<!--小組本月業績-->
 				<div class="row">
 				<?php
-				if $_SESSION["team_name"] != "" ){
-					$SQL = 
-					
-	rs.open "SELECT * from ad_index_data where types='index_top6' and team_name = '"&session("team_name")&"' and datediff(d, times, '"&thisdate&"') = 0", SPCon, 1, 1
-	if rs.eof then
-		rs.close
-		ars.open "delete ad_index_data where types='index_top6' and team_name = '"&session("team_name")&"'", SPCon, 1, 3
-		rs.open "SELECT * from ad_index_data", SPCon, 1, 3
-		ars.open "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, p_job2, team_name FROM single_search where team_name='"&session("team_name")&"' and ps_year="&year(thisdate)&" and ps_month="&month(thisdate)&" GROUP BY p_branch, p_other_name, p_user, p_job2, team_name ORDER BY sum(ps_total) desc", SPCon, 1, 1
-		If Not ars.eof Then
-			i = 1
-			while not ars.eof
-				rs.addnew
-				rs("no") = i
-				rs("n1") = session("branch")
-				rs("n2") = ars("p_other_name")
-				rs("n3") = ars("singles")
-				rs("n4") = ars("p_user")
-				rs("types") = "index_top6"
-				rs("times") = thisdate
-				rs("team_name") = session("team_name")
-				rs.update
-				i = i + 1
-				ars.movenext
-			wend
-		end if
-		ars.close
-	end if
-	rs.close
-
-	nowi = ""
-	rs.open "SELECT * from ad_index_data where types='index_top6' and team_name='"&session("team_name")&"' and datediff(d, times, '"&thisdate&"') = 0 order by no asc", SPCon, 1, 1
-	If Not rs.eof Then
-		i = 1
-		Do While Not rs.eof
-			If rs("n4") = session("MM_Username") Then
-				nowi = "您的排名："&i
-				Exit do
-			End if
-			 i = i + 1
-			rs.movenext
-		loop
-		rs.movefirst
-	End If
-%>
-	<div class="col-md-4">
-		<div class="panel panel-default panel-rank">
-			<div class="panel-heading text-center">
-				<strong>小組 - <%=session("team_name")%> - 本月排行</strong>
-				<span class="pull-right"><%=nowi%></span>
-			</div>
-
-			<!-- panel content -->
-			<div class="panel-body">
-				<table class="table table-striped table-hover table-bordered">
-					<tbody>
-					<%         
-					if not rs.eof then
-						While Not rs.eof
-							if rs("no") = 1 then
-								Response.write "<tr style=""color:#333333;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
-							elseif rs("no") = 2 then
-								Response.write "<tr style=""color:#666666;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
-							elseif rs("no") = 3 then
-								Response.write "<tr style=""color:#666666;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
-							else
-								Response.write "<tr><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"                     
-							end if
-							rs.movenext
-						wend
-					Else
-						Response.write "<br><br>暫無統計<br><br>"
-					End If					
-					rs.close%>	
-					</tbody>
-				</table>無業績資料者不顯示											
-			</div>
-		</div>
-	</div>
-<%end if%>
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				<!--本月排行-->
-				<?php
 				if ( $_SESSION["team_name"] != "" ){
-					$SQL = "Select * From ad_index_data Where types='index_top6' And team_name = '".$_SESSION["team_name"]."' And datediff(d, times, '".$thisdate."') = 0";
+					$SQL = "Select * From ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."' And datediff(d, times, '".strtotime($thisdate)."') = 0";;
+					$rs = $SPConn->prepare($SQL);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					//foreach($result_grn as $re_grn);
+					if ( count($result) == 0 ){
+						$SQL1 = "Delete ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."'";
+						$rs1 = $SPConn->prepare($SQL1);
+						$rs1->execute();
+						$SQL2  = "Select Top 10 sum(ps_total) As singles, p_branch, p_other_name, p_user, p_job2, team_name FROM single_search Where team_name='".$_SESSION["team_name"]."' And ";
+						$SQL2 .= "ps_year=".date("Y",strtotime($thisdate))." And ps_month=".date("m",strtotime($thisdate))." Group By p_branch, p_other_name, p_user, p_job2, team_name ORDER BY sum(ps_total) desc";
+						$rs2 = $SPConn->prepare($SQL2);
+						$rs2->execute();
+						$result2=$rs2->fetchAll(PDO::FETCH_ASSOC);
+						if ( count($result2) > 0 ){
+							$i=0;
+							foreach ($result2 as $re2){
+								$i++;
+								//新增ad_index_data
+								$SQL3  = "Insert Into ad_index_data(no, n1, n2, n3, n4, types, times, team_name) Values ( '";
+								$SQL3 .= SqlFilter($i,"int")."',";
+								$SQL3 .= "'".SqlFilter($_SESSION["branch"],"str")."',";
+								$SQL3 .= "N'".SqlFilter($re2["p_other_name"],"str")."',";
+								$SQL3 .= "'".SqlFilter($re2["singles"],"str")."',";
+								$SQL3 .= "'N".SqlFilter($re2["p_user"],"str")."',";
+								$SQL3 .= "'index_top6',";
+								$SQL3 .= "'".SqlFilter($thisdate,"str")."',";
+								$SQL3 .= "'".SqlFilter($_SESSION["team_name"],"str")."')";
+								$rs3 = $SPConn->prepare($SQL3);
+								$rs3->execute();
+							}
+						}
+					}
+
+					$nowi = "";
+					$SQL = "SELECT * from ad_index_data where types='index_top6' and team_name='".$_SESSION["team_name"]."' and datediff(d, times, '".$thisdate."') = 0 order by no asc";
 					$rs = $SPConn->prepare($SQL);
 					$rs->execute();
 					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 					if ( count($result) > 0 ){
-						$SQL1 = "Delete ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."'";
-						$rs1 = $SPConn->prepare($SQL);
-						$rs1->execute();
-						$SQL3  = "Select Top 10 sum(ps_total) As singles, p_branch, p_other_name, p_user, p_job2, team_name From single_search Where team_name='".$_SESSION["team_name"]."' And ps_year=".date("Y",$thisdate)." And ";
-						$SQL3 .= "ps_month=".date("m",$thisdate)." Group By p_branch, p_other_name, p_user, p_job2, team_name Order By sum(ps_total) Desc";
-						$rs3 = $SPConn1->prepare($SQL3);
-						$rs3->execute();
-						$result3=$rs3->fetchAll(PDO::FETCH_ASSOC);
-						$i = 0;
-						if ( count($result3) > 0 ){
-							$i++;
-							foreach($result3 as $re3){
-								$SQL  = "Insert Into ad_index_data(no, n1, n3, n4, types, times, team_name) Values ( '";
-								$SQL .= SqlFilter($i,"int")."',";
-								$SQL .= "'".SqlFilter($_SESSION["branch"],"str")."',";
-								$SQL .= "'".SqlFilter($rs3["p_other_name"],"str")."',";
-								$SQL .= "'".SqlFilter($rs3["singles"],"str")."',";
-								$SQL .= "'".SqlFilter($rs3["p_user"],"str")."',";
-								$SQL .= "'index_top6',";
-								$SQL .= "'".SqlFilter($thisdate,"str")."',";
-								$SQL .= "'".SqlFilter($_SESSION["team_name"],"str").")";
-								$rsi = $SPConn->prepare($SQL);
-								$rsi->execute();
-								echo $re3["p_other_name"];
+						$i=0;
+						foreach($result as $re){
+							if ( $re["n4"] == $_SESSION["MM_Username"] ){
+								$nowi = "您的排名：".$i;
 							}
+						}
+					}
+					?>
+					
+					<div class="col-md-4">
+						<div class="panel panel-default panel-rank">
+							<div class="panel-heading text-center">
+								<strong>小組 - <?php echo $_SESSION["team_name"];?> - 本月排行</strong>
+								<span class="pull-right"><?php echo $nowi?></span>
+							</div>
+							
+							<!-- panel content -->
+							<div class="panel-body">
+								<table class="table table-striped table-hover table-bordered">
+									<tbody>
+										<?php
+										if ( count($result) > 0 ){
+											foreach($result as $re){
+												if ( $re["no"] == 1 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 2 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 3 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}else{
+													echo "<tr><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}
+											}
+										}else{
+											echo "<br><br>暫無統計<br><br>";
+										}
+										?>
+									</tbody>
+								</table>無業績資料者不顯示											
+							</div>
+						</div>
+					</div>
+				<?php }?>
+				
+				
+				<!--會館本月排行-->
+				<?php
+				$SQL = "SELECT * from ad_index_data where types='index_top1' and n1 = '".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0";
+				$rs = $SPConn->prepare($SQL);
+				$rs->execute();
+				$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+				if ( count($result) == 0 ){
+					$SQL_d = "Delete ad_index_data Where types='index_top1' And n1='".$_SESSION["branch"]."'";
+					$rs_d = $SPConn->prepare($SQL);
+					$rs_d->execute();
+					$SQL1  = "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 FROM single_search where p_branch='".$_SESSION["branch"]."' and ";
+					$SQL1 .=  "ps_year=".date("Y",strtotime($thisdate))." And ps_month=".date("m",strtotime($thisdate))." GROUP BY p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 order by singles DESC";					
+					$rs1 = $SPConn->prepare($SQL1);
+					$rs1->execute();
+					$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+					$i = 0;
+					if ( count($result1) > 0 ){
+						$i++;
+						foreach($result1 as $re1){
+							$SQL_i  = "Insert Into ad_index_data(no, n1, n2, n3, n4, types, times) Values ( '";
+							$SQL_i .= SqlFilter($i,"int")."',";
+							$SQL_i .= "'".SqlFilter($_SESSION["branch"],"str")."',";
+							$SQL_i .= "'".SqlFilter($re1["p_other_name"],"str")."',";
+							$SQL_i .= "'".SqlFilter($re1["singles"],"str")."',";
+							$SQL_i .= "'".SqlFilter($re1["p_user"],"str")."',";
+							$SQL_i .= "'index_top1',";
+							$SQL_i .= "'".SqlFilter($thisdate,"str")."')";
+							$rs_i = $SPConn->prepare($SQL_i);
+							$rs_i->execute();
 						}
 					}
 				}
 
 				$nowi = "";
-				$SQL = "Select * From ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."' And datediff(d, times, '".$thisdate."') = 0 Order By no Asc";
+				$SQL = "Select * From ad_index_data Where types='index_top1' And n1='".$_SESSION["branch"]."' And datediff(d, times, '".$thisdate."') = 0 Order By no Asc";
 				$rs = $SPConn->prepare($SQL);
 				$rs->execute();
 				$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -1122,12 +1095,10 @@
 				} ?>
 				
 				<div class="row">
-				
-					<!--本月排行-->
 					<div class="col-md-4">
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
-								<strong><?php echo $_SESSION["branch"];?> - 本月排行</strong>
+								<strong><?php echo $_SESSION["branch"];?>會館 - 本月排行</strong>
 								<span class="pull-right"></span>
 							</div>
 
@@ -1156,75 +1127,147 @@
 							</div>
 						</div>
 					</div>
-
-
-
-
-
-
-
-
+					
+					<!--會館年度排行-->
 					<div class="col-md-4">
-
-
-
+						<?php
+							$nowi = "";
+							$SQL = "SELECT * From ad_index_data where types='index_top2' and n1='".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0";
+							$rs = $SPConn->prepare($SQL);
+							$rs->execute();
+							$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+							if ( count($result) == 0 ){
+								$SQL_d = "delete ad_index_data where types='index_top2' and n1 = '".$_SESSION["branch"]."'";
+								$rs_d = $SPConn->prepare($SQL_d);
+								$rs_d->execute();
+								$SQL1  = "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 FROM single_search where p_branch='".$_SESSION["branch"]."' and ";
+								$SQL1 .= "ps_year=".$years." GROUP BY p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 order by singles DESC";
+								$rs1 = $SPConn->prepare($SQL1);
+								$rs1->execute();
+								$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+								if ( count($result1) > 0 ){
+									$i=0;
+									foreach($result1 as $re1){
+										$i++;
+										$SQL_i  = "Insert Into ad_index_data(no, n1, n2, n3, n4, types, times) Values ( '";
+										$SQL_i .= SqlFilter($i,"int")."',";
+										$SQL_i .= "'".SqlFilter($_SESSION["branch"],"str")."',";
+										$SQL_i .= "N'".SqlFilter($re1["p_other_name"],"str")."',";
+										$SQL_i .= "'".SqlFilter($re1["singles"],"str")."',";
+										$SQL_i .= "N'".SqlFilter($re1["p_user"],"str")."',";
+										$SQL_i .= "'index_top2',";
+										$SQL_i .= "'".SqlFilter($thisdate,"str")."')";
+										$rs_i = $SPConn->prepare($SQL_i);
+										$rs_i->execute();
+									}
+								}
+							}
+							
+						$SQL = "SELECT * from ad_index_data where types='index_top2' and n1 = '".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0 order by no asc";
+						$rs = $SPConn->prepare($SQL);
+						$rs->execute();
+						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+						if ( count($result) > 0 ){ 
+							$i=0;
+							foreach($result as $re){
+								$i++;
+								if ( $_re["n4"] == $_SESSION["MM_Username"] ){
+									$nowi = "您的排名：".$i;
+								}
+							}
+						}else{
+							//echo "<br><br>暫無統計<br><br>";
+						} ?>
+						
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
-								<strong>總管理處會館 - 年度排行</strong>
+								<strong><?php echo $_SESSION["branch"];?>會館 - 年度排行</strong>
 								<span class="pull-right"></span>
 							</div>
 
 							<!-- panel content -->
 							<div class="panel-body">
-
 								<table class="table table-striped table-hover table-bordered">
 									<tbody>
-										<tr style="color:#333333;font-weight:bold;">
-											<td>1</td>
-											<td>網站行銷</td>
-											<td>$463,937</td>
-										</tr>
-										<tr style="color:#666666;font-weight:bold;">
-											<td>2</td>
-											<td>約專LINE POINTS</td>
-											<td>$179,479</td>
-										</tr>
-										<tr style="color:#666666;font-weight:bold;">
-											<td>3</td>
-											<td>黃若忻</td>
-											<td>$135,842</td>
-										</tr>
-										<tr>
-											<td>4</td>
-											<td>劉澔翰</td>
-											<td>$29,169</td>
-										</tr>
-										<tr>
-											<td>5</td>
-											<td>曾欣怡</td>
-											<td>$4,850</td>
-										</tr>
+										<?php
+										if ( count($result) > 0 ){
+											foreach($result as $re){
+												if ( $re["no"] == 1 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 2 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 3 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}else{
+													echo "<tr><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}
+											}
+										}else{
+											echo "<br><br>暫無統計<br><br>";
+										} ?>
 									</tbody>
 								</table>
-
-
 							</div>
 						</div>
 					</div>
 
+
+					<!--全省會館 - 年度排行-->
 					<div class="col-md-4">
-
-
-
+						<?php
+						$SQL = "SELECT * from ad_index_data where types='index_top3' and datediff(d, times, '".$thisdate."') = 0";
+						$rs = $SPConn->prepare($SQL);
+						$rs->execute();
+						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+						if ( count($result) == 0 ){
+							$SQL_d = "delete ad_index_data where types='index_top3'";
+							$rs_d = $SPConn->prepare($SQL_d);
+							$rs_d->execute();
+							$SQL1 = "select top 10 sum(pb_total) as tt, pb_reb FROM pay_branch where pb_year=".$years." GROUP BY pb_reb ORDER BY tt DESC";
+							$rs1 = $SPConn->prepare($SQL1);
+							$rs1->execute();
+							$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+							if ( count($result1) > 0 ){
+								$i=0;
+								foreach($result1 as $re1){
+									$i++;
+									$SQL_i  = "Insert Into ad_index_data(no, n1,n3, types, times) Values ( '";
+									$SQL_i .= SqlFilter($i,"int")."',";
+									$SQL_i .= "N'".SqlFilter($re1["pb_reb"],"str")."',";
+									$SQL_i .= "'".SqlFilter($re1["tt"],"str")."',";
+									$SQL_i .= "'index_top3',";
+									$SQL_i .= "'".SqlFilter($thisdate,"str")."')";
+									$rs_i = $SPConn->prepare($SQL_i);
+									$rs_i->execute();
+								}
+							}
+						}
+						
+						$SQL = "SELECT * from ad_index_data where types='index_top3' and datediff(d, times, '".$thisdate."') = 0 order by no asc";
+						$rs = $SPConn->prepare($SQL);
+						$rs->execute();
+						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+						foreach($result as $re);
+						if ( count($result) > 0 ){
+							$i=0;
+							for($f=1;$f<=count($result);$f++){
+								if ( $re["n1"] == $_SESSION["branch"] ){
+									$nowi = "會館排名：".$i;
+									Exit For;
+								}
+							}
+						}else{
+							echo "<br><br>暫無統計<br><br>";
+						} ?>
+						
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
 								<strong>全省會館 - 年度排行</strong>
-								<span class="pull-right">會館排名：9</span>
+								<span class="pull-right">會館排名：<?php echo $nowi;?></span>
 							</div>
 
 							<!-- panel content -->
 							<div class="panel-body">
-
 								<table class="table table-striped table-hover table-bordered">
 									<tbody>
 										<tr style="color:#333333;font-weight:bold;">
