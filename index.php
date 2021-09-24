@@ -1,8 +1,9 @@
-<?php
+<?php	
 	require_once("./include/_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
+	echo "TEST";
 	
 	if ( $_Request["st"] == "keepconnect" ){
 		$_SESSION["keepconnect"] = 1;
