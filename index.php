@@ -3,6 +3,7 @@
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
+	echo "test3";
 	if ( $_Request["st"] == "keepconnect" ){
 		$_SESSION["keepconnect"] = 1;
 		echo "1";
