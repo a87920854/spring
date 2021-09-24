@@ -26,16 +26,16 @@ require("./include/_sidebar.php");
 
             <div class="panel-body">
                 <div class="col-md-12">
-                    <div class="btn-group pull-left margin-right-10">
-                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>
-
-                            <li><a href="ad_fun_love_f.php?t=0"><i class="icon-tag"></i> 進階搜尋</a></li>
-                            <li><a href="ad_fun_action_add.php"><i class="icon-plus-sign"></i> 新增報名資料</a></li>
-                        </ul>
-                    </div>　
-
+                <div class="btn-group pull-left margin-right-10">
+							<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
+							<ul class="dropdown-menu">
+							    <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>							    
+								<li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>								
+							    <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>								
+								<li><a href="ad_fun_love_f.php?t=0"><i class="icon-tag"></i> 進階搜尋</a></li>
+								<li><a href="ad_fun_action_add.php"><i class="icon-plus-sign"></i> 新增報名資料</a></li>
+							</ul>
+						  </div>
                     <form id="searchform" action="ad_fun_action1.php?vst=full&sear=1" method="post" target="_self" class="form-inline pull-left" onsubmit="return chk_search_form()">
                         <select name="keyword_type" id="keyword_type" class="form-control">
                             <option value="s2">手機</option>
