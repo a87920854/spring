@@ -89,6 +89,13 @@
 		$years = date("Y");
 	}
 	
+	//年度業績表 user
+	if ( $_SESSION["p_user2"] != "" ){
+		$p_user = $_SESSION["p_user2"];
+	}else{
+		$p_user = $_SESSION["MM_Username"];
+	}
+	
 	//年度業績表 query
 	if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 		$SQL  = "Select ";
@@ -122,20 +129,21 @@
 		$SQL .= "From pay_branch As a Where pb_year='".$years."' And pb_reb='".$_SESSION["branch"]."'";
 	}else{
 		$SQL  = "Select ";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 1 THEN pb_total END), 0) AS m1,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 2 THEN pb_total END), 0) AS m2,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 3 THEN pb_total END), 0) AS m3,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 4 THEN pb_total END), 0) AS m4,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 5 THEN pb_total END), 0) AS m5,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 6 THEN pb_total END), 0) AS m6,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 7 THEN pb_total END), 0) AS m7,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 8 THEN pb_total END), 0) AS m8,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 9 THEN pb_total END), 0) AS m9,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 10 THEN pb_total END), 0) AS m10,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 11 THEN pb_total END), 0) AS m11,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 12 THEN pb_total END), 0) AS m12 ";
-		$SQL .= "From pay_branch As a Where pb_year='".$years."' And ps_id='".$p_user."'";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 1 THEN ps_total END), 0) AS m1,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 2 THEN ps_total END), 0) AS m2,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 3 THEN ps_total END), 0) AS m3,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 4 THEN ps_total END), 0) AS m4,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 5 THEN ps_total END), 0) AS m5,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 6 THEN ps_total END), 0) AS m6,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 7 THEN ps_total END), 0) AS m7,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 8 THEN ps_total END), 0) AS m8,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 9 THEN ps_total END), 0) AS m9,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 10 THEN ps_total END), 0) AS m10,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 11 THEN ps_total END), 0) AS m11,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 12 THEN ps_total END), 0) AS m12 ";
+		$SQL .= "From pay_single As a Where ps_year='".$years."' And ps_id='".$p_user."'";
 	}
+
 	$rs_y = $SPConn->prepare($SQL);
 	$rs_y->execute();
 	$result_y=$rs_y->fetchAll(PDO::FETCH_ASSOC);
@@ -174,19 +182,19 @@
 		$SQL .= "From pay_branch As a Where pb_year='".($years-1)."' And pb_reb='".$_SESSION["branch"]."'";
 	}else{
 		$SQL  = "Select ";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 1 THEN pb_total END), 0) AS m1,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 2 THEN pb_total END), 0) AS m2,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 3 THEN pb_total END), 0) AS m3,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 4 THEN pb_total END), 0) AS m4,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 5 THEN pb_total END), 0) AS m5,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 6 THEN pb_total END), 0) AS m6,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 7 THEN pb_total END), 0) AS m7,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 8 THEN pb_total END), 0) AS m8,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 9 THEN pb_total END), 0) AS m9,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 10 THEN pb_total END), 0) AS m10,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 11 THEN pb_total END), 0) AS m11,";
-		$SQL .= "ISNULL(SUM(CASE WHEN pb_month = 12 THEN pb_total END), 0) AS m12 ";
-		$SQL .= "From pay_branch As a Where pb_year='".($years-1)."' And ps_id='".$p_user."'";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 1 THEN ps_total END), 0) AS m1,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 2 THEN ps_total END), 0) AS m2,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 3 THEN ps_total END), 0) AS m3,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 4 THEN ps_total END), 0) AS m4,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 5 THEN ps_total END), 0) AS m5,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 6 THEN ps_total END), 0) AS m6,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 7 THEN ps_total END), 0) AS m7,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 8 THEN ps_total END), 0) AS m8,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 9 THEN ps_total END), 0) AS m9,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 10 THEN ps_total END), 0) AS m10,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 11 THEN ps_total END), 0) AS m11,";
+		$SQL .= "ISNULL(SUM(CASE WHEN ps_month = 12 THEN ps_total END), 0) AS m12 ";
+		$SQL .= "From pay_single As a Where ps_year='".($years-1)."' And ps_id='".$p_user."'";
 	}
 	$rs_by = $SPConn->prepare($SQL);
 	$rs_by->execute();
@@ -277,7 +285,7 @@
 					<p class="hidden-md hidden-lg">手機版可往右滑動</p>
 					<table class="table table-striped table-bordered bootstrap-datatable">
 						<tr>
-							<th>2021 年度業績</th>
+							<th><?php echo date("Y");?> 年度業績</th>
 							<?php for ( $i=1;$i<=12;$i++ ){?>
 								<th><?php echo monthname($i);?></th>
 							<?php }?>
@@ -492,17 +500,16 @@
 									$times = $re["times"];
 									$rtime = $re["rtime"];
 									
-									
 									if ( $rtime != "" ){
-										$ctime = changeDate($rtime);
-										$rtime = "<a href='#m' class='label label-success' data-toggle='tooltip' data-original-title='".$ctime." 讀取'>已讀</a>";
+										$rtime = changeDate($rtime);
+										$rtime = "<a href='#m' class='label label-success' data-toggle='tooltip' data-original-title='".$rtime." 讀取'>已讀</a>";
 										$block_style = " style='color:#666'";
 									}else{
 										$rtime = "<span class='label label-danger'>未讀</span>";
 										$block_style = "";
 									}?>
 									<li>
-										<?php echo $rtime;?> <?php echo $types;?> - <a href="<?php echo $url;?>" target="_self"<?php echo $block_style;?>><?php echo $re["msg"];?><small class="margin-left-20">[<?php echo $ctime?>]</small></a>
+										<?php echo $rtime;?> <?php echo $types;?> - <a href="<?php echo $url;?>" target="_self"<?php echo $block_style;?>><?php echo $re["msg"];?><small class="margin-left-20">[ <?php echo changeDate($times);?> ]</small></a>
 									</li>
 								<?php }
 							}?>	
@@ -559,7 +566,7 @@
 								?>
 									<li>
 										<span class="label label-warning"><i class="fa fa-exclamation size-15"></i></span>
-										<?php echo $types;?> - <a href="<?php echo $url?>" target="_blank"<?php echo $block_style?>><?php echo $re["msg"]?><small class="margin-left-20">[<?php echo changeDate($times);?>]<?php echo $towho?></small></a>
+										<?php echo $types;?> - <a href="<?php echo $url?>" target="_blank"<?php echo $block_style;?>><?php echo $re["msg"]?><small class="margin-left-20">[ <?php echo changeDate($times);?> ]<?php echo $towho?></small></a>
 									</li>
 								<?php }
 							}?>
@@ -567,159 +574,473 @@
 					<a href="index.php?st=read_all_sysmsg" data-remote="false" data-toggle="modal" data-backdrop="static" data-keyboard="true" data-target="#ajax_load_modal" class="btn btn-success col-md-12 col-sm-12 col-xs-12 margin-top-10 margin-bottom-10">點此查看50筆訊息通知</a>
 				</div>
 				
-				
-				
-				
-				
-				<div class="bold margin-left-5 padding-bottom-5">未發送未入會資料<small class="hidden-md hidden-lg">&nbsp;&nbsp;&nbsp;&nbsp;手機版可往右滑動</small></div>
-<div class="table-responsive">
-	
-												<table class="table table-striped table-hover table-bordered">
-													<thead>
-														<tr>
-															<th>NO.</th>
-									<th>資料時間</th>
-								  <th>資料來源</th>
-								  <th>編號</th>
-								  <th>姓名</th>
-								  <th>性別</th>
-								  <th>生日</th>
-								  <th>學歷</th>
-								  <th>秘書</th>
-														</tr>
-													</thead>
-													<tbody>
+				<!--未發送未入會資料-->
+				<?php
+					if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+						$subSQL = "Select Top 10 * From member_data Where mem_level = 'guest' And send_time2 is null And all_type='未處理'";
+						$stxt = "未發送";
+					}
 			
-			<tr>
-      <td>1</td>
-      <td>2021-09-08 22:54</td>
-      <td>行銷活動-2021年12星座愛情指數測驗 [DMN_FB_post_12starsigns_20210204B]</td>
-      <td>2082584</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082584" target="_blank">Wang ChungMing</a></td>
-      	<td>男</td>
-      	<td>1995/9/7　26 歲</td>
-      	<td></td>
-      	<td><font color=green>受理：</font>八德 - 不明</td>
-      	
-      </tr>
-      
-			<tr>
-      <td>2</td>
-      <td>2021-09-09 00:17</td>
-      <td>行銷活動-九型戀愛人格分析 [Springclub_Google_allproducts_GDN]</td>
-      <td>2082595</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082595" target="_blank">她</a></td>
-      	<td>女</td>
-      	<td>2001/8/7　20 歲</td>
-      	<td>大學</td>
-      	<td></td>
-      	
-      </tr>
-      
-			<tr>
-      <td>3</td>
-      <td>2021-09-09 00:53</td>
-      <td>行銷活動-12生肖看戀愛運-手機版 [Springclub_allproducts_instagram_pay20210127]</td>
-      <td>2082601</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082601" target="_blank">林育緯</a></td>
-      	<td>男</td>
-      	<td>1996/11/2　25 歲</td>
-      	<td></td>
-      	<td></td>
-      	
-      </tr>
-      
-			<tr>
-      <td>4</td>
-      <td>2021-09-09 01:00</td>
-      <td>春天網站-網站註冊 [Springclub_Google_allproducts_Explore]</td>
-      <td>2082603</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082603" target="_blank">陳永華</a></td>
-      	<td>男</td>
-      	<td>0/0/0</td>
-      	<td></td>
-      	<td></td>
-      	
-      </tr>
-      
-			<tr>
-      <td>5</td>
-      <td>2021-09-09 00:58</td>
-      <td>行銷活動-現代月老陪你戀愛交友-手機版 [Springclub_Google_allproducts_Explore]</td>
-      <td>2082602</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082602" target="_blank">陳永華</a></td>
-      	<td>男</td>
-      	<td>0/0/0</td>
-      	<td></td>
-      	<td></td>
-      	
-      </tr>
-      
-			<tr>
-      <td>6</td>
-      <td>2021-09-08 22:33</td>
-      <td>春天網站-網站註冊 [sale-744]</td>
-      <td>2082580</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082580" target="_blank">陳正旺</a></td>
-      	<td>男</td>
-      	<td>1990/4/28　31 歲</td>
-      	<td>高中</td>
-      	<td><br><font color=green>推薦：</font>台中 - 台中督導</td>
-      	
-      </tr>
-      
-			<tr>
-      <td>7</td>
-      <td>2021-09-08 23:26</td>
-      <td>行銷活動-2021年12星座愛情指數測驗 [DMN_FB_post_12starsigns_20210423]</td>
-      <td>2082586</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082586" target="_blank">林妏瑾</a></td>
-      	<td>女</td>
-      	<td>2001/5/3　20 歲</td>
-      	<td></td>
-      	<td><font color=green>受理：</font>八德 - 不明</td>
-      	
-      </tr>
-      
-			<tr>
-      <td>8</td>
-      <td>2021-09-09 01:10</td>
-      <td>行銷活動-2021年12星座愛情指數測驗 [DMN_FB_post_12starsigns_20210423]</td>
-      <td>2082605</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082605" target="_blank">Yan</a></td>
-      	<td>女</td>
-      	<td>1995/2/7　26 歲</td>
-      	<td></td>
-      	<td><font color=green>受理：</font>八德 - 不明</td>
-      	
-      </tr>
-      
-			<tr>
-      <td>9</td>
-      <td>2021-09-08 21:55</td>
-      <td>春天網站-手機APP-首頁</td>
-      <td>2082576</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082576" target="_blank">陳怡帆</a></td>
-      	<td>女</td>
-      	<td>1985/6/8　36 歲</td>
-      	<td>大學</td>
-      	<td></td>
-      	
-      </tr>
-      
-			<tr>
-      <td>10</td>
-      <td>2021-09-09 00:20</td>
-      <td>約會專家-手機板 [singleparty_lovelab_fb2_iProspect]</td>
-      <td>2082596</td>
-      <td><a href="ad_mem_detail.asp?mem_num=2082596" target="_blank">李品毅</a></td>
-      	<td>男</td>
-      	<td>1989/3/17　32 歲</td>
-      	<td>高職</td>
-      	<td></td>
-      	
-      </tr>
-      </tbody></table></div><a class="btn btn-success col-md-12 col-sm-12 col-xs-12" href="ad_no_mem.asp">點此前往處理所有未發送未入會資料</a><div class="clearfix"></div><hr>
+					if ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+						$subSQL = "Select Top 10 * From member_data Where mem_level = 'guest' And (mem_branch='".$_SESSION["branch"]."') And not send_time2 is null And send_time is null And all_type='已發送'";
+						$stxt = "未發送";
+					}
+
+					if ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "love" ){
+						$subSQL = "Select Top 10 * From member_data Where mem_level = 'guest' And (mem_branch='".$_SESSION["branch"]."') And (mem_single='".$_SESSION["MM_Username"]."') And all_type='已發送'";
+						$stxt = "未處理";
+					}
+					
+					if ( $SQL <> "" ){
+						if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+							$SQL = $subSQL." Order By mem_mobile, mem_auto Desc";
+						}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+							$SQL = $subSQL." Order By send_time2 Desc, send_time Desc";
+							
+						}else{
+							$SQL = $subSQL." Order By send_time Desc";
+						}
+						$rs = $SPConn->prepare($SQL);
+						$rs->execute();
+						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+						if ( count($result) > 0 ){
+				?>
+							<div class="bold margin-left-5 padding-bottom-5">未發送未入會資料<small class="hidden-md hidden-lg">&nbsp;&nbsp;&nbsp;&nbsp;手機版可往右滑動</small></div>
+							<div class="table-responsive">
+								<table class="table table-striped table-hover table-bordered">
+									<thead>
+										<tr>
+											<th>NO.</th>
+											<th>資料時間</th>
+											<th>資料來源</th>
+											<th>編號</th>
+											<th>姓名</th>
+											<th>性別</th>
+											<th>生日</th>
+											<th>學歷</th>
+											<th>秘書</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php
+										$i = 0;
+										foreach( $result as $re ){
+											$i++;
+											if ( $re["mem_cc"] != "" ){ $mem_cc = " [".$re["mem_cc"]."]"; }else{ $mem_cc = ""; }
+											if ( $re["mem_name"] != "" ){
+												$mem_name = $re["mem_name"];
+											}else{ 
+												$mem_name = "無姓名";
+												if ( $re["mem_mobile"] != "" ){
+													$mem_name = $mem_name . "[".$re["mem_mobile"]."]";
+												}
+											}
+											
+											$bday = "";
+											if ( is_numeric($re["mem_by"]) && $re["mem_by"] > 1911 ){
+												$bday = "　".(date("Y")-$re["mem_by"])." 歲";
+											}
+											$mem_single = "";
+											if ( $re["mem_branch"] != "" ){
+												$mem_single = "<font color='green'>受理：</font>".$re["mem_branch"]." - ".SingleName($re["mem_single"]);
+											}else{
+												$mem_single = "";
+											}
+								 
+											if ( $re["love_single"] != "" ){
+												$love_single = "<br><font color='green'>排約：</font>".SingleName($re["love_single"]);
+											}else{
+												$love_single = "";
+											}
+
+											if ( $re["call_branch"] != "" ){
+												//$call_single = "<br><font color='green'>邀約：</font>".$re["call_branch"]." - ".SingleName($re["call_single"]);
+											}else{
+												$call_single = "";
+											}
+
+											if ( $re["mem_come3"] != "" ){
+												$sup_single = "<br><font color='green'>推薦：</font>".$re["mem_come3"]." - ".SingleName($re["mem_come4"]);
+											}else{
+												$sup_single = "";
+											} ?>
+											<tr>
+												<td><?php echo $i;?></td>
+												<td><?php echo Date_EN($re["mem_time"],9);?></td>
+												<td><?php echo $re["mem_come"];?><?php if ( $re["mem_come2"] != "" ){ echo "-".$re["mem_come2"];}?><?php echo $mem_cc;?></td>
+												<td><?php echo $re["mem_num"];?></td>
+												<td><a href="ad_mem_detail.asp?mem_num=<?php echo $re["mem_num"];?>" target="_blank"><?php echo $re["mem_name"];?></a></td>
+												<td><?php echo $re["mem_sex"];?></td>
+												<td><?php echo $re["mem_by"];?>/<?php echo $re["mem_bm"];?>/<?php echo $re["mem_bd"];?><?php echo $bday;?></td>
+												<td><?php echo $re["mem_school"];?></td>
+												<td><?php echo $mem_single.$love_single.$call_single.$sup_single?></td>
+											</tr>
+									<?php }?>										
+									</tbody>
+								</table>
+							</div>
+							<a class="btn btn-success col-md-12 col-sm-12 col-xs-12" href="ad_no_mem.asp">點此前往處理所有未發送未入會資料</a><div class="clearfix"></div><hr>
+				<?php	} }?>
+				
+				
+				<!--本月約見記錄.ap-->
+				<?php
+				if ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+					$apSQL = "Select Top 10 * From invite Where year(n11)=".date("Y")." And month(n11)=".date("m")." and (branch='".$_SESSION["branch"]."' Or branch3='".$_SESSION["branch"]."')";
+				}
+				
+				if ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "love" ){
+					$apSQL = "Select Top 10 * From invite Where year(n11)=".date("Y")." And month(n11)=".date("m")." And (single='".$_SESSION["MM_Username"]."' Or single2='".$_SESSION["MM_Username"]."' Or single3='".$_SESSION["MM_Username"]."') And datediff(DAY, '".date("Y/m/d")."', n11) >= 0";
+				}
+
+				if ( $apSQL != "" ){
+					$apSQL = $apSQL." Order By n11 Desc";
+					$ap_rs = $SPConn->prepare($apSQL);
+					$ap_rs->execute();
+					$ap_result=$ap_rs->fetchAll(PDO::FETCH_ASSOC);
+					if ( count($ap_result) > 0 ){?>
+						<div class="bold margin-left-5 padding-bottom-5">本月約見紀錄</div>																				
+						<table class="table table-striped table-hover table-bordered">
+							<thead>
+								<tr>
+									<th>NO.</th>
+									<th>時間</th>
+									<th>姓名</th>
+									<th>基本資料</th>
+									<th>開發</th>
+									<th>邀約</th>
+									<th>受理</th>
+									<th>狀態</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+							<?php
+							$i = 0;
+							foreach($ap_result as $ap_re){
+								$i++;
+								$single3name = SingleName($ap_re["single3"]);
+								$sts = "";
+								switch ($ap_re["stats"]){
+									Case 1:
+										if ( strstr($single3name,"督導") > 0 || $single3name == "不明" ){
+											$sts = "待分配秘書";
+										}else{
+											$sts = "待回報結果";
+										}
+										break;
+									Case 2:
+										if ( $ap_re["n14"] == "1" ){
+											$sts = "參加";
+										}
+										if ( $ap_re["n16"] == "1" ){
+											$sts = "未參加";
+										}
+										break;
+									Case 3:
+										$sts = "重新約見";
+										break;
+									Case 4:
+										$sts = "重新提醒";
+										break;
+									Case 5:
+										$sts = "已改約 ".$ap_re["n21"]."";
+										break;
+									Case 6:
+										$sts = "未到";
+										break;
+									default:
+										$sts = "待電話提醒";
+										break;
+								}
+								?>
+								<tr>
+									<td><?php echo $i;?></td>
+									<td style="font-size:12px;"><?php echo changeDate($ap_re["n11"]);?></td>
+									<td><?php echo $ap_re["n1"];?></td>
+									<td><?php echo $ap_re["n3"];?>/<?php echo $ap_re["n4"];?>/<?php echo $ap_re["n5"];?>.<?php echo $ap_re["n6"];?></td>
+									<td><?php echo $ap_re["branch"];?> - <?php echo $ap_re["single"].singlename($ap_re["single"]);?></td>
+									<td><?php echo SingleName($ap_re["single2"]);?></td>
+									<td><?php if ( $ap_re["branch"] != $ap_re["branch3"] ){ echo $ap_re["branch3"] ." - ". $single3name ;}?></td>
+									<td><?php echo $sts;?></td>
+									<td><a href="ad_invite_d.asp?y=<?php echo date("Y",$ap_re["n11"]);?>&m=<?php echo date("m",$ap_re["n11"]);?>&d=<?php echo date("d",$ap_re["n11"]);?>">查看</a></td>
+								</tr>
+							<?php }?>
+							</tbody>
+						</table>
+						<div class="clearfix"></div><hr>
+				<?php	} } ?>
+
+				
+				<!--預約聯絡名單.booking-->
+				<?php
+				$bookingSQL  = "Select Top 5 * From log_data Outer Apply (Select mem_num, mem_sex,mem_by,mem_bm,mem_bd,mem_school,mem_area,mem_photo From member_data Where mem_auto=log_data.log_num) mm Where ";
+				//$bookingSQL .= "log_single='".$_SESSION["MM_Username"]."' And (log_6 <> '' Or Not log_6 is null) And datediff(DAY, '".date("Y/m/d")."', log_6) >= 0 Order By log_6 asc, log_6_time Asc";
+				$bookingSQL .= "log_single='S222486977' And (log_6 <> '' Or Not log_6 is null) And datediff(DAY, '".date("Y/m/d")."', log_6) >= 0 Order By log_6 asc, log_6_time Asc";
+				$rs_booking = $SPConn->prepare($bookingSQL);
+				$rs_booking->execute();
+				$result_booking=$rs_booking->fetchAll(PDO::FETCH_ASSOC);
+				
+				if ( count($result_booking) > 0 ){ ?>
+					<div class="bold margin-left-5 padding-bottom-5">預約聯絡名單</div>  
+					<table class="table table-striped table-hover table-bordered">									
+					<?php
+					foreach($result_booking as $re_booking){
+						echo "<tr>";
+						if ( $re_booking["log_5"] == "member" ){
+							$ismember = 1;
+							$ahref = "<a href='ad_mem_detail.asp?mem_num=".$re_booking["mem_num"]."' target='_blank'>";
+							$log_num = $re_booking["mem_num"];
+						}else{
+							$ismember = 0;
+							$ahref = "<a href='#' onClick='Mars_popup('ad_love_detail.asp?k_id=".$re_booking["log_num"]."','',' scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10')'>";
+							$log_num = $re_booking["log_num"];
+						}
+						  								  		
+						echo "<td>".$log_num."</td>";
+						echo "<td>".$ahref.$re_booking["log_username"]."</a></td>";
+						echo "<td>".$re_booking["mem_sex"]."</td>";
+						$bday = "";
+						if ( is_numeric($re_booking["mem_by"]) && $re_booking["mem_by"] > 1911 ){
+							$bday="　".(date("Y")-$re_booking["mem_by"])." 歲";
+						}
+						echo "<td>".$re_booking["mem_by"]."/".$re_booking["mem_bm"]."/".$re_booking["mem_bd"].$bday."</td>";
+						echo "<td>".$re_booking["mem_school"]."</td>";
+						echo "<td>".$re_booking["mem_area"]."</td>";
+						echo "<td>".$re_booking["log_1"]."</td>";						  		
+						
+						if ( $re_booking["log_6"] != "" ){
+							if ( chkDate($re_booking["log_6_time"])){
+								$log_6_time = $re_booking["log_6_time"];
+							}else{
+								$log_6_time = $re_booking["log_6"]." ".$re_booking["log_6_t"];
+							}
+							$date1 = date("d");
+							$date2 =  date("d",strtotime($re_booking["log_6"]));
+							if (  $date2- $date1 >= 0 ){
+								if (  $date2 - $date1 == 0 ){
+									$td = " style='color:Red'";
+								}else{
+									$td = "";
+								}
+								echo "<td".$td.">".date("Y/m/d H:i",strtotime($log_6_time))."</td>";
+							}else{
+								echo "<td style='text-decoration: line-through'>".date("Y/m/d H:i",strtotime($log_6_time))."</td>";
+							}
+						}else{
+							echo "<td>僅關注</td>";
+						}
+
+						$reports = get_report_num($re_booking["log_1"]);
+						if ( strstr($reports, "|+|", true) > 0 ){
+							$report_array = explode("|+|", $reports);
+							$report = $report_array[0];
+							$report_text = $report_array[1];
+							$report_type = $report_array[2];
+							$report_time = $report_array[3];
+						}else{
+							$report = 0;
+							$report_text = "無";
+							$report_type = "無";
+							$report_time = "";
+						}
+						?>
+						<td><a href="javascript:Mars_popup('ad_report.asp?k_id=<?php echo $re_booking["log_num"];?>&lu=<?php echo $re_booking["log_fid"];?>&ty=<?php echo $re_booking["log_5"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10')">回報(<?php echo $report;?>)</a>&nbsp;&nbsp;處理情形：<?php echo $report_type;?>-<?php echo $report_time;?></td>
+						<?
+						echo "<td>".$re_booking["log_branch"]."</td>";
+						echo "<td>".SingleName($re_booking["log_single"])."</td>";
+						echo "<td>";
+						$mem_photo = $re_booking["mem_photo"];
+						if ( $mem_photo != "" && ! strstr($mem_photo, "boy.") > 0 && ! strstr($mem_photo, "girl.") > 0 ){
+							if ( strstr(mem_photo, "photo/") > 0 ){
+								echo "<a href='dphoto/".$mem_photo."?t=".int(rnd()*9999)."' class='fancybox'>有</a>";
+							}else{
+								echo "<a href='../photo/".$mem_photo."?t=".int(rnd()*9999)."' class='fancybox'>有</a>";
+							}
+						}else{
+							echo "無";
+						}
+						echo "</td>";
+						echo "</tr>";
+					}
+
+					echo "</table>";
+					echo "<a class='btn btn-success col-md-12 col-sm-12 col-xs-12' href='ad_mem_reservation.asp'>點此前往預約聯絡名單</a>";
+					echo "<div class='clearfix'></div><hr>";
+				}
+				?>
+				
+				
+				<!--即將到期會員(90天).ex-->
+				<?php
+				//$exSQL = "Select Top 5 * From member_data Where mem_level='mem' And mem_single='".$_SESSION["MM_Username"]."' And Not web_endtime is null And web_endtime Between getdate() And dateadd(DAY, 90, getdate()) Order By web_endtime Asc";
+				$exSQL = "Select Top 5 * From member_data Where mem_level='mem' And mem_single='S222486977' And Not web_endtime is null And web_endtime Between getdate() And dateadd(DAY, 90, getdate()) Order By web_endtime Asc";
+				$rs_ex = $SPConn->prepare($exSQL);
+				$rs_ex->execute();
+				$result_ex=$rs_ex->fetchAll(PDO::FETCH_ASSOC);
+				if ( count($result_ex) > 0 ){ ?>
+					<div class="bold margin-left-5 padding-bottom-5">即將到期會員(90天)</div>  
+					<table class="table table-striped table-hover table-bordered">
+						<thead>
+							<tr>
+								<th>NO.</th>
+								<th>到期時間</th>
+								<th>資料來源</th>
+								<th>編號</th>
+								<th>姓名</th>
+								<th>性別</th>
+								<th>生日</th>
+								<th>學歷</th>
+								<th>秘書</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+						$i = 0;
+						foreach ( $result_ex as $re_ex ){
+							$i++;
+							if ( $re_ex["mem_cc"] != "" ){
+								$mem_cc = " [".$re_ex["mem_cc"]."]";
+							}else{
+								$mem_cc = "";
+							}
+							if ( $re_ex["mem_name"] != "" ){
+								$mem_name = $re_ex["mem_name"];
+							}else{
+								$mem_name = "無姓名";
+								if ( $re_ex["mem_mobile"] != "" ){
+									$mem_name = $mem_name."[".$re_ex["mem_mobile"]."]";
+								}
+							}
+							$bday = "";
+							if ( is_numeric($re_ex["mem_by"]) && $re_ex["mem_by"] > 1911 ){
+								$bday = "　".(date("Y")-$re_ex["mem_by"])." 歲";
+							}
+							$mem_single = "";
+							if ( $re_ex["mem_branch"] != "" ){
+								$mem_single = "<font color='green'>受理：</font>".$re_ex["mem_branch"]." - ".SingleName($re_ex["mem_single"]);
+							}else{
+								$mem_single = "";
+							}
+								if ( $re_ex["love_single"] != "" ){
+								$love_single = "<br><font color='green'>排約：</font>".SingleName($re_ex["love_single"]);
+							}else{
+								$love_single = "";
+							}
+								if ( $re_ex["call_branch"] != "" ){
+								$call_single = "<br><font color='green'>邀約：</font>".$re_ex["call_branch"]." - ".SingleName($re_ex["call_single"]);
+							}else{
+								$call_single = "";
+							}
+							 
+							if ( $re_ex["mem_come3"] != "" ){
+								$sup_single = "<br><font color='green'>推薦：</font>".$re_ex["mem_come3"]." - ".SingleName($re_ex["mem_come4"]);
+							}else{
+								$sup_single = "";
+							}?>
+							<tr>
+								<td><?php echo $i;?></td>
+								<td><?php echo $re_ex["web_endtime"];?></td>
+								<td><?php echo $re_ex["mem_come"];?><?php if ( $re_ex["mem_come2"] != "" ){ echo "-".$re_ex["mem_come2"].$mem_cc;}?></td>
+								<td><?php echo $re_ex["mem_num"]?></td>
+								<td><a href="ad_mem_detail.asp?mem_num=<?php echo $re_ex["mem_num"];?>" target="_blank"><?php echo $mem_name;?></a></td>
+								<td><?php echo $re_ex["mem_sex"];?></td>
+								<td><?php echo $re_ex["mem_by"];?>/<?php echo $re_ex["mem_bm"]?>/<?php echo $re_ex["mem_bd"];?><?php echo $bday;?></td>
+								<td><?php echo $re_ex["mem_school"];?></td>
+								<td><?php echo $mem_single.$love_single.$call_single.$sup_single?></td>
+							</tr>
+						<?php }?>
+						</tbody>
+					</table>
+				</div>
+				<a class="btn btn-success col-md-12 col-sm-12 col-xs-12" href="ad_mem.asp?in90=1&orderby=2">點此前往查看所有即將到期會員</a><div class="clearfix"></div><hr>
+				<div class="clearfix"></div><hr>
+				<?php }?>
+				
+				
+				<!--小組本月業績-->
+				<div class="row">
+				<?php
+				if $_SESSION["team_name"] != "" ){
+					$SQL = 
+					
+	rs.open "SELECT * from ad_index_data where types='index_top6' and team_name = '"&session("team_name")&"' and datediff(d, times, '"&thisdate&"') = 0", SPCon, 1, 1
+	if rs.eof then
+		rs.close
+		ars.open "delete ad_index_data where types='index_top6' and team_name = '"&session("team_name")&"'", SPCon, 1, 3
+		rs.open "SELECT * from ad_index_data", SPCon, 1, 3
+		ars.open "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, p_job2, team_name FROM single_search where team_name='"&session("team_name")&"' and ps_year="&year(thisdate)&" and ps_month="&month(thisdate)&" GROUP BY p_branch, p_other_name, p_user, p_job2, team_name ORDER BY sum(ps_total) desc", SPCon, 1, 1
+		If Not ars.eof Then
+			i = 1
+			while not ars.eof
+				rs.addnew
+				rs("no") = i
+				rs("n1") = session("branch")
+				rs("n2") = ars("p_other_name")
+				rs("n3") = ars("singles")
+				rs("n4") = ars("p_user")
+				rs("types") = "index_top6"
+				rs("times") = thisdate
+				rs("team_name") = session("team_name")
+				rs.update
+				i = i + 1
+				ars.movenext
+			wend
+		end if
+		ars.close
+	end if
+	rs.close
+
+	nowi = ""
+	rs.open "SELECT * from ad_index_data where types='index_top6' and team_name='"&session("team_name")&"' and datediff(d, times, '"&thisdate&"') = 0 order by no asc", SPCon, 1, 1
+	If Not rs.eof Then
+		i = 1
+		Do While Not rs.eof
+			If rs("n4") = session("MM_Username") Then
+				nowi = "您的排名："&i
+				Exit do
+			End if
+			 i = i + 1
+			rs.movenext
+		loop
+		rs.movefirst
+	End If
+%>
+	<div class="col-md-4">
+		<div class="panel panel-default panel-rank">
+			<div class="panel-heading text-center">
+				<strong>小組 - <%=session("team_name")%> - 本月排行</strong>
+				<span class="pull-right"><%=nowi%></span>
+			</div>
+
+			<!-- panel content -->
+			<div class="panel-body">
+				<table class="table table-striped table-hover table-bordered">
+					<tbody>
+					<%         
+					if not rs.eof then
+						While Not rs.eof
+							if rs("no") = 1 then
+								Response.write "<tr style=""color:#333333;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
+							elseif rs("no") = 2 then
+								Response.write "<tr style=""color:#666666;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
+							elseif rs("no") = 3 then
+								Response.write "<tr style=""color:#666666;font-weight:bold;""><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"
+							else
+								Response.write "<tr><td>"&rs("no")&"</td><td>"&rs("n2")&"</td><td>"&FormatCurrency_UTIL(rs("n3"))&"</td></tr>"                     
+							end if
+							rs.movenext
+						wend
+					Else
+						Response.write "<br><br>暫無統計<br><br>"
+					End If					
+					rs.close%>	
+					</tbody>
+				</table>無業績資料者不顯示											
+			</div>
+		</div>
+	</div>
+<%end if%>
 				
 				
 				
@@ -748,13 +1069,65 @@
 				
 				
 				
+				
+				<!--本月排行-->
+				<?php
+				if ( $_SESSION["team_name"] != "" ){
+					$SQL = "Select * From ad_index_data Where types='index_top6' And team_name = '".$_SESSION["team_name"]."' And datediff(d, times, '".$thisdate."') = 0";
+					$rs = $SPConn->prepare($SQL);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					if ( count($result) > 0 ){
+						$SQL1 = "Delete ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."'";
+						$rs1 = $SPConn->prepare($SQL);
+						$rs1->execute();
+						$SQL3  = "Select Top 10 sum(ps_total) As singles, p_branch, p_other_name, p_user, p_job2, team_name From single_search Where team_name='".$_SESSION["team_name"]."' And ps_year=".date("Y",$thisdate)." And ";
+						$SQL3 .= "ps_month=".date("m",$thisdate)." Group By p_branch, p_other_name, p_user, p_job2, team_name Order By sum(ps_total) Desc";
+						$rs3 = $SPConn1->prepare($SQL3);
+						$rs3->execute();
+						$result3=$rs3->fetchAll(PDO::FETCH_ASSOC);
+						$i = 0;
+						if ( count($result3) > 0 ){
+							$i++;
+							foreach($result3 as $re3){
+								$SQL  = "Insert Into ad_index_data(no, n1, n3, n4, types, times, team_name) Values ( '";
+								$SQL .= SqlFilter($i,"int")."',";
+								$SQL .= "'".SqlFilter($_SESSION["branch"],"str")."',";
+								$SQL .= "'".SqlFilter($rs3["p_other_name"],"str")."',";
+								$SQL .= "'".SqlFilter($rs3["singles"],"str")."',";
+								$SQL .= "'".SqlFilter($rs3["p_user"],"str")."',";
+								$SQL .= "'index_top6',";
+								$SQL .= "'".SqlFilter($thisdate,"str")."',";
+								$SQL .= "'".SqlFilter($_SESSION["team_name"],"str").")";
+								$rsi = $SPConn->prepare($SQL);
+								$rsi->execute();
+								echo $re3["p_other_name"];
+							}
+						}
+					}
+				}
+
+				$nowi = "";
+				$SQL = "Select * From ad_index_data Where types='index_top6' And team_name='".$_SESSION["team_name"]."' And datediff(d, times, '".$thisdate."') = 0 Order By no Asc";
+				$rs = $SPConn->prepare($SQL);
+				$rs->execute();
+				$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+				if ( count($result) > 0 ){
+					$i=0;
+					foreach($result as $re){
+						if ( $re["n4"] == $_SESSION["MM_Username"] ){
+							$nowi = "您的排名：".$i;
+						}
+					}
+				} ?>
 				
 				<div class="row">
+				
+					<!--本月排行-->
 					<div class="col-md-4">
-
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
-								<strong>總管理處會館 - 本月排行</strong>
+								<strong><?php echo $_SESSION["branch"];?> - 本月排行</strong>
 								<span class="pull-right"></span>
 							</div>
 
@@ -762,17 +1135,34 @@
 							<div class="panel-body">
 								<table class="table table-striped table-hover table-bordered">
 									<tbody>
-										<tr style="color:#333333;font-weight:bold;">
-											<td>1</td>
-											<td>網站行銷</td>
-											<td>$17,750</td>
-										</tr>
+										<?php
+										if ( count($result) > 0 ){
+											foreach($result as $re){
+												if ($re["no"] == 1 ){
+													echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 2 ){
+													echo "<tr style='color:#666666;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}elseif ( $re["no"] == 3 ){
+													echo "<tr style='color:#666666;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n3"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}else{
+													echo "<tr><td>".$re["no"]."</td><td>".$re["n2"]."</td><td>".FormatCurrency($re["n3"])."</td></tr>";
+												}
+											}
+										}else{
+											echo "<br><br>暫無統計<br><br>";
+										}?>	
 									</tbody>
 								</table>
-
 							</div>
 						</div>
 					</div>
+
+
+
+
+
+
+
 
 					<div class="col-md-4">
 
@@ -1086,5 +1476,5 @@
 </div>
 <?php 
 	require_once("./include/_bottom.php");
-	require_once("./include/_chart.js");
+	require("./include/_chart.js");
 ?>
