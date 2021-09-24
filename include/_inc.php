@@ -13,7 +13,7 @@
 			exit;
 		}
 	}
-
+	
 	//好好玩旅行社
 	function FunOpen(){
 		try {

@@ -1,5 +1,5 @@
 <?php
-
+	
 	//彈跳訊息
 	function call_alert( $msg, $url, $outtime ){
 		echo "<script language=\"javascript\">" ;
@@ -105,5 +105,170 @@
 			$member_array = 1;
 		}
 		return $member_array; 
+	}
+	
+	//登入有使用到的funcion，不知作用為何
+	/*function updatemyreservation(){
+		if ( $_SESSION["MM_Username"] != "" ){ //登入中  	
+			//$singleid = "E223522640"; //測試用
+			$singleid = $_SESSION["MM_Username"];
+			//setcookie("reservation_alert","","","");
+			//$SQL = "Select Distinct log_6_time From log_data Where log_single='".$singleid."' And ((log_6 <> '' Or Not log_6 is null) And datediff(n, getdate(), log_6_time) >= 0 and datediff(d, getdate(), log_6_time) = 0) order by log_6_time asc";
+			$SQL = "Select top 10 * From log_data";
+			$rsd = $SPConn->prepare($SQL);
+			$rsd->execute();
+			$resultd=$rsd->fetchAll(PDO::FETCH_ASSOC);
+			echo "**";
+			exit;
+			/*if ( count($result) > 0 ){ // Not Eof
+				foreach($result as $re){ //先取出當日的所有不重復時段
+					//再取出各時段中的名稱
+					$log_6_time = chtime($re["log_6_time"]);
+					$SQL = "Select log_username From log_data Where log_single='".$singleid."' And ((log_6 <> '' or not log_6 is null) And datediff(n, '".$log_6_time."', log_6_time) = 0) order by log_6_time asc";
+					$rs1 = $SPConn->prepare($SQL);
+					$rs1->execute();
+					$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+					if ( count($result1) > 0 ){ // Not Eof
+						foreach($result1 as $re1){ //先取出當日的所有不重復時段
+							$log_username = $log_username.",".$re2["log_username"];
+						}
+					}
+					echo $log_username;
+					exit;
+					$log_username = clear_left_par($log_username, ",");
+					$reservation_alert_str = $reservation_alert_str."|o|".$log_6_time."|a|".$log_username;  		
+				}
+				
+				$reservation_alert_str = clear_left_par($reservation_alert_str, "|o|");
+				if ( $reservation_alert_str != "" ){ //寫入 cookie
+					$reservation_alert_str = str_replace(" ", "|s|", $reservation_alert_str); //轉換空格
+					setcookie("reservation_alert",$reservation_alert_str,time()+86400); //期限一天 86400秒
+				}
+			}
+		}
+	}*/
+
+	function chtime($thetime){
+		if ( chkDate($thetime) ){
+			$thetimes = date("Y-d-m H:M:S");
+			$chtime = date("Y",$thetimes)."-".date("M",$thetimes)."-".date("d",$thetimes)." ".date("H",$thetimes).":".date("M",$thetimes);
+		}else{
+			$chtime = $thetime;
+		}
+		return $chtime;
+	}
+
+	//驗證字串是否為日期格式
+	function chkDate($str){
+		if (!isset($str) || $str==""){
+			return false;
+		}
+		if (stristr($str,"-"))
+			list($yy,$mm,$dd)=explode("-",$str);
+		if (stristr($str,"/"))
+			list($yy,$mm,$dd)=explode("/",$str);
+		if ($dd!="" && $mm!="" && $yy!=""){
+			return checkdate($mm,$dd,$yy);
+		}
+		return false;
+	}
+	
+	//英文日期格式(yyyy/mm/dd)
+	function Date_EN($dtDate,$num){
+		if (chkDate($dtDate)){
+			switch ($num) {
+			case 1:
+				$reDate = date("Y/m/d",strtotime($dtDate));
+				break;
+			case 2:
+				$reDate = date("Y-m-d",strtotime($dtDate));
+				break;
+			case 3:
+				$reDate = date("Y.m.d",strtotime($dtDate));
+				break;
+			case 4:
+				$reDate = date("d.m.Y",strtotime($dtDate));
+				break;
+			case 5:
+				$reDate = date("Y/m/d H:i",strtotime($dtDate));
+				break;
+			case 6:
+				$reDate = date("Y/m/d H:i:s",strtotime($dtDate));
+				break;
+			case 7:
+				$reDate = date("Y.m.d H:i:s",strtotime($dtDate));
+				break;
+			case 8:
+				$reDate = date("Y.m",strtotime($dtDate));
+				break;
+			}
+			return $reDate;
+		}
+	}
+	
+	//轉換日期(上午.下午)
+	function changeDate($chDate){
+		$xDate = strtotime($chDate);
+		$cDate = date("Y/m/d",$xDate);
+		if ( date("H",$xDate) >= 12  ){
+			$cTime = " 下午 ".date("H:m:s",$xDate);
+		}else{
+			$cTime = " 上午 ".date("H:m:s",$xDate);
+		}
+		$cDate = $cDate.$cTime;
+		return $cDate;
+	}
+	
+	//將數字改為金額(3位一撇)
+	function FormatCurrency($num){
+		if ( is_numeric($num) ){
+			$num = number_format($num);
+		}else{
+			$num = 0;
+		}
+		return $num;
+	}
+	
+	//數值轉換月份文字
+	function monthname($num){
+		switch($num){
+			Case 1:
+				$strTxt = "一月";
+				break;
+			Case 2:
+				$strTxt = "二月";
+				break;
+			Case 3:
+				$strTxt = "三月";
+				break;
+			Case 4:
+				$strTxt = "四月";
+				break;
+			Case 5:
+				$strTxt = "五月";
+				break;
+			Case 6:
+				$strTxt = "六月";
+				break;
+			Case 7:
+				$strTxt = "七月";
+				break;
+			Case 8:
+				$strTxt = "八月";
+				break;
+			Case 9:
+				$strTxt = "九月";
+				break;
+			Case 10:
+				$strTxt = "十月";
+				break;
+			Case 11:
+				$strTxt = "十一月";
+				break;
+			Case 12:
+				$strTxt = "十二月";
+				break;
+		}
+		return $strTxt;
 	}
 ?>
