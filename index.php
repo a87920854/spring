@@ -3,6 +3,7 @@
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
+	echo "QueenaTEST";
 	if ( $_Request["st"] == "keepconnect" ){
 		$_SESSION["keepconnect"] = 1;
 		echo "1";
@@ -1243,18 +1244,15 @@
 						}
 						
 						$SQL = "SELECT * from ad_index_data where types='index_top3' and datediff(d, times, '".$thisdate."') = 0 order by no asc";
-						echo $SQL;
-						exit;
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
 						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 						foreach($result as $re);
 						if ( count($result) > 0 ){
 							$i=0;
-							for($f=1;$f<=count($result);$f++){
+							foreach($result as $re){
 								if ( $re["n1"] == $_SESSION["branch"] ){
 									$nowi = "會館排名：".$i;
-									//exit for;
 								}
 							}
 						}else{
