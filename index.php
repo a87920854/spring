@@ -3,7 +3,7 @@
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
-	echo "QueenaTEST";
+	
 	if ( $_Request["st"] == "keepconnect" ){
 		$_SESSION["keepconnect"] = 1;
 		echo "1";
@@ -1131,37 +1131,37 @@
 					<!--會館年度排行-->
 					<div class="col-md-4">
 						<?php
-							$nowi = "";
-							$SQL = "SELECT * From ad_index_data where types='index_top2' and n1='".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0";
-							$rs = $SPConn->prepare($SQL);
-							$rs->execute();
-							$result=$rs->fetchAll(PDO::FETCH_ASSOC);
-							if ( count($result) == 0 ){
-								$SQL_d = "delete ad_index_data where types='index_top2' and n1 = '".$_SESSION["branch"]."'";
-								$rs_d = $SPConn->prepare($SQL_d);
-								$rs_d->execute();
-								$SQL1  = "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 FROM single_search where p_branch='".$_SESSION["branch"]."' and ";
-								$SQL1 .= "ps_year=".$years." GROUP BY p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 order by singles DESC";
-								$rs1 = $SPConn->prepare($SQL1);
-								$rs1->execute();
-								$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
-								if ( count($result1) > 0 ){
-									$i=0;
-									foreach($result1 as $re1){
-										$i++;
-										$SQL_i  = "Insert Into ad_index_data(no, n1, n2, n3, n4, types, times) Values ( '";
-										$SQL_i .= SqlFilter($i,"int")."',";
-										$SQL_i .= "'".SqlFilter($_SESSION["branch"],"str")."',";
-										$SQL_i .= "N'".SqlFilter($re1["p_other_name"],"str")."',";
-										$SQL_i .= "'".SqlFilter($re1["singles"],"str")."',";
-										$SQL_i .= "N'".SqlFilter($re1["p_user"],"str")."',";
-										$SQL_i .= "'index_top2',";
-										$SQL_i .= "'".SqlFilter($thisdate,"str")."')";
-										$rs_i = $SPConn->prepare($SQL_i);
-										$rs_i->execute();
-									}
+						$nowi = "";
+						$SQL = "SELECT * From ad_index_data where types='index_top2' and n1='".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0";
+						$rs = $SPConn->prepare($SQL);
+						$rs->execute();
+						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+						if ( count($result) == 0 ){
+							$SQL_d = "delete ad_index_data where types='index_top2' and n1 = '".$_SESSION["branch"]."'";
+							$rs_d = $SPConn->prepare($SQL_d);
+							$rs_d->execute();
+							$SQL1  = "select top 10 sum(ps_total) as singles, p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 FROM single_search where p_branch='".$_SESSION["branch"]."' and ";
+							$SQL1 .= "ps_year=".$years." GROUP BY p_branch, p_other_name, p_user, b_year, b_month, b_date, j_year, j_month, j_date, p_job2 order by singles DESC";
+							$rs1 = $SPConn->prepare($SQL1);
+							$rs1->execute();
+							$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+							if ( count($result1) > 0 ){
+								$i=0;
+								foreach($result1 as $re1){
+									$i++;
+									$SQL_i  = "Insert Into ad_index_data(no, n1, n2, n3, n4, types, times) Values ( '";
+									$SQL_i .= SqlFilter($i,"int")."',";
+									$SQL_i .= "'".SqlFilter($_SESSION["branch"],"str")."',";
+									$SQL_i .= "N'".SqlFilter($re1["p_other_name"],"str")."',";
+									$SQL_i .= "'".SqlFilter($re1["singles"],"str")."',";
+									$SQL_i .= "N'".SqlFilter($re1["p_user"],"str")."',";
+									$SQL_i .= "'index_top2',";
+									$SQL_i .= "'".SqlFilter($thisdate,"str")."')";
+									$rs_i = $SPConn->prepare($SQL_i);
+									$rs_i->execute();
 								}
 							}
+						}
 							
 						$SQL = "SELECT * from ad_index_data where types='index_top2' and n1 = '".$_SESSION["branch"]."' and datediff(d, times, '".$thisdate."') = 0 order by no asc";
 						$rs = $SPConn->prepare($SQL);
@@ -1247,10 +1247,10 @@
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
 						$result=$rs->fetchAll(PDO::FETCH_ASSOC);
-						foreach($result as $re);
 						if ( count($result) > 0 ){
 							$i=0;
 							foreach($result as $re){
+								$i++;
 								if ( $re["n1"] == $_SESSION["branch"] ){
 									$nowi = "會館排名：".$i;
 								}
@@ -1262,67 +1262,48 @@
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
 								<strong>全省會館 - 年度排行</strong>
-								<span class="pull-right">會館排名：<?php echo $nowi;?></span>
+								<span class="pull-right"><?php echo $nowi;?></span>
 							</div>
-
 							<!-- panel content -->
 							<div class="panel-body">
 								<table class="table table-striped table-hover table-bordered">
 									<tbody>
-										<tr style="color:#333333;font-weight:bold;">
-											<td>1</td>
-											<td>台南</td>
-											<td>$17,***,***</td>
-										</tr>
-										<tr style="color:#666666;font-weight:bold;">
-											<td>2</td>
-											<td>高雄</td>
-											<td>$16,***,***</td>
-										</tr>
-										<tr style="color:#666666;font-weight:bold;">
-											<td>3</td>
-											<td>台中</td>
-											<td>$15,***,***</td>
-										</tr>
-										<tr>
-											<td>4</td>
-											<td>台北</td>
-											<td>$12,***,***</td>
-										</tr>
-										<tr>
-											<td>5</td>
-											<td>八德</td>
-											<td>$10,***,***</td>
-										</tr>
-										<tr>
-											<td>6</td>
-											<td>桃園</td>
-											<td>$8,***,***</td>
-										</tr>
-										<tr>
-											<td>7</td>
-											<td>新竹</td>
-											<td>$8,***,***</td>
-										</tr>
-										<tr>
-											<td>8</td>
-											<td>約專</td>
-											<td>$2,***,***</td>
-										</tr>
-										<tr>
-											<td>9</td>
-											<td>總管理處</td>
-											<td>$74*,***</td>
-										</tr>
-										<tr>
-											<td>10</td>
-											<td>迷你約</td>
-											<td>$54*,***</td>
-										</tr>
+										<?php
+										if ( count($result) > 0 ){
+											foreach($result as $re){
+												$tt = $re["n3"];
+												$noshowtop3 = 0;
+												if ( strlen($tt) < 5 ){
+													$noshowtop3 = 1;
+												}else{
+													$tt = FormatCurrency($tt);
+													
+													$ftt = substr($tt,0,3);
+													
+													$stt = substr($tt,4,strlen($tt));
+													for ( $i=0;$i<=9;$i++ ){
+														$stt = str_replace($i,"*",$stt);
+													}
+													$tt = $ftt.$stt;
+													echo $tt."<br>";
+												}
+												if ( $noshowtop3 == 0 ){
+													if ( $re["no"] == 1 ){
+														echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n1"]."</td><td>".$tt."</td></tr>";
+													}elseif ( $re["no"] == 2 ){
+														echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n1"]."</td><td>".$tt."</td></tr>";
+													}elseif ( $re["no"] == 3 ){
+														echo "<tr style='color:#333333;font-weight:bold;'><td>".$re["no"]."</td><td>".$re["n1"]."</td><td>".$tt."</td></tr>";
+													}else{
+														echo "<tr><td>".$re["no"]."</td><td>".$re["n1"]."</td><td>".$tt."</td></tr>";
+													}
+												}
+											}
+										}else{
+											echo "<br><br>暫無統計<br><br>";
+										} ?>
 									</tbody>
 								</table>
-
-
 							</div>
 						</div>
 					</div>
