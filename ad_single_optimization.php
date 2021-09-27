@@ -1,6 +1,8 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("./include/_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -8,7 +10,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">優化單身資料庫</li>
         </ol>
     </header>
@@ -27,14 +29,31 @@ require("./include/_sidebar.php");
             <div class="panel-body">
 
                 <form action="?st=search" method="post" target="_self" class="form-inline">
-                    <p>日期：<input type="text" name="date1" id="date1" class="datepicker" autocomplete="off" value="" autocomplete="off"> ~ <input type="text" name="date2" id="date2" class="datepicker" autocomplete="off" value="" autocomplete="off"></p>
-                    <p>性別：<input type="radio" name="sex" id="sex" value="男"> 男 <input type="radio" name="sex" id="sex" value="女"> 女
+                    <p>日期：<input type="text" name="date1" id="date1" class="datepicker" autocomplete="off" value="2021/06/01" autocomplete="off"> ~ <input type="text" name="date2" id="date2" class="datepicker" autocomplete="off" value="2021/09/27" autocomplete="off"></p>
+                    <p>性別：<input type="radio" name="sex" id="sex" value="男" checked> 男 <input type="radio" name="sex" id="sex" value="女"> 女
+
+                        <select name="branch" id="branch">
+                            <option value="">請選擇會館</option>
+                            <option value="台北">台北</option>
+                            <option value="桃園">桃園</option>
+                            <option value="新竹">新竹</option>
+                            <option value="台中">台中</option>
+                            <option value="台南">台南</option>
+                            <option value="高雄">高雄</option>
+                            <option value="八德">八德</option>
+                            <option value="約專">約專</option>
+                            <option value="迷你約">迷你約</option>
+                            <option value="總管理處">總管理處</option>
+                        </select>　
+                        <select name="single" id="single">
+                            <option value="">請選擇秘書</option>
+                        </select>
 
                     </p>
                     <p>年次：
                         <select name="age1" id="age1" class="form-control">
                             <option value="" selected>請選擇</option>
-                            <option value="1941">1941</option>
+                            <option value="1941" selected>1941</option>
                             <option value="1942">1942</option>
                             <option value="1943">1943</option>
                             <option value="1944">1944</option>
@@ -125,7 +144,7 @@ require("./include/_sidebar.php");
                             <option value="1962">1962</option>
                             <option value="1963">1963</option>
                             <option value="1964">1964</option>
-                            <option value="1965">1965</option>
+                            <option value="1965" selected>1965</option>
                             <option value="1966">1966</option>
                             <option value="1967">1967</option>
                             <option value="1968">1968</option>
@@ -282,7 +301,258 @@ require("./include/_sidebar.php");
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan=15>請選擇日期區間</td>
+                            <td>1</td>
+                            <td>2021/8/29</td>
+                            <td>2021/9/4</td>
+                            <td>高雄</td>
+                            <td>倪梅</td>
+                            <td>台南</td>
+                            <td>杜曉倩</td>
+                            <td>樂得流水call</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2080022" target="_blank">林春福</a></td>
+                            <td>男</td>
+                            <td>1965/7/8</td>
+                            <td>165</td>
+                            <td>高職</td>
+                            <td>101萬到199萬</td>
+                            <td>1</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>2021/9/1</td>
+                            <td>2021/9/4</td>
+                            <td>台南</td>
+                            <td>王秀玲</td>
+                            <td>台南</td>
+                            <td>王秀玲</td>
+                            <td>春天網站</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2080011" target="_blank">許清忠</a></td>
+                            <td>男</td>
+                            <td>1957/1/16</td>
+                            <td>160</td>
+                            <td>大學</td>
+                            <td>51萬到80萬</td>
+                            <td>1</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2021/8/28</td>
+                            <td>2021/8/29</td>
+                            <td>高雄</td>
+                            <td>王心祈</td>
+                            <td>台北</td>
+                            <td>余宗嶼</td>
+                            <td>樂得流水call</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2079850" target="_blank">陳協和</a></td>
+                            <td>男</td>
+                            <td>1962/9/29</td>
+                            <td>173</td>
+                            <td>碩士</td>
+                            <td></td>
+                            <td>2</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>2021/8/25</td>
+                            <td>2021/9/1</td>
+                            <td>高雄</td>
+                            <td>謝宛倫</td>
+                            <td>台南</td>
+                            <td>林雪娟</td>
+                            <td>台灣電話流水序號開發</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2079105" target="_blank">張萬祥</a></td>
+                            <td>男</td>
+                            <td>1961/8/20</td>
+                            <td>170</td>
+                            <td>高中</td>
+                            <td></td>
+                            <td>3</td>
+                            <td>18000</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>2021/9/3</td>
+                            <td>2021/9/5</td>
+                            <td>新竹</td>
+                            <td>彭惠芝</td>
+                            <td>高雄</td>
+                            <td>倪梅</td>
+                            <td>約會專家</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2078703" target="_blank">劉夢湘</a></td>
+                            <td>男</td>
+                            <td>1965/12/29</td>
+                            <td>168</td>
+                            <td>高中</td>
+                            <td>81萬到100萬</td>
+                            <td>2</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>2021/8/21</td>
+                            <td>2021/8/26</td>
+                            <td>高雄</td>
+                            <td>賴成琳</td>
+                            <td>台南</td>
+                            <td>黃秀英</td>
+                            <td>台灣電話流水序號開發</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2078065" target="_blank">王秀文</a></td>
+                            <td>男</td>
+                            <td>1960/11/21</td>
+                            <td>175</td>
+                            <td>專科</td>
+                            <td></td>
+                            <td>2</td>
+                            <td>6000</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>2021/8/18</td>
+                            <td>2021/8/18</td>
+                            <td>新竹</td>
+                            <td>陳雅婷</td>
+                            <td>新竹</td>
+                            <td>陳雅婷</td>
+                            <td>約會專家</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2077121" target="_blank">周曙光</a></td>
+                            <td>男</td>
+                            <td>1964/12/3</td>
+                            <td>168</td>
+                            <td>碩士</td>
+                            <td></td>
+                            <td>4</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>2021/8/15</td>
+                            <td>2021/8/22</td>
+                            <td>台北</td>
+                            <td>詹善宇</td>
+                            <td>台北</td>
+                            <td>詹善宇</td>
+                            <td>台灣推薦名單</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2076822" target="_blank">鍾愉賢</a></td>
+                            <td>男</td>
+                            <td>1963/10/28</td>
+                            <td>170</td>
+                            <td>專科</td>
+                            <td>81萬到100萬</td>
+                            <td>2</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>2021/8/14</td>
+                            <td>2021/8/18</td>
+                            <td>高雄</td>
+                            <td>劉明英</td>
+                            <td>桃園</td>
+                            <td>邱月嬌</td>
+                            <td>流水陌call</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2076260" target="_blank">游振安</a></td>
+                            <td>男</td>
+                            <td>1957/8/20</td>
+                            <td>165</td>
+                            <td>大學</td>
+                            <td></td>
+                            <td>1</td>
+                            <td>40000</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>2021/7/2</td>
+                            <td>2021/7/10</td>
+                            <td>台南</td>
+                            <td>黃芳敏</td>
+                            <td>台北</td>
+                            <td>詹善宇</td>
+                            <td>流水陌call</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2065399" target="_blank">張興生</a></td>
+                            <td>男</td>
+                            <td>1957/6/25</td>
+                            <td>176</td>
+                            <td>大學</td>
+                            <td>81萬到100萬</td>
+                            <td>3</td>
+                            <td>28000</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>2021/6/25</td>
+                            <td>2021/6/27</td>
+                            <td>桃園</td>
+                            <td>林均澤</td>
+                            <td>桃園</td>
+                            <td>林均澤</td>
+                            <td>約會專家</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2062676" target="_blank">范揚廣</a></td>
+                            <td>男</td>
+                            <td>1965/3/15</td>
+                            <td>175</td>
+                            <td>高職</td>
+                            <td>51萬到80萬</td>
+                            <td>4</td>
+                            <td>26200</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>2021/6/1</td>
+                            <td>2021/6/18</td>
+                            <td>台中</td>
+                            <td>鄭郁湘</td>
+                            <td>桃園</td>
+                            <td>林均澤</td>
+                            <td>樂得流水call</td>
+                            <td><a href="ad_mem_detail.php?mem_num=2056031" target="_blank">高文忠</a></td>
+                            <td>男</td>
+                            <td>1961/11/30</td>
+                            <td>167</td>
+                            <td>高中</td>
+                            <td>51萬到80萬</td>
+                            <td>1</td>
+                            <td>28000</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>2021/8/26</td>
+                            <td>2021/9/4</td>
+                            <td>台中</td>
+                            <td>彭春福</td>
+                            <td>台中</td>
+                            <td>彭春福</td>
+                            <td>約會專家</td>
+                            <td><a href="ad_mem_detail.php?mem_num=1851781" target="_blank">黃山川</a></td>
+                            <td>男</td>
+                            <td>1963/8/6</td>
+                            <td>170</td>
+                            <td>專科</td>
+                            <td></td>
+                            <td>2</td>
+                            <td>28000</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>2021/8/20</td>
+                            <td>
+                                <font color=red>2019/1/27</font>
+                            </td>
+                            <td>高雄</td>
+                            <td>謝璧如</td>
+                            <td>桃園</td>
+                            <td>廖盈綺 </td>
+                            <td>春天網站</td>
+                            <td><a href="ad_mem_detail.php?mem_num=1295335" target="_blank">劉明凱</a></td>
+                            <td>男</td>
+                            <td>1965/11/23</td>
+                            <td>174</td>
+                            <td>高中</td>
+                            <td>51萬到80萬</td>
+                            <td>2</td>
+                            <td>40000</td>
                         </tr>
 
                     </tbody>
@@ -301,7 +571,7 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">

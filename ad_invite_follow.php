@@ -17,7 +17,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">約見未參追蹤表</li>
         </ol>
     </header>
@@ -112,7 +112,7 @@ require("./include/_bottom.php");
             alert("請勾選要列印的資料。");
             return false;
         } else {
-            location.href = 'ad_invite_d_print.asp?nums=' + $allnum + '';
+            location.href = 'ad_invite_d_print.php?nums=' + $allnum + '';
         }
     }
 

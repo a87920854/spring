@@ -8,8 +8,8 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
-            <li><a href="ad_secretary_single_fix.asp">個人資料</a></li>
+            <li><a href="index.php">管理系統</a></li>
+            <li><a href="ad_secretary_single_fix.php">個人資料</a></li>
             <li class="active">修改個人資料</li>
         </ol>
     </header>
@@ -25,7 +25,7 @@ require("./include/_sidebar.php");
             </div>
 
             <div class="panel-body">
-                <form name="form1" method="post" action="ad_secretary_single_fix.asp?st=save" class="form-inline">
+                <form name="form1" method="post" action="ad_secretary_single_fix.php?st=save" class="form-inline">
                     <table class="table table-striped table-bordered bootstrap-datatable">
                         <thead>
                             <tr>

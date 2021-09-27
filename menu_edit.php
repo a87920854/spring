@@ -85,7 +85,7 @@
 	<!-- page title -->
 	<header id="page-header">
 		<ol class="breadcrumb">
-			<li><a href="index.asp"><?php echo $menu1;?></a></li>
+			<li><a href="index.php"><?php echo $menu1;?></a></li>
 			<li><a href="menu_list.php"><?php echo $menu2.$txt_list;?></a></li>
 			<li class="active"><?php echo $menu2.$txt_edit;?></li>
 		</ol>

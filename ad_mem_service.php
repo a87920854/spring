@@ -8,8 +8,8 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
-            <li><a href="ad_mem.asp">會員管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
+            <li><a href="ad_mem.php">會員管理系統</a></li>
             <li class="active">會員服務紀錄 - 編號 173134 - 鄭小姐</li>
         </ol>
     </header>
@@ -33,12 +33,12 @@ require("./include/_sidebar.php");
 
 
 
-                    <a class="btn btn-primary" href="ad_mem_detail.asp?mem_num=173134">基本資料</a>
+                    <a class="btn btn-primary" href="ad_mem_detail.php?mem_num=173134">基本資料</a>
 
-                    <a class="btn btn-info" href="ad_mem_service.asp?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>服務紀錄</a>
-                    <a class="btn btn-danger" href="ad_mem_ptest.asp?mem_num=173134">心理測驗</a>
-                    <a class="btn btn-warning" href="ad_mem_login_log.asp?mem_num=173134">登入紀錄</a>
-                    <a class="btn btn-dirtygreen" href="ad_important_paper.asp?mem_num=173134">紙本資料</a>
+                    <a class="btn btn-info" href="ad_mem_service.php?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>服務紀錄</a>
+                    <a class="btn btn-danger" href="ad_mem_ptest.php?mem_num=173134">心理測驗</a>
+                    <a class="btn btn-warning" href="ad_mem_login_log.php?mem_num=173134">登入紀錄</a>
+                    <a class="btn btn-dirtygreen" href="ad_important_paper.php?mem_num=173134">紙本資料</a>
 
                 </p>
 
@@ -100,8 +100,8 @@ require("./include/_sidebar.php");
 
                 </table>
                 <p>
-                    <a href="javascript:Mars_popup('ad_report.asp?k_id=85689&lu=A000000002&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報紀錄</a>
-                    <a href="#ac_data">參加活動統計</a>&nbsp;&nbsp;<a href="#love_data">排約列表</a>&nbsp;&nbsp;<a href="#p" onclick="Mars_popup('ad_mem_service_print.asp?mem_num=173134','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">列印本頁</a>
+                    <a href="javascript:Mars_popup('ad_report.php?k_id=85689&lu=A000000002&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報紀錄</a>
+                    <a href="#ac_data">參加活動統計</a>&nbsp;&nbsp;<a href="#love_data">排約列表</a>&nbsp;&nbsp;<a href="#p" onclick="Mars_popup('ad_mem_service_print.php?mem_num=173134','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">列印本頁</a>
                 </p>
 
                 <table class="table table-striped table-bordered bootstrap-datatable">
@@ -3908,7 +3908,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=182119" target="_blank">余志興</a>
+                            <a href="ad_mem_detail.php?mem_num=182119" target="_blank">余志興</a>
                             (63)(大學)
 
                             <!--(0953514235) F123555184-->
@@ -3918,7 +3918,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -3940,7 +3940,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=182605" target="_blank">吳宗儒</a>
+                            <a href="ad_mem_detail.php?mem_num=182605" target="_blank">吳宗儒</a>
                             (66)(高職)
 
                             <!--(0911907976) F124079898-->
@@ -3950,7 +3950,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -3972,7 +3972,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=171717" target="_blank">陳國勝</a>
+                            <a href="ad_mem_detail.php?mem_num=171717" target="_blank">陳國勝</a>
                             (68)(專科)
 
                             <!--(0919901558) G121431780-->
@@ -3982,7 +3982,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4004,7 +4004,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=182282" target="_blank">郭茂昌</a>
+                            <a href="ad_mem_detail.php?mem_num=182282" target="_blank">郭茂昌</a>
                             (61)(高職)
 
                             <!--(0935920883) A123216016-->
@@ -4014,7 +4014,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4036,7 +4036,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172472" target="_blank">張峻豪</a>
+                            <a href="ad_mem_detail.php?mem_num=172472" target="_blank">張峻豪</a>
                             (69)(專科)
 
                             <!--(0933909180) A125162851-->
@@ -4046,7 +4046,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4068,7 +4068,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172509" target="_blank">徐育彬</a>
+                            <a href="ad_mem_detail.php?mem_num=172509" target="_blank">徐育彬</a>
                             (67)(大學)
 
                             <!--(0920670624) A125017995-->
@@ -4078,7 +4078,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4100,7 +4100,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=175477" target="_blank">陳菁蝗</a>
+                            <a href="ad_mem_detail.php?mem_num=175477" target="_blank">陳菁蝗</a>
                             (66)(大學)
 
                             <!--(0919399343) F124402824-->
@@ -4110,7 +4110,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4132,7 +4132,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=176716" target="_blank">范宏源</a>
+                            <a href="ad_mem_detail.php?mem_num=176716" target="_blank">范宏源</a>
                             (63)(大學)
 
                             <!--(0918380777) E120597312-->
@@ -4142,7 +4142,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4164,7 +4164,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=181116" target="_blank">陳明遠</a>
+                            <a href="ad_mem_detail.php?mem_num=181116" target="_blank">陳明遠</a>
                             (70)(專科)
 
                             <!--(0926216600) F125266957-->
@@ -4174,7 +4174,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4196,7 +4196,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172192" target="_blank">張哲文</a>
+                            <a href="ad_mem_detail.php?mem_num=172192" target="_blank">張哲文</a>
                             (68)(大學)
 
                             <!--(0921784306) M121622767-->
@@ -4206,7 +4206,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4228,7 +4228,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=178838" target="_blank">林以堂</a>
+                            <a href="ad_mem_detail.php?mem_num=178838" target="_blank">林以堂</a>
                             (60)(碩士)
 
                             <!--(0912029729) L123758518-->
@@ -4238,7 +4238,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4260,7 +4260,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=733679" target="_blank">朱倪廷</a>
+                            <a href="ad_mem_detail.php?mem_num=733679" target="_blank">朱倪廷</a>
                             (68)(碩士)
 
                             <!--(0930054510) L122685838-->
@@ -4270,7 +4270,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4279,7 +4279,7 @@ require("./include/_sidebar.php");
                         <td align="center">
                             茶卷&nbsp;&nbsp;0
                         <td align="center">
-                            <a class="lightbox" href="ad_mem_service.asp?st=readreply&a=2242" data-lightbox="iframe" data-plugin-options='{"type":"ajax", "closeOnContentClick":false}'>排約回饋</a>&nbsp;&nbsp;
+                            <a class="lightbox" href="ad_mem_service.php?st=readreply&a=2242" data-lightbox="iframe" data-plugin-options='{"type":"ajax", "closeOnContentClick":false}'>排約回饋</a>&nbsp;&nbsp;
                         </td>
                         <td align="center">無</td>
                         <td align="center">台北</td>
@@ -4292,7 +4292,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=103469" target="_blank">賴文政</a>
+                            <a href="ad_mem_detail.php?mem_num=103469" target="_blank">賴文政</a>
                             (63)(碩士)
 
                             <!--(0935180848) N121781404-->
@@ -4302,7 +4302,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;0
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4324,7 +4324,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=175522" target="_blank">許天福</a>
+                            <a href="ad_mem_detail.php?mem_num=175522" target="_blank">許天福</a>
                             (62)(專科)
 
                             <!--(0939109682) C120703818-->
@@ -4334,7 +4334,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (69)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4356,7 +4356,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=179578" target="_blank">郭鄧發</a>
+                            <a href="ad_mem_detail.php?mem_num=179578" target="_blank">郭鄧發</a>
                             (65)(大學)
 
                             <!--(0919391637) F123452679-->
@@ -4366,7 +4366,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4388,7 +4388,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=171962" target="_blank">許育彰</a>
+                            <a href="ad_mem_detail.php?mem_num=171962" target="_blank">許育彰</a>
                             (63)(專科)
 
                             <!--(0983102821) A121901147-->
@@ -4398,7 +4398,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4420,7 +4420,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=168908" target="_blank">黃威斯</a>
+                            <a href="ad_mem_detail.php?mem_num=168908" target="_blank">黃威斯</a>
                             (66)(專科)
 
                             <!--(0920316522) F130210958-->
@@ -4430,7 +4430,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4452,7 +4452,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=104663" target="_blank">蔡佳宏</a>
+                            <a href="ad_mem_detail.php?mem_num=104663" target="_blank">蔡佳宏</a>
                             (61)(大學)
 
                             <!--(0922005513) L120632400-->
@@ -4462,7 +4462,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4484,7 +4484,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=unknown" target="_blank">無紀錄</a>
+                            <a href="ad_mem_detail.php?mem_num=unknown" target="_blank">無紀錄</a>
                             (68)(專科)
 
                             <!--(unknown) H122511162-->
@@ -4494,7 +4494,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (69)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4516,7 +4516,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=171979" target="_blank">黎永揚</a>
+                            <a href="ad_mem_detail.php?mem_num=171979" target="_blank">黎永揚</a>
                             (68)(專科)
 
                             <!--(0939521266) A125110508-->
@@ -4526,7 +4526,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (69)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4548,7 +4548,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=105914" target="_blank">李宏仁</a>
+                            <a href="ad_mem_detail.php?mem_num=105914" target="_blank">李宏仁</a>
                             (64)(大學)
 
                             <!--(0915023816) Q120848993-->
@@ -4558,7 +4558,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4580,7 +4580,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173378" target="_blank">陳奕志</a>
+                            <a href="ad_mem_detail.php?mem_num=173378" target="_blank">陳奕志</a>
                             (68)(碩士)
 
                             <!--(0955850037) F124813809-->
@@ -4590,7 +4590,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4612,7 +4612,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=178836" target="_blank">劉慈航</a>
+                            <a href="ad_mem_detail.php?mem_num=178836" target="_blank">劉慈航</a>
                             (58)(專科)
 
                             <!--(0955001848) T120190306-->
@@ -4622,7 +4622,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4644,7 +4644,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=178709" target="_blank">徐銘鴻</a>
+                            <a href="ad_mem_detail.php?mem_num=178709" target="_blank">徐銘鴻</a>
                             (59)(高職)
 
                             <!--(0937097630) F121861358-->
@@ -4654,7 +4654,7 @@ require("./include/_sidebar.php");
                             現金&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4676,7 +4676,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=105996" target="_blank">周立恆</a>
+                            <a href="ad_mem_detail.php?mem_num=105996" target="_blank">周立恆</a>
                             (68)(大學)
 
                             <!--(0921019332) D121543157-->
@@ -4686,7 +4686,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4708,7 +4708,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=103555" target="_blank">田松枝</a>
+                            <a href="ad_mem_detail.php?mem_num=103555" target="_blank">田松枝</a>
                             (62)(國中)
 
                             <!--(0986027999) G120508997-->
@@ -4718,7 +4718,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4740,7 +4740,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=105904" target="_blank">李宗儒</a>
+                            <a href="ad_mem_detail.php?mem_num=105904" target="_blank">李宗儒</a>
                             (68)(碩士)
 
                             <!--(0920707327) F124602182-->
@@ -4750,7 +4750,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4772,7 +4772,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=171884" target="_blank">張秉勳</a>
+                            <a href="ad_mem_detail.php?mem_num=171884" target="_blank">張秉勳</a>
                             (69)(大學)
 
                             <!--(0918199943) F125059381-->
@@ -4782,7 +4782,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4804,7 +4804,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=102731" target="_blank">郭志宏</a>
+                            <a href="ad_mem_detail.php?mem_num=102731" target="_blank">郭志宏</a>
                             (66)(碩士)
 
                             <!--(0913036510) A124449742-->
@@ -4814,7 +4814,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4836,7 +4836,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=177357" target="_blank">尤彥欽</a>
+                            <a href="ad_mem_detail.php?mem_num=177357" target="_blank">尤彥欽</a>
                             (71)(高中)
 
                             <!--(0918987383) T123102540-->
@@ -4846,7 +4846,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4868,7 +4868,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172517" target="_blank">黃咸琛</a>
+                            <a href="ad_mem_detail.php?mem_num=172517" target="_blank">黃咸琛</a>
                             (64)(大學)
 
                             <!--(0910685138) M120718979-->
@@ -4878,7 +4878,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4900,7 +4900,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=103238" target="_blank">林定緯</a>
+                            <a href="ad_mem_detail.php?mem_num=103238" target="_blank">林定緯</a>
                             (69)(大學)
 
                             <!--(0958559109) K121762443-->
@@ -4910,7 +4910,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;0
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4932,7 +4932,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=103912" target="_blank">呂國志</a>
+                            <a href="ad_mem_detail.php?mem_num=103912" target="_blank">呂國志</a>
                             (59)(大學)
 
                             <!--(0938307110) F121928652-->
@@ -4942,7 +4942,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4964,7 +4964,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172595" target="_blank">羅濟棠</a>
+                            <a href="ad_mem_detail.php?mem_num=172595" target="_blank">羅濟棠</a>
                             (66)(專科)
 
                             <!--(0918087632) K121416213-->
@@ -4974,7 +4974,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -4996,7 +4996,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=105884" target="_blank">施程畯</a>
+                            <a href="ad_mem_detail.php?mem_num=105884" target="_blank">施程畯</a>
                             (64)(大學)
 
                             <!--(0920486016) F123719937-->
@@ -5006,7 +5006,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5028,7 +5028,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=144266" target="_blank">邱奕彬</a>
+                            <a href="ad_mem_detail.php?mem_num=144266" target="_blank">邱奕彬</a>
                             (64)(專科)
 
                             <!--(0932091689) H121972367-->
@@ -5038,7 +5038,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5060,7 +5060,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=168028" target="_blank">陳俊言</a>
+                            <a href="ad_mem_detail.php?mem_num=168028" target="_blank">陳俊言</a>
                             (68)(專科)
 
                             <!--(0931059769) A124628627-->
@@ -5070,7 +5070,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5092,7 +5092,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=unknown" target="_blank">無紀錄</a>
+                            <a href="ad_mem_detail.php?mem_num=unknown" target="_blank">無紀錄</a>
                             (65)(大學)
 
                             <!--(unknown) A122154160-->
@@ -5102,7 +5102,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5124,7 +5124,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=104742" target="_blank">黃鴻文</a>
+                            <a href="ad_mem_detail.php?mem_num=104742" target="_blank">黃鴻文</a>
                             (68)(專科)
 
                             <!--(0926817954) U121225961-->
@@ -5134,7 +5134,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5156,7 +5156,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=175521" target="_blank">翁進榮</a>
+                            <a href="ad_mem_detail.php?mem_num=175521" target="_blank">翁進榮</a>
                             (71)(高職)
 
                             <!--(0915162651) R123043393-->
@@ -5166,7 +5166,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5188,7 +5188,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=175066" target="_blank">賴長志</a>
+                            <a href="ad_mem_detail.php?mem_num=175066" target="_blank">賴長志</a>
                             (74)(專科)
 
                             <!--(0918894262) A128165774-->
@@ -5198,7 +5198,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5220,7 +5220,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=101311" target="_blank">陳繹閔</a>
+                            <a href="ad_mem_detail.php?mem_num=101311" target="_blank">陳繹閔</a>
                             (65)(大學)
 
                             <!--(0982060762) N122888948-->
@@ -5230,7 +5230,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5252,7 +5252,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=unknown" target="_blank">無紀錄</a>
+                            <a href="ad_mem_detail.php?mem_num=unknown" target="_blank">無紀錄</a>
                             (63)(大學)
 
                             <!--(unknown) S121395760-->
@@ -5262,7 +5262,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5284,7 +5284,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173466" target="_blank">詹宜璋</a>
+                            <a href="ad_mem_detail.php?mem_num=173466" target="_blank">詹宜璋</a>
                             (65)(大學)
 
                             <!--(0918220528) P122101009-->
@@ -5294,7 +5294,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5316,7 +5316,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=172944" target="_blank">李志偉</a>
+                            <a href="ad_mem_detail.php?mem_num=172944" target="_blank">李志偉</a>
                             (65)(專科)
 
                             <!--(0922080106) D121487707-->
@@ -5326,7 +5326,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;300
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (65)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5348,7 +5348,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=104497" target="_blank">吳正盛</a>
+                            <a href="ad_mem_detail.php?mem_num=104497" target="_blank">吳正盛</a>
                             (69)(專科)
 
                             <!--(0922550819) A125142199-->
@@ -5358,7 +5358,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (69)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5380,7 +5380,7 @@ require("./include/_sidebar.php");
                         <td align="center">台北</td>
                         <td align="center">一般排約</td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=105397" target="_blank">李永發</a>
+                            <a href="ad_mem_detail.php?mem_num=105397" target="_blank">李永發</a>
                             (66)(高職)
 
                             <!--(0912509233) F123666431-->
@@ -5390,7 +5390,7 @@ require("./include/_sidebar.php");
                             茶卷&nbsp;&nbsp;200
                         </td>
                         <td align="center">
-                            <a href="ad_mem_detail.asp?mem_num=173134" target="_blank">鄭小姐</a>
+                            <a href="ad_mem_detail.php?mem_num=173134" target="_blank">鄭小姐</a>
                             (69)(大學)
 
                             <!--  (0900000001) A000000002-->
@@ -5483,7 +5483,7 @@ $(".cpopover").popover({
     placement: 'left',
     trigger: 'manual',    
     content: function() {
-      return $.ajax({method: "POST",url: 'ad_mem_service.asp?st=readreply&a='+$(this).data("loveauto"),
+      return $.ajax({method: "POST",url: 'ad_mem_service.php?st=readreply&a='+$(this).data("loveauto"),
                      dataType: 'html',
                      async: false}).responseText;
     }

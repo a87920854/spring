@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">預約聯絡表</li>
         </ol>
     </header>
@@ -94,7 +94,7 @@ require("./include/_bottom.php");
 
     function cancel_res(an) {
         $.ajax({
-            url: "ad_mem_reservation_v.asp",
+            url: "ad_mem_reservation_v.php",
             data: {
                 st: "cancel",
                 an: an
@@ -113,7 +113,7 @@ require("./include/_bottom.php");
 
     function hiden_res(an) {
         $.ajax({
-            url: "ad_mem_reservation_v.asp",
+            url: "ad_mem_reservation_v.php",
             data: {
                 st: "hiden",
                 an: an

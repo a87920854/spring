@@ -11,7 +11,7 @@ require_once("./include/_sidebar.php");
     <header id="page-header">
         <ol class="breadcrumb">
             <li>好好玩管理系統</li>
-            <li><a href="ad_fun_action1.asp">好好玩國內報名</a></li>
+            <li><a href="ad_fun_action1.php">好好玩國內報名</a></li>
             <li class="active">新增報名資料</li>
         </ol>
     </header>

@@ -10,8 +10,8 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
-            <li><a href="ad_no_mem.asp">未入會資料</a></li>
+            <li><a href="index.php">管理系統</a></li>
+            <li><a href="ad_no_mem.php">未入會資料</a></li>
             <li class="active">未入會資料搜尋</li>
         </ol>
     </header>
@@ -28,7 +28,7 @@ require("./include/_sidebar.php");
             </div>
 
             <div class="panel-body">
-                <form id="searchform" action="ad_no_mem.asp?vst=full&sear=1" method="post" class="form-inline" target="_self">
+                <form id="searchform" action="ad_no_mem.php?vst=full&sear=1" method="post" class="form-inline" target="_self">
                     <table class="table table-striped table-bordered bootstrap-datatable">
                         <tbody>
                             <tr>
@@ -1343,7 +1343,7 @@ require("./include/_sidebar.php");
                                         <option value="sale-345">sale-345</option>
                                         <option value="sale-346">sale-346</option>
                                         <option value="sale-353">sale-353</option>
-                                        <option value="sale-353.asp">sale-353.asp</option>
+                                        <option value="sale-353.php">sale-353.php</option>
                                         <option value="sale-353?��?多活?��??��??�身資�??��???">sale-353?��?多活?��??��??�身資�??��???</option>
                                         <option value="sale-360">sale-360</option>
                                         <option value="sale-363">sale-363</option>
@@ -1631,7 +1631,7 @@ require("./include/_sidebar.php");
 
             <div class="modal-footer">
                 <a href="#close" class="btn btn-default" data-dismiss="modal">關閉</a>
-                <a class="btn btn-danger" href="ad_mem_reservation_v.asp?t1=2021/9/9&t2=2021/9/9">查看本日預約</a>
+                <a class="btn btn-danger" href="ad_mem_reservation_v.php?t1=2021/9/9&t2=2021/9/9">查看本日預約</a>
             </div>
 
         </div>
@@ -1675,7 +1675,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome2"
                         }
@@ -1699,7 +1699,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome3"
                         }
@@ -1723,7 +1723,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome6"
                         }
@@ -1747,7 +1747,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome4"
                         }
@@ -1772,7 +1772,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome5",
                             r: "春天網站"
@@ -1797,7 +1797,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome5",
                             r: "FB名單"
@@ -1822,7 +1822,7 @@ $("#s98").multiselect({
 
                     $.ajax({
                         method: "POST",
-                        url: "ad_no_mem_f.asp",
+                        url: "ad_no_mem_f.php",
                         data: {
                             st: "getcome5",
                             r: "迷你約"

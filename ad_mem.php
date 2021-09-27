@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">會員管理系統</li>
         </ol>
     </header>
@@ -30,12 +30,12 @@ require("./include/_sidebar.php");
                     <div class="btn-group pull-left margin-right-10">
                         <button class="btn dropdown-toggle btn-default" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                            <li><a href="ad_register1.asp" target="_blank"><i class="icon-star"></i> 新增會員資料</a></li>
-                            <li><a href="ad_mem_f.asp"><i class="icon-tag"></i> 進階搜尋</a></li>
+                            <li><a href="ad_register1.php" target="_blank"><i class="icon-star"></i> 新增會員資料</a></li>
+                            <li><a href="ad_mem_f.php"><i class="icon-tag"></i> 進階搜尋</a></li>
                         </ul>
                     </div>
 
-                    <form id="searchform" action="ad_mem.asp?vst=full&sear=1" method="post" target="_self" class="form-inline" onsubmit="return chk_search_form()">
+                    <form id="searchform" action="ad_mem.php?vst=full&sear=1" method="post" target="_self" class="form-inline" onsubmit="return chk_search_form()">
                         <select name="keyword_type" id="keyword_type" style="width:100px;">
                             <option value="s2">手機</option>
                             <option value="s1">身分證字號</option>
@@ -50,12 +50,12 @@ require("./include/_sidebar.php");
 
 
                     <p class="clearfix">
-                        <a class="btn btn-success" href="ad_mem.asp">所有會員</a> <a class="btn btn-warning" href="?s14=1&s13=2">30天內排約</a> <a class="btn btn-success" href="ad_no_mem.asp?s15=1&sear=1">資料認證</a> <a class="btn btn-success" href="?s13=2">真人認證</a> <a class="btn btn-success" href="?s13=3">璀璨會員</a> <a class="btn btn-success" href="?s13=4">璀璨VIP會員</a>
+                        <a class="btn btn-success" href="ad_mem.php">所有會員</a> <a class="btn btn-warning" href="?s14=1&s13=2">30天內排約</a> <a class="btn btn-success" href="ad_no_mem.php?s15=1&sear=1">資料認證</a> <a class="btn btn-success" href="?s13=2">真人認證</a> <a class="btn btn-success" href="?s13=3">璀璨會員</a> <a class="btn btn-success" href="?s13=4">璀璨VIP會員</a>
 
                         <a class="btn btn-success" href="?enterprise=1">企業會員</a>
 
 
-                        <select class="form-control2 pull-right" onchange="location.href='ad_mem.asp'+$(this).val()+'&s13=2'" autocomplete="off">
+                        <select class="form-control2 pull-right" onchange="location.href='ad_mem.php'+$(this).val()+'&s13=2'" autocomplete="off">
                             <option value="?orderby=0">預設排序</option>
                             <option value="?orderby=1">依入會時間排序</option>
                             <option value="?orderby=2">依到期時間排序</option>
@@ -113,7 +113,7 @@ require("./include/_bottom.php");
             $("#keyword").focus();
             return false;
         }
-        location.href = "ad_mem.asp?sear=1&vst=&s99=&" + $("#keyword_type").val() + "=" + $("#keyword").val() + "&keyk=" + $("#keyword_type").val() + "&keyv=" + $("#keyword").val();
+        location.href = "ad_mem.php?sear=1&vst=&s99=&" + $("#keyword_type").val() + "=" + $("#keyword").val() + "&keyk=" + $("#keyword_type").val() + "&keyv=" + $("#keyword").val();
         return false;
     }
 </script>

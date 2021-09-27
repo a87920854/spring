@@ -45,9 +45,9 @@
 	}
 	
 	//設定conn name
-	// $SPConn = SPConOpen(); 	//春天會館
-	// $FunConn = FunOpen();	//好好玩旅行社
-	// $DMNConn = DMNOpen();	//datemenow
+	$SPConn = SPConOpen(); 	//春天會館
+	$FunConn = FunOpen();	//好好玩旅行社
+	$DMNConn = DMNOpen();	//datemenow
 	
 	session_start();	//啟動 session
 	//------------------------------------------------------------------------

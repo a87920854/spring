@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">公告訊息</li>
             <li class="active">2021年9月網站行銷相關名單恢復原本比例（9/1更新）</li>
         </ol>

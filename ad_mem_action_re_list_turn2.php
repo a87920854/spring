@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">退費資料查詢</li>
         </ol>
     </header>
@@ -27,17 +27,17 @@ require("./include/_sidebar.php");
             <div class="panel-body">
 
                 <div class="col-md-12">
-                    <form action="ad_mem_action_re_list_turn2.asp" method="post" name="form1">
+                    <form action="ad_mem_action_re_list_turn2.php" method="post" name="form1">
                         <p><span>
                                 <div class="btn-group pull-left margin-right-10">
                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                                     <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_action_re.asp"><i class="fa fa-edit"></i> 新增活動明細</a></li>
-                                        <li><a href="ad_mem_action_re_list.asp"><i class="fa fa-th-large"></i> 活動明細表</a></li>
-                                        <li><a href="ad_mem_action_re_day.asp"><i class="fa fa-th-list"></i> 每日活動記錄</a></li>
-                                        <li><a href="ad_mem_action_re_ac1.asp"><i class="fa fa-th-list"></i> 單一活動記錄</a></li>
-                                        <li><a href="ad_mem_action_re_list_turn.asp"><i class="fa fa-share"></i> 待轉資料查詢</a></li>
-                                        <li><a href="ad_mem_action_re_list_turn2.asp"><i class="fa fa-arrow-circle-right"></i> 退費資料查詢</a></li>
+                                        <li><a href="ad_mem_action_re.php"><i class="fa fa-edit"></i> 新增活動明細</a></li>
+                                        <li><a href="ad_mem_action_re_list.php"><i class="fa fa-th-large"></i> 活動明細表</a></li>
+                                        <li><a href="ad_mem_action_re_day.php"><i class="fa fa-th-list"></i> 每日活動記錄</a></li>
+                                        <li><a href="ad_mem_action_re_ac1.php"><i class="fa fa-th-list"></i> 單一活動記錄</a></li>
+                                        <li><a href="ad_mem_action_re_list_turn.php"><i class="fa fa-share"></i> 待轉資料查詢</a></li>
+                                        <li><a href="ad_mem_action_re_list_turn2.php"><i class="fa fa-arrow-circle-right"></i> 退費資料查詢</a></li>
 
                                     </ul>
                                 </div>　

@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">預約聯絡表</li>
         </ol>
     </header>
@@ -27,10 +27,10 @@ require("./include/_sidebar.php");
             <div class="panel-body">
 
                 <div class="col-md-12">
-                    <p><a href="ad_mem_reservation_list.asp?y=2021&m=9" class="btn btn-info">列表模式</a>
+                    <p><a href="ad_mem_reservation_list.php?y=2021&m=9" class="btn btn-info">列表模式</a>
                         <label class="checkbox" style="padding-left:24px;"><input type="checkbox" id="om" value="1"><i></i>只顯示自己</label>
                     </p>
-                    <form class="form-inline" id="searchform" action="ad_mem_reservation_slist.asp" method="post" target="_self" onsubmit="return chk_search_form()">
+                    <form class="form-inline" id="searchform" action="ad_mem_reservation_slist.php" method="post" target="_self" onsubmit="return chk_search_form()">
 
 
                         <input type="text" class="form-control" name="keyword" id="keyword">

@@ -8,7 +8,7 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
             <li class="active">秘書履歷 - <%=p_other_name%></li>
         </ol>
     </header>
@@ -38,7 +38,7 @@ require("./include/_sidebar.php");
 
                         <div class="box-title">
                             <!-- add .noborder class if box-body is removed -->
-                            <h4><a href="ad_no_mem.asp?s=nokaifa&u=<%=p_user%>"><%=nokaifa%> 位尚未開發</a></h4>
+                            <h4><a href="ad_no_mem.php?s=nokaifa&u=<%=p_user%>"><%=nokaifa%> 位尚未開發</a></h4>
                             <small class="block">快來看看這些還沒被關心的人吧</small>
                             <i class="fa fa-users"></i>
                         </div>

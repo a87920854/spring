@@ -8,8 +8,8 @@ require("./include/_sidebar.php");
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
-            <li><a href="ad_mem.asp">會員管理系統</a></li>
+            <li><a href="index.php">管理系統</a></li>
+            <li><a href="ad_mem.php">會員管理系統</a></li>
             <li class="active">會員詳細資料 - 編號 173134 - 鄭小姐</li>
         </ol>
     </header>
@@ -29,15 +29,12 @@ require("./include/_sidebar.php");
 
 
                 <p>
-
-
-
-                    <a class="btn btn-primary" href="ad_mem_detail.asp?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>基本資料</a>
-
-                    <a class="btn btn-info" href="ad_mem_service.asp?mem_num=173134">服務紀錄</a>
-                    <a class="btn btn-danger" href="ad_mem_ptest.asp?mem_num=173134">心理測驗</a>
-                    <a class="btn btn-warning" href="ad_mem_login_log.asp?mem_num=173134">登入紀錄</a>
-                    <a class="btn btn-dirtygreen" href="ad_important_paper.asp?mem_num=173134">紙本資料</a>
+                    <a class="btn btn-primary" href="ad_mem_detail.php?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>基本資料</a>
+                    <a class="btn btn-blue" href="ad_mem_fix.asp?mem_num=2080022">修改資料</a>
+                    <a class="btn btn-info" href="ad_mem_service.php?mem_num=173134">服務紀錄</a>
+                    <a class="btn btn-danger" href="ad_mem_ptest.php?mem_num=173134">心理測驗</a>
+                    <a class="btn btn-warning" href="ad_mem_login_log.php?mem_num=173134">登入紀錄</a>
+                    <a class="btn btn-dirtygreen" href="ad_important_paper.php?mem_num=173134">紙本資料</a>
 
                 </p>
 
@@ -698,7 +695,7 @@ require("./include/_sidebar.php");
                             <td valign="top">
                                 <div align="right">處理情形：</div>
                             </td>
-                            <td colspan=3>未處理　<a href="javascript:Mars_popup('ad_report.asp?k_id=85689&lu=A000000002&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(0)</a></td>
+                            <td colspan=3>未處理　<a href="javascript:Mars_popup('ad_report.php?k_id=85689&lu=A000000002&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(0)</a></td>
                         </tr>
                         <tr>
                             <td valign="top">
@@ -709,7 +706,7 @@ require("./include/_sidebar.php");
                         </tr>
                         <tr>
                             <td colspan=4>
-                                會員照片及生活照&nbsp;&nbsp;<a href="ad_photo_check.asp?sear=1&vst=&s99=&s4=173134" target="_blank">前往審核</a><br>
+                                會員照片及生活照&nbsp;&nbsp;<a href="ad_photo_check.php?sear=1&vst=&s99=&s4=173134" target="_blank">前往審核</a><br>
                                 <div class="lightbox" data-plugin-options='{"delegate": "a", "gallery": {"enabled": true}}'>
 
                                 </div>
@@ -856,6 +853,6 @@ require("./include/_bottom.php");
     }
 
     function checknook() {
-        location.href = 'ad_mem_detail.asp?st=checknook&mem_num=173134&errmsg=' + $("#si_errmsg").val();
+        location.href = 'ad_mem_detail.php?st=checknook&mem_num=173134&errmsg=' + $("#si_errmsg").val();
     }
 </script>

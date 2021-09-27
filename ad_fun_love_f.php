@@ -13,7 +13,7 @@ require_once("./include/_sidebar.php");
             <li>好好玩管理系統</li>
             <li>
 
-                <a href="ad_fun_action1.asp">好好玩國內活動</a>
+                <a href="ad_fun_action1.php">好好玩國內活動</a>
 
             </li>
             <li class="active">報名系統搜尋</li>
@@ -38,9 +38,9 @@ require_once("./include/_sidebar.php");
                                 <td>類別：
                                     <select id="search_page">
                                         <option value="" selected>請選擇</option>
-                                        <option value="ad_fun_action1.asp?sear=1&vst=full">好好玩國內活動</option>
-                                        <option value="ad_fun_action3.asp?sear=1&vst=full">好好玩國內活動-資料版</option>
-                                        <option value="ad_fun_action2.asp?sear=1&vst=full">好好玩國外旅遊</option>
+                                        <option value="ad_fun_action1.php?sear=1&vst=full">好好玩國內活動</option>
+                                        <option value="ad_fun_action3.php?sear=1&vst=full">好好玩國內活動-資料版</option>
+                                        <option value="ad_fun_action2.php?sear=1&vst=full">好好玩國外旅遊</option>
                                     </select>
                                 </td>
                             </tr>

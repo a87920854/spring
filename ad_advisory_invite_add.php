@@ -164,7 +164,7 @@ $("#n11y,#n11m,#n11d,#n11h").on( "change", function() {
 	if($("#mem_wbranch").val() && $("#mem_who").val() && $("#n11h").val()) {
 		$ctime = $("#n11y").val()+"/"+$("#n11m").val()+"/"+$("#n11d").val()+" "+$("#n11h").val()+":"+$("#n11mm").val();		
     $.ajax({
-    url: 'ad_advisory_invite_add.asp',
+    url: 'ad_advisory_invite_add.php',
     data: {st:"qtimelist", mem_who: $("#mem_who").val(), ctime: $ctime}
   }).done(function(response) {  
     	if(response) {        

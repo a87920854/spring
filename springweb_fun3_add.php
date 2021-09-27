@@ -8,9 +8,9 @@ require("./include/_sidebar.php");
 	<!-- page title -->
 	<header id="page-header">
 		<ol class="breadcrumb">
-			<li><a href="index.asp">管理系統</a></li>
+			<li><a href="index.php">管理系統</a></li>
 			<li>春天網站系統</li>
-			<li><a href="springweb_fun3.asp">愛情見證</a></li>
+			<li><a href="springweb_fun3.php">愛情見證</a></li>
 			<li class="active">新增/修改愛情見證</li>
 		</ol>
 	</header>
@@ -26,7 +26,7 @@ require("./include/_sidebar.php");
 			</div>
 
 			<div class="panel-body">
-				<form name="mform" method="post" action="springweb_fun3_add.asp" class="form-inline" onSubmit="return chkform()">
+				<form name="mform" method="post" action="springweb_fun3_add.php" class="form-inline" onSubmit="return chkform()">
 					<table class="table table-striped table-bordered bootstrap-datatable">
 						<tbody>
 							<tr>
@@ -106,7 +106,7 @@ require("./include/_bottom.php");
 		var $imgs = $file_uploads2.closest("span").find("#cimg").val();
 
 		$file_uploads2.fileupload({
-				url: "springweb_fun3_add.asp?st=upload&ac_auto=",
+				url: "springweb_fun3_add.php?st=upload&ac_auto=",
 				type: "POST",
 				dropZone: $file_uploads2,
 				dataType: 'html',
@@ -153,7 +153,7 @@ require("./include/_bottom.php");
 		$pic_div.html("讀取中...");
 		$.ajax({
 			type: "POST",
-			url: "springweb_fun3_add.asp",
+			url: "springweb_fun3_add.php",
 			data: {
 				st: "pic_div",
 				ac_auto: ""
@@ -180,7 +180,7 @@ require("./include/_bottom.php");
 		ob.val("儲存中...");
 		ob.prop("disabled", true);
 		$.ajax({
-			url: "springweb_fun3_add.asp",
+			url: "springweb_fun3_add.php",
 			data: {
 				st: "vurl",
 				an: an,
@@ -209,7 +209,7 @@ require("./include/_bottom.php");
 	function set_first(a) {
 		$.ajax({
 			type: "POST",
-			url: "springweb_fun3_add.asp",
+			url: "springweb_fun3_add.php",
 			data: {
 				st: "pic_first",
 				ac_auto: "",
@@ -226,7 +226,7 @@ require("./include/_bottom.php");
 		if (confirm("是否確定刪除此圖片？")) {
 			$.ajax({
 				type: "POST",
-				url: "springweb_fun3_add.asp",
+				url: "springweb_fun3_add.php",
 				data: {
 					st: "pic_del",
 					ac_auto: "",

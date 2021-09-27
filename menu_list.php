@@ -25,7 +25,7 @@
 	<!-- page title -->
 	<header id="page-header">
 		<ol class="breadcrumb">
-			<li><a href="index.asp"><?php echo $menu1;?></a></li>
+			<li><a href="index.php"><?php echo $menu1;?></a></li>
 			<li class="active"><?php echo $menu2.$txt_list;?></li>
 		</ol>
 	</header>
