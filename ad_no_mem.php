@@ -1,6 +1,8 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("./include/_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php")
 ?>
 
 <!-- MIDDLE -->
@@ -20,7 +22,7 @@ require("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>未入會資料 未處理 - 數量：0　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>未入會資料 未處理 - 數量：5　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -32,6 +34,14 @@ require("./include/_sidebar.php");
                         <div class="btn-group">
                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                             <ul class="dropdown-menu">
+
+                                <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>
+                                <li><a href="javascript:mutil_del();"><i class="icon-remove-sign"></i> 多選刪除</a></li>
+                                <li><a href="javascript:mutil_black();"><i class="icon-tag"></i> 多選黑名單</a></li>
+
+                                <li><a href="javascript:mutil_del2();"><i class="icon-remove-sign"></i> 多選強刪</a></li>
+
+                                <li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>
 
                                 <li><a href="ad_register_no.php"><i class="icon-star"></i> 新增未入會資料</a></li>
                                 <li><a href="ad_no_mem_f.php"><i class="icon-tag"></i> 進階搜尋</a></li>
@@ -50,6 +60,10 @@ require("./include/_sidebar.php");
                             <option value="s22">電子信箱</option>
 
 
+                            <option value="s18">DMN編號</option>
+
+                            <option value="s23">IP</option>
+
                         </select>
                         <input id="keyword" name="keyword" id="keyword" class="form-control" type="text" value="">
                         <input type="submit" id="search_send" class="btn btn-default" value="查詢">
@@ -60,13 +74,13 @@ require("./include/_sidebar.php");
                 <p style="clear:both">
                 <div class="inline-block">
 
-                    <a class="btn btn-info" href="ad_no_mem.php">未處理</a> <a class="btn btn-info" href="ad_no_mem.php?tr=1">已處理</a>
-
                     <a class="btn btn-success" href="ad_no_mem.php?sear=1">所有未入會</a> <a class="btn btn-success" href="?s15=1&sear=1">資料認證</a> <a class="btn btn-success" href="ad_mem.php?s13=2">真人認證</a> <a class="btn btn-success" href="ad_mem.php?s13=3">璀璨會員</a> <a class="btn btn-success" href="ad_mem.php?s13=4">璀璨VIP會員</a>
+
+                    <a class="btn btn-success" href="ad_mem.php?branch2=1">跨區會員</a>
 
                     <!--  <a class="btn btn-success" href="?sear=1&enterprise=1">企業會員</a>-->
                     <a class="btn btn-danger" href="ad_mem_reservation.php">預約總表</a>
-                    <a class="btn btn-danger" href="ad_mem_reservation_v.php?t1=2021/9/9&t2=2021/9/9">本日預約</a>
+                    <a class="btn btn-danger" href="ad_mem_reservation_v.php?t1=2021/9/28&t2=2021/9/28">本日預約</a>
                     <a class="btn btn-primary" href="ad_no_mem.php?st=fav&sear=1">關注名單</a>
                 </div>
                 <div class="inline-block btn-group">
@@ -91,6 +105,26 @@ require("./include/_sidebar.php");
 
                 <p style="clear:both">
 
+                    <a class="btn btn-info" href="?c=0"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>春天會館 (5)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=2">行銷春天 (10)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=1">DateMeNow (1)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=5">行銷DMN (15)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=4">約會專家 (5)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=6">行銷約專 (11)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=10">MiniDate (0)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=11">行銷MD (0)</a>&nbsp;
+                    <a class="btn btn-info" href="?c=9">好好玩活動 (0)</a>&nbsp;
+                    <a class="btn btn-pink" href="?c=7">體驗 (0)</a>&nbsp;
+                    <a class="btn btn-pink" href="?c=8">所有</a>&nbsp;
+
+
+                    <a class="btn btn-info" href="?c=3">其他 (0)</a>&nbsp;
+
+                    <a class="btn btn-warning" href="ad_single_atwork.php">秘書上班表</a>&nbsp;
+                    <a class="btn btn-black" href="ad_no_mem.php?st=checkdellist&sear=1">資源回收區 (7922)</a>&nbsp;
+
+                </p>
+
 
                 <table class="table table-bordered bootstrap-datatable">
 
@@ -109,12 +143,368 @@ require("./include/_sidebar.php");
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan=10 height=200>目前沒有資料</td>
+
+                        <tr id="showtr_2082603" style="background-color:#f2f2f2">
+                            <td style="background-color:#7868f5" class="nums_td"><input data-no-uniform="true" type="checkbox" name="nums" value="2082603" data-phone="0907961046"></td>
+                            <td class="center">
+                                春天網站-網站註冊-<font color=purple>春天會館</font><a href="ad_no_mem.php?sear=1&vst=full&s97_2=Springclub_Google_allproducts_Explore"> [Springclub_Google_allproducts_Explore]</a>
+
+                            </td>
+                            <td>2082603</td>
+
+                            <td class="center"><a href="ad_mem_detail.php?mem_num=2082603" target="_blank">陳永華</a>
+                                <div style="float:right"> <span class="label label-warning"><a href="#" style="color:white;">重</a></span>
+
+                                    <a href="ad_no_mem_s.php?mem_mobile=0907961046" target="_blank"> <span class="label label-info">查</span></a>
+
+
+                                    <a href="javascript:mem_send('2082603')"><span class="label label-success">苗栗縣</span>
+                                    </a>
+
+                                    <a href="#report" onclick="Mars_popup('ad_report.php?k_id=1984634&lu=&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><span class="label label-pp">回報(0)</span></a>
+
+                                </div>
+                            </td>
+                            <td class="center">男</td>
+
+                            <td class="center">0/0/0</td>
+                            <td class="center"></td>
+
+                            <td class="center"></td>
+                            <td class="center">
+                                無
+                            </td>
+                            <td class="center">
+                                <div class="btn-group">
+                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu pull-right">
+
+                                        <li><a href="javascript:mem_send('2082603')"><i class="icon-arrow-right"></i> 發送</a></li>
+
+                                        <li><a href="ad_mem_detail.php?mem_num=2082603" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                        <li><a href="ad_mem_card_print.php?mem_num=2082603" target="_blank"><i class="icon-file"></i> 貴賓諮詢卡</a></li>
+
+                                        <li><a href="ad_mem_fix.php?mem_num=2082603" target="_blank"><i class="icon-file"></i> 修改</a></li>
+
+
+                                        <li><a href="#fav" onclick="check_fav('2082603')"><i class="icon-star"></i> 加入關注</a></li>
+
+
+                                        <li><a href="ad_register2.php?mem_num=2082603" target="_blank"><i class="icon-camera"></i> 照片</a></li>
+
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp.php?mem_auto=1984634&mem_mail=jghyt0210@gmail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=520,top=10,left=10');"><i class="icon-envelope"></i> 春天開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp.php?mem_sex=男&mem_single=&mem_mail=jghyt0210@gmail.com&mem_num=2082603','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 春天速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_print0.php?mem_auto=1984634&mem_sex=男','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 五人擇友信</a></li>
+                                        <!--<li><a href="javascript:Mars_popup('send_mail_action.php?mem_auto=1984634&mem_mail=jghyt0210@gmail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 當月活動信</a></li>-->
+
+
+                                        <li><a href="#j" onclick="Mars_popup('block_list.php?phone=0907961046','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=205,top=200,left=200');"><i class="icon-envelope"></i> 加入黑名單</a></li>
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_dmn.php?mem_auto=1984634&mem_mail=jghyt0210@gmail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=900,height=700,top=10,left=10');"><i class="icon-envelope"></i> DMN開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_dmn.php?mem_sex=男&mem_single=&mem_mail=jghyt0210@gmail.com&mem_num=2082603','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> DMN速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_sp.php?mem_auto=1984634&mem_mail=jghyt0210@gmail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_sp.php?mem_sex=男&mem_single=&mem_mail=jghyt0210@gmail.com&mem_num=2082603','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專速配信</a></li>
+                                        <li><a href="javascript:mem_del('2082603');"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:mem_del2('2082603');"><i class="icon-trash"></i> 強制刪除</a></li>
+
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
+
+                        <tr id="showtr_2082580" style="background-color:#ffffff">
+                            <td style="background-color:#78f568" class="nums_td"><input data-no-uniform="true" type="checkbox" name="nums" value="2082580" data-phone="0909750066"></td>
+                            <td class="center">
+                                春天網站-網站註冊-<font color=purple>春天會館</font><a href="ad_no_mem.php?sear=1&vst=full&s97_2=sale-744"> [推廣：新竹-楊淑梅]</a>
+
+                            </td>
+                            <td>2082580</td>
+
+                            <td class="center"><a href="ad_mem_detail.php?mem_num=2082580" target="_blank">陳正旺</a>
+                                <div style="float:right"> <span class="label label-warning"><a href="#" style="color:white;">重</a></span>
+
+                                    <a href="ad_no_mem_s.php?mem_mobile=0909750066" target="_blank"> <span class="label label-info">查</span></a>
+
+
+                                    <a href="javascript:mem_send('2082580')"><span class="label label-success">雲林縣</span>
+                                    </a>
+
+                                    <a href="#report" onclick="Mars_popup('ad_report.php?k_id=1984611&lu=&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><span class="label label-pp">回報(4)</span></a>
+
+                                </div>
+                            </td>
+                            <td class="center">男</td>
+
+                            <td class="center">1990/4/28　31 歲</td>
+                            <td class="center">高中</td>
+
+                            <td class="center"><br>
+                                <font color=green>推薦：</font>台中 - 台中督導
+                            </td>
+                            <td class="center">
+                                無
+                            </td>
+                            <td class="center">
+                                <div class="btn-group">
+                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu pull-right">
+
+                                        <li><a href="javascript:mem_send('2082580')"><i class="icon-arrow-right"></i> 發送</a></li>
+
+                                        <li><a href="ad_mem_detail.php?mem_num=2082580" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                        <li><a href="ad_mem_card_print.php?mem_num=2082580" target="_blank"><i class="icon-file"></i> 貴賓諮詢卡</a></li>
+
+                                        <li><a href="ad_mem_fix.php?mem_num=2082580" target="_blank"><i class="icon-file"></i> 修改</a></li>
+
+
+                                        <li><a href="#fav" onclick="check_fav('2082580')"><i class="icon-star"></i> 加入關注</a></li>
+
+
+                                        <li><a href="ad_register2.php?mem_num=2082580" target="_blank"><i class="icon-camera"></i> 照片</a></li>
+
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp.php?mem_auto=1984611&mem_mail=zxc0909750066@mail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=520,top=10,left=10');"><i class="icon-envelope"></i> 春天開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp.php?mem_sex=男&mem_single=&mem_mail=zxc0909750066@mail.com&mem_num=2082580','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 春天速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_print0.php?mem_auto=1984611&mem_sex=男','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 五人擇友信</a></li>
+                                        <!--<li><a href="javascript:Mars_popup('send_mail_action.php?mem_auto=1984611&mem_mail=zxc0909750066@mail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 當月活動信</a></li>-->
+
+
+                                        <li><a href="#j" onclick="Mars_popup('block_list.php?phone=0909750066','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=205,top=200,left=200');"><i class="icon-envelope"></i> 加入黑名單</a></li>
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_dmn.php?mem_auto=1984611&mem_mail=zxc0909750066@mail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=900,height=700,top=10,left=10');"><i class="icon-envelope"></i> DMN開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_dmn.php?mem_sex=男&mem_single=&mem_mail=zxc0909750066@mail.com&mem_num=2082580','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> DMN速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_sp.php?mem_auto=1984611&mem_mail=zxc0909750066@mail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_sp.php?mem_sex=男&mem_single=&mem_mail=zxc0909750066@mail.com&mem_num=2082580','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專速配信</a></li>
+                                        <li><a href="javascript:mem_del('2082580');"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:mem_del2('2082580');"><i class="icon-trash"></i> 強制刪除</a></li>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="showtr_2082576" style="background-color:#f2f2f2">
+                            <td style="background-color:#f6db44" class="nums_td"><input data-no-uniform="true" type="checkbox" name="nums" value="2082576" data-phone="0917257020"></td>
+                            <td class="center">
+                                春天網站-手機APP-首頁-<font color=purple>春天會館</font>
+
+                            </td>
+                            <td>2082576</td>
+
+                            <td class="center"><a href="ad_mem_detail.php?mem_num=2082576" target="_blank">陳怡帆</a>
+                                <div style="float:right"> <span class="label label-warning"><a href="#" style="color:white;">重</a></span>
+
+                                    <a href="ad_no_mem_s.php?mem_mobile=0917257020" target="_blank"> <span class="label label-info">查</span></a>
+
+
+                                    <a href="javascript:mem_send('2082576')"><span class="label label-success">新北市</span>
+                                    </a>
+
+                                    <a href="#report" onclick="Mars_popup('ad_report.php?k_id=1984607&lu=&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><span class="label label-pp">回報(1)</span></a>
+
+                                </div>
+                            </td>
+                            <td class="center">女</td>
+
+                            <td class="center">1985/6/8　36 歲</td>
+                            <td class="center">大學</td>
+
+                            <td class="center"></td>
+                            <td class="center">
+                                無
+                            </td>
+                            <td class="center">
+                                <div class="btn-group">
+                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu pull-right">
+
+                                        <li><a href="javascript:mem_send('2082576')"><i class="icon-arrow-right"></i> 發送</a></li>
+
+                                        <li><a href="ad_mem_detail.php?mem_num=2082576" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                        <li><a href="ad_mem_card_print.php?mem_num=2082576" target="_blank"><i class="icon-file"></i> 貴賓諮詢卡</a></li>
+
+                                        <li><a href="ad_mem_fix.php?mem_num=2082576" target="_blank"><i class="icon-file"></i> 修改</a></li>
+
+
+                                        <li><a href="#fav" onclick="check_fav('2082576')"><i class="icon-star"></i> 加入關注</a></li>
+
+
+                                        <li><a href="ad_register2.php?mem_num=2082576" target="_blank"><i class="icon-camera"></i> 照片</a></li>
+
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp.php?mem_auto=1984607&mem_mail=gaigai520@yahoo.com.tw','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=520,top=10,left=10');"><i class="icon-envelope"></i> 春天開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp.php?mem_sex=女&mem_single=&mem_mail=gaigai520@yahoo.com.tw&mem_num=2082576','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 春天速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_print0.php?mem_auto=1984607&mem_sex=女','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 五人擇友信</a></li>
+                                        <!--<li><a href="javascript:Mars_popup('send_mail_action.php?mem_auto=1984607&mem_mail=gaigai520@yahoo.com.tw','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 當月活動信</a></li>-->
+
+
+                                        <li><a href="#j" onclick="Mars_popup('block_list.php?phone=0917257020','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=205,top=200,left=200');"><i class="icon-envelope"></i> 加入黑名單</a></li>
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_dmn.php?mem_auto=1984607&mem_mail=gaigai520@yahoo.com.tw','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=900,height=700,top=10,left=10');"><i class="icon-envelope"></i> DMN開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_dmn.php?mem_sex=女&mem_single=&mem_mail=gaigai520@yahoo.com.tw&mem_num=2082576','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> DMN速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_sp.php?mem_auto=1984607&mem_mail=gaigai520@yahoo.com.tw','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_sp.php?mem_sex=女&mem_single=&mem_mail=gaigai520@yahoo.com.tw&mem_num=2082576','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專速配信</a></li>
+                                        <li><a href="javascript:mem_del('2082576');"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:mem_del2('2082576');"><i class="icon-trash"></i> 強制刪除</a></li>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="showtr_2082571" style="background-color:#ffffff">
+                            <td style="background-color:#ea6d9a" class="nums_td"><input data-no-uniform="true" type="checkbox" name="nums" value="2082571" data-phone="0983868022"></td>
+                            <td class="center">
+                                春天網站-春網首頁-<font color=purple>春天會館</font><a href="ad_no_mem.php?sear=1&vst=full&s97_2=Yahoo_cpc_Asiapac"> [Yahoo_cpc_Asiapac]</a>
+
+                            </td>
+                            <td>2082571</td>
+
+                            <td class="center"><a href="ad_mem_detail.php?mem_num=2082571" target="_blank">王詠柔</a>
+                                <div style="float:right"> <span class="label label-warning"><a href="#" style="color:white;">重</a></span>
+
+                                    <a href="ad_no_mem_s.php?mem_mobile=0983868022" target="_blank"> <span class="label label-info">查</span></a>
+
+
+                                    <a href="javascript:mem_send('2082571')"><span class="label label-success">彰化縣</span>
+                                    </a>
+
+                                    <a href="#report" onclick="Mars_popup('ad_report.php?k_id=1984602&lu=&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><span class="label label-pp">回報(2)</span></a>
+
+                                </div>
+                            </td>
+                            <td class="center">男</td>
+
+                            <td class="center">1983/5/24　38 歲</td>
+                            <td class="center">高職</td>
+
+                            <td class="center"></td>
+                            <td class="center">
+                                無
+                            </td>
+                            <td class="center">
+                                <div class="btn-group">
+                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu pull-right">
+
+                                        <li><a href="javascript:mem_send('2082571')"><i class="icon-arrow-right"></i> 發送</a></li>
+
+                                        <li><a href="ad_mem_detail.php?mem_num=2082571" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                        <li><a href="ad_mem_card_print.php?mem_num=2082571" target="_blank"><i class="icon-file"></i> 貴賓諮詢卡</a></li>
+
+                                        <li><a href="ad_mem_fix.php?mem_num=2082571" target="_blank"><i class="icon-file"></i> 修改</a></li>
+
+
+                                        <li><a href="#fav" onclick="check_fav('2082571')"><i class="icon-star"></i> 加入關注</a></li>
+
+
+                                        <li><a href="ad_register2.php?mem_num=2082571" target="_blank"><i class="icon-camera"></i> 照片</a></li>
+
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp.php?mem_auto=1984602&mem_mail=qoo05242477@yahoo.com.tw','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=520,top=10,left=10');"><i class="icon-envelope"></i> 春天開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp.php?mem_sex=男&mem_single=&mem_mail=qoo05242477@yahoo.com.tw&mem_num=2082571','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 春天速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_print0.php?mem_auto=1984602&mem_sex=男','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 五人擇友信</a></li>
+                                        <!--<li><a href="javascript:Mars_popup('send_mail_action.php?mem_auto=1984602&mem_mail=qoo05242477@yahoo.com.tw','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 當月活動信</a></li>-->
+
+
+                                        <li><a href="#j" onclick="Mars_popup('block_list.php?phone=0983868022','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=205,top=200,left=200');"><i class="icon-envelope"></i> 加入黑名單</a></li>
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_dmn.php?mem_auto=1984602&mem_mail=qoo05242477@yahoo.com.tw','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=900,height=700,top=10,left=10');"><i class="icon-envelope"></i> DMN開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_dmn.php?mem_sex=男&mem_single=&mem_mail=qoo05242477@yahoo.com.tw&mem_num=2082571','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> DMN速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_sp.php?mem_auto=1984602&mem_mail=qoo05242477@yahoo.com.tw','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_sp.php?mem_sex=男&mem_single=&mem_mail=qoo05242477@yahoo.com.tw&mem_num=2082571','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專速配信</a></li>
+                                        <li><a href="javascript:mem_del('2082571');"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:mem_del2('2082571');"><i class="icon-trash"></i> 強制刪除</a></li>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr id="showtr_2082560" style="background-color:#f2f2f2">
+                            <td style="background-color:#7868f5" class="nums_td"><input data-no-uniform="true" type="checkbox" name="nums" value="2082560" data-phone="0988205213"></td>
+                            <td class="center">
+                                春天網站-網站註冊-<font color=purple>春天會館</font><a href="ad_no_mem.php?sear=1&vst=full&s97_2=sale-997"> [推廣：新竹-妍瑀]</a>
+
+                            </td>
+                            <td>2082560</td>
+
+                            <td class="center"><a href="ad_mem_detail.php?mem_num=2082560" target="_blank">陳歆</a>
+                                <div style="float:right"> <span class="label label-warning"><a href="#" style="color:white;">重</a></span>
+
+                                    <a href="ad_no_mem_s.php?mem_mobile=0988205213" target="_blank"> <span class="label label-info">查</span></a>
+
+
+                                    <a href="javascript:mem_send('2082560')"><span class="label label-success">台北市</span>
+                                    </a>
+
+                                    <a href="#report" onclick="Mars_popup('ad_report.php?k_id=1984591&lu=&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><span class="label label-pp">回報(0)</span></a>
+
+                                </div>
+                            </td>
+                            <td class="center">女</td>
+
+                            <td class="center">0/0/0</td>
+                            <td class="center"></td>
+
+                            <td class="center"></td>
+                            <td class="center">
+                                無
+                            </td>
+                            <td class="center">
+                                <div class="btn-group">
+                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu pull-right">
+
+                                        <li><a href="javascript:mem_send('2082560')"><i class="icon-arrow-right"></i> 發送</a></li>
+
+                                        <li><a href="ad_mem_detail.php?mem_num=2082560" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                        <li><a href="ad_mem_card_print.php?mem_num=2082560" target="_blank"><i class="icon-file"></i> 貴賓諮詢卡</a></li>
+
+                                        <li><a href="ad_mem_fix.php?mem_num=2082560" target="_blank"><i class="icon-file"></i> 修改</a></li>
+
+
+                                        <li><a href="#fav" onclick="check_fav('2082560')"><i class="icon-star"></i> 加入關注</a></li>
+
+
+                                        <li><a href="ad_register2.php?mem_num=2082560" target="_blank"><i class="icon-camera"></i> 照片</a></li>
+
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp.php?mem_auto=1984591&mem_mail=melody205213@gmail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=520,top=10,left=10');"><i class="icon-envelope"></i> 春天開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp.php?mem_sex=女&mem_single=&mem_mail=melody205213@gmail.com&mem_num=2082560','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 春天速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_print0.php?mem_auto=1984591&mem_sex=女','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 五人擇友信</a></li>
+                                        <!--<li><a href="javascript:Mars_popup('send_mail_action.php?mem_auto=1984591&mem_mail=melody205213@gmail.com','_blank','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=200,top=200,left=200');"><i class="icon-envelope"></i> 當月活動信</a></li>-->
+
+
+                                        <li><a href="#j" onclick="Mars_popup('block_list.php?phone=0988205213','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=380,height=205,top=200,left=200');"><i class="icon-envelope"></i> 加入黑名單</a></li>
+
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_dmn.php?mem_auto=1984591&mem_mail=melody205213@gmail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=900,height=700,top=10,left=10');"><i class="icon-envelope"></i> DMN開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_dmn.php?mem_sex=女&mem_single=&mem_mail=melody205213@gmail.com&mem_num=2082560','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> DMN速配信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_ksp_sp.php?mem_auto=1984591&mem_mail=melody205213@gmail.com','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專開發信</a></li>
+                                        <li><a href="javascript:Mars_popup('send_mail_sp_sp.php?mem_sex=女&mem_single=&mem_mail=melody205213@gmail.com&mem_num=2082560','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 約專速配信</a></li>
+                                        <li><a href="javascript:mem_del('2082560');"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:mem_del2('2082560');"><i class="icon-trash"></i> 強制刪除</a></li>
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>
+            <div class="text-center">共 5 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
+                <ul class='pagination pagination-md'>
+                    <li><a href=/ad_no_mem.php?topage=1>第一頁</a></li>
+                    <li class='active'><a href="#">1</a></li>
+                    <li><a href=/ad_no_mem.php?topage=1 class='text'>最後一頁</a></li>
+                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+                            <option value="/ad_no_mem.php?topage=1" selected>1</option>
+                        </select></li>
+                </ul>
+            </div>
+
         </div>
         <!--/span-->
 
@@ -124,10 +514,11 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php");
 ?>
 
 <script language="JavaScript">
+    <!--
     function reset_send_branch() {
         $("#send_branch_pay1").val("");
         $("#send_branch_pay2").val("");
@@ -306,6 +697,40 @@ require("./include/_bottom.php");
         } else alert("請重新選擇。");
     }
 
+    function mem_del_f(m) {
+        if (window.confirm("是否確定刪除？")) {
+            myApp.showPleaseWait();
+            if ($.isArray(m)) {
+                $s1 = m.join(",");
+                $s2 = $.each(m, function(i, val) {
+                    $("#showtr_" + val + ",#showtr_" + val + "_2").remove();
+                });
+            } else {
+                $s1 = m;
+                $s2 = $("#showtr_" + m + ",#showtr_" + m + "_2").remove();
+            }
+
+            $.ajax({
+                url: "ad_del.php",
+                data: {
+                    t: "n",
+                    mem_num: $s1
+                },
+                type: "POST",
+                dataType: "text",
+                success: function(msg) {
+                    $s2;
+                    myApp.hidePleaseWait();
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+
+        } else alert("請重新選擇。");
+    }
+
     function mem_del2(m) {
         if (window.confirm("是否確定刪除？")) {
             myApp.showPleaseWait();
@@ -376,4 +801,5 @@ require("./include/_bottom.php");
             }
         });
     }
+    -->
 </script>
