@@ -210,6 +210,17 @@
 		}
 		return $chtime;
 	}
+	
+	//原程式
+	function clear_left_par($t, $n){
+		if ( $t != "" ){
+			$nx = strlen($n);
+			if left(t, nx) = cstr(n) then
+  	t = right(t, len(t)-nx)  	
+  end if
+ end if
+  clear_left_par = t
+end function
 
 	//驗證字串是否為日期格式
 	function chkDate($str){

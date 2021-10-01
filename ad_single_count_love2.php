@@ -10,7 +10,7 @@ require_once("./include/_sidebar.php")
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.php">管理系統</a></li>
+            <li><a href="index.asp">管理系統</a></li>
             <li class="active">排約人次統計-總表</li>
         </ol>
     </header>
@@ -47,7 +47,130 @@ require_once("./include/_sidebar.php")
                     </p>
                 </form>
 
-                <div id="outdiv"></div>
+                <div id="outdiv">
+                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
+                        <tbody>
+                            <tr>
+                                <th width="40">NO</th>
+                                <th>會館</th>
+                                <th>姓名</th>
+                                <th>職稱</th>
+                                <th>2020年一月</th>
+                                <th>二月</th>
+                                <th>三月</th>
+                                <th>四月</th>
+                                <th>五月</th>
+                                <th>六月</th>
+                                <th>七月</th>
+                                <th>八月</th>
+                                <th>九月</th>
+                                <th>十月</th>
+                                <th>十一月</th>
+                                <th>十二月</th>
+                                <th>排約次數</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>台北</td>
+                                <td>余宗嶼</td>
+                                <td>服務部督導</td>
+                                <td>145</td>
+                                <td>212</td>
+                                <td>201</td>
+                                <td>276</td>
+                                <td>236</td>
+                                <td>175</td>
+                                <td>263</td>
+                                <td>226</td>
+                                <td>186</td>
+                                <td>214</td>
+                                <td>203</td>
+                                <td>194</td>
+                                <td>2531</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>台北</td>
+                                <td>林馨彤</td>
+                                <td>排約秘書</td>
+                                <td>92</td>
+                                <td>144</td>
+                                <td>97</td>
+                                <td>141</td>
+                                <td>159</td>
+                                <td>108</td>
+                                <td>141</td>
+                                <td>172</td>
+                                <td>156</td>
+                                <td>142</td>
+                                <td>140</td>
+                                <td>165</td>
+                                <td>1657</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>台北</td>
+                                <td>李至喬</td>
+                                <td>愛情顧問</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>24</td>
+                                <td>53</td>
+                                <td>65</td>
+                                <td>66</td>
+                                <td>208</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>台北</td>
+                                <td>高語鍹</td>
+                                <td>客戶經理</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>台北</td>
+                                <td>台北督導</td>
+                                <td>督導</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>1</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>1</td>
+                            </tr>
+                            <script type="text/javascript">
+                                button_set(1);
+                                outmsg_show("已讀取 1 資料完畢。");
+                            </script>
+                        </tbody>
+                    </table>
+                </div>
                 <div id="outmsg" height=20 style="font-size:12px;display:none">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
 
             </div>

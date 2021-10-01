@@ -13,13 +13,14 @@
 			if ( $_REQUEST["noshow"] == "1" ){ $noshow = 1; }else{ $noshow = ""; }
 			$note = str_replace("\r\n","<br>",$_REQUEST["system_report_note"]);
 			$SQL  = "Insert Into system_report(types, branch, single, noshow, note) Values ( ";
-			$SQL .= "'".SqlFilter($_REQUEST["system_report_types"],"str")."',";
-			$SQL .= "'".SqlFilter($_SESSION["branch"],"str")."',";
-			$SQL .= "'".SqlFilter($_SESSION["MM_Username"],"str")."',";
-			$SQL .= "'".SqlFilter($noshow,"str")."','";
+			$SQL .= "'".SqlFilter($_REQUEST["system_report_types"],"tab")."',";
+			$SQL .= "'".SqlFilter($_SESSION["branch"],"tab")."',";
+			$SQL .= "'".SqlFilter($_SESSION["MM_Username"],"tab")."',";
+			$SQL .= "'".SqlFilter($noshow,"str")."',";
 			$SQL .= "'".SqlFilter($note,"str")."')";
 			$rs = $SPConn->prepare($SQL);
 			$rs->execute();
+			
 		}
 		call_alert("您反映的事項已成功送出。", "ad_system_report_list.php", 0);
 		exit;
