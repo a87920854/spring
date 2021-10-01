@@ -20,7 +20,6 @@
 <link href="assets/css/color_scheme/green.css?v=1.1" rel="stylesheet" type="text/css" id="color_scheme" />
 </head>
 <script language="JavaScript">
-
 	//判斷表單欄位
 	function sbForm(){
 		if(fieldCheck0()){
@@ -79,7 +78,6 @@
 							<b class="tooltip tooltip-top-right">臨時授權碼，如無免填</b>
 						</label>
 					</section>
-
 				</fieldset>
 
 				<footer>

@@ -230,33 +230,33 @@
 	function Date_EN($dtDate,$num){
 		if (chkDate($dtDate)){
 			switch ($num) {
-			case 1:
-				$reDate = date("Y/m/d",strtotime($dtDate));
-				break;
-			case 2:
-				$reDate = date("Y-m-d",strtotime($dtDate));
-				break;
-			case 3:
-				$reDate = date("Y.m.d",strtotime($dtDate));
-				break;
-			case 4:
-				$reDate = date("d.m.Y",strtotime($dtDate));
-				break;
-			case 5:
-				$reDate = date("Y/m/d H:i",strtotime($dtDate));
-				break;
-			case 6:
-				$reDate = date("Y/m/d H:i:s",strtotime($dtDate));
-				break;
-			case 7:
-				$reDate = date("Y.m.d H:i:s",strtotime($dtDate));
-				break;
-			case 8:
-				$reDate = date("Y.m",strtotime($dtDate));
-				break;
-			case 9:
-				$reDate = date("Y-m-d H:i",strtotime($dtDate));
-				break;
+				case 1:
+					$reDate = date("Y/m/d",strtotime($dtDate));
+					break;
+				case 2:
+					$reDate = date("Y-m-d",strtotime($dtDate));
+					break;
+				case 3:
+					$reDate = date("Y.m.d",strtotime($dtDate));
+					break;
+				case 4:
+					$reDate = date("d.m.Y",strtotime($dtDate));
+					break;
+				case 5:
+					$reDate = date("Y/m/d H:i",strtotime($dtDate));
+					break;
+				case 6:
+					$reDate = date("Y/m/d H:i:s",strtotime($dtDate));
+					break;
+				case 7:
+					$reDate = date("Y.m.d H:i:s",strtotime($dtDate));
+					break;
+				case 8:
+					$reDate = date("Y.m",strtotime($dtDate));
+					break;
+				case 9:
+					$reDate = date("Y-m-d H:i",strtotime($dtDate));
+					break;
 			}
 			return $reDate;
 		}
@@ -273,6 +273,17 @@
 		}
 		$cDate = $cDate.$cTime;
 		return $cDate;
+	}
+	
+	//轉換日期(上午.下午)不含日期
+	function changeTime($chDate){
+		$xDate = strtotime($chDate);
+		if ( date("H",$xDate) >= 12  ){
+			$cTime = "下午 ".date("h:i:s",$xDate);
+		}else{
+			$cTime = "上午 ".date("h:i:s",$xDate);
+		}
+		return $cTime;
 	}
 	
 	//將數字改為金額(3位一撇)

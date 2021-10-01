@@ -3,10 +3,11 @@
 	require_once("./include/_function.php");
 	
 	
-	//登出預留
-	/*if (strtolower(SqlFilter($_REQUEST["Action"],"tab"))=='logout'){
-		
-	}*/
+	//登出
+	if ( $_REQUEST["st"] == "out" ){
+		session_destroy();
+		call_alert("您已登出。","login.php",0);
+	}
 
 	//判斷session預留
 	/*if($_SESSION['Manage']=='Yes' && strlen($_SESSION["Login_ID"])>0 && $_SESSION["private_key"]==secret()){
