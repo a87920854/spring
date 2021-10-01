@@ -1,14 +1,14 @@
-/** Green	#00ccff
+/** Green	#17c2c2
 			#36a9e1
  **************************************************************** **/
 	::selection {
-		background: #00ccff;
+		background: #17c2c2;
 	}
 	::-moz-selection {
-		background: #00ccff; /* Firefox */
+		background: #17c2c2; /* Firefox */
 	}
 	::-webkit-selection {
-		background: #00ccff; /* Safari */
+		background: #17c2c2; /* Safari */
 	}
 
 	#aside nav ul li a:active,
@@ -31,22 +31,22 @@
 	.btn-primary,	
 	.popular .plan-title
 	 {
-		background-color: #3f9fd9;
+		background-color: #00AEAE;
 	 }
 	#header
 	 {
-		background-color: #3f9fd9;
+		background-color: #00AEAE;
 	 }
 	body.min #aside ul.nav>li:hover:before {
 		border-right-color: #fff;
 	}
 
 	.panel>.panel-heading strong {
-		color:#31708f;
+		color:#017070;
 	}
 	
-	.btn-primary {
-		border-color:#31708f;
+	.btn-primary:hover,  .btn-primary:focus, .btn-primary:hover{
+		border-color:#017070;
 	}
 
 	.popular {
@@ -59,17 +59,17 @@
 	.btn-primary,
 	.alert-theme-color,
 	.panel-primary>.panel-heading {
-		background-color: ##36a9e1 !important;
+		background-color: #00AEAE !important;
 	}
 	.panel-primary,
 	.panel-primary>.panel-heading {
-		border-color: #00ccff !important;
+		border-color: #17c2c2 !important;
 	}
 	
 	@media only screen and (min-width: 768px) {
 		body.min #aside ul.nav>li:hover>a span {
 			background-color: #fff;
-			color:#337ab7;
+			color:#00AEAE;
 			text-align:center;
 			font-weight:bold;
 		}

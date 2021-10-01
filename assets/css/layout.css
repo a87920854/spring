@@ -404,7 +404,7 @@ body.boxed #asidebg {
 		text-transform:uppercase;
 		color:#fff;
 		/*background-color:#36a9e1;*/
-		background-color:#3f9fd9;
+		background-color:#17c2c2;
 	}
 	#aside nav>ul.nav.nav-list {
 		margin-bottom:30px;
@@ -2834,7 +2834,7 @@ fieldset[disabled] .form-control2 {
 filter:alpha(opacity=70);
 }
 #header .btn {
-	background-color:#3f9fd9 !important;
+	background-color:#00AEAE !important;
 }
 .dropdown-menu>li>a {
 	padding: 5px 10px 5px 20px;
