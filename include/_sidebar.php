@@ -112,12 +112,7 @@
 
 			<!-- ### 2. permissions=admin ##################################################################################################################################################################-->
 			<?php if ( $show_menu_2 == 1 ){ ?>
-				<!--<h3 style="background-color: #000; color: #fff">2. admin</h3>-->
-<<<<<<< HEAD
-				<h3 style="background-color: #00AEAE; color: #fff"> --- 客戶管理系統 ---</h3>
-=======
 				<h3> --- 客戶管理系統 ---</h3>
->>>>>>> f19f52435370ea02e2ac50f574e275d5d47bb8c3
 				<li><a href="index.php"><i class="main-icon fa fa-dashboard"></i><span> 個人頁面</span></a></li>
 				<li><a href="ad_system_report_list.php"><i class="main-icon fa fa-exchange"></i><span> 意見反映</span></a></li>
 				<li><a href="ad_action_note.php"><i class="main-icon fa fa-book"></i><span> 工作日誌</span></a></li>
@@ -781,7 +776,7 @@
 					$rs->execute();
 					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 					foreach($result as $re);
-					if ( count($result1) > 0 ) {
+					if ( count($result) > 0 ) {
 						$photojt = $re["tt"];
 				}?>				
 				<li><a href="ad_photo_check.php"><i class="main-icon fa fa-angle-double-right"></i><span> 網站照片審核<font color="red">(<?php echo $photojt;?>)</font></span></a></li>

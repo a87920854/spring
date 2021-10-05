@@ -4,9 +4,6 @@
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
 
-	//SESSION登入時間判斷
-	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
-
 	//新增記錄 [ system_report ]
 	if ( $_REQUEST["st"] == "system_report" ){
 		if ( $_REQUEST["system_report_note"] != "" ){
@@ -49,20 +46,33 @@
 	$default_sql_num = 500; //預設顯示筆數
 	if ( $_REQUEST["vst"] == "full" ){
 		$subSQL1 = "top ".$default_sql_num." ";
+	}else{
+		$subSQL1 = "* ";
 	}
 	
 	if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 		$subSQL2 = "1 = 1";
 	}else{
-		$subSQL2 = "noshow = 0 And single = '".strtoupper($_SESSION["MM_username"])."'";
+		$subSQL2 = "noshow = 0 And single = '".strtoupper($_SESSION["MM_Username"])."'";
 	}
 	
-	if ( SqlFilter($_REQUEST["keyword"],"str") != "" ){
-		$subSQL3 = " And (note Like '%".SqlFilter($_REQUEST["keyword"],"str")."%' Or fixnote Like '%".SqlFilter($_REQUEST["keyword"],"str")."%')";
+	if ( SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$subSQL3 = " And (note Like '%".SqlFilter($_REQUEST["keyword"],"tab")."%' Or fixnote Like '%".SqlFilter($_REQUEST["keyword"],"tab")."%')";
+	}
+	
+	//取得處理狀態語法
+	$subSQL4 = "";
+	$tr = SqlFilter($_REQUEST["tr"],"int" );
+	if ( $tr == 1 ){ //已處理
+		$subSQL4 = " And stat=1";
+	}elseif ( $tr == 2 ){ //不需處理
+		$subSQL4 = " And stat=2";
+	}elseif ( $tr == 3 ){ //未處理/處理中
+		$subSQL4 = " And Not stat=1 And Not stat=2";
 	}
 	
 	//取得總筆數
-	$SQL = "Select count(auton) As total_size From system_report Where ".$subSQL2.$subSQL3;
+	$SQL = "Select count(auton) As total_size From system_report Where ".$subSQL2.$subSQL3.$subSQL4;
 	$rs = $SPConn->prepare($SQL);
 	$rs->execute();
 	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -84,15 +94,21 @@
 		$page2 = (50-(($tPageSize*$tPage)-$total_size));
 	}
 	
-	$SQL  = "Select ".$subSQL1."* From (";
+	$SQL  = "Select ".$subSQL1."From (";
 	$SQL .= "Select TOP ".$page2." * From (";
-	$SQL .= "Select TOP ".($tPageSize*$tPage)." * From system_report Order By times Desc) t1 ";
-	$SQL .= "Order By times) t2 Order By times Desc";
+	$SQL .= "Select TOP ".($tPageSize*$tPage)." * From system_report Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc) t1 Where ".$subSQL2.$subSQL3.$subSQL4." ";
+	$SQL .= "Order By times) t2 Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc";
 	$rs = $SPConn->prepare($SQL);
 	$rs->execute();
 	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
+<script type="text/javascript">
+	function stype(rnum){
+		document.frmsearch.tr.value = rnum;
+		frmsearch.submit();
+	}
+</script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -112,7 +128,6 @@
                     <strong>同仁意見反映　<?php //echo $all_type; 先mark找不到變數來源 ?>- 數量：<?php echo $total_size;?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
                 <p>
                 <form id="searchform" action="ad_system_report.php" method="post" target="_self" class="form-inline">
@@ -121,17 +136,28 @@
                     <input type="submit" id="search_send" class="btn btn-default" value="查詢">
                 </form>
                 </p>
-                <table class="table table-striped table-bordered bootstrap-datatable">
+				<p>
+					<span class="text-status">所有資料狀態 </span> ▶&nbsp;
+					<a class="btn btn-info<?php if ( $tr == 3 ){ echo " btn-active";} ?>" onclick="javascript:stype(3);">未處理/處理中</a>
+					<a class="btn btn-info<?php if ( $tr == 1 ){ echo " btn-active";} ?>" onclick="javascript:stype(1);">已處理</a>
+					<a class="btn btn-info<?php if ( $tr == 2 ){ echo " btn-active";} ?>" onclick="javascript:stype(2);">不需處理</a>
+				</p>
+				<form name="frmsearch" id="frmsearch" method="post">
+					<input type="hidden" name="tr" id="tr" value="">
+				</form>
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
-                        <tr>
-                            <th width="80">類型</th>
-                            <th width="100">會館</th>
-                            <th width="80">秘書</th>
+                        <tr style="bgcolor='#f0f0f0';">
+                            <th width="5%">類型</th>
+                            <th width="5%">會館</th>
+                            <th width="6%">秘書</th>
                             <th>內容</th>
-                            <th width="120">時間</th>
-                            <th width="60">狀態</th>
-                            <th>處理結果</th>
+                            <th width="10%">時間</th>
+                            <th width="5%">狀態</th>
+                            <th width="30%">處理結果</th>
                         </tr>
+					</thead>
+					<tbody>
 						<?php
 						if ( count($result) == 0 ){
 							echo "<tr><td colspan='8' height='200'>目前沒有資料</td></tr>";
@@ -169,18 +195,14 @@
 									<td class="center"><?php echo $re["fixnote"];?></td>
 								</tr>
 						<?php } } ?>
-                    </thead>
+                    </tbody>
                 </table>
             </div>
             <?php require_once("./include/_page.php"); ?>
-
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 

@@ -1,10 +1,121 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
-?>
+	require_once("./include/_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
 
+	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。", "login.php", 0); }
+	if ( $_SESSION["MM_UserAuthorization"] != "admin" ){ call_alert("您沒有權限", 1 ,0); }
+
+	//刪除
+	if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+		$SQL = "Delete From system_report Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+	}
+	
+	//回覆處理結果
+	if ( SqlFilter($_REQUEST["st"],"tab") == "report" ){
+		if ( SqlFilter($_REQUEST["fixstat"]) == "" ){ call_alert("請選擇處理結果。", 0, 0); }
+		$fixstat = SqlFilter($_REQUEST["fixstat"]);
+		$SQL = "Select * From system_report Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		if ( count($result) > 0 ){
+			if ( SqlFilter($_REQUEST["fixstat"]) == "" ){
+				if ( $re["fixnote"] != "" ){
+					$fixnote = $re["fixnote"]."<br>[".date("Y-m-d H:s")."]:".str_replace("\r\n","<br>",$_REQUEST["fixnote"])."&nbsp;by ".$_SESSION["pname"];
+				}else{
+					$fixnote = "[".date("Y-m-d H:s")."]:".str_replace("\r\n","<br>",$_REQUEST["fixnote"])."&nbsp;by ".$_SESSION["pname"];
+				}
+			}
+			$SQL_u = "Update system_report Set stat='".$fixstat."',fixnote=N'".$fixnote."',fixtimes='".date("Y-m-d H:s:i")."' Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
+			$rs_u = $SPConn->prepare($SQL_u);
+			$rs_u->execute();
+		}
+		header( "location:ad_system_report.php" );
+	}
+	
+	//回覆狀態-不處理
+	if ( SqlFilter($_REQUEST["st"],"tab") == "nofix" ){
+		$SQL_u = "Update system_report Set stat='2',fixtimes='".date("Y-m-d H:s:i")."' Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
+		echo $SQL_u;
+		exit;
+		$rs_u = $SPConn->prepare($SQL_u);
+		$rs_u->execute();
+		header( "location:ad_system_report.php" );
+	}
+	
+	
+	$default_sql_num = 500; //預設顯示筆數
+	if ( $_REQUEST["vst"] == "full" ){
+		$subSQL1 = "top ".$default_sql_num." ";
+	}else{
+		$subSQL1 = "* ";
+	}
+	
+	if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+		$subSQL2 = "1 = 1";
+	}else{
+		$subSQL2 = "noshow = 0 And single = '".strtoupper($_SESSION["MM_Username"])."'";
+	}
+	
+	//關鍵字
+	if ( SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$keyword = SqlFilter($_REQUEST["keyword"],"tab");
+		$subSQL3 = " And (note Like '%".$keyword."%' Or fixnote Like '%".$keyword."%')";
+	}
+	
+	//取得處理狀態語法
+	$tr = SqlFilter($_REQUEST["tr"],"int");
+	$subSQL4 = "";
+	if ( $tr == 1 ){ //已處理
+		$subSQL4 = " And stat=1";
+	}elseif ( $tr == 2 ){ //不需處理
+		$subSQL4 = " And stat=2";
+	}elseif ( $tr == 3 ){ //不需處理
+		$subSQL4 = " And Not stat=1 And Not stat=2";
+	}
+	
+	//取得總筆數
+	$SQL = "Select count(auton) As total_size From system_report Where ".$subSQL2.$subSQL3;
+	$rs = $SPConn->prepare($SQL);
+	$rs->execute();
+	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+	foreach($result as $re);
+	if ( count($result) == 0 || $re["total_size"] == 0 ) {
+		$total_size = 0;
+	}else{
+		$total_size = $re["total_size"];
+	}
+	
+	//取得分頁資料
+	$tPageSize = 50; //每頁幾筆
+	$tPage = 1; //目前頁數
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 50;
+	}else{
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));
+	}
+	
+	$SQL  = "Select ".$subSQL1."From (";
+	$SQL .= "Select TOP ".$page2." * From (";
+	$SQL .= "Select TOP ".($tPageSize*$tPage)." * From system_report Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc) t1 Where ".$subSQL2.$subSQL3.$subSQL4." ";
+	$SQL .= "Order By times) t2 Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc";
+	$rs = $SPConn->prepare($SQL);
+	$rs->execute();
+	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+?>
+<script type="text/JavaScript" src="./include/script.js"></script>
+<script type="text/javascript">
+	function stype(rnum){
+		document.frmsearch.tr.value = rnum;
+		frmsearch.submit();
+	}
+</script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -21,10 +132,9 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>同仁意見反映　 - 數量：396</strong> <!-- panel title -->
+                    <strong>同仁意見反映　<?php //echo $all_type; 先mark找不到變數來源 ?>- 數量：<?php echo $total_size;?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
                 <p>
                 <form id="searchform" action="ad_system_report.php" method="post" target="_self" class="form-inline">
@@ -32,179 +142,74 @@ require_once("./include/_sidebar.php");
                     <input type="submit" id="search_send" class="btn btn-default" value="查詢">
                 </form>
                 </p>
-                <p><a class="btn btn-info" href="ad_system_report.php">未處理/處理中</a> <a class="btn btn-info" href="ad_system_report.php?tr=1">已處理</a></p>
-                <table class="table table-striped table-bordered bootstrap-datatable">
-
+                <p>
+					<span class="text-status">搜尋關鍵字：<?php echo SqlFilter($_REQUEST["keyword"],"tab");?></span>&nbsp;▶&nbsp;
+					<a class="btn btn-info<?php if ( $tr == 3 ){ echo " btn-active";} ?>" onclick="javascript:stype(3);">未處理/處理中</a>
+					<a class="btn btn-info<?php if ( $tr == 1 ){ echo " btn-active";} ?>" onclick="javascript:stype(1);">已處理</a>
+					<a class="btn btn-info<?php if ( $tr == 2 ){ echo " btn-active";} ?>" onclick="javascript:stype(2);">不需處理</a>
+				</p>
+				<form name="frmsearch" id="frmsearch" method="post">
+					<input type="hidden" name="keyword" id="keyword" value="<?php echo $keyword;?>">
+					<input type="hidden" name="tr" id="tr" value="">
+				</form>
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
-                        <tr>
-                            <th width=80>類型</th>
-                            <th width=100>會館</th>
-                            <th width=80>秘書</th>
+						<tr>
+                            <th width="5%">類型</th>
+                            <th width="5%">會館</th>
+                            <th width="6%">秘書</th>
                             <th>內容</th>
-                            <th width=140>時間</th>
-                            <th width=120>狀態</th>
-                            <th>處理結果</th>
-                            <th></th>
+                            <th width="10%">時間</th>
+                            <th width="5%">狀態</th>
+                            <th width="30%">處理結果</th>
                         </tr>
-
-                        <tr>
-                            <td class="center">系統</td>
-                            <td class="center">八德</td>
-                            <td class="center">八德督導</td>
-                            <td class="center">約見系統<br>已下約見...約見紀錄表/看的到資訊，但個人回報內 無約見訊息。<br>10/1趙之珩0978325701，<br>10/4 文珠 蕭0916083952，<br>10/10楊忠霖0989126560，<br>(已截圖給曉娟)</td>
-                            <td class="center">2021-09-30 14:14</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-09-30 20:09]:請小娟協助&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('445');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">其他</td>
-                            <td class="center">台南</td>
-                            <td class="center">台南督導</td>
-                            <td class="center">五倍卷是否財務部與業務部有確定可興方案之公告--便於因應(推廣有利方案)助業績及經濟成長<br><small>
-                                    <font color=red>此意見勾選不需出現在列表中</font>
-                                </small></td>
-                            <td class="center">2021-08-30 17:07</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-08-30 19:23]:進行中！各區亦可以提出建議&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('438');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">服務</td>
-                            <td class="center">台北</td>
-                            <td class="center">陳紅</td>
-                            <td class="center">會員啟用一對一諮詢後.會館秘書和排約部 希望能從老師那ㄦ˙了解諮詢內容 和 老師的 建議. 以便作為陸續輔導會員的 參考.<br> * 是否能得到老師的 回饋建議和 會員課後問卷<br>謝謝老師 謝謝行銷部 辛苦了 <br>
-                                <font color=blue>[2021-08-18 13:54] 補充：<br></font><br>諮詢回饋表會反映在會員個人服務紀錄嗎 ?
-                            </td>
-                            <td class="center">2021-08-08 17:16</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-08-09 14:04]:建立一個諮詢回饋表給會員及如同病歷一般給老師一個服務記錄表，方便會館主管及同仁可以了解會員授課或諮詢情況。<br>&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('434');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">服務</td>
-                            <td class="center">台北</td>
-                            <td class="center">陳紅</td>
-                            <td class="center">約會專家上的 會員資料.其婚況 若是曾有過婚姻.是否能明白紀載: **再次單身**<br>讓會員上網搜尋對象資料.也能清楚了解對方婚況.避免抱怨.<br>謝謝</td>
-                            <td class="center">2021-08-08 14:23</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-08-09 14:04]:請行銷部一併考量&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('433');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">其他</td>
-                            <td class="center">台南</td>
-                            <td class="center">台南督導</td>
-                            <td class="center">官網-<br>有無機會連結各區大百貨公司<br>至少有信用卡----<br>有卡就有機會成交<br><br>因疫情---沒錢---若有廣告或連結有機會是有信用卡訪客增加----各區可能有機會高卡-付清率增加</td>
-                            <td class="center">2021-07-27 12:27</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-07-27 14:49]:請欣怡和夏副總了解方向&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('431');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">系統</td>
-                            <td class="center">台南</td>
-                            <td class="center">台南督導</td>
-                            <td class="center">不知道嘉義.雲林.台南若客人拉選可否系統自發<br>因為上班時間1:30才發有時訪客上班不能說話或錯過最佳邀約期<br>現在客人意願度/很重要/成為疫情下更應把握的客人<br>台南可因應即時<br>不然客人也會上其他網站</td>
-                            <td class="center">2021-06-30 10:27</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-06-30 14:19]:可以參考&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('419');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">系統</td>
-                            <td class="center">台南</td>
-                            <td class="center">台南督導</td>
-                            <td class="center">行銷活動-愛情實驗室-約會專家<br>行銷活動-愛情實驗室-約會專家<br>公有資源<br>可否秘書會跳在首頁<br>方便即時性處理<br>爭取時效<br>我想先打台南地區的舊春網<br>看澔漢有沒有辦法成立一筆這樣的資料庫<br>因為我剛才自己設定進階搜尋結果回報一筆就又跳回舊資料頁面<br>等於每次回報就又要重新進階搜尋很麻煩<br>因為資料太多會被蓋過<br>只能用手機搜尋</td>
-                            <td class="center">2021-05-24 13:50</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2021-05-24 14:06]:應該不會跳回舊資料, 聯絡台南督導確認&nbsp;by 澔翰<br>[2021-05-25 11:29]:只有特定ipad跟iphone會有問題,手邊沒設備可測,暫無法修復&nbsp;by 澔翰</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('382');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">其他</td>
-                            <td class="center">台南</td>
-                            <td class="center">台南督導</td>
-                            <td class="center">FB社團--大台南,王承封有對春天會館發問----其中有72人回答有人涉及毀謗,以為春天會館是H會館或安平酒店------不知道可否讓大台南團長讓這不正面沒根據文下架或刪文----我FB已被封鎖可能無法留言</td>
-                            <td class="center">2020-01-09 20:39</td>
-                            <td class="center">處理中</td>
-                            <td class="center">[2020-01-14 14:55]:請行銷部協助&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('237');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">制度</td>
-                            <td class="center">八德</td>
-                            <td class="center">柯婉儀</td>
-                            <td class="center">八德會館排約部<br>1、排約本館不用限條件。<br>2、排約外館未達到主約人條件可不接受。<br>3、北三區資料、E化主題。<br>4、配對指數後台要看到。</td>
-                            <td class="center">2018-08-03 16:10</td>
-                            <td class="center">處理中</td>
-                            <td class="center"><br>[2018-08-03 17:17]:做為未來約會專家/跨會館排約整合的參考&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('52');">處理中</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">服務</td>
-                            <td class="center">八德</td>
-                            <td class="center">蔡佩蓁 Sunny</td>
-                            <td class="center">建議可叫上課老師寫會員上課評分表...讓他們知道自己的問題..如上馬拉熊老師3堂課的有系統規畫課程..單1堂不用寫...可讓學員清楚了解還有哪要加強</td>
-                            <td class="center">2018-06-08 15:56</td>
-                            <td class="center">處理中</td>
-                            <td class="center"><br>[2018-06-11 18:45]:可以由會館先用紙本的回收上課評量嗎&nbsp;by 黎總經理</td>
-                            <td width=80 class="center">
-                                <a href="#m" onclick="openreportmodal('24');">處理中</a>
-                            </td>
-                        </tr>
-
-                        </tbody>
+					</thead>
+					<tbody>
+						<?php
+						if ( count($result) == 0 ){
+							echo "<tr><td colspan='8' height='200'>目前沒有資料</td></tr>";
+						}else{
+							foreach($result as $re){?>
+								<tr>
+									<td class="center"><?php echo $re["types"];?></td>
+									<td class="center"><?php echo $re["branch"];?></td>
+									<td class="center"><?php if ( $re["single"] != "" ){ echo SingleName($re["single"]);}?></td>
+									<td class="center"><?php echo $re["note"];?></td>
+									<td class="center"><?php echo Date_EN($re["times"],9);?></td>
+									<td class="center">
+										<?php
+										$showreportbtn = 0;
+										switch ( $re["stat"] ){
+											case 1:
+												echo "已處理";
+												break;
+											case 2:
+												echo "不需處理";
+												break;
+											case 3:
+												echo "處理中";
+												$showreportbtn = 1;
+												break;
+											default:
+												echo "未處理";
+												break;
+										}
+										
+										if ( $showreportbtn == 1 ){
+											echo "<a class='btn btn-warning btn-xs' href='#system_report2' onclick=system_report2_show('".$re["auton"]."')>提出補充</a>";
+										}?>
+									</td>
+									<td class="center"><?php echo $re["fixnote"];?></td>
+								</tr>
+						<?php } } ?>
+                    </tbody>
                 </table>
             </div>
-            <div class="text-center">共 10 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_system_report.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_system_report.php?topage=1 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_system_report.php?topage=1" selected>1</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
-
-<?php
-require_once("./include/_bottom.php");
-?>
+<?php require_once("./include/_bottom.php"); ?>

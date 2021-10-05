@@ -203,7 +203,7 @@
 
 	function chtime($thetime){
 		if ( chkDate($thetime) ){
-			$thetimes = date("Y-d-m H:M:S");
+			$thetimes = date("Y-d-m H:m:i");
 			$chtime = date("Y",$thetimes)."-".date("M",$thetimes)."-".date("d",$thetimes)." ".date("H",$thetimes).":".date("M",$thetimes);
 		}else{
 			$chtime = $thetime;
@@ -215,12 +215,12 @@
 	function clear_left_par($t, $n){
 		if ( $t != "" ){
 			$nx = strlen($n);
-			if left(t, nx) = cstr(n) then
-  	t = right(t, len(t)-nx)  	
-  end if
- end if
-  clear_left_par = t
-end function
+			if ( substr($t, 0, $nx) == strval($n) ){
+				$t = substr($t, -(strlen($t)-$nx));
+			}
+		}
+		return $t;
+	}
 
 	//驗證字串是否為日期格式
 	function chkDate($str){

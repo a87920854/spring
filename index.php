@@ -762,7 +762,7 @@
 									<td style="font-size:12px;"><?php echo changeDate($ap_re["n11"]);?></td>
 									<td><?php echo $ap_re["n1"];?></td>
 									<td><?php echo $ap_re["n3"];?>/<?php echo $ap_re["n4"];?>/<?php echo $ap_re["n5"];?>.<?php echo $ap_re["n6"];?></td>
-									<td><?php echo $ap_re["branch"];?> - <?php echo $ap_re["single"].singlename($ap_re["single"]);?></td>
+									<td><?php echo $ap_re["branch"];?> - <?php echo singlename($ap_re["single"]);?></td>
 									<td><?php echo SingleName($ap_re["single2"]);?></td>
 									<td><?php if ( $ap_re["branch"] != $ap_re["branch3"] ){ echo $ap_re["branch3"] ." - ". $single3name ;}?></td>
 									<td><?php echo $sts;?></td>
@@ -853,10 +853,10 @@
 						echo "<td>";
 						$mem_photo = $re_booking["mem_photo"];
 						if ( $mem_photo != "" && ! strstr($mem_photo, "boy.") > 0 && ! strstr($mem_photo, "girl.") > 0 ){
-							if ( strstr(mem_photo, "photo/") > 0 ){
-								echo "<a href='dphoto/".$mem_photo."?t=".int(rnd()*9999)."' class='fancybox'>有</a>";
+							if ( strstr($mem_photo, "photo/") > 0 ){
+								echo "<a href='dphoto/".$mem_photo."?t=".intval(rand()*9999)."' class='fancybox'>有</a>";
 							}else{
-								echo "<a href='../photo/".$mem_photo."?t=".int(rnd()*9999)."' class='fancybox'>有</a>";
+								echo "<a href='../photo/".$mem_photo."?t=".intval(rand()*9999)."' class='fancybox'>有</a>";
 							}
 						}else{
 							echo "無";
@@ -1167,7 +1167,7 @@
 							$i=0;
 							foreach($result as $re){
 								$i++;
-								if ( $_re["n4"] == $_SESSION["MM_Username"] ){
+								if ( $re["n4"] == $_SESSION["MM_Username"] ){
 									$nowi = "您的排名：".$i;
 								}
 							}
@@ -1178,7 +1178,7 @@
 						<div class="panel panel-default panel-rank">
 							<div class="panel-heading text-center">
 								<strong><?php echo $_SESSION["branch"];?>會館 - 年度排行</strong>
-								<span class="pull-right"></span>
+								<span class="pull-right"><?php echo $nowi;?></span>
 							</div>
 
 							<!-- panel content -->
@@ -1493,12 +1493,14 @@
 	</div>
 </section>
 <!-- /MIDDLE -->
+
 <?php
 	//前50筆訊息彈跳視窗
 	//if ( $_REQUEST["st"] == "read_all_sysmsg" ){
 		require_once("./include/_read_index_show.php");
 	//}
 ?>
+
 <div class="modal fade" id="reservation_alert_modal" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -1512,7 +1514,6 @@
 				<p>預約聯絡時間：<span id="reservation_alert_modal_time"></span></p>
 				<p>預約聯絡姓名：<span id="reservation_alert_modal_us"></span></p>
 			</div>
-
 			<div class="modal-footer">
 				<a href="#close" class="btn btn-default" data-dismiss="modal">關閉</a>
 				<a class="btn btn-danger" href="ad_mem_reservation_v.php?t1=2021/9/8&t2=2021/9/8">查看本日預約</a>

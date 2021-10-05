@@ -1,8 +1,91 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+	require_once("./include/_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+
+	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.html",0); }
+
+	//刪除
+	if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+		$SQL = "Delete From action_log Where auton=".SqlFilter($_REQUEST["an"],"tab");
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		header(location:"reload_window.asp?m=資料刪除中...");
+		exit;
+	}
+
+	//顯示筆數
+	$default_sql_num = 500; //預設顯示筆數
+
+	if ( SqlFilter($_REQUEST["vst"] == "full" ){
+		$sqlv = "*";
+		$sqlv2 = "count(auton)";
+	}else{
+		$sqlv = "top "&default_sql_num&" *";
+		$sqlv2 = "count(auton)";
+	}
+	
+	switch ($_SESSION["MM_UserAuthorization"]){
+		case "admin":
+			if ( $_SESSION["branch"] == "好好玩旅行社" ){
+				$sqls = "Select ".$sqlv." From action_log Where types='list' and branch='".$_SESSIONsession("branch")&"'"
+      sqls2 = "SELECT "&sqlv2&" as total_size FROM action_log Where types='list' and branch='"&session("branch")&"'"
+      else
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list'"
+      sqls2 = "SELECT "&sqlv2&" as total_size FROM action_log Where types='list'"
+      end if
+      case "branch","manager"
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and branch='"&session("branch")&"'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and branch='"&session("branch")&"'"
+	    case "action"
+	  	if session("action_level") = 1 then
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and (branch='台南' or branch='高雄') and singlelv='action'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and (branch='台南' or branch='高雄') and singlelv='action'"
+	  	elseif session("action_level") = 2 then
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and (branch='台北' or branch='桃園' or branch='新竹' or branch='台中') and singlelv='action'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and (branch='台北' or branch='桃園' or branch='新竹' or branch='台中') and singlelv='action'"
+	  	elseif session("action_level") = 3 then
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and not branch='好好玩旅行社' and singlelv='action'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and not branch='好好玩旅行社' and singlelv='action'"
+	  	else
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and single='"&session("MM_Username")&"'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and single='"&session("MM_Username")&"'"
+      end if
+      
+      case else
+      sqls = "SELECT "&sqlv&" FROM action_log Where types='list' and single='"&session("MM_Username")&"'"
+      sqls2 = "SELECT "&sqlv2&"  as total_size FROM action_log Where types='list' and single='"&session("MM_Username")&"'"      
+      
+	  End Select
+
+If request("d1") <> "" and request("d2") <> "" Then
+sqlss = sqlss & " and dates between '"&request("d1")&" 00:00' and '"&request("d2")&" 23:59'"
+End If
+
+If request("branch") <> "" Then
+ sqlss = sqlss & " and branch = '" & Replace(request("branch"), "'", "''") & "'"
+End If
+
+If request("single") <> "" Then
+ sqlss = sqlss & " and single = '" & Replace(request("single"), "'", "''") & "'"
+End If
+
+If request("wtype") <> "" Then
+ sqlss = sqlss & " and wtype = '" + Replace(request("wtype"), "'", "''") + "'"
+End If
+
+If request("keyword") <> "" Then
+ sqlss = sqlss & " and (title like '%" + Replace(request("keyword"), "'", "''") + "%' or supplier like '%" + Replace(request("keyword"), "'", "''") + "%')"
+End If
+sqls = sqls & sqlss & " order by auton desc"
+
+sqls2 = sqls2 & sqlss
+%>
+
+
+
 ?>
 
 <!-- MIDDLE -->

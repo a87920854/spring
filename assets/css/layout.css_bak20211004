@@ -3009,19 +3009,3 @@ margin:0px;
 		width: 100%;
 	}
 }
-
-/* 20211004新增 */
-.table-hover tbody tr:hover{
-	background-color: #fff2f2;
-}
-.text-status{
-	display: inline-block;
-	background-color: #17c2c2;
-	color: #fff;
-	padding: 6px 12px;
-	height: 36px;
-	line-height: 1.42857143;
-}
-.btn-active{
-	opacity: 0.7;
-}

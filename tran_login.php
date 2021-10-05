@@ -341,8 +341,8 @@
 		if ( count($result) > 0 ){ // Not Eof
 			foreach($result as $re){ //先取出當日的所有不重復時段
 				//再取出各時段中的名稱
-				$log_6_time = chtime($re["log_6_time"]);
-				$SQL = "Select log_username From log_data Where log_single='".$singleid."' And ((log_6 <> '' or not log_6 is null) And datediff(n, '".$log_6_time."', log_6_time) = 0) order by log_6_time asc";
+				$log_6_time = $re["log_6_time"];
+				$SQL = "Select log_username From log_data Where log_single='".$singleid."' And ((log_6 <> '' or not log_6 is null) And datediff(n, '".date("Y-m-d H:s",strtotime($log_6_time))."', log_6_time) = 0) order by log_6_time asc";
 				$rs1 = $SPConn->prepare($SQL);
 				$rs1->execute();
 				$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);

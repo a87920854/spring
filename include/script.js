@@ -1,4 +1,4 @@
 function GotoPage(tPage,theForm){
-	theForm.Page.value=tPage;
+	theForm.tPage.value=tPage;
 	theForm.submit();
 }
