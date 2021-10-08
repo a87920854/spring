@@ -1,8 +1,218 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
-?>
+	require_once("./include/_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+	
+	$mem_num = SqlFilter($_REQUEST["mem_num"],"int");
+	$mem_au = SqlFilter($_REQUEST["mem_au"],"int");
+	$mem_mobile = SqlFilter($_REQUEST["mem_mobile"],"tab");
 
+	if ( $mem_num == "" && $mem_au == "" && $mem_mobile == "" ){ call_alert("會員編號讀取有誤。", "ClOsE",0);}
+	
+	$st = SqlFilter($_REQUEST["st"],"tab");
+
+	if ( $st == "addsirealinvite" ){
+		$SQL_d = "Update si_real_invite Set sk_real_invite=1 Where mem_num='".$mem_num."'";
+		$rs_d = $SPConn->prepare($SQL_d);
+		$rs_d->execute();
+		header("location:ad_mem_detail.asp?mem_num=".$mem_num);
+		exit;
+	}
+	
+	if ( $st == "proofdel" ){
+		$SQL = "Select * From proof_data Where photo_auto='".SqlFilter($_REQUEST["a"],"tab")."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		if ( count($result) > 0 ){
+			$path = dirname(__FILE__)."\idcard\\".$re["photo_name"];
+			//刪除實體檔案
+			DelFile($path);
+			//刪除資料庫資料
+			$SQL_d = "Delete From proof_data Where photo_auto='".SqlFilter($_REQUEST["a"],"tab")."'";
+			$rs_d = $SPConn->prepare($SQL_d);
+			$rs_d->execute();
+		}
+		header("location:ad_mem_detail.asp?mem_num=".$mem_num);
+		exit;
+	}
+	
+	//審核不通過
+	if ( $st == "checknook" ){
+		$SQL = "Select mem_auto,mem_username, mem_name, mem_mobile, si_errmsg From member_data Where mem_num='".$mem_num."'");
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		if ( count($result) > 0 ){
+			if ( SqlFilter($_REQUEST["errmsg"],"tab") != "" ){
+				$SQL_u = "Update member_data Set si_errmsg=N'".SqlFilter($_REQUEST["errmsg"],"tab")."' Where mem_num='".$mem_num."'");
+				$rs_u = $SPConn->prepare($SQL_u);
+				$rs_u->execute();
+			}
+			$mem_au = $re["mem_auto"];
+			$lusername = $re["mem_username"];
+			$n1 = $re["mem_name"];
+			$n10 = $re["mem_mobile"];
+		}
+	
+		if ( SqlFilter($_REQUEST["errmsg"] != "" ){
+			//新增
+			$SQL_i  = "Insert Into log_data(log_time,log_num,log_fid,log_username,log_name,log_branch,log_single,log_1,log_2,log_4,log_5) Values ( '";
+			$SQL_i .= SqlFilter(date("Y-m-d"),"tab")."',";
+			$SQL_i .= "'".SqlFilter($mem_au,"tab")."',";
+			$SQL_i .= "'".SqlFilter($lusername,"tab")."',";
+			$SQL_i .= "'".SqlFilter($n1,"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["p_other_name"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["branch"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["MM_Username"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($n10,"tab")."',";
+			$SQL_i .= "'系統計錄',";
+			$SQL_i .= "'".$_SESSION["p_other_name"]."於".date("Y-m-d")."不通過資料審核，原因：".SqlFilter($_REQUEST["errmsg"],"tab")."',";
+			$SQL_i .= "'member')";
+			$rs_i = $SPConn->prepare($SQL_i);
+			$rs_i->execute();
+			header("location:ad_mem_detail.asp?mem_num=".$mem_num);
+			exit;
+		}
+
+	//審核通過
+	if ( $st == "checkok" ){
+		$cardid = strtoupper(str_replace(" ", "", SqlFilter($_REQUEST["cardid"],"tab")));
+		$SQL = "Select mem_auto, mem_name, mem_username,mem_num,mem_passwd, si_account, mem_level,mem_mobile, web_level, web_startime, web_endtime, si_enterprise, mem_branch, mem_single From member_data Where mem_num='".$mem_num."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		if ( count($result) == 0 ){
+			call_alert("會員編號讀取有誤。", 0,0);
+		}else{
+			$isbranch = 0;
+			$rsreopen = 0;
+			$canpic = 0;
+			if ( is_null($re["web_level"]) == false && $re["web_level"] != 0 ){
+				call_alert("此會員已審核通過。", 0,0);
+			}
+			if ( (integer)SqlFilter($_REQUEST["web_level"],"int") >= 2 && $re["mem_level"] == "mem" ){
+				call_alert("要升級成真人認證或璀璨會員須先將會員等級變更成已入會。", 0,0);
+			}
+			
+			$havefid = 0;
+			$SQL1 = "Select mem_num, web_level From member_data Where mem_username = '".$cardid."'";
+			$rs1 = $SPConn->prepare($SQL1);
+			$rs1->execute();
+			$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+			if ( count($result1) > 0 ){
+				foreach($result1 as $re1){
+					if ( $re["mem_num"] != $re1["mem_num"] ){
+						$havefid = 1;
+					}
+				}
+			}
+    
+			if ( $havefid == 1 ){
+				call_alert("此身分證字號重覆，請聯絡總公司處理。".$cardid, 0,0);
+			}
+
+			$mem_au = $re["mem_auto"];
+			$lusername = $re["mem_username"];
+			$n1 = $re["mem_name"];
+			$n10 = $re["mem_mobile"];
+			$mem_branch = $re["mem_branch"];
+			$mem_single = $re["mem_single"];		
+			
+			if ( $re["mem_username"] == "" || is_null($re["mem_username"]) ){
+				$subSQL1 = ",mem_username = '".$cardid."'";
+				$isbranch = 1;
+				$mem_username = $cardid;
+			}else{
+				$mem_username = $re["mem_username"];
+			}
+		
+			if ( $re["si_account"] == "" || $re["si_account"] == "0" || is_null($re["si_account"]) ){
+				$subSQL2 = ",si_account = '".$cardid."'";
+			}
+
+			if ( $re["mem_passwd"] == "" || is_null($re["mem_passwd"]) ){
+				$subSQL3 = ",mem_passwd = '".substr($mem_username, -5)."'";
+			}
+			
+			$web_level = (integer)SqlFilter($_REQUEST["web_level"],"int");
+
+			$SQL_u  = "Update member_data Set ";
+			$SQL_u .= "web_level='".$web_level."'";
+			$SQL_u .= $subSQL1.$subSQL2,$subSQL3;
+			$SQL_u .= ",web_startime='".strftime("%Y/%m/%d %H:%M:%S")."'";
+
+
+
+		//rs("web_level") = web_level
+		//rs("web_startime") = date()
+		select case web_level
+			case "1"
+				rs("web_endtime") = dateadd("m", 2, date())
+				timemsg = date()&"~"&dateadd("m", 2, date())
+			case "2"
+				rs("web_endtime") = dateadd("m", 6, date())	
+				timemsg = date()&"~"&dateadd("m", 6, date())
+			case "3"
+				rs("web_endtime") = NULL
+				timemsg = "視服務期間而定"
+		end select
+		
+		if rs("si_enterprise") = 99 then
+		  rs("si_enterprise") = 1
+		end if
+		rs.update
+		rs.close
+		
+		
+		rs.open "select top 1 * from log_data", SPCon, 1, 3
+		rs.addnew
+		rs("log_time") = now
+		rs("log_num") = mem_au
+		rs("log_fid") = lusername
+		rs("log_username") = n1
+		rs("log_name") = Session("p_other_name")
+		rs("log_branch") = Session("branch")
+		rs("log_single") = Session("MM_Username")
+		rs("log_1") = n10
+		rs("log_2") = "系統紀錄"
+		if isbranch = 1 then
+			branch_set = "，由審核人員設定帳號"
+		else
+			branch_set = ""
+		end if
+
+		rs("log_4") = Session("p_other_name")&"於"&now&"通過資料審核，並變更成"&num_lv(web_level)&" - 效期至"&timemsg&""&branch_set	
+		rs("log_5") = "member"
+		rs.update
+		rs.close
+
+		rs.open "select top 1 * from single_sysmsg", SPCon, 1, 3
+		rs.addnew
+		mem_single_name = SingleName(mem_single)
+		rs("mem_num") = mem_num
+		rs("msg") = mem_single_name&"您好，您的會員"&n1&" ["&mem_num&"] 資料，已由總公司審核通過，麻煩您協助進一步邀請對方到會館進行面對面認證。"
+		rs("url") = "ad_no_mem.asp?fullm="&mem_num
+		rs("branch") = mem_branch
+		rs("single") = mem_single
+		rs("singlename") = mem_single_name
+		rs("times") = now
+		rs("types") = "系統訊息"
+		rs("types2") = "網站認證"
+		rs("log_single") = Session("MM_Username")
+		rs("index_show") = 1
+		rs.update
+		rs.close
+		response.redirect "ad_mem_detail.asp?mem_num="&mem_num
+	end if
+	response.end
+end if
+	
+	
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->

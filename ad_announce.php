@@ -1,9 +1,116 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+	require_once("./include/_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+	
+	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
+
+	//刪除資料
+	if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+		$SQL_d = "Delete From single_sysmsg Where types='公告訊息' And auton='".SqlFilter($_REQUEST["an"],"tab");
+		$rs_d = $SPConn->prepare($SQL_d);
+		$rs_d->execute();
+		header("location:win_close.php?m=刪除中...");
+		exit;
+	}
+
+	if ( SqlFilter($_REQUEST["st"],"tab") == "report" ){
+		if ( SqlFilter($_REQUEST["fixstat"],"tab") == "" ){ call_alert("請選擇處理結果。", 0, 0);}
+		$fixstat = SqlFilter($_REQUEST["fixstat"],"tab");
+		$SQL = "Select * From system_report Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		if ( count($result) > 0 ){
+			$SQL_u  = "Update system_report Set ";
+			$SQL_u .= "stat='".$fixstat."',";
+			$SQL_u .= "fixnote='".$re["fixnote"]."<br>[".chtime(now)."]:".str_replace("\r\n","<br>",$_REQUEST["fixnote"])."&nbsp;by ".$_SESSION["pname"]."',";
+			$SQL_u .= "fixtimes='".date("Y-m-d H:s:i")."' ";
+			$SQL_u .= "Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+			$rs_u = $SPConn->prepare($SQL);
+			$rs_u->execute();
+		}
+		header("location:ad_system_report.php");
+	}
+
+	if ( SqlFilter($_REQUEST["st"],"tab") == "nofix" ){
+		$SQL = "Select * From system_report Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		if ( count($result) > 0 ){
+			$SQL_u  = "Update system_report Set ";
+			$SQL_u .= "stat='2',";
+			$SQL_u .= "fixtimes='".date("Y-m-d H:s:i")."' ";
+			$SQL_u .= "Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+			$rs_u = $SPConn->prepare($SQL);
+			$rs_u->execute();
+		}
+		header("location:ad_system_report.php");
+	}
+
+	//顯示筆數
+	$default_sql_num = 500; //預設顯示筆數
+	if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
+		$subSQL1 = "top ".$default_sql_num." * ";
+	}else{
+		$subSQL1 = "* ";
+	}
+	$asize = 0;
+
+	$subSQL2 = "And (','+branch+',' like '%,".$_SESSION["branch"].",%' Or branch Like '%all%')";
+	//依權限設定語法
+	if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+		$subSQL2 = "";
+		$subSQL3 = "";
+		//sqls = "SELECT "&sqlv&", (select count(auton) from single_sysmsg_log where announce_an=single_sysmsg.auton) as asize, (select times from single_sysmsg_log where announce_an=single_sysmsg.auton and single='"&Session("MM_Username")&"') as rtime from single_sysmsg         where types='公告訊息'"
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" ){
+		$subSQL3 = "And (look_for Like '%branch%' Or look_for Like '%all%')";
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "single" ){
+		$subSQL3 = "And (look_for Like '%single%' Or look_for Like '%all%')";
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "pay" ){
+		$subSQL3 = "And (look_for like '%pay%' Or look_for Like '%all%')";
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+		$subSQL3 = "And (look_for Like '%love%' Or look_for Like '%all%')";
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "action" ){
+		$subSQL3 = "And (look_for Like '%action%' Or look_for Like '%all%')";
+	}else{
+		$subSQL3 = "And (look_for Like '%all%')";
+	}
+	//關鍵字keyword
+	if ( SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$keyword = SqlFilter($_REQUEST["keyword"],"tab");
+		$subSQL4 = " And (notes Like '%".$keyword."%' Or msg Like '%".$keyword."%')";
+	}
+	
+	//取得總筆數
+	$SQL = "Select count(auton) As total_size From single_sysmsg Where types='公告訊息'".$subSQL2.$subSQL3.$subSQL4;
+	$rs = $SPConn->prepare($SQL);
+	$rs->execute();
+	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+	foreach($result as $re);
+	if ( count($result) == 0 || $re["total_size"] == 0 ) {
+		$total_size = 0;
+	}else{
+		$total_size = $re["total_size"];
+	}
+	
+	
+    //sqls = sqls & sqlss
+	//sqls2 = sqls2 & sqlss  
+	//sqls = sqls & " Order By times Desc"
+	
+	
+	
+	
+	
+
 ?>
+
+
 
 <!-- MIDDLE -->
 <section id="middle">
@@ -21,7 +128,7 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>公告訊息 - 數量：141</strong> <!-- panel title -->
+                    <strong>公告訊息 - 數量：<?php echo $total_size;?></strong> <!-- panel title -->
                 </span>
             </div>
 

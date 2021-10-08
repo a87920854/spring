@@ -3,12 +3,6 @@
 </div>
 <!-- /WRAPPER -->
 
-<form name="frmpage" id="frmpage" method="post">
-	<input type="hidden" name="tPage" id="tPage" value=<?php echo $tPage;?>>
-	<input type="hidden" name="keyword" id="keyword" value=<?php echo $keyword;?>>
-	<input type="hidden" name="tr" id="tr" value=<?php echo $tr;?>>
-</form>
-
 </body>
 </html>
 
@@ -17,4 +11,5 @@
 <script type="text/javascript">var plugin_path = 'assets/plugins/';</script>
 <script type="text/javascript" src="assets/plugins/jquery/jquery-2.2.3.min.js"></script>
 <script type="text/javascript" src="assets/js/app.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
+<!--<script type="text/javascript" src="js/util.js"></script>-->
+<script type="text/JavaScript" src="js/ajax.js"></script>

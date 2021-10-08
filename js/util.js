@@ -307,6 +307,9 @@ function pay_personnel_get_old0305(v, p, r) {
   }
 }
 function pay_personnel_get(v, p, r) {
+	alert(v);
+	alert(p);
+	alert(r);
   var $val = $("#"+v).val(),
       $pay2 = $("#"+p);
 	  $pay2_o = $("#"+p+" option");

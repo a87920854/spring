@@ -32,3 +32,8 @@
 		</ul>
 	</div>
 <?php }?>
+<form name="frmpage" id="frmpage" method="post">
+	<input type="hidden" name="tPage" id="tPage" value="<?php echo $tPage;?>">
+	<input type="hidden" name="keyword" id="keyword" value=<?php echo $keyword;?>>
+	<input type="hidden" name="tr" id="tr" value=<?php echo $tr;?>>
+</form>

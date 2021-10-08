@@ -1,7 +1,7 @@
 <?php
 	//代碼轉換姓名
 	function singlename($sn){
-		if ( $sn == "" || is_null($sn) == true ){
+		if ( $sn == "" || empty($sn) == true ){
 			$SingleName = "不明";
 		}else{
 			$SPConn2 = SPConOpen();
@@ -19,6 +19,27 @@
 		return $SingleName;
 	}
 	
+	//代碼轉換姓名_real
+	function SingleName_real($sn){
+		$SPConn1 = SPConOpen();
+		if ( $sn == "" || is_null($sn) == 1 ){
+			$SingleName_real = "不明";
+		}else{
+			$SQL_real = "Select p_name, p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
+			$rs_real = $SPConn1->prepare($SQL_real);
+			$rs_real->execute();
+			$result_real=$rs_real->fetchAll(PDO::FETCH_ASSOC);
+			foreach($result_real as $re_real);
+			if ( count($result_real) == 0 ){		
+				$SingleName_real == "不明-".$sn;
+			}else{
+				$SingleName_real = $re_real["p_name"];
+				if ( $SingleName_real == "" ){ $SingleName_real = $re_real["p_other_name"];}
+			}
+		}
+		return $SingleName_real;
+	}
+
 	//??
 	function get_report_num($mobile){
 		$gresult = 0;
@@ -348,5 +369,14 @@
 				break;
 		}
 		return $strTxt;
+	}
+	
+	//刪除檔案
+	function DelFile($sFileName){
+		//參數意義：檔案名稱
+		//判斷檔案是否存在
+		if(is_file($sFileName)){
+			unlink($sFileName);
+		}
 	}
 ?>

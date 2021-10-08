@@ -141,7 +141,7 @@
 						<li><a href="ad_admin_diff_list_team.php"><i class="fa fa-angle-right"></i><span> 小組業績表</span></a></li>
 						<li><a href="ad_single_count_love.php"><i class="fa fa-angle-right"></i><span> 排約人次統計</span></a></li>
 						<li><a href="ad_mem_love.php"><i class="fa fa-angle-right"></i><span> 會員排約時間</span></a></li>
-						<li><a href="ad_mem_service_list.php"><i class="fa fa-angle-right"></i><span> 會員排約次數查詢</span></a></li
+						<li><a href="ad_mem_service_list.php"><i class="fa fa-angle-right"></i><span> 會員排約次數查詢</span></a></li>
 						<li><a href="ad_action_service.php"><i class="fa fa-angle-right"></i><span> 會員服務紀錄查詢</span></a></li>
 						<li><a href="ad_single_list.php"><i class="fa fa-angle-right"></i><span> 秘書履歷</span></a></li>
 						<li><a href="ad_mem.php"><i class="fa fa-angle-right"></i><span> 會員管理系統</span></a></li>
@@ -671,7 +671,7 @@
 				$rs->execute();
 				$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 				foreach($result as $re);
-				if ( count($result1) > 0 ) {
+				if ( count($result) > 0 ) {
 					$photojt = $re["tt"];
 				}?>
 				<li><a href="ad_photo_check.php"><i class="main-icon fa fa-angle-double-right"></i><span> 網站照片審核<font color="red">(<?php echo $photojt;?>)</font></span></a></li>
@@ -988,23 +988,4 @@
     </nav>
     <span id="asidebg"></span>
 </aside>
-
-<!-- HEADER -->
-<header id="header" class="no-print">
-    <button id="mobileMenuBtn"></button>
-    <span class="logo pull-left">
-        <a class="brand" href="index.php"><img src="assets/images/logo.png?v=1.2" height="35"></a>
-    </span>
-    <div id="rightup_dropdown_showtooltip" class="pull-right margin-right-10">
-        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><?php echo $_SESSION["p_other_name"];?>[<?php echo $_SESSION["MM_Username"]?>]&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
-        <ul class="dropdown-menu" role="menu">
-            <li><a href="ad_secretary_saletool.php"><i class="fa fa-rocket"></i> 推廣工具</a></li>
-            <li><a href="ad_secretary_single_fix.php"><i class="fa fa-edit"></i> 個人資料</a></li>
-            <li class="divider"></li>
-            <li class="divider"></li>
-            <li><a href="tran_login.php?st=out"><i class="fa fa-power-off"></i> 登出</a></li>
-        </ul>
-    </div>
-    <div class="pull-right margin-right-20 hidden-xs hidden-sm" style="line-height:50px;">推廣代號：<?php echo $_SESSION["pauto"]?>&nbsp;&nbsp;&nbsp;&nbsp;連線位置：<a href="#" style="color:#fff" data-container="body" data-html="true" data-toggle="tooltip" data-placement="bottom" title="最近三次連線位置資訊<br><?php echo $_SESSION["lastip"];?>"><?php echo $_SESSION["ip"];?></a> (<?php echo changeTime($_SESSION["logintime"])?>)</div>
-</header>
-<!-- //HEADER -->
+<?php require_once("_topmenu.php");?>

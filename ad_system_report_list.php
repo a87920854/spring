@@ -43,6 +43,7 @@
 		exit;
 	}
 	
+	//顯示筆數
 	$default_sql_num = 500; //預設顯示筆數
 	if ( $_REQUEST["vst"] == "full" ){
 		$subSQL1 = "top ".$default_sql_num." ";
@@ -98,6 +99,7 @@
 	$SQL .= "Select TOP ".$page2." * From (";
 	$SQL .= "Select TOP ".($tPageSize*$tPage)." * From system_report Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc) t1 Where ".$subSQL2.$subSQL3.$subSQL4." ";
 	$SQL .= "Order By times) t2 Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc";
+	echo $SQL;
 	$rs = $SPConn->prepare($SQL);
 	$rs->execute();
 	$result=$rs->fetchAll(PDO::FETCH_ASSOC);

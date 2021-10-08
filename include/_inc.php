@@ -45,9 +45,9 @@
 	}
 	
 	//設定conn name
-	// $SPConn = SPConOpen(); 	//春天會館
-	// $FunConn = FunOpen();	//好好玩旅行社
-	// $DMNConn = DMNOpen();	//datemenow
+	$SPConn = SPConOpen();	//春天會館
+	$FunConn = FunOpen();	//好好玩旅行社
+	$DMNConn = DMNOpen();	//datemenow
 	
 	session_start();	//啟動 session
 	//------------------------------------------------------------------------
@@ -62,4 +62,12 @@
 	$txt_edit = "修改";
 	$txt_del = "刪除";
 	$txt_list = "列表";
+	
+	if ( $_SESSION["MM_Username"] == "" ){
+		echo "<script language=\"javascript\">" ;
+		echo "alert('請重新登入');";
+		echo "location.href='login.php';";
+		echo "</script>";
+		exit;
+	}
 ?>
