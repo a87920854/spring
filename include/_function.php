@@ -182,45 +182,41 @@
 	}
 	
 	//登入有使用到的funcion，不知作用為何
-	/*function updatemyreservation(){
-		if ( $_SESSION["MM_Username"] != "" ){ //登入中  	
-			//$singleid = "E223522640"; //測試用
+	function updatemyreservation(){
+		if ( $_SESSION["MM_Username"] != "" ){ //'登入中
+			//$singleid = "E223522640"; maybe測試用的
 			$singleid = $_SESSION["MM_Username"];
-			//setcookie("reservation_alert","","","");
-			//$SQL = "Select Distinct log_6_time From log_data Where log_single='".$singleid."' And ((log_6 <> '' Or Not log_6 is null) And datediff(n, getdate(), log_6_time) >= 0 and datediff(d, getdate(), log_6_time) = 0) order by log_6_time asc";
-			$SQL = "Select top 10 * From log_data";
-			$rsd = $SPConn->prepare($SQL);
-			$rsd->execute();
-			$resultd=$rsd->fetchAll(PDO::FETCH_ASSOC);
-			echo "**";
-			exit;
-			/*if ( count($result) > 0 ){ // Not Eof
+			setcookie("reservation_alert","",time()+3600); //建立cookie
+			$SQL = "Select Distinct log_6_time From log_data Where log_single='".$singleid."' And ((log_6 <> '' Or Not log_6 Is Null) And datediff(n, getdate(), log_6_time) >= 0 And datediff(d, getdate(), log_6_time) = 0) Order By log_6_time Asc";
+			$rs = $SPConn->prepare($SQL);
+			$rs->execute();
+			$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+			if ( count($result) > 0 ){
 				foreach($result as $re){ //先取出當日的所有不重復時段
 					//再取出各時段中的名稱
 					$log_6_time = chtime($re["log_6_time"]);
-					$SQL = "Select log_username From log_data Where log_single='".$singleid."' And ((log_6 <> '' or not log_6 is null) And datediff(n, '".$log_6_time."', log_6_time) = 0) order by log_6_time asc";
-					$rs1 = $SPConn->prepare($SQL);
-					$rs1->execute();
-					$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
-					if ( count($result1) > 0 ){ // Not Eof
-						foreach($result1 as $re1){ //先取出當日的所有不重復時段
+					$SQL2 = "Select log_username From log_data where log_single='".$singleid."' And ((log_6 <> '' Or Not log_6 is null) And datediff(n, '".$log_6_time."', log_6_time) = 0) Order By log_6_time Asc";
+					$rs2 = $SPConn->prepare($SQL2);
+					$rs2->execute();
+					$result2=$rs2->fetchAll(PDO::FETCH_ASSOC);
+					if ( count($result2) > 0 ){
+						foreach($result2 as $re2){
 							$log_username = $log_username.",".$re2["log_username"];
 						}
 					}
-					echo $log_username;
-					exit;
 					$log_username = clear_left_par($log_username, ",");
-					$reservation_alert_str = $reservation_alert_str."|o|".$log_6_time."|a|".$log_username;  		
+					$reservation_alert_str = $reservation_alert_str."|o|".$log_6_time."|a|".$log_username;
 				}
-				
 				$reservation_alert_str = clear_left_par($reservation_alert_str, "|o|");
+				
 				if ( $reservation_alert_str != "" ){ //寫入 cookie
 					$reservation_alert_str = str_replace(" ", "|s|", $reservation_alert_str); //轉換空格
-					setcookie("reservation_alert",$reservation_alert_str,time()+86400); //期限一天 86400秒
+					//reservation_alert_str = replace(reservation_alert_str, "2018-08-30|s|17:00", "2018-08-30|s|14:37") //test
+					setcookie( "reservation_alert",$reservation_alert_str,date("Y/m/d",strtotime("+1 day")) ); //期限一天
 				}
 			}
 		}
-	}*/
+	}
 
 	function chtime($thetime){
 		if ( chkDate($thetime) ){
@@ -378,5 +374,48 @@
 		if(is_file($sFileName)){
 			unlink($sFileName);
 		}
+	}
+	
+	//轉換會員級別中文名稱
+	function num_lv($n){
+		switch ($n){
+			case "1":
+				$num_lv = "資料認證會員";
+			case "2":
+				$num_lv = "真人認證會員";
+			case "3":
+				$num_lv = "璀璨會員-一年期";
+			case "4":
+				$num_lv = "璀璨VIP會員-一年期";
+			case "5":
+				$num_lv = "璀璨會員-二年期";
+			case "6":
+				$num_lv = "璀璨VIP會員-二年期";
+			case "10":
+				$num_lv = "菁英專案-三個月";
+			case "11":
+				$num_lv = "菁英專案-六個月";
+			default:
+				$num_lv = "網站會員";
+		}
+		return $num_lv;
+	}
+	
+	//不知用途,舊有程式
+	function mem_detail_menu($n, $mb1, $mb2){  
+		$showfull = 0;
+		if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+			$ad_mem_fix_url = "ad_mem_fix.asp?mem_num=".$mem_num.$islovepages;
+			$showfull = 1;
+		}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.islovepages;
+			if ( $mb1 == $_SESSION["branch"] || $mb2 == $_SESSION["branch"] ){
+				$showfull = 1;
+			}
+			$islovepages = "&love=1";
+		}else{
+			$showfull = 1;
+		}
+		return $showfull;
 	}
 ?>

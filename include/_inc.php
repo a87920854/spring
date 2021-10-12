@@ -63,11 +63,13 @@
 	$txt_del = "刪除";
 	$txt_list = "列表";
 	
-	if ( $_SESSION["MM_Username"] == "" ){
-		echo "<script language=\"javascript\">" ;
-		echo "alert('請重新登入');";
-		echo "location.href='login.php';";
-		echo "</script>";
-		exit;
+	if ( $action != "login" ){
+		if ( $_SESSION["MM_Username"] == "" ){
+			echo "<script language=\"javascript\">" ;
+			echo "alert('請重新登入');";
+			echo "location.href='login.php';";
+			echo "</script>";
+			exit;
+		}
 	}
 ?>

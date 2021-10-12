@@ -7,6 +7,7 @@
 	$mem_num = SqlFilter($_REQUEST["mem_num"],"int");
 	$mem_au = SqlFilter($_REQUEST["mem_au"],"int");
 	$mem_mobile = SqlFilter($_REQUEST["mem_mobile"],"tab");
+	$member_item = 1; //for button
 
 	if ( $mem_num == "" && $mem_au == "" && $mem_mobile == "" ){ call_alert("會員編號讀取有誤。", "ClOsE",0);}
 	
@@ -40,14 +41,14 @@
 	
 	//審核不通過
 	if ( $st == "checknook" ){
-		$SQL = "Select mem_auto,mem_username, mem_name, mem_mobile, si_errmsg From member_data Where mem_num='".$mem_num."'");
+		$SQL = "Select mem_auto,mem_username, mem_name, mem_mobile, si_errmsg From member_data Where mem_num='".$mem_num."'";
 		$rs = $SPConn->prepare($SQL);
 		$rs->execute();
 		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 		foreach($result as $re);
 		if ( count($result) > 0 ){
 			if ( SqlFilter($_REQUEST["errmsg"],"tab") != "" ){
-				$SQL_u = "Update member_data Set si_errmsg=N'".SqlFilter($_REQUEST["errmsg"],"tab")."' Where mem_num='".$mem_num."'");
+				$SQL_u = "Update member_data Set si_errmsg=N'".SqlFilter($_REQUEST["errmsg"],"tab")."' Where mem_num='".$mem_num."'";
 				$rs_u = $SPConn->prepare($SQL_u);
 				$rs_u->execute();
 			}
@@ -57,7 +58,7 @@
 			$n10 = $re["mem_mobile"];
 		}
 	
-		if ( SqlFilter($_REQUEST["errmsg"] != "" ){
+		if ( SqlFilter($_REQUEST["errmsg"],"tab") != "" ){
 			//新增
 			$SQL_i  = "Insert Into log_data(log_time,log_num,log_fid,log_username,log_name,log_branch,log_single,log_1,log_2,log_4,log_5) Values ( '";
 			$SQL_i .= SqlFilter(date("Y-m-d"),"tab")."',";
@@ -76,6 +77,7 @@
 			header("location:ad_mem_detail.asp?mem_num=".$mem_num);
 			exit;
 		}
+	}
 
 	//審核通過
 	if ( $st == "checkok" ){
@@ -98,6 +100,8 @@
 				call_alert("要升級成真人認證或璀璨會員須先將會員等級變更成已入會。", 0,0);
 			}
 			
+			
+			
 			$havefid = 0;
 			$SQL1 = "Select mem_num, web_level From member_data Where mem_username = '".$cardid."'";
 			$rs1 = $SPConn->prepare($SQL1);
@@ -114,105 +118,305 @@
 			if ( $havefid == 1 ){
 				call_alert("此身分證字號重覆，請聯絡總公司處理。".$cardid, 0,0);
 			}
-
+			
 			$mem_au = $re["mem_auto"];
 			$lusername = $re["mem_username"];
 			$n1 = $re["mem_name"];
 			$n10 = $re["mem_mobile"];
 			$mem_branch = $re["mem_branch"];
-			$mem_single = $re["mem_single"];		
+			$mem_single = $re["mem_single"];				
 			
-			if ( $re["mem_username"] == "" || is_null($re["mem_username"]) ){
-				$subSQL1 = ",mem_username = '".$cardid."'";
+			if ( $re["mem_username"] == "" || is_null($re["mem_username"]) ) {
+				$in_mem_username = cardid;
+				$mem_username = cardid;
 				$isbranch = 1;
-				$mem_username = $cardid;
 			}else{
+				$in_mem_username = "";
 				$mem_username = $re["mem_username"];
 			}
-		
+
 			if ( $re["si_account"] == "" || $re["si_account"] == "0" || is_null($re["si_account"]) ){
-				$subSQL2 = ",si_account = '".$cardid."'";
+				$si_account = $cardid;
 			}
 
 			if ( $re["mem_passwd"] == "" || is_null($re["mem_passwd"]) ){
-				$subSQL3 = ",mem_passwd = '".substr($mem_username, -5)."'";
+				$mem_passwd = substr($mem_username, -5);
+			}
+				
+			$web_level = (integer)SqlFilter($_REQUEST["web_level"],"int");
+			$web_startime = date("Y-m-d");
+			
+			switch ($web_level){
+				case "1":
+					$web_endtime = date("Y/m/d",strtotime("+2 day"));
+					$timemsg = date("Y/m/d")."~".date("Y/m/d",strtotime("+2 day"));
+				case "2":
+					$web_endtime = date("Y/m/d",strtotime("+6 day"));
+					$timemsg = date("Y/m/d")."~".date("Y/m/d",strtotime("+6 day"));
+				case "3":
+					$web_endtime = "";
+					$timemsg = "視服務期間而定";
+			}
+				
+			if ( $re["si_enterprise"] == 99 ){
+				$si_enterprise = 1;
 			}
 			
-			$web_level = (integer)SqlFilter($_REQUEST["web_level"],"int");
-
 			$SQL_u  = "Update member_data Set ";
-			$SQL_u .= "web_level='".$web_level."'";
-			$SQL_u .= $subSQL1.$subSQL2,$subSQL3;
-			$SQL_u .= ",web_startime='".strftime("%Y/%m/%d %H:%M:%S")."'";
-
-
-
-		//rs("web_level") = web_level
-		//rs("web_startime") = date()
-		select case web_level
-			case "1"
-				rs("web_endtime") = dateadd("m", 2, date())
-				timemsg = date()&"~"&dateadd("m", 2, date())
-			case "2"
-				rs("web_endtime") = dateadd("m", 6, date())	
-				timemsg = date()&"~"&dateadd("m", 6, date())
-			case "3"
-				rs("web_endtime") = NULL
-				timemsg = "視服務期間而定"
-		end select
+			$SQL_u .= "mem_username='".$$in_mem_username."',";
+			$SQL_u .= "si_account=".$si_account."',";
+			$SQL_u .= "mem_passwd=".$mem_passwd."',";
+			$SQL_u .= "web_level='".$web_level."',";
+			$SQL_u .= "web_startime='".$web_startime."',";
+			$SQL_u .= "web_endtime='".$web_endtime."',";
+			$SQL_u .= "si_enterprise='".$si_enterprise."'";
+			$SQL_u .= " Where mem_num='".$mem_num."'";
+			$rs_u = $SPConn->prepare($SQL);
+			$rs_u->execute();
 		
-		if rs("si_enterprise") = 99 then
-		  rs("si_enterprise") = 1
-		end if
-		rs.update
-		rs.close
-		
-		
-		rs.open "select top 1 * from log_data", SPCon, 1, 3
-		rs.addnew
-		rs("log_time") = now
-		rs("log_num") = mem_au
-		rs("log_fid") = lusername
-		rs("log_username") = n1
-		rs("log_name") = Session("p_other_name")
-		rs("log_branch") = Session("branch")
-		rs("log_single") = Session("MM_Username")
-		rs("log_1") = n10
-		rs("log_2") = "系統紀錄"
-		if isbranch = 1 then
-			branch_set = "，由審核人員設定帳號"
-		else
-			branch_set = ""
-		end if
-
-		rs("log_4") = Session("p_other_name")&"於"&now&"通過資料審核，並變更成"&num_lv(web_level)&" - 效期至"&timemsg&""&branch_set	
-		rs("log_5") = "member"
-		rs.update
-		rs.close
-
-		rs.open "select top 1 * from single_sysmsg", SPCon, 1, 3
-		rs.addnew
-		mem_single_name = SingleName(mem_single)
-		rs("mem_num") = mem_num
-		rs("msg") = mem_single_name&"您好，您的會員"&n1&" ["&mem_num&"] 資料，已由總公司審核通過，麻煩您協助進一步邀請對方到會館進行面對面認證。"
-		rs("url") = "ad_no_mem.asp?fullm="&mem_num
-		rs("branch") = mem_branch
-		rs("single") = mem_single
-		rs("singlename") = mem_single_name
-		rs("times") = now
-		rs("types") = "系統訊息"
-		rs("types2") = "網站認證"
-		rs("log_single") = Session("MM_Username")
-		rs("index_show") = 1
-		rs.update
-		rs.close
-		response.redirect "ad_mem_detail.asp?mem_num="&mem_num
-	end if
-	response.end
-end if
+			//新增 log_data
+			if ( $isbranch == 1 ){
+				$branch_set = "，由審核人員設定帳號";
+			}else{
+				$branch_set = "";
+			}
+			$SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+			$SQL_i .= "'".SqlFilter(date("H:s:i"),"tab")."',";
+			$SQL_i .= "'".SqlFilter($mem_au,"tab")."',";
+			$SQL_i .= "'".SqlFilter($lusername,"tab")."',";
+			$SQL_i .= "'".SqlFilter($n1,"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["p_other_name"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["branch"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($_SESSION["MM_Username"],"tab")."',";
+			$SQL_i .= "'".SqlFilter($n10,"tab")."',";
+			$SQL_i .= "'系統紀錄',";
+			$SQL_i .= "'".$_SESSION["p_other_name"]."於".date("H:s:i")."通過資料審核，並變更成".num_lv($web_level)." - 效期至".$timemsg.$branch_set;
+			$SQL_i .= "'member')";
+			$rs_i = $SPConn->prepare($SQL_i);
+			$rs_i->execute();
+			
+			//新增 single_sysmsg
+			$mem_single_name = SingleName($mem_single);
+			$SQL_i  = "Insert Into log_data(mem_num, msg, url, branch, single, singlename, times, types, types2, log_single, index_show) Values ( ";
+			$SQL_i .= "'".SqlFilter($mem_num,"tab")."',";
+			$SQL_i .= "'".$mem_single_name."您好，您的會員".$n1." [".$mem_num."] 資料，已由總公司審核通過，麻煩您協助進一步邀請對方到會館進行面對面認證。";
+			$SQL_i .= "'ad_no_mem.asp?fullm=".$mem_num;
+			$SQL_i .= "'".SqlFilter($mem_branch,"tab")."',";
+			$SQL_i .= "'".SqlFilter($mem_single,"tab")."',";
+			$SQL_i .= "'".SqlFilter($mem_single_name,"tab")."',";
+			$SQL_i .= "'".date("H:s:i")."',";
+			$SQL_i .= "'系統訊息',";
+			$SQL_i .= "'網站認證',";
+			$SQL_i .= "'".SqlFilter($_SESSION["MM_Username"],"tab")."',";
+			$SQL_i .= "'1')";
+			$rs_i = $SPConn->prepare($SQL_i);
+			$rs_i->execute();
+			header("location:ad_mem_detail.asp?mem_num=".$mem_num);
+		}
+		exit;
+	}
 	
+	if ( SqlFilter($_REQUEST["st"],"tab") == "delpic" ){
+		$log_save = 0;
+		$SQL = "Select mem_name, mem_username, mem_mobile, mem_photo, mem_p1, mem_p2, mem_p3, mem_p4 From member_data Where mem_auto=".$mem_au;
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		if ( count($result) > 0 ){
+			if ( SqlFilter($_REQUEST["v"],"tab") != "" ){
+				$lusername = $re["mem_username"];
+				$n1 = $re["mem_name"];
+				$n10 = $re["mem_mobile"];
+				$rrv = SqlFilter($_REQUEST["v"],"tab");
+				if ( $rrv == "mem_photo" ){
+					$n4 = "本人照片";
+				}elseif ( $rrv == "mem_p1" ){
+					$n4 = "身分證正面";
+				}elseif ( $rrv == "mem_p2" ){
+					$n4 = "身分證反面";
+				}elseif ( $rrv == "mem_p3" ){
+					$n4 = "工作證";
+				}else{
+					$n4 = "學力證明";
+				}
+				$rr = $re["rrv"];
+				if ( $rrv == "mem_photo" ){
+					$path = dirname(__FILE__)."\photo\\".$rr;
+					//rmfile(server.mappath("photo\"&rr))
+				}else{
+					$path = dirname(__FILE__)."\idcard\\".$rr;
+					//rmfile(server.mappath("idcard\"&rr))
+				}
+				
+				//更新 member_data
+				$SQL_u  = "Update member_data Set ";
+				$SQL_u .= "rrv='' Where mem_num='".$mem_num."'";
+				$rs_u = $SPConn->prepare($SQL);
+				$rs_u->execute();
+				$log_save = 1;
+			}
+		}
+		
+		if ( $log_save == 1 ){		
+			//新增 log_data
+			$SQL_u  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( '";
+			$SQL_u .= SqlFilter(date("H:m:s"),"tab")."',";
+			$SQL_u .= "'".SqlFilter($mem_au,"tab")."',";
+			$SQL_u .= "'".SqlFilter($lusername,"tab")."',";
+			$SQL_u .= "'".SqlFilter($n1,"tab")."',";
+			$SQL_u .= "'".SqlFilter(_SESSION["p_other_name"],"tab")."',";
+			$SQL_u .= "'".SqlFilter(_SESSION["branch"],"tab")."',";
+			$SQL_u .= "'".SqlFilter(_SESSION["MM_Username"],"tab")."',";
+			$SQL_u .= "'".SqlFilter($n10,"tab")."',";
+			$SQL_u .= "'系統紀錄',";
+			$SQL_u .= "'".$_SESSION["p_other_name"]."於".date("H:m:s")."刪除".$n4."'";
+			$SQL_u .= "'member')";
+			$rs_u = $SPConn->prepare($SQL);
+			$rs_u->execute();
+		}
+		header("location:ad_mem_detail.asp?mem_num=".$mem_num);
+	}
 	
+	//刪除 log_data
+	if ( SqlFilter($_REQUEST["st"],"tab") == "log_del" ){
+		$SQL_d = "Delete From log_data Where log_auto='".SqlFilter($_REQUEST["la"],"int");
+		$rs_d = $SPConn->prepare($SQL_d);
+		$rs_d->execute();
+		header("location:ad_mem_detail.asp?mem_num=".SqlFilter($_REQUEST["mem_num"],"tab"));
+	}
+	
+	if ( SqlFilter($_REQUEST["st"],"tab") == "log_send" ){
+		$log_6_time = SqlFilter($_REQUEST["log_6"],"tab")." ".SqlFilter($_REQUEST["log_6_time1"],"tab").":".SqlFilter($_REQUEST["log_6_time2"],"tab");
+		$log_6_time = date("Y-m-d H:m:i",$log_6_time);
+		if ( chkDate($log_6_time) == false ){
+			call_alert("預約時間有誤。",0,0);
+		}
+	
+		//更新 member_data
+		$SQL_u = "Update member_data Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")."' Where mem_auto=".SqlFilter(_REQUEST["mem_auto"],"int");
+		$rs_u = $SPConn->prepare($SQL_u);
+		$rs_u->execute();
+
+		//新增 log_data
+		if ( SqlFilter($_REQUEST["log_6"],"tab") != "點此預約下次通話" && chkDate($_REQUEST["log_6"]) ){
+			$log_6 = SqlFilter($_REQUEST["log_6"],"tab");
+			$in_log_6_time = $log_6_time;
+			$log_4 = $_SESSION["p_other_name"]."於".date("H:m:s")."預約 ".$log_6_time." 聯絡，內容：".SqlFilter($_REQUEST["log_4"],"tab");
+		}else{
+			$in_log_6_time = "";
+			$log_4 = SqlFilter($_REQUEST["log_4"],"tab");
+		}
+		
+		
+		$SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_3, log_5, log_6, log_4) Values ( ";
+		$SQL_i .= "'".SqlFilter(date("H:s:i"),"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["mem_auto"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["lusername"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["log_username"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["log_name"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["log_branch"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["MM_Username"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["mem_mobile"],"tab")."',";
+		$SQL_i .= "'預約聯絡',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["log_3"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($_REQUEST["ty"],"tab")."',";
+		$SQL_i .= "'".SqlFilter($$in_log_6_time,"tab")."',";
+		$SQL_i .= "'".SqlFilter($log_4,"tab")."')";
+		$rs_i = $SPConn->prepare($SQL_i);
+		$rs_i->execute();
+		updatemyreservation();
+		header("location:ad_mem_detail.asp?mem_num=".$_REQUEST["mem_num"]);
+	}		
+
+
+	if ( $mem_num != "" ){
+		$SQL = "Select * From member_data Where mem_num = '".$mem_num."'";
+	}elseif ( $mem_mobile != "" ){
+		$SQL = "Select * From member_data Where mem_mobile = '".$mem_mobile."'";
+	}else{
+		$SQL = "Select * From member_data Where mem_auto = ".$mem_au;
+	}
+	$rs = $SPConn->prepare($SQL);
+	$rs->execute();
+	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+	foreach($result as $re);
+	if ( count($result) == 0 ){
+		call_alert("會員資料讀取有誤或無此會員。", 0,0);
+	}else{
+		$this_single = strtoupper($_SESSION["MM_Username"]);
+		$this_branch = $_SESSION["branch"];
+		$lovebranch = $_SESSION["lovebranch"];
+		$mem_num = $re["mem_num"];
+		$mem_branch = $re["mem_branch"];
+		$mem_branch2 = $re["mem_branch2"];
+		$mem_single = strtoupper($re["mem_single"]);
+		$mem_single2 = strtoupper($re["mem_single2"]);
+		$love_single = strtoupper($re["love_single"]);
+		$call_branch = $re["call_branch"];
+		$call_single = strtoupper($re["call_single"]);
+		$cansee = 0;
+		$block_msg = "<font color='red'>不可見</font>";
+		
+		if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+			$cansee = 1;
+		}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+			$cmem_branch = ",".$mem_branch.",";
+			$cmem_branch2 = ",".$mem_branch2.",";
+			$ccall_branch = ",".$$call_branch.",";
+			$lovebranch = ",".$lovebranch.",";			
+			if ( strstr($lovebranch, $cmem_branch) > 0 || strstr($lovebranch, $cmem_branch2) > 0 || strstr($lovebranch, $ccall_branch) > 0 ){
+				$cansee = 1;
+			}
+		}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+			if ( $this_branch == $mem_branch || $this_branch == $mem_branch2 || $this_branch == $call_branch ){
+				$cansee = 1;
+			}
+		}elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "keyin" || $_SESSION["MM_UserAuthorization"] == "manager" ){			
+			if ( $this_single == $mem_single || $this_single == $mem_single2 || $this_single == $love_single || $this_single == $call_single ){
+				$cansee = 1;
+			}
+		}else{
+			$cansee = 0;
+		}
+		
+		if ( $re["mem_level"] == "mem" ){
+			$mem_lv = "會員";
+		}else{
+			$mem_lv = "未入會";
+		}
+
+		if ( $mem_branch == "八德"){
+			$bfont = "<font color='green'>DateMeNow</font>";
+		}elseif ( $re["mem_come"] == "約會專家" ){
+			$bfont = "<font color='red'>約會專家</font>";
+		}else{
+			$bfont = "<font color='red'>春天會館</font>";
+		}
+
+		if ( $mem_branch == "" || empty($mem_branch) ){
+			$bfont = "";
+		}
+	
+		if ( $re["si_account"] != "" && $re["si_account"] != "0" ){
+			$bfont = "<font color='#c22c7d'>約會專家主帳號</font>";
+		}
+
+		$mem_username = trim($re["mem_username"]);
+		if ( $mem_username != "" ){
+			$mem_username = str_replace(" ", "", $mem_username);
+		}
+	}
 ?>
+<style>
+	label.checkbox {
+		padding-left:12px;
+		margin-left:12px;
+	}
+	label.checkbox i {
+		left:-12px;
+	}
+</style>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -220,52 +424,63 @@ end if
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="ad_mem.php">會員管理系統</a></li>
-            <li class="active">會員詳細資料 - 編號 173134 - 鄭小姐</li>
+            <li class="active"><?php echo $mem_lv;?>詳細資料 - 編號 <?php echo $mem_num;?> - <?php echo $re["mem_name"];?></li>
         </ol>
     </header>
     <!-- /page title -->
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>會員詳細資料 - 編號 173134 - 鄭小姐 - <font color=#c22c7d>約會專家主帳號</font></strong> <!-- panel title -->
+                    <strong><?php echo $mem_lv;?>詳細資料 - 編號 <?php echo $mem_num;?> - <?php echo $re["mem_name"];?><?php if ( $bfont != "" ){ echo " - " . $bfont;}?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
-
                 <p>
-                    <a class="btn btn-primary" href="ad_mem_detail.php?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>基本資料</a>
-                    <a class="btn btn-blue" href="ad_mem_fix.asp?mem_num=2080022">修改資料</a>
-                    <a class="btn btn-info" href="ad_mem_service.php?mem_num=173134">服務紀錄</a>
-                    <a class="btn btn-danger" href="ad_mem_ptest.php?mem_num=173134">心理測驗</a>
-                    <a class="btn btn-warning" href="ad_mem_login_log.php?mem_num=173134">登入紀錄</a>
-                    <a class="btn btn-dirtygreen" href="ad_important_paper.php?mem_num=173134">紙本資料</a>
-
+					<span class="text-status">操作項目 ▶▶</span>
+					<a class="btn btn-info<?php if ( $member_item == 1 ){ echo " btn-active";}?>" href="ad_mem_detail.php?mem_num=<?php echo $mem_num;?>">基本資料</a>
+					<a class="btn btn-info<?php if ( $member_item == 2 ){ echo " btn-active";}?>" href="ad_mem_fix.php?mem_num=<?php echo $mem_num;?>">修改資料</a>
+					<a class="btn btn-info<?php if ( $member_item == 3 ){ echo " btn-active";}?>" href="ad_mem_service.php?mem_num=<?php echo $mem_num;?>">服務紀錄</a>
+					<a class="btn btn-info<?php if ( $member_item == 4 ){ echo " btn-active";}?>" href="ad_mem_ptest.php?mem_num=<?php echo $mem_num;?>">心理測驗</a>
+					<a class="btn btn-info<?php if ( $member_item == 5 ){ echo " btn-active";}?>" href="ad_mem_login_log.php?mem_num=<?php echo $mem_num;?>">登入紀錄</a>
+					<a class="btn btn-info<?php if ( $member_item == 6 ){ echo " btn-active";}?>" href="ad_important_paper.php?mem_num=<?php echo $mem_num;?>">紙本資料</a>
                 </p>
-
+				<?php mem_detail_menu(0, $mem_branch, $mem_branch2);?>
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <tbody>
                         <tr>
-                            <td colspan=4 style="font-size:150%;color:blue"><b>基本資料</b></td>
+                            <td colspan="4" style="font-size:150%;color:blue"><b>▶&nbsp;基本資料</b></td>
                         </tr>
                         <tr>
                             <td width="92">
                                 <div align="right">權益：</div>
                             </td>
-                            <td colspan=3><b>
-                                    璀璨會員-一年期(~)</b>&nbsp;&nbsp;一年卡
+                            <td colspan="3"><b>
+								<?php
+								if ( $re["ispay"] == 1 ){
+									echo "<font color='red'>[付訂]</font>";
+								}
+								echo num_lv($re["web_level"]);
+								if ( $re["web_level"] > 0 ){
+									echo "(".$re["web_startime"]."~".$re["web_endtime"].")";
+								}
+								if ( chkData($re["web_endtime"]) ){
+									/////////////////////////////////$web_time_diff = datediff("d", now, rs("web_endtime"));
+									if ( $web_time_diff > 0 ){
+										echo "&nbsp;&nbsp;餘 ".$web_time_diff." 天";
+									}else{
+										echo "&nbsp;&nbsp;<span class='label label-danger'>已過期</span>";
+									}
+								}?>
                             </td>
                         </tr>
                         <tr>
                             <td width="92">
                                 <div align="right">編號：</div>
                             </td>
-                            <td width="267">173134</td>
+                            <td width="267"><?php echo $re["mem_num"];?></td>
                             <td width="94">
                                 <div align="right">身分證字號：</div>
                             </td>
@@ -939,13 +1154,13 @@ end if
                         </tr>
                         <tr>
                             <td colspan=4>
-                                此會員學歷為大學<font color=blue>應</font>上傳學歷證明文件<br>未上傳學歷證明文件
+                                此會員學歷為大學<font color="blue">應</font>上傳學歷證明文件<br>未上傳學歷證明文件
                             </td>
                         </tr>
                         <tr>
                             <td colspan=4>
                                 財力證明文件<br>
-                                此會員財力為<font color=red>可不需</font>財力證明文件<br>
+                                此會員財力為<font color="red">可不需</font>財力證明文件<br>
 
                             </td>
                         </tr>
