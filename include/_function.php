@@ -381,22 +381,31 @@
 		switch ($n){
 			case "1":
 				$num_lv = "資料認證會員";
+				break;
 			case "2":
 				$num_lv = "真人認證會員";
+				break;
 			case "3":
 				$num_lv = "璀璨會員-一年期";
+				break;
 			case "4":
 				$num_lv = "璀璨VIP會員-一年期";
+				break;
 			case "5":
 				$num_lv = "璀璨會員-二年期";
+				break;
 			case "6":
 				$num_lv = "璀璨VIP會員-二年期";
+				break;
 			case "10":
 				$num_lv = "菁英專案-三個月";
+				break;
 			case "11":
 				$num_lv = "菁英專案-六個月";
+				break;
 			default:
 				$num_lv = "網站會員";
+				break;
 		}
 		return $num_lv;
 	}
@@ -417,5 +426,60 @@
 			$showfull = 1;
 		}
 		return $showfull;
+	}
+	
+	// 參數解釋
+	// $string： 明文 或 密文
+	// $operation：DECODE表示解密,其它表示加密
+	// $key： 密匙
+	// $expiry：密文有效期
+	function Authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
+		if( $operation == 'DECODE') $string=str_replace(array("-","_"), array('+','/'),$string);
+		$ckey_length = 4;
+		$key = md5($key ? $key : $GLOBALS['discuz_auth_key']);
+		$keya = md5(substr($key, 0, 16));
+		$keyb = md5(substr($key, 16, 16));
+		$keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';
+		$cryptkey = $keya.md5($keya.$keyc);
+		$key_length = strlen($cryptkey);
+		$string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
+		$string_length = strlen($string);
+		$result = '';
+		$box = range(0, 255);
+		$rndkey = array();
+		for($i = 0; $i <= 255; $i++) {
+			$rndkey[$i] = ord($cryptkey[$i % $key_length]);
+		}
+		for($j = $i = 0; $i < 256; $i++) {
+			$j = ($j + $box[$i] + $rndkey[$i]) % 256;
+			$tmp = $box[$i];
+			$box[$i] = $box[$j];
+			$box[$j] = $tmp;
+		}
+		for($a = $j = $i = 0; $i < $string_length; $i++) {
+			$a = ($a + 1) % 256;
+			$j = ($j + $box[$a]) % 256;
+			$tmp = $box[$a];
+			$box[$a] = $box[$j];
+			$box[$j] = $tmp;
+			$result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+		}
+		if($operation == 'DECODE') {
+			if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
+				return substr($result, 26);
+			} else {
+				return '';
+			}
+		} else {
+			return $keyc.str_replace(array("=","+","/"), array('','-','_'), base64_encode($result));
+		}
+	}
+	
+	//身材顯示
+	function wetstrreplace($t){
+		if ( $t == "偏瘦" ){ $t = $t."(<18)";}
+		if ( $t == "中等" ){ $t = $t."(18.1~24)";}
+		if ( $t == "偏肉" ){ $t = $t."(>24)";}
+		return $t;
 	}
 ?>
