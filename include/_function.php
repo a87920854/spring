@@ -482,4 +482,14 @@
 		if ( $t == "偏肉" ){ $t = $t."(>24)";}
 		return $t;
 	}
+	
+	$all_branchs_arr = Array("台北", "桃園", "新竹", "台中", "台南", "高雄", "八德", "約專", "迷你約", "總管理處", "好好玩旅行社");
+	function num_branch($num){
+		$num_branchnum = $num-1;
+		if ( $num_branchnum < 0 || $num_branchnum > count($all_branchs_arr) ){
+			$num_branch = "err";
+		}else{
+			$num_branch = $all_branchs_arr[$num_branchnum];
+		}
+	}
 ?>

@@ -406,6 +406,18 @@
 		if ( $mem_username != "" ){
 			$mem_username = str_replace(" ", "", $mem_username);
 		}
+		
+		//取得卡別
+		$SQL_card = "Select card_name From card_type Where card_no=".$re["mem_join"];
+		$rs_card = $SPConn->prepare($SQL_card);
+		$rs_card->execute();
+		$result_card=$rs_card->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result_card as $re_card);
+		if ( count($result_card) > 0 ){
+			$card_name = $re_card["card_name"];
+		}else{
+			$card_name = "不明";
+		}
 	}
 ?>
 <style>
@@ -926,15 +938,18 @@
 									$allstr = array("內向","外向","隨和","嚴謹","善良熱情","陽光","不拘");
 									$allstr1= "內向,外向,隨和,嚴謹,善良熱情,陽光,不拘";
 									for ( $i=0;$i<count($allstr);$i++ ){
-										echo strpos($allstr1,$re["sel_mem4"]);
+										//echo strpos($allstr1,$re["sel_mem4"]);
 									
 										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
-										//for ( $j=0;$j<count($sel_mem4);$j++ ){
-											
-											//if ( in_array($sel_mem4[$j],$allstr) ){ echo "checked=\"checked\"";}
-											if ( strpos($allstr1,$re["sel_mem4"]) > 0 ){ echo " checked=\"checked\"";}
-											
-										//}
+										if( is_array($sel_mem4) ){
+											foreach ($sel_mem4 as $value) {
+												//if ( in_array($value,$allstr) ){ echo "checked=\"checked\"";}
+												if ( strpos($allstr1,$value) > 0 ){ echo " checked=\"checked\"";}
+												
+											}
+										}else{
+											if ( $sel_mem4 == $allstr[$i] ){ echo " checked=\"checked\"";}
+										}
 										echo "><i></i>".$allstr[$i]."</label>";
 									}
 								?>
@@ -942,7 +957,7 @@
                         </tr>
                         <tr>
                             <td>經濟：</td>
-                            <td colspan=3>
+                            <td colspan="3">
                                 <?php
 									$sel_money_des = "";
 									if ( $re["sel_money_des"] != "" ){ $sel_money_des = $re["sel_money_des"]; }else{ $sel_money_des = "不拘"; }
@@ -1002,112 +1017,228 @@
                         </tr>
                         <tr>
                             <td>居住區域：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_area" value="北部" disabled><i></i>北部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="中部" disabled><i></i>中部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="南部" disabled><i></i>南部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="台北" disabled><i></i>台北</label><label class="checkbox"><input type="checkbox" name="sel_area" value="桃竹苗" disabled><i></i>桃竹苗</label><label class="checkbox"><input type="checkbox" name="sel_area" value="中彰投" disabled><i></i>中彰投</label><label class="checkbox"><input type="checkbox" name="sel_area" value="雲嘉南" disabled><i></i>雲嘉南</label><label class="checkbox"><input type="checkbox" name="sel_area" value="高屏" disabled><i></i>高屏</label><label class="checkbox"><input type="checkbox" name="sel_area" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+								<?php
+									$sel_area = "";
+									if ( $re["sel_area"] != "" ){ $sel_area = $re["sel_area"]; }else{ $sel_area = "不拘"; }
+									$allstr = array("北部","中部","南部","台北","桃竹苗","中彰投","雲嘉南","高屏","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_area == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>星座：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_star" value="牡羊座" disabled><i></i>牡羊座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="金牛座" disabled><i></i>金牛座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="雙子座" disabled><i></i>雙子座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="巨蟹座" disabled><i></i>巨蟹座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="獅子座" disabled><i></i>獅子座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="處女座" disabled><i></i>處女座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="天秤座" disabled><i></i>天秤座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="天蠍座" disabled><i></i>天蠍座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="射手座" disabled><i></i>射手座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="魔羯座" disabled><i></i>魔羯座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="水瓶座" disabled><i></i>水瓶座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="雙魚座" disabled><i></i>雙魚座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+								<?php
+									$sel_star = "";
+									if ( $re["sel_star"] != "" ){ $sel_star = $re["sel_star"]; }else{ $sel_star = "不拘"; }
+									$allstr = array("牡羊座","金牛座","雙子座","巨蟹座","獅子座","處女座","天秤座","天蠍座","射手座","魔羯座","水瓶座","雙魚座","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_star == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>身高：</td>
-                            <td colspan=3>
-
-                                <input type="text" name="sel_he1" id="sel_he1" class="form-control" style="width:100px;display:inline-block;" value="" disabled> - <input type="text" name="sel_he2" id="sel_he2" class="form-control" style="width:100px;display:inline-block;" value="" disabled> 公分
-
+                            <td colspan="3">
+								<input type="text" name="sel_he1" id="sel_he1" class="form-control" style="width:100px;display:inline-block;" value="<?php echo $re["sel_he1"];?>" disabled> - 
+								<input type="text" name="sel_he2" id="sel_he2" class="form-control" style="width:100px;display:inline-block;" value="<?php echo $re["sel_he2"];?>" disabled> 公分
                             </td>
                         </tr>
                         <tr>
                             <td>身型：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_wet" value="苗條" disabled><i></i>苗條</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="普通" disabled><i></i>普通</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="豐腴" disabled><i></i>豐腴</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="有肌肉" disabled><i></i>有肌肉</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="豐滿" disabled><i></i>豐滿</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="肥胖" disabled><i></i>肥胖</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="偏瘦" disabled><i></i>偏瘦(<18)< /label><label class="checkbox"><input type="checkbox" name="sel_wet" value="中等" disabled><i></i>中等(18.1~24)</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="偏肉" disabled><i></i>偏肉(>24)</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_wet = "";
+									if ( $re["sel_wet"] != "" ){ $sel_wet = $re["sel_wet"]; }else{ $sel_wet = "不拘"; }
+									$allstr = array("苗條","普通","豐腴","有肌肉","豐滿","肥胖","偏瘦","中等","偏肉","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_wet == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>社交性：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡與多人相處" disabled><i></i>喜歡與多人相處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡與少數人相處" disabled><i></i>喜歡與少數人相處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡獨處" disabled><i></i>喜歡獨處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="很熟" disabled><i></i>很熟</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="慢熟" disabled><i></i>慢熟</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_sociability = "";
+									if ( $re["sel_sociability"] != "" ){ $sel_sociability = $re["sel_sociability"]; }else{ $sel_sociability = "不拘"; }
+									$allstr = array("喜歡與多人相處","喜歡與少數人相處","喜歡獨處","很熟","慢熟","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_sociability == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>交友觀點：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_view" value="純粹擴大交友" disabled><i></i>純粹擴大交友</label><label class="checkbox"><input type="checkbox" name="sel_view" value="尋找談戀愛對象" disabled><i></i>尋找談戀愛對象</label><label class="checkbox"><input type="checkbox" name="sel_view" value="尋找依靠終身伴侶" disabled><i></i>尋找依靠終身伴侶</label><label class="checkbox"><input type="checkbox" name="sel_view" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_view = "";
+									if ( $re["sel_view"] != "" ){ $sel_view = $re["sel_view"]; }else{ $sel_view = "不拘"; }
+									$allstr = array("純粹擴大交友","尋找談戀愛對象","尋找依靠終身伴侶","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_view == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>抽菸：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_mem7" value="是" disabled><i></i>是</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="否" disabled><i></i>否</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="偶爾" disabled><i></i>偶爾</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_mem7 = "";
+									if ( $re["sel_mem7"] != "" ){ $sel_mem7 = $re["sel_mem7"]; }else{ $sel_mem7 = "不拘"; }
+									$allstr = array("是","否","偶爾","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_mem7 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>喝酒：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_mem8" value="是" disabled><i></i>是</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="否" disabled><i></i>否</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="偶爾" disabled><i></i>偶爾</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_mem8 = "";
+									if ( $re["sel_mem8"] != "" ){ $sel_mem8 = $re["sel_mem8"]; }else{ $sel_mem8 = "不拘"; }
+									$allstr = array("是","否","偶爾","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_mem8 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>飲食：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="sel_mem22" value="全素" disabled><i></i>全素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="鍋邊素" disabled><i></i>鍋邊素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="奶蛋素" disabled><i></i>奶蛋素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="吃辣" disabled><i></i>吃辣</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="不吃辣" disabled><i></i>不吃辣</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="葷食" disabled><i></i>葷食</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$sel_mem22 = "";
+									if ( $re["sel_mem22"] != "" ){ $sel_mem22 = $re["sel_mem22"]; }else{ $sel_mem22 = "不拘"; }
+									$allstr = array("全素","鍋邊素","奶蛋素","吃辣","不吃辣","葷食","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $sel_mem22 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td valign="top">
                                 <div align="right">忌諱：</div>
                             </td>
-                            <td colspan=3> </td>
+                            <td colspan="3"><?php echo $re["mem_da4"];?></td>
                         </tr>
                         <tr>
                             <td valign="top">
                                 <div align="right">擇友條件：</div>
                             </td>
-                            <td colspan=3> </td>
+                            <td colspan="3"><?php echo $re["mem_da5"];?></td>
                         </tr>
                         <tr>
                             <td colspan=4 style="font-size:150%;color:blue"><b>其他事項</b></td>
                         </tr>
                         <tr>
                             <td>備註說明：</td>
-                            <td colspan=3><textarea id="sys_note" name="sys_note" cols="100" rows="5" id="textarea" style="width:50%;height:60px" readonly></textarea> </td>
+                            <td colspan=3><textarea id="sys_note" name="sys_note" cols="100" rows="5" id="textarea" style="width:50%;height:60px" readonly><?php echo $re["sys_note"];?></textarea></td>
                         </tr>
                         <tr>
                             <td>會員備註：</td>
-                            <td colspan=3><textarea id="tosinglenote" name="tosinglenote" cols="100" rows="5" id="textarea" style="width:50%;height:60px" readonly></textarea> </td>
+                            <td colspan=3><textarea id="tosinglenote" name="tosinglenote" cols="100" rows="5" id="textarea" style="width:50%;height:60px" readonly><?php echo $re["tosinglenote"];?></textarea></td>
                         </tr>
 
                         <tr>
                             <td>方便聯繫時間：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="can_call" value="星期一" disabled><i></i>星期一</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期二" disabled><i></i>星期二</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期三" disabled><i></i>星期三</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期四" disabled><i></i>星期四</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期五" disabled><i></i>星期五</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期六" disabled><i></i>星期六</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期日" disabled><i></i>星期日</label><label class="checkbox"><input type="checkbox" name="can_call" value="上午" disabled><i></i>上午</label><label class="checkbox"><input type="checkbox" name="can_call" value="下午" disabled><i></i>下午</label><label class="checkbox"><input type="checkbox" name="can_call" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$can_call = "";
+									if ( $re["can_call"] != "" ){ $can_call = $re["can_call"]; }else{ $can_call = "不拘"; }
+									$allstr = array("星期一","星期二","星期三","星期四","星期五","星期六","星期日","上午","下午","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $can_call == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>方便排約時間：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="can_love" value="星期一" disabled><i></i>星期一</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期二" disabled><i></i>星期二</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期三" disabled><i></i>星期三</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期四" disabled><i></i>星期四</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期五" disabled><i></i>星期五</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期六" disabled><i></i>星期六</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期日" disabled><i></i>星期日</label><label class="checkbox"><input type="checkbox" name="can_love" value="上午" disabled><i></i>上午</label><label class="checkbox"><input type="checkbox" name="can_love" value="下午" disabled><i></i>下午</label><label class="checkbox"><input type="checkbox" name="can_love" value="不拘" checked disabled><i></i>不拘</label>
+                            <td colspan="3">
+                                <?php
+									$can_love = "";
+									if ( $re["can_love"] != "" ){ $can_love = $re["can_love"]; }else{ $can_love = "不拘"; }
+									$allstr = array("星期一","星期二","星期三","星期四","星期五","星期六","星期日","上午","下午","不拘");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $can_love == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>魅力處方箋01：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="recipe1" value="戀愛講堂" disabled><i></i>戀愛講堂</label><label class="checkbox"><input type="checkbox" name="recipe1" value="魅力有約" disabled><i></i>魅力有約</label><label class="checkbox"><input type="checkbox" name="recipe1" value="品味生活" disabled><i></i>品味生活</label><label class="checkbox"><input type="checkbox" name="recipe1" value="互動美學" disabled><i></i>互動美學</label>
+                            <td colspan="3">
+                                <?php
+									$recipe1 = "";
+									if ( $re["recipe1"] != "" ){ $recipe1 = $re["recipe1"]; }else{ $recipe1 = "不拘"; }
+									$allstr = array("戀愛講堂","魅力有約","品味生活","互動美學");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $recipe1 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>魅力處方箋02：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="recipe2" value="輕旅行" disabled><i></i>輕旅行</label><label class="checkbox"><input type="checkbox" name="recipe2" value="主題特別企劃" disabled><i></i>主題特別企劃</label><label class="checkbox"><input type="checkbox" name="recipe2" value="主題精緻餐會" disabled><i></i>主題精緻餐會</label><label class="checkbox"><input type="checkbox" name="recipe2" value="美味廚房" disabled><i></i>美味廚房</label><label class="checkbox"><input type="checkbox" name="recipe2" value="健康料理" disabled><i></i>健康料理</label><label class="checkbox"><input type="checkbox" name="recipe2" value="國外旅遊" disabled><i></i>國外旅遊</label>
+                            <td colspan="3">
+                                <?php
+									$recipe2 = "";
+									if ( $re["recipe2"] != "" ){ $recipe2 = $re["recipe2"]; }else{ $recipe2 = "不拘"; }
+									$allstr = array("輕旅行","主題特別企劃","主題精緻餐會","美味廚房","健康料理","國外旅遊");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $recipe2 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
                         <tr>
                             <td>魅力處方箋03：</td>
-                            <td colspan=3>
-                                <label class="checkbox"><input type="checkbox" name="recipe3" value="一對一排約" disabled><i></i>一對一排約</label><label class="checkbox"><input type="checkbox" name="recipe3" value="多平台排約" disabled><i></i>多平台排約</label><label class="checkbox"><input type="checkbox" name="recipe3" value="多對多約會" disabled><i></i>多對多約會</label><label class="checkbox"><input type="checkbox" name="recipe3" value="主題式約會" disabled><i></i>主題式約會</label><label class="checkbox"><input type="checkbox" name="recipe3" value="下午茶約會" disabled><i></i>下午茶約會</label>
+                            <td colspan="3">
+                                <?php
+									$recipe3 = "";
+									if ( $re["recipe3"] != "" ){ $recipe3 = $re["recipe3"]; }else{ $recipe3 = "不拘"; }
+									$allstr = array("一對一排約","多平台排約","多對多約會","主題式約會","下午茶約會");
+									for ( $i=0;$i<count($allstr);$i++ ){
+										echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$allstr[$i]."'";
+										if ( $recipe3 == $allstr[$i] ){ echo "checked=\"checked\"";}
+										echo "><i></i>".$allstr[$i]."</label>";
+									}
+								?>
                             </td>
                         </tr>
 
@@ -1116,13 +1247,29 @@
                                 <div align="right">會館/秘書：</div>
                             </td>
                             <td colspan=4>
-                                <font color=green>受理</font>：台北-台北督導
+                                <font color=green>受理</font>：<?php echo $mem_branch;?>-<?php echo SingleName($mem_single);?>
+								<?php if ( $mem_branch2 != "" ){?>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">跨區</font>：<?php echo $mem_branch2?>-<?php echo SingleName($mem_single2);?>
+								<?php }?>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>排約</font>：
-                                無
+                                <?php
+									if ( $re["love_single"] != "" ){
+										echo SingleName($re["love_single"]);
+									}else{
+										echo "無";
+									}
+								?>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>邀約</font>：
-                                無
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;電訪員：0　　
-
+                                <?php
+									if ( $re["call_branch"] != "" ){
+										echo $re["call_branch"]." - ".SingleName($re["call_single"]);
+									}else{
+										echo "無";
+									}
+								?>
+								<?php if ( $re["mem_serc"] != "" ){ ?>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;電訪員：<?php echo $re["mem_serc"];?>
+								<?php }?>
                             </td>
                         </tr>
                         <tr>
@@ -1130,110 +1277,380 @@
                                 <div align="right">是否入會：</div>
                             </td>
                             <td>
-                                已入會
-                                璀璨會員(~)
+                                <?php
+									if ( $re["mem_level"] != "guest" ){
+										echo "已入會";
+									}else{
+										echo "未入會";
+									}
+									
+									if ( $re["web_level"] != "" ){
+										switch ($re["web_level"]){
+											case 1:
+												$wbl = "資料認證會員(".$re["web_startime"]."~".$re["web_endtime"].")";
+												break;
+											case 2:
+												$wbl = "真人認證會員(".$re["web_startime"]."~".$re["web_endtime"].")";
+												break;
+											case 3:
+												$wbl = "璀璨會員(".$re["web_startime"]."~".$re["web_endtime"].")";
+												break;
+											case 4:
+												$wbl = "璀璨VIP會員(".$re["web_startime"]."~".$re["web_endtime"].")";
+												break;
+										}
+										echo $wbl;
+									}
+								?>
                             </td>
                             <td>
                                 <div align="right">參加卡別：</div>
                             </td>
-                            <td>一年卡</td>
+                            <td><?php echo $card_name;?></td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="right">入會日期：</div>
                             </td>
-                            <td>2009/2/1</td>
+                            <td><?php echo $re["mem_jy"];?>/<?php echo $re["mem_jm"];?>/<?php echo $re["mem_jd"];?></td>
                             <td>
                                 <div align="right">來源：</div>
                             </td>
-                            <td>其他
+                            <td>
+								<?php
+									echo $re["mem_come"];
+									if ( $re["mem_come5"] != "" ){
+										echo "-".$re["mem_come5"];
+									}
+									if ( $re["mem_come2"] != "" ){
+										echo "-".$re["mem_come2"];
+									}
+									
+									if ( $re["mem_cc"] != "" ){
+										$mem_cc = $re["mem_cc"];
+										if ( strstr($mem_cc, "sale-") > 0 ){
+											$mem_cc = "推廣：".SingleName_auto(split($mem_cc, "-")(1));
+										}
+										$mem_cc = " [".$mem_cc."]";
+									}else{
+										$mem_cc = "";
+									}
+									if ( $mem_cc != "" ){ echo $mem_cc;}
+									if ( $re["mem_regip"] != "" ){ echo "<br>".$re["mem_regip"];}?>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="right">資料時間：</div>
                             </td>
-                            <td>2008/10/19 下午 02:42:00</td>
+                            <td><?php echo $re["mem_time"];?></td>
                             <td>
                                 <div align="right">更新時間：</div>
                             </td>
-                            <td>2009/2/3 下午 04:32:00</td>
+                            <td><?php echo $re["mem_uptime"];?></td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="right">最後登入時間：</div>
                             </td>
-                            <td></td>
+                            <td><?php echo $re["last_login"];?></td>
                             <td>
                                 <div align="right">輸入：</div>
                             </td>
-                            <td>不明</td>
+                            <td><?php echo SingleName($re["keyin_single"]);?></td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="right">最後排約時間：</div>
                             </td>
-                            <td>2009/2/3 下午 07:30:00</td>
+                            <td><?php echo $re["love_time2"];?></td>
                             <td>
                                 <div align="right">推薦人：</div>
                             </td>
-                            <td>　（推薦會館秘書：　
-
-                                ）</td>
+                            <td>
+								<?php
+								echo $re["mem_come2"];
+								echo "（推薦會館秘書：";
+								if ( $re["mem_come3"] != "" ){
+									if ( is_numeric($re["mem_come3"] ) ){
+										echo num_branch($re["mem_come3"]);
+									}else{
+										echo $re["mem_come3"];
+									}
+								}
+								if ( $re["mem_come4"] != "" && $re["mem_come3"] != "無" ){
+									echo SingleName($re["mem_come4"]);
+								}
+								echo "）";
+								?>
+                            </td>
                         </tr>
-
-
+						<?php
+						//Set qrs = Server.CreateObject("ADODB.Recordset")
+						$reports = get_report_num($re["mem_mobile"]);
+						if ( strstr($reports, "|+|") > 0 ){
+							$report = split($reports, "|+|")(0);
+							$report_text = split(reports, "|+|")(1);
+						}else{
+							$report = 0;
+							$report_text = "無";
+						}?>
                         <tr>
                             <td valign="top">
                                 <div align="right">處理情形：</div>
                             </td>
-                            <td colspan=3>未處理　<a href="javascript:Mars_popup('ad_report.php?k_id=85689&lu=A000000002&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(0)</a></td>
+                            <td colspan="3">
+								<?php echo $re["all_type"];?>
+								<a href="javascript:Mars_popup('ad_report.asp?k_id=<?php echo $re["mem_auto"];?>&lu=<?php echo $mem_username;?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report?>)</a>
+							</td>
                         </tr>
                         <tr>
                             <td valign="top">
                                 <div align="right">處理內容：</div>
                             </td>
-                            <td colspan=3>無　　<font color=blue>舊：</font>
-                            </td>
+                            <td colspan="3"><?php echo $report_text;?>　<font color="blue">舊：</font>><?php echo $re["all_note"];?></td>
                         </tr>
                         <tr>
-                            <td colspan=4>
-                                會員照片及生活照&nbsp;&nbsp;<a href="ad_photo_check.php?sear=1&vst=&s99=&s4=173134" target="_blank">前往審核</a><br>
+                            <td colspan=＂4＂>
+                                會員照片及生活照&nbsp;&nbsp;<a href="ad_photo_check.asp?sear=1&vst=&s99=&s4=<?php echo $mem_num;?>" target="_blank">前往審核</a><br>
                                 <div class="lightbox" data-plugin-options='{"delegate": "a", "gallery": {"enabled": true}}'>
-
+									<?php
+									$mem_photo = $re["mem_photo"];
+									$inupload1 = 1;																		
+									if ( $mem_photo != "" && !strstr($mem_photo, "boy.") > 0 && !strstr($mem_photo, "girl.") > 0 ){
+										echo "<div style=""text-align:center;display:inline-block;"">";
+										if ( strstr($mem_photo, "photo/") > 0 ){
+											echo "<a href='dphoto/".$mem_photo."?t=".(int)(rand()*9999)."' class='popup'><img width='200' src='dphoto/".$mem_photo."'></a>";
+									    	$mem_photo = strreplace("photo/", "", $mem_photo);
+										}else{
+											echo "<a href='../photo/".$mem_photo."?t=".(int)(rand()*9999)."' class='popup'><img width='200' src='../photo/".$mem_photo."'></a>";
+										}
+										$inupload1 = 0;
+										echo "<br>封面照";
+										echo "</div>";
+									}
+									
+									$SQL_q = "Select * From photo_data Where mem_num=".$mem_num." And Not photo_name='".$mem_photo."'";
+									$rs_q = $SPConn->prepare($SQL_q);
+									$rs_q->execute();
+									$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+									if ( count($result_q) > 0 ){
+										foreach($result_q as $re_q){
+											echo "<div style=""text-align:center;display:inline-block;"">";
+											if ( $re_q["types"] == "dmn" ){
+												echo "<a href='dphoto/photo/".$re_q["photo_name"]."' class='popup'><img width='200' src='dphoto/photo/".$re_q["photo_name"]."' style='margin-left:15px;'></a>";
+											}else{
+												echo "<a href='photo/".$re_q["photo_name"]."' class='popup'><img width='200' src='photo/".$re_q["photo_name"]."' style='margin-left:15px;'></a>";
+											}
+											
+											if ( $re_q["accept"] == "1" ){
+												echo "<br><font color='blue'>審核通過</font>";
+												if ( $re_q["accept_single"] != "" ){
+													echo " - ".SingleName($re_q["accept_single"])."審";
+												}
+											elseif ( $re_q["accept"] == "-1" ){ 
+												echo "<br><font color='blue'>審核不通過，".$re_q["acceptm"]."</font>";
+											}else{
+												echo "<br><font color='green'>待審核</font>";
+											}
+											echo "</div>";										
+										}
+									}
+									?>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td valign="top" colspan=4>
+                            <td valign="top" colspan="4">
                                 <div style="text-align:center;display:inline-block;">
-                                    未上傳身分證正面
+									<?php
+									$inupload2 = 1;
+									$inupload3 = 1;
+									if ( $re["mem_p1"] != "" ){
+										$inupload2 = 0;
+										if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+											if ( is_null($re["web_level"]) || $re["web_level"] = 0  || $_SESSION["MM_UserAuthorization"] == "admin" ){
+												echo "身分證正面&nbsp;&nbsp;<a href='ad_mem_detail.asp?st=delpic&v=mem_p1&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除並開放重新上傳</a><br>";
+											}
+											echo "<a href=""idcard/".$re["mem_p1"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p1"]."'></a>";
+										}else{
+											echo "已上傳身分證正面";
+										}
+									}else{
+										echo "未上傳身分證正面";
+									} ?>
                                 </div>
                                 <div style="text-align:center;display:inline-block;">
-                                    未上傳身分證反面
+                                    <?php
+									if ( $re["mem_p2"] != "" ){
+										$inupload3 = 0;
+										if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" ||  $_SESSION["MM_UserAuthorization"] == "pay" ){
+											if ( is_null($re["web_level"]) || $re["web_level"] == 0 || $_SESSION["MM_UserAuthorization"] == "admin" ){
+												echo "身分證反面&nbsp;&nbsp;<a href='ad_mem_detail.asp?st=delpic&v=mem_p2&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除並開放重新上傳</a><br>";
+											}
+											echo "<a href='idcard/"&rs("mem_p2")&"' class='fancybox'><img width='200' src='idcard/".$re["mem_p2"]."'></a>";
+										}else{
+											echo "已上傳身分證反面";
+										}
+									}else{
+										echo "未上傳身分證反面";
+									} ?>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan=4>
-                                未上傳工作證
+                            <td colspan="4">
+								<?php          
+								if ( $re["mem_p3"] != "" ){
+									if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+										if ( is_null($re["web_level"]) || $re["web_level"] == 0 || $_SESSION["MM_UserAuthorization"] == "admin" ){
+											echo "<a href=""ad_mem_detail.asp?st=delpic&v=mem_p3&mem_num=".$mem_num."&mem_au=".$re["mem_auto"].""">刪除工作證開放重新上傳</a><br>";
+										}
+										echo "<a href='idcard/".$re["mem_p3"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p3"]."'></a>";
+									}else{
+										echo "已上傳工作證";
+									}
+								}else{
+									echo "未上傳工作證";
+								}?>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan=4>
-                                此會員學歷為大學<font color="blue">應</font>上傳學歷證明文件<br>未上傳學歷證明文件
+                            <td colspan="4">
+								<?php
+								if ( $re["mem_school"] == "大學" || $re["mem_school"] == "碩士" || $re["mem_school"] == "博士" ){
+									echo "此會員學歷為".$re["mem_school"]."<font color=blue>應</font>上傳學歷證明文件<br>";
+									$inupload5 = 1;
+								}else{
+									echo "此會員學歷為".$re["mem_school"]."<font color='red'>可不需</font>學歷證明文件<br>";
+									$inupload5 = 0;
+								}
+								
+								if ( $re["mem_p4"] != "" ){
+									$inupload5 = 0;
+									if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+										if ( is_null($re["web_level"]) || $re["web_level"] == 0 || $_SESSION["MM_UserAuthorization"] == "admin" ){
+											echo "<a href='ad_mem_detail.asp?st=delpic&v=mem_p4&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除學歷證明文件開放重新上傳</a><br>";
+										}
+										echo "<a href='idcard/".$re["mem_p4"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p4"]."'></a>";
+									}else{
+										echo "已上傳學歷證明文件";
+									}            
+								}else{
+									echo "未上傳學歷證明文件";
+								}?>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan=4>
+                            <td colspan="4">
                                 財力證明文件<br>
-                                此會員財力為<font color="red">可不需</font>財力證明文件<br>
-
+                                <?php
+								if ( $re["mem_money"] == "101萬到199萬" || $re["mem_money"] == "200萬以上" ){
+									echo "此會員財力為".$re["mem_money"]."<font color='blue'>應</font>上傳財力證明文件<br>";
+									$inupload6 = 1;
+								}else{
+									echo "此會員財力為".$re["mem_money"]."<font color='red'>可不需</font>財力證明文件<br>";
+									$inupload6 = 0;
+								}
+								$SQL_q = "Select * From proof_data Where mem_num=".$mem_num." And Not photo_name='".$mem_photo."'";
+								$rs_q = $SPConn->prepare($SQL_q);
+								$rs_q->execute();
+								$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+								if ( count($result_q) > 0 ){
+									foreach($result as $re_q){
+										echo "<div style='text-align:center;display:inline-block;'>";
+										echo "<a href='idcard/".$re_q["photo_name"]."' class='fancybox'><img width='200' src='idcard/".$re_q["photo_name"]."' style='margin-left:15px;'></a>";
+										if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+											echo "<br><a href=""?st=proofdel&a=".$re_q["photo_auto"]."&mem_num=".$_REQUEST["mem_num"].""">刪除</a>";
+										}
+										echo "</div>";
+										$inupload6 = 0;
+									}
+								}?>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan=4>此會員目前為璀璨會員(視服務期間而定)</td>
-                        </tr>
+                        <?php
+						if ( 1 = 1 ){
+							if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+								if ( $re["mem_photo") == "" && $re["mem_p1"] == "" && $re["mem_p2"] == "" ){
+									$SQL_u = "Update member_data Set web_level = 0, web_endtime = NULL Where mem_num=".$re["mem_num"];
+									$rs_u = $SPConn->prepare($SQL_u);
+									$rs_u->execute();
+								}          
+								$p1 = 0;
+								$p2 = 0;
+								$SQL_q = "Select Count(love_user) As pp From love_data_re Where love_user='".$mem_username."' And love_time2 Between '".$re["web_startime"]."' And '".$re["web_endtime"]."'";
+								$rs_q = $SPConn->prepare($SQL_q);
+								$rs_q->execute();
+								$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+								foreach($result_q as $re_q);
+								if ( count($result_q) > 0 ){
+									$p1 = $re_q["pp"];
+								}
+								$SQL_q = "Select Count(love_user) As pp From love_data_re Where love_user2='".$mem_username."' And love_time2 Between '".$re["web_startime"]."' And '".$re["web_endtime"]."'";
+								$rs_q = $SPConn->prepare($SQL_q);
+								$rs_q->execute();
+								$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+								foreach($result_q as $re_q);
+								if ( count($result_q) > 0 ){
+									$p2 = $re_q["pp"];
+								}
+								
+								switch ($re["web_level"]){
+									case 1:
+										echo "<tr><td colspan='4'>此會員目前為資料認證會員(".$re["web_startime"]."~".$re["web_endtime"]."]</td></tr>";
+										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次</td></tr>";
+										break;
+									case 2:
+										echo "<tr><td colspan='4'>此會員目前為真人認證會員(".$re["web_startime"]."~".$re["web_endtime"]."]</td></tr>"
+										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次、約會專家可排約 ".$re["si_real_invite"]." 次"
+										if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+											echo "<a href='?st=addsirealinvite&mem_num=".$re["mem_num"]."'>+1</a>";
+										}
+										echo "</td></tr>";
+										break;
+									case 3:
+										$SQL_q = "Select Count(love_user) As pp From love_data_re Where love_user='".$mem_username."'";
+										$rs_q = $SPConn->prepare($SQL_q);
+										$rs_q->execute();
+										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+										foreach($result_q as $re_q);
+										if ( count($result_q) > 0 ){
+											$p1 = $rs_q["pp"];
+										}
+										$SQL_q = "Select Count(love_user) As pp FROM love_data_re Where love_user2='".$mem_username."'";
+										$rs_q = $SPConn->prepare($SQL_q);
+										$rs_q->execute();
+										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+										foreach($result_q as $re_q);
+										if ( count($result_q) > 0 ){
+											$p2 = $re_q["pp"];
+										}
+										echo "<tr><td colspan='4'>此會員目前為璀璨會員(視服務期間而定)</td></tr>";
+										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次</td></tr>";
+										break;
+									case 4:
+										$SQL_q = "Select Count(love_user) As pp From love_data_re Where love_user='".$mem_username."'";
+										$rs_q = $SPConn->prepare($SQL_q);
+										$rs_q->execute();
+										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+										foreach($result_q as $re_q);
+										if ( count($result_q) > 0 ){
+											$p1 = $rs_q["pp"];
+										}
+										$SQL_q = "Select Count(love_user) As pp FROM love_data_re Where love_user2='".$mem_username."'";
+										$rs_q = $SPConn->prepare($SQL_q);
+										$rs_q->execute();
+										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
+										foreach($result_q as $re_q);
+										if ( count($result_q) > 0 ){
+											$p2 = $re_q["pp"];
+										}
+										echo "<tr><td colspan='4'>此會員目前為璀璨VIP會員(視服務期間而定)</td></tr>";
+										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次</td></tr>";
+										break;
+									default:
+									if ( $inupload == 0 && $inupload2 == 0 && $inupload3 == 0 && $inupload4 == 0 && $inupload5 == 0 && $inupload6 == 0 ){ ?>
                         <tr>
                             <td colspan=4>資料效期內共主動排約 0 次、被動排約 47 次</td>
                         </tr>
