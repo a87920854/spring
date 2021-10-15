@@ -1,7 +1,14 @@
 <?php
-//SESSION登入時間判斷
-	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
-	//if ( $_SESSION["MM_UserAuthorization"] != "admin" ){ call_alert("您沒有權限", 1 ,0); } 原程式被mark
+	//SESSION登入時間判斷
+	if ( $action != "login" ){
+		if ( $_SESSION["MM_Username"] == "" ){
+			echo "<script language=\"javascript\">" ;
+			echo "alert('請重新登入');";
+			echo "location.href='login.php';";
+			echo "</script>";
+			exit;
+		}
+	}
 ?>
 <!doctype html>
 <html lang="en-US">
