@@ -28,12 +28,28 @@ require("./include/_sidebar.php");
                 <div class="col-md-12">
                     <form id="searchform" action="ad_photo_check.php?vst=full&sear=1&t=" method="post" target="_self" class="form-inline" onsubmit="return chk_search_form()" style="margin:0px;">
 
+                        <p>
+                            會館：
+                            <select name="branch" id="branch" style="width:100px;">
+                                <option value="">請選擇</option>
+                                <option value="台北">台北</option>
+                                <option value="桃園">桃園</option>
+                                <option value="新竹">新竹</option>
+                                <option value="台中">台中</option>
+                                <option value="台南">台南</option>
+                                <option value="高雄">高雄</option>
+                                <option value="八德">八德</option>
+                                <option value="約專">約專</option>
+                                <option value="迷你約">迷你約</option>
+                                <option value="總管理處">總管理處</option>
+                            </select>
+                            &nbsp;&nbsp;
 
 
-                        上傳時間：
-                        <input type="text" class="datepicker" autocomplete="off" name="times1" value="">
-                        ～
-                        <input type="text" class="datepicker" autocomplete="off" name="times2" value="">
+                            上傳時間：
+                            <input type="text" class="datepicker" autocomplete="off" name="times1" value="">
+                            ～
+                            <input type="text" class="datepicker" autocomplete="off" name="times2" value="">
                         </p>
                         <p>
                             <select name="ismem" id="ismem">
@@ -199,13 +215,6 @@ require("./include/_sidebar.php");
                                 此會員目前無其他照片可供參考
                             </td>
                             <td>虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
-                                虛偽的騙子虛偽的騙子
                                 從頭到結束都在騙人的江琳</td>
                             <td class="center"></td>
                             <td class="center">
