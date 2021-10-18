@@ -1,10 +1,70 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+	/*****************************************/
+	//檔案名稱：ad_single_list.php
+	//後台對應位置：名單/發送記錄>祕書履歷
+	//改版日期：2021.10.18
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+	
+	check_page_power("ad_single_list");
+
+	if ( $_SESSION["MM_UserAuthorization"] == "admin"){
+		$SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
+		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0";
+		$branch = SqlFilter($_REQUEST["branch"],"tab");
+		if ( $branch != "" ){
+			$subSQL .= " And p_branch='".$branch."'";
+		}
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+		$branch = $_SESSION["branch"];
+	    $SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
+		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0 And p_branch ='".$branch."'";
+	}elseif ( $_SESSION["MM_UserAuthorization"] == "manager" ){
+		$SQL1 = "Select p_user From personnel_data_aparty Where team_name='".$_SESSION["team_name"]."'";
+		$rs1 = $SPConn->prepare($SQL1);
+		$rs1->execute();
+		$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+		if ( count($select1) > 0 ){
+			//dim allgroupid()
+			$counter = 0;
+			foreach($result1 as $re1){
+				//ReDim Preserve allgroupid(counter)
+				//allgroupid(counter) = ars("p_user")
+				$counter = ($counter + 1);
+			}
+		}
+		/*if ( isarray(allgroupid) ){
+			//allgroupidstr = join(allgroupid, "','")
+			$branch = $_SESSION["branch"];
+			$SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
+			$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0 And p_branch ='".$branch."' And p_user in ('".$allgroupidstr."')";
+		}else{
+			Call Alert("小組組員資料錯誤。"&session("team_name"), 0, 0);
+		}*/
+	}else{
+		header("location:ad_single_view.asp?st=my");
+	}
+
+	if ( SqlFilter($_REQUEST["keyword_type"],"tab") == "s1" && SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$subSQL .= " And p_auto Like '%".str_replace(SqlFilter($_REQUEST["keyword"],"tab"), "'", "''")."%'";
+	}
+	
+	if ( SqlFilter($_REQUEST["keyword_type"],"tab") == "s2" && SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$subSQL .= " And p_name Like '%".str_replace(SqlFilter($_REQUEST["keyword"],"tab"), "'", "''")."%'";
+	}
+	
+	if ( SqlFilter($_REQUEST["keyword_type"],"tab") == "s3" && SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$subSQL .= " And p_user Like '%".str_replace(SqlFilter($_REQUEST["keyword"],"tab"), "'", "''")."%'";
+	}
+
+	$SQL .= $subSQL." Order By p_branch desc, q_year asc, p_auto Desc";
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -29,21 +89,27 @@ require_once("./include/_sidebar.php")
             <div class="panel-body">
                 <div class="col-md-12 margin-bottom-10">
                     <form action="?st=search" method="post" target="_self" class="form-inline">
-
-                        <select name="branch" id="branch">
-                            <option value="" selected>會館</option>
-                            <option value="台北" selected>台北</option>
-                            <option value="桃園">桃園</option>
-                            <option value="新竹">新竹</option>
-                            <option value="台中">台中</option>
-                            <option value="台南">台南</option>
-                            <option value="高雄">高雄</option>
-                            <option value="八德">八德</option>
-                            <option value="約專">約專</option>
-                            <option value="迷你約">迷你約</option>
-                            <option value="總管理處">總管理處</option>
-                            <option value="好好玩旅行社">好好玩旅行社</option>
-                        </select> <select name="keyword_type" id="keyword_type">
+						<?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){?>
+							<select name="branch" id="branch">
+								<option value="">請選擇會館</option>
+								<?php
+								if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+									$SQL1 = "Select admin_name From branch_data Where admin_name<>'好好玩旅行社'";
+									$rs1 = $SPConn->prepare($SQL1);
+									$rs1->execute();
+									$result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+									foreach($result1 as $re1){
+										echo "<option value='".$re1["admin_name"]."'";
+										if ( $branch == $re1["admin_name"] ){ echo " selected";}
+										echo ">".$re1["admin_name"]."</option>";
+									}
+								}else{
+									echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
+								}
+								?>
+							</select>
+						<?php }?>
+						<select name="keyword_type" id="keyword_type">
                             <option value="s2">姓名</option>
                             <option value="s3">身分證字號</option>
                             <option value="s1">流水號</option>
@@ -55,219 +121,37 @@ require_once("./include/_sidebar.php")
 
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <tbody>
-                        <tr>
-                            <th>會館</th>
-                            <th>姓名</th>
-                            <th>別名</th>
-                            <th>職稱</th>
-                            <th>流水號</th>
-                            <th>尚未開發</th>
-                            <th width=80></th>
-                        </tr>
-                        <tr>
-                            <td>台北</td>
-                            <td>陳玉涵</td>
-                            <td>陳玉涵</td>
-                            <td>諮詢顧問</td>
-                            <td>1679</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A225553998">199</a></td>
-                            <td><a href="ad_single_view.php?an=1679">履歷</a></td>
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>許凱甯</td>
-                            <td>許凱甯</td>
-                            <td>諮詢顧問</td>
-                            <td>1678</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=F226722661">1</a></td>
-                            <td><a href="ad_single_view.php?an=1678">履歷</a></td>
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>陳鍠志</td>
-                            <td>陳鍠志</td>
-                            <td>假日櫃台</td>
-                            <td>1659</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=F126382405">0</a></td>
-                            <td><a href="ad_single_view.php?an=1659">履歷</a></td>
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>李至喬</td>
-                            <td>李至喬</td>
-                            <td>愛情顧問</td>
-                            <td>1635</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A227850285">204</a></td>
-                            <td><a href="ad_single_view.php?an=1635">履歷</a></td>
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>張棟崴</td>
-                            <td>張棟崴</td>
-                            <td>企劃</td>
-                            <td>1620</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A130353266">7</a></td>
-                            <td><a href="ad_single_view.php?an=1620">履歷</a></td>
-                        </tr>
-                        <tr>
-                            <td>台北</td>
-                            <td>許凱涵</td>
-                            <td>許凱涵</td>
-                            <td>假日櫃台</td>
-                            <td>1479</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A226907749">0</a></td>
-                            <td><a href="ad_single_view.php?an=1479">履歷</a></td>
-
-                        </tr>
-                        <tr>
-                            <td>台北</td>
-                            <td>黃映晴</td>
-                            <td>黃映晴</td>
-                            <td>櫃台</td>
-                            <td>1463</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A226446198">0</a></td>
-                            <td><a href="ad_single_view.php?an=1463">履歷</a></td>
-
-                        </tr>
-                        <tr>
-                            <td>台北</td>
-                            <td>林馨彤</td>
-                            <td>林馨彤</td>
-                            <td>愛情顧問</td>
-                            <td>1298</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A224876769">11</a></td>
-                            <td><a href="ad_single_view.php?an=1298">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>崔慶三</td>
-                            <td>崔慶三</td>
-                            <td>客戶部經理</td>
-                            <td>1124</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=A121165794">0</a></td>
-                            <td><a href="ad_single_view.php?an=1124">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>林美智</td>
-                            <td>林美智</td>
-                            <td>櫃台</td>
-                            <td>962</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=R220021682">0</a></td>
-                            <td><a href="ad_single_view.php?an=962">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>黃玉卿</td>
-                            <td>黃玉卿</td>
-                            <td>清潔人員</td>
-                            <td>932</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=F222015414">0</a></td>
-                            <td><a href="ad_single_view.php?an=932">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>余宗嶼</td>
-                            <td>余宗嶼</td>
-                            <td>督導</td>
-                            <td>875</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=E222962846">0</a></td>
-                            <td><a href="ad_single_view.php?an=875">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>黃明儀</td>
-                            <td>黃明儀</td>
-                            <td>客戶部經理</td>
-                            <td>624</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=J220528313">1</a></td>
-                            <td><a href="ad_single_view.php?an=624">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>吳嘉齡</td>
-                            <td>吳嘉齡</td>
-                            <td>會計</td>
-                            <td>524</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=G220011142">0</a></td>
-                            <td><a href="ad_single_view.php?an=524">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>春天網站</td>
-                            <td>春天網站</td>
-                            <td>其他</td>
-                            <td>407</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=SPRINGCLUBNET1">0</a></td>
-                            <td><a href="ad_single_view.php?an=407">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>詹善宇</td>
-                            <td>詹善宇</td>
-                            <td>諮詢顧問</td>
-                            <td>374</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=F220056613">827</a></td>
-                            <td><a href="ad_single_view.php?an=374">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>王英華</td>
-                            <td>王英華</td>
-                            <td>愛情顧問</td>
-                            <td>264</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=C200302406">1</a></td>
-                            <td><a href="ad_single_view.php?an=264">履歷</a></td>
-
-                        </tr>
-
-                        <tr>
-                            <td>台北</td>
-                            <td>高語鍹</td>
-                            <td>高語鍹</td>
-                            <td>資深客戶經理</td>
-                            <td>180</td>
-                            <td><a href="ad_no_mem.php?s=nokaifa&u=J220390453">5318</a></td>
-                            <td><a href="ad_single_view.php?an=180">履歷</a></td>
-
-                        </tr>
-
+						<?php
+						if ( $branch == "" && SqlFilter($_REQUEST["sear"],"tab") == "1" ){
+							echo "<tr><td>請最少選擇會館。</td></tr>";
+						}else{
+							/*$rs = $SPConn->prepare($SQL);
+							$rs->execute();
+							$result=$rs->fetchAll(PDO::FETCH_ASSOC); */?>
+							<tr>
+								<th>會館</th>
+								<th>姓名</th>
+								<th>別名</th>
+								<th>職稱</th>
+								<th>流水號</th>
+								<th>尚未開發</th>
+								<th width="80"></th>
+							</tr>
+							<?php foreach($result as $re){ ?>
+								<tr>
+									<td><?//php echo $re["p_branch"];?></td>
+									<td><?//php echo $re["p_name"];?></td>
+									<td><?//php echo $re["p_other_name"];?></td>
+									<td><?//php echo $re["p_job2"];?></td>
+									<td><?//php echo $re["p_auto"];?></td>
+									<td><a href="ad_no_mem.asp?s=nokaifa&u=<?//php echo $re["p_user"];?>"><?php echo $re["nob"];?></a></td>
+									<td><a href="ad_single_view.asp?an=<?//php echo $re["p_auto"];?>">履歷</a></td>
+								</tr>
+							<?php }?>
+						<?php }?>
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 18 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_single_list.php?topage=1&keyword=&keyword_type=s2&branch=%E5%8F%B0%E5%8C%97&st=search>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_single_list.php?topage=1&keyword=&keyword_type=s2&branch=%E5%8F%B0%E5%8C%97&st=search class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_single_list.php?topage=1&keyword=&keyword_type=s2&branch=%E5%8F%B0%E5%8C%97&st=search" selected>1</option>
-                        </select></li>
-                </ul>
-            </div>
-
         </div>
         <!--/span-->
 
@@ -280,7 +164,7 @@ require_once("./include/_sidebar.php")
 <!-- /MIDDLE -->
 
 <?php
-require_once("./include/_bottom.php");
+require("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">

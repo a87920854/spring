@@ -74,7 +74,7 @@ $(function(){
 });	
 	
 function AjaxLoadSuccess(selectbox,branch,rtype,flag,invite){
-	//console.log("../ajax/ajax.php?PKey="+ PKey + "&RType=" + selectbox);
+	console.log("../ajax/ajax.php?branch="+ branch + "&re_type=" + rtype);
 	$(function(){
 		$.ajax({
 		   type: "POST",
@@ -95,6 +95,7 @@ function onComplete(selectbox,val)
 			str = eval("(" + str + ")");	
 			for(var i = 0; i < str.data.length; i++){
 				document.getElementById(selectbox).options[i + 1] = new Option(str.data[i].Name,str.data[i].ID);
+				document.getElementById(selectbox).options[value=Name].prop('selected', true);
 			};
 		}
 	

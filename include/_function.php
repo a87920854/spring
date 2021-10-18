@@ -492,4 +492,12 @@
 			$num_branch = $all_branchs_arr[$num_branchnum];
 		}
 	}
+	
+	//權限檢查
+	function check_page_power($page){
+		$mypowers = $_SESSION["page_powers"];
+		if ( $mypowers != "" ){
+			if ( in_array($mypowers, $page) ){ call_alert("您沒有查看此頁的權限。",0,0);}
+		}
+	}
 ?>

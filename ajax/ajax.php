@@ -1,5 +1,5 @@
 <?php
-	require_once("../include/_inc.php");
+	require_once("../_inc.php");
 	require_once("../include/_function.php");
 	
 	$re_type = SqlFilter($_REQUEST["re_type"],"tab");

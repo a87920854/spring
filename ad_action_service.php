@@ -1,8 +1,74 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+	/*****************************************/
+	//檔案名稱：ad_action_service.php
+	//後台對應位置：名單/發送記錄>會員服務紀錄查詢
+	//改版日期：2021.10.18
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
+
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php")
+	
+	//程式開始 *****
+	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
+	check_page_power("ad_action_service");
+
+  sqlv = "*"
+  sqlv2 = "count(mem_auto)"
+
+ if request("branch") <> "" then
+ 	branch = request("branch")
+ end if
+ 
+ b2sql = "(mem_branch= '"&session("branch")&"' or ','+mem_branch2+',' LIKE '%,"&session("branch")&",%')"	
+
+	  Select case Session("MM_UserAuthorization")
+      case "admin"
+      if branch <> "" then
+      b2sql = " and (mem_branch= '"&branch&"' or ','+mem_branch2+',' LIKE '%,"&branch&",%')"	
+      else
+      b2sql = ""
+      end if
+      sqls = "SELECT "&sqlv&" FROM member_data WHERE mem_level = 'mem'"&b2sql
+	    sqls2 = "SELECT "&sqlv2&" as total_size FROM member_data WHERE mem_level = 'mem'"&b2sql	   	    
+	  case "branch","love","action","teacher"
+      sqls = "SELECT "&sqlv&" FROM member_data WHERE mem_level = 'mem' and "&b2sql
+	    sqls2 = "SELECT "&sqlv2&" as total_size FROM member_data WHERE mem_level = 'mem' and "&b2sql
+	    branch = session("branch")
+	  case else
+	  response.end
+	  	sqls = ""
+	  	sqls2 = ""
+      End Select
+      
+      keyword_type = request("keyword_type")
+      
+      select case keyword_type
+      	case "s2"
+      	  sqlss = sqlss & " and mem_mobile = '"&request("keyword")&"'"	
+      	case "s17"
+      	  sqlss = sqlss & " and mem_phone = '"&request("keyword")&"'"	
+      	case "s3"
+      	  sqlss = sqlss & " and mem_name like N'%"&request("keyword")&"%'"	
+      	case "s4"
+      	  sqlss = sqlss & " and mem_num = '"&request("keyword")&"'"	
+      	case "s5"
+      	  sqlss = sqlss & " and si_account = '"&request("keyword")&"'"	
+      	case "s6"
+      	  sqlss = sqlss & " and mem_username = '"&request("keyword")&"'"	
+      	case "s22"
+      	  sqlss = sqlss & " and mem_mail = '"&request("keyword")&"'"	
+        case else
+        	sqlss = sqlss & " and 1=0"
+      end select
+
+sqls = sqls & sqlss
+
+%>
+
 ?>
 
 <!-- MIDDLE -->

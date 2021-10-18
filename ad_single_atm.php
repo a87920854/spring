@@ -37,7 +37,7 @@
 				$date1 = $_REQUEST["date1"];
 				$date2 = $_REQUEST["date2"];
 				$sex = $_REQUEST["sex"];
-				$branch = $_REQUEST["branch"]
+				$branch = $_REQUEST["branch"];
 				$ssingle = $_REQUEST["single"];
 				?>
                 <form action="?st=search" method="post" target="_self" class="form-inline">
@@ -56,7 +56,9 @@
 									$rs->execute();
 									$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 									foreach($result as $re){
-										echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+										echo "<option value='".$re["admin_name"]."'";
+										if ( $branch == $re["admin_name"] ){ echo " selected";}
+										echo ">".$re["admin_name"]."</option>";
 									}
 								}else{
 									echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
@@ -65,6 +67,24 @@
 							</select>　
 							<select name="single" id="single">
 								<option value="">請選擇秘書</option>
+								<?php
+								if ( $_REQUEST["flag"] == "1" ){ 
+									$SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' Order By p_desc2 Desc, lastlogintime Desc";
+								}else{
+									$SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
+								}
+								if ( $branch != "" ){
+									$rs_er = $SPConn->prepare($SQL_er);
+									$rs_er->execute();
+									$result_er=$rs_er->fetchAll(PDO::FETCH_ASSOC);
+									foreach($result_er as $re_er){
+										if ( $re_er["p_name"] != "" ){ $p_name = $re_er["p_name"]; }
+										if ( $re_er["p_other_name"] != "" ){ $p_name = $re_er["p_other_name"]; }
+										echo "<option value='".$re_er["p_user"]."'";
+										if ( $ssingle == $re_er["p_user"] ){ echo " selected";}
+										echo ">".$p_name."</option>";
+									}
+								}?>								
 							</select>
 						<?php }?>
                         &nbsp;&nbsp;<input type="submit" value="送出" class="btn btn-default">
@@ -98,15 +118,12 @@
 						  	if ( $sex != "" ){
 						  		$subSQL = $subSQL . " And mem_sex='".$sex."'";
 							}
-
 						  	if ( $branch != "" ){
 								$subSQL = $subSQL . " And mem_branch='".$branch."'";
 							}
-
 						  	if ( $ssingle != "" ){
 								$subSQL = $subSQL . " And (mem_single='".$ssingle."' Or call_single='".$ssingle."')";
 						  	}
-						  	  
 							if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 								//subSQL = subSQL & " and mem_branch ='"&sessio&"'"
 							}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "pay" ){
@@ -128,7 +145,8 @@
 							$SQL .= "Outer Apply (Select Count(auton) As lovecount2 From si_invite Where types <> 'branch' And stats = 8 And (mnum = mem_num Or tnum = mem_num)) cc";
 							$SQL .= "Right Join (Select Sum(pay_total2) As fixmoney, pay_user, Max(pay_atm2) As pay_atm2 From pay_main Where (pay_atm2 <> '' And pay_user <> '' And pay_user <> '0') Group By pay_user) pp ";
 							$SQL .= "On pay_user = mem_username Where mem_time between '".$date1."' And '".$date2."'".$subSQL."";
-							//response.write sql
+							//echo $SQL;
+							//exit;
 						  	$rs = $SPConn->prepare($SQL);
 							$rs->execute();
 							$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -150,47 +168,38 @@
 									echo "<td>".$re["mem_branch"]."</td>";
 									echo "<td>".SingleName_real($re["mem_single"])."</td>";
 									echo "<td>".$re["mem_come"]."</td>";
-									echo "<td><a href='ad_mem_detail.asp?mem_num=".$re["mem_num"]."' target='_blank'>".$re["mem_name"]."</a>";
-						  	    response.write " <a href=""ad_mem_pay_detail.asp?mem_username="&rs("pay_user")&"&uname="&rs("mem_name")&""" class=""btn btn-xs btn-warning"">收支</a>"
-						  	    response.write "</td>"
-						  	    response.write "<td>"&rs("mem_sex")&"</td>"
-						  	    response.write "<td>"&rs("mem_by")&"/"&rs("mem_bm")&"/"&rs("mem_bd")&"</td>"
-						  	    response.write "<td>"&rs("pay_atm2")&"</td>"
-						  	    lovecount = rs("lovecount")
-						  	    lovecount2 = rs("lovecount2")
-						  	    if isnull(lovecount) or lovecount = "" then
-						  	    	lovecount = 0
-						  	    end if
-						  	    if isnull(lovecount2) or lovecount2 = "" then
-						  	    	lovecount2 = 0
-						  	    end if
-						  	    response.write "<td>"&lovecount+lovecount2&"</td>"
-						  	    fixmoney = rs("fixmoney")
-						  	    if isnull(fixmoney) or fixmoney = "" then
-						  	    	fixmoney = 0
-						  	    end if
-						  	    response.write "<td>"&fixmoney&"</td>"
-						  	    
-						  	    response.write "</tr>"
-						  	    rs.movenext
-						  	    wend
-						      end if
-						  	  set rs=nothing						  	
-						    end if
-						  	%>
-						  	
+									echo "<td><a href='ad_mem_detail.php?mem_num=".$re["mem_num"]."' target='_blank'>".$re["mem_name"]."</a>";
+									echo " <a href='ad_mem_pay_detail.php?mem_username=".$re["pay_user"]."&uname=".$re["mem_name"]."' class='btn btn-xs btn-warning'>收支</a>";
+									echo "</td>";
+									echo "<td>".$re["mem_sex"]."</td>";
+									echo "<td>".$re["mem_by"]."/".$re["mem_bm"]."/".$re["mem_bd"]."</td>";
+									echo "<td>".$re["pay_atm2"]."</td>";
+									$lovecount = $re["lovecount"];
+									$lovecount2 = $re["lovecount2"];
+									if ( empty($lovecount) || $lovecount == "" ){
+										$lovecount = 0;
+									}
+									if ( empty($lovecount2) || $lovecount2 == "" ){
+										$lovecount2 = 0;
+									}
+									echo "<td>".($lovecount+$lovecount2)."</td>";
+									$fixmoney = $re["fixmoney"];
+									if ( empty($fixmoney) || $fixmoney == "" ){
+										$fixmoney = 0;
+									}
+									echo "<td>".$fixmoney."</td>";
+									echo "</tr>";
+								}
+							}
+						}
+						?>					  	
                     </tbody>
                 </table>
-
             </div>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 
@@ -199,12 +208,9 @@ require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $(function() {
+ /*   $(function() {
         $("#branch").on("change", function() {
             personnel_get_send("branch", "single");
         });
-
-
-
-    });
+    });*/
 </script>
