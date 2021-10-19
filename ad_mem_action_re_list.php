@@ -1,8 +1,9 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("./include/_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php")
 ?>
-
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -21,7 +22,7 @@ require("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>活動明細表 - 數量：33　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>活動明細表 - 數量：500　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -87,41 +88,16 @@ require("./include/_sidebar.php");
                         </tr>
 
                         <tr>
-                            <td align="center">2020/11/13 下午 04:04:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
+                            <td align="center">2021/9/8 下午 09:01:00</td>
+                            <td align="center">2021/9/7 下午 07:00:00(台北)每月藝文分享，好書好劇好音樂<br>
 
                             </td>
 
-                            <td align="center">楊富瑄(C220541374)<br>(1971/1/27 , 0927290818)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">699</td>
-                            <td align="center">11/15 #7766*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77154','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/11/13 上午 09:43:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
-
-                            </td>
-
+                            <td align="center">高雅瑩(F226885109)<br>(1988/3/27 , 0930556292)</td>
+                            <td align="center">（現金）<font color="#FF0000" size="3">0</td>
                             <td align="center"></td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">699</td>
-                            <td align="center">11/15 #5473*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
+                            <td align="center">桃園</td>
+                            <td align="center">阿綸</td>
                             <td align="center">
                                 已報名
                             </td>
@@ -130,223 +106,27 @@ require("./include/_sidebar.php");
                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                     <ul class="dropdown-menu pull-right">
 
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77107','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
+                                        <li><a href="javascript:Mars_popup2('ad_mem_action_re_list.php?st=del&acre_auto=87397','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=on&acre_auto=87397','','width=300,height=200,top=100,left=100')"><i class="icon-ok-sign"></i> 參加</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=off&acre_auto=87397','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 未參加</a></li>
+
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=87397','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
 
                         <tr>
-                            <td align="center">2020/11/13 上午 09:43:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
+                            <td align="center">2021/9/8 下午 09:00:00</td>
+                            <td align="center">2021/9/7 下午 07:00:00(台北)每月藝文分享，好書好劇好音樂<br>
 
                             </td>
 
-                            <td align="center">郭乃瑜(Y220042668)<br>(1972/3/13 , 0937182269)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">699</td>
-                            <td align="center">11/15 #6229*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77106','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/11/13 上午 09:41:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">謝寶文(F122087945)<br>(1967/9/28 , 0975923318)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">690</td>
-                            <td align="center">11/15 #0708*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77105','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/11/13 上午 09:41:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">董建華(F120787184)<br>(1966/2/24 , 0975068076)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">690</td>
-                            <td align="center">11/15 現場付費</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77104','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/11/13 上午 09:40:00</td>
-                            <td align="center">2020/11/15 下午 02:00:00(好好玩旅行社)5565百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">高明煌(Y120063656)<br>(1967/8/14 , 0935935728)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">690</td>
-                            <td align="center">11/15 #1317*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=77103','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/27 下午 01:50:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">林宏銘(G120159172)<br>(1973/8/24 , 0920311889)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">999</td>
-                            <td align="center">10/28 現場付費</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76643','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/27 下午 01:49:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">許雅芳(A228390260)<br>(1980/12/29 , 0953036487)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">399</td>
-                            <td align="center">10/28 #0817*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76642','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/27 下午 01:49:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">林佳穎(A225634274)<br>(1984/11/14 , 0912582155)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">399</td>
-                            <td align="center">10/28 #1975*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76641','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/27 下午 01:48:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
-
-                            </td>
-
-                            <td align="center">楊雅婷(S222389259)<br>(1978/11/4 , 0910811942)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">399</td>
-                            <td align="center">10/28 #5309*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76640','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/27 下午 01:46:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
-
-                            </td>
-
+                            <td align="center">嚴秉均(K122091747)<br>(1981/11/16 , 0987286276)</td>
+                            <td align="center">（現金）<font color="#FF0000" size="3">0</td>
                             <td align="center"></td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">999</td>
-                            <td align="center">10/28 #4439*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
+                            <td align="center">桃園</td>
+                            <td align="center">阿綸</td>
                             <td align="center">
                                 已報名
                             </td>
@@ -355,73 +135,27 @@ require("./include/_sidebar.php");
                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                     <ul class="dropdown-menu pull-right">
 
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76639','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
+                                        <li><a href="javascript:Mars_popup2('ad_mem_action_re_list.php?st=del&acre_auto=87396','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=on&acre_auto=87396','','width=300,height=200,top=100,left=100')"><i class="icon-ok-sign"></i> 參加</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=off&acre_auto=87396','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 未參加</a></li>
+
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=87396','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
 
                         <tr>
-                            <td align="center">2020/10/27 下午 01:45:00</td>
-                            <td align="center">2020/10/28 下午 07:00:00(好好玩旅行社)六年級百萬靠譜優質男專屬<br>
+                            <td align="center">2021/9/8 下午 09:00:00</td>
+                            <td align="center">2021/9/7 下午 07:00:00(台北)每月藝文分享，好書好劇好音樂<br>
 
                             </td>
 
-                            <td align="center">陳威村(Q121362027)<br>(1973/12/5 , 0920813505)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">999</td>
-                            <td align="center">10/28 #9032*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76638','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/8 下午 05:00:00</td>
-                            <td align="center">2020/10/7 下午 07:00:00(好好玩旅行社)輕熟齡聯誼 專屬質感約會<br>
-
-                            </td>
-
-                            <td align="center">連日銘(F125865101)<br>(1983/9/13 , 0910370008)</td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">300</td>
-                            <td align="center">10/07 #6016*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76208','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/8 下午 04:58:00</td>
-                            <td align="center">2020/10/7 下午 07:00:00(好好玩旅行社)輕熟齡聯誼 專屬質感約會<br>
-
-                            </td>
-
+                            <td align="center">劉家宏(A129070827)<br>(1990/1/29 , 0970998366)</td>
+                            <td align="center">（現金）<font color="#FF0000" size="3">0</td>
                             <td align="center"></td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">999</td>
-                            <td align="center">非會員-蕭賢泰 10/07 #1834*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
+                            <td align="center">桃園</td>
+                            <td align="center">阿綸</td>
                             <td align="center">
                                 已報名
                             </td>
@@ -430,175 +164,59 @@ require("./include/_sidebar.php");
                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                     <ul class="dropdown-menu pull-right">
 
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76207','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
+                                        <li><a href="javascript:Mars_popup2('ad_mem_action_re_list.php?st=del&acre_auto=87395','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=on&acre_auto=87395','','width=300,height=200,top=100,left=100')"><i class="icon-ok-sign"></i> 參加</a></li>
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_list.php?st=off&acre_auto=87395','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 未參加</a></li>
+
+                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=87395','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
                                     </ul>
                                 </div>
                             </td>
                         </tr>
-
-                        <tr>
-                            <td align="center">2020/10/8 下午 04:56:00</td>
-                            <td align="center">2020/10/7 下午 07:00:00(好好玩旅行社)輕熟齡聯誼 專屬質感約會<br>
-
-                            </td>
-
-                            <td align="center"></td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">999</td>
-                            <td align="center">非會員-陳怡平 10/07 #8294*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76206','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/10/8 上午 09:27:00</td>
-                            <td align="center">2020/10/7 下午 07:00:00(好好玩旅行社)輕熟齡聯誼 專屬質感約會<br>
-
-                            </td>
-
-                            <td align="center">楊琰琛(E122513654)<br>(1977/12/7 , 0926275129)</td>
-                            <td align="center">（現金）<font color="#FF0000" size="3">300</td>
-                            <td align="center"></td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=76198','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/9/28 上午 11:25:00</td>
-                            <td align="center">2020/9/27 下午 02:00:00(總管理處)175UP挺拔歐爸專屬！精選3<br>
-
-                            </td>
-
-                            <td align="center">王馨誼(A228275473)<br>(1985/1/9 , 0936377508)</td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">399</td>
-                            <td align="center">09/27 #8824*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=75967','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/9/28 上午 11:22:00</td>
-                            <td align="center">2020/9/27 下午 02:00:00(總管理處)175UP挺拔歐爸專屬！精選3<br>
-
-                            </td>
-
-                            <td align="center">林惠文(E222999496)<br>(1982/5/16 , 0988253652)</td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">399</td>
-                            <td align="center">09/27 #1702*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=75966','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/9/28 上午 11:20:00</td>
-                            <td align="center">2020/9/27 下午 02:00:00(總管理處)175UP挺拔歐爸專屬！精選3<br>
-
-                            </td>
-
-                            <td align="center">蔡忻璇(A225794480)<br>(1987/1/17 , 0965073790)</td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">399</td>
-                            <td align="center">09/27 行動網</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=75965','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/9/28 上午 11:18:00</td>
-                            <td align="center">2020/9/27 下午 02:00:00(總管理處)175UP挺拔歐爸專屬！精選3<br>
-
-                            </td>
-
-                            <td align="center">李昱昇(H123284664)<br>(1984/10/6 , 0919334055)</td>
-                            <td align="center">（匯款）<font color="#FF0000" size="3">690</td>
-                            <td align="center">09/27 #3720*</td>
-                            <td align="center">總管理處</td>
-                            <td align="center">張利 Liz</td>
-                            <td align="center">
-                                已報名
-                            </td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_mem_action_re_print.php?acre_auto=75964','','width=700,height=520,top=100,left=100')"><i class="icon-print"></i> 列印收據</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
                         </tbody>
                 </table>
             </div>
-            <div class="text-center">共 33 筆、第 1 頁／共 2 頁&nbsp;&nbsp;
+            <div class="text-center">共 500 筆、第 1 頁／共 25 頁&nbsp;&nbsp;
                 <ul class='pagination pagination-md'>
                     <li><a href=/ad_mem_action_re_list.php?topage=1>第一頁</a></li>
                     <li class='active'><a href="#">1</a></li>
                     <li><a href=/ad_mem_action_re_list.php?topage=2 class='text'>2</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=3 class='text'>3</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=4 class='text'>4</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=5 class='text'>5</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=6 class='text'>6</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=7 class='text'>7</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=8 class='text'>8</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=9 class='text'>9</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=10 class='text'>10</a></li>
                     <li><a href=/ad_mem_action_re_list.php?topage=2 class='text' title='Next'>下一頁</a></li>
-                    <li><a href=/ad_mem_action_re_list.php?topage=2 class='text'>最後一頁</a></li>
+                    <li><a href=/ad_mem_action_re_list.php?topage=25 class='text'>最後一頁</a></li>
                     <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
                             <option value="/ad_mem_action_re_list.php?topage=1" selected>1</option>
                             <option value="/ad_mem_action_re_list.php?topage=2">2</option>
+                            <option value="/ad_mem_action_re_list.php?topage=3">3</option>
+                            <option value="/ad_mem_action_re_list.php?topage=4">4</option>
+                            <option value="/ad_mem_action_re_list.php?topage=5">5</option>
+                            <option value="/ad_mem_action_re_list.php?topage=6">6</option>
+                            <option value="/ad_mem_action_re_list.php?topage=7">7</option>
+                            <option value="/ad_mem_action_re_list.php?topage=8">8</option>
+                            <option value="/ad_mem_action_re_list.php?topage=9">9</option>
+                            <option value="/ad_mem_action_re_list.php?topage=10">10</option>
+                            <option value="/ad_mem_action_re_list.php?topage=11">11</option>
+                            <option value="/ad_mem_action_re_list.php?topage=12">12</option>
+                            <option value="/ad_mem_action_re_list.php?topage=13">13</option>
+                            <option value="/ad_mem_action_re_list.php?topage=14">14</option>
+                            <option value="/ad_mem_action_re_list.php?topage=15">15</option>
+                            <option value="/ad_mem_action_re_list.php?topage=16">16</option>
+                            <option value="/ad_mem_action_re_list.php?topage=17">17</option>
+                            <option value="/ad_mem_action_re_list.php?topage=18">18</option>
+                            <option value="/ad_mem_action_re_list.php?topage=19">19</option>
+                            <option value="/ad_mem_action_re_list.php?topage=20">20</option>
+                            <option value="/ad_mem_action_re_list.php?topage=21">21</option>
+                            <option value="/ad_mem_action_re_list.php?topage=22">22</option>
+                            <option value="/ad_mem_action_re_list.php?topage=23">23</option>
+                            <option value="/ad_mem_action_re_list.php?topage=24">24</option>
+                            <option value="/ad_mem_action_re_list.php?topage=25">25</option>
                         </select></li>
                 </ul>
             </div>
@@ -614,7 +232,7 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
