@@ -1,46 +1,34 @@
-<STYLE TYPE="text/css">
-    body,
-    th,
-    td,
-    input,
-    select,
-    textarea,
-    select,
-    checkbox {
-        font: 10pt 新細明體
-    }
+<?php
+	/*****************************************/
+	//檔案名稱：ad_job_send_branch.php
+	//後台對應位置：名單/發送記錄>徵人資料 → 發送
+	//改版日期：2021.10.19
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
-    a:link {
-        font: 10pt "新細明";
-        text-decoration: underline;
-        color: none
-    }
-
-    a:visited {
-        font: 10pt "新細明";
-        text-decoration: underline;
-        color: 000099
-    }
-
-    a:active {
-        font: 10pt "新細明";
-        text-decoration: underline;
-        color: 00CC66
-    }
-
-    a:hover {
-        font: 10pt 新細明;
-        text-decoration: underline;
-        color: ff0000
-    }
-</STYLE>
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	
+	if ( SqlFilter($_REQUEST["state"] == "add" ){
+		$an = SqlFilter($_REQUEST["an"],"tab");
+		$SQL = "Select * From job Where auton='".$an."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		$SQL_u = "Update job Set all_branch='".SqlFilter($_REQUEST["pay1"],"tab")."' Where auton='".$an."'";
+		$rs = $SPConn->prepare($SQL);
+		$rs->execute();
+		header("location:win_close.php");
+		exit;
+	}
+?>
 <html>
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>春天會館</title>
 </head>
-
 <body leftmargin="0" topmargin="0">
     <form action="?state=add" method="post" name="form1">
         <table width="350" border="0" align="center">
