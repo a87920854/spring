@@ -1,6 +1,8 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("./include/_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -20,7 +22,7 @@ require("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>諮詢紀錄表 - 數量：2　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>諮詢紀錄表 - 數量：500　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -134,57 +136,72 @@ require("./include/_sidebar.php");
                         </tr>
 
                         <tr>
-                            <td align="center">2020/10/21 下午 04:00:00</td>
-                            <td align="center">一對一諮詢</td>
-                            <td align="center"><a href="ad_mem_detail.php?mem_num=173134" target="_blank">黃金品[173134]</a></td>
-                            <td align="center">現金：699 元</td>
-                            <td align="center">0 元</td>
-                            <td align="center">0 元</td>
-                            <td align="center">總管理處/張利 Liz</td>
-                            <td align="center">台北</td>
-                            <td align="center">瑪那熊</td>
-                            <td align="center">2020/10/21 下午 05:51:54</td>
-                            <td align="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">2020/3/15 上午 10:00:00</td>
+                            <td align="center">2021/9/8 下午 05:00:00</td>
                             <td align="center">一對一造型諮詢</td>
-                            <td align="center"><a href="ad_mem_detail.php?mem_num=738767" target="_blank">林紹鈞[738767]</a></td>
-                            <td align="center">新抵用卷：1800 元</td>
+                            <td align="center"><a href="ad_mem_detail.php?mem_num=2077352" target="_blank">楊立為[2077352]</a></td>
+                            <td align="center">現金：1000 元</td>
                             <td align="center">0 元</td>
-                            <td align="center">3200 元</td>
-                            <td align="center">總管理處/柯宥如 Maggie</td>
-                            <td align="center">八德</td>
-                            <td align="center">八德督導</td>
-                            <td align="center">2020/3/17 下午 06:18:22</td>
+                            <td align="center">0 元</td>
+                            <td align="center">台北/詹明錡</td>
+                            <td align="center">台北</td>
+                            <td align="center">Ethan</td>
+                            <td align="center">2021/9/8 下午 07:31:57</td>
                             <td align="center">
                                 <div class="btn-group">
                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                     <ul class="dropdown-menu pull-right">
 
+                                        <li><a href="javascript:Mars_popup('ad_advisory_fix.php?an=11552','','width=690,height=470,top=100,left=100')"><i class="icon-trash"></i> 修改</a></li>
+                                        <li><a href="javascript:Mars_popup2('ad_advisory.php?st=del&an=11552','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+
                                     </ul>
                                 </div>
                             </td>
                         </tr>
-
                         </tbody>
                 </table>
             </div>
-            <div class="text-center">共 2 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
+            <div class="text-center">共 500 筆、第 1 頁／共 25 頁&nbsp;&nbsp;
                 <ul class='pagination pagination-md'>
                     <li><a href=/ad_advisory.php?topage=1>第一頁</a></li>
                     <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_advisory.php?topage=1 class='text'>最後一頁</a></li>
+                    <li><a href=/ad_advisory.php?topage=2 class='text'>2</a></li>
+                    <li><a href=/ad_advisory.php?topage=3 class='text'>3</a></li>
+                    <li><a href=/ad_advisory.php?topage=4 class='text'>4</a></li>
+                    <li><a href=/ad_advisory.php?topage=5 class='text'>5</a></li>
+                    <li><a href=/ad_advisory.php?topage=6 class='text'>6</a></li>
+                    <li><a href=/ad_advisory.php?topage=7 class='text'>7</a></li>
+                    <li><a href=/ad_advisory.php?topage=8 class='text'>8</a></li>
+                    <li><a href=/ad_advisory.php?topage=9 class='text'>9</a></li>
+                    <li><a href=/ad_advisory.php?topage=10 class='text'>10</a></li>
+                    <li><a href=/ad_advisory.php?topage=2 class='text' title='Next'>下一頁</a></li>
+                    <li><a href=/ad_advisory.php?topage=25 class='text'>最後一頁</a></li>
                     <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
                             <option value="/ad_advisory.php?topage=1" selected>1</option>
+                            <option value="/ad_advisory.php?topage=2">2</option>
+                            <option value="/ad_advisory.php?topage=3">3</option>
+                            <option value="/ad_advisory.php?topage=4">4</option>
+                            <option value="/ad_advisory.php?topage=5">5</option>
+                            <option value="/ad_advisory.php?topage=6">6</option>
+                            <option value="/ad_advisory.php?topage=7">7</option>
+                            <option value="/ad_advisory.php?topage=8">8</option>
+                            <option value="/ad_advisory.php?topage=9">9</option>
+                            <option value="/ad_advisory.php?topage=10">10</option>
+                            <option value="/ad_advisory.php?topage=11">11</option>
+                            <option value="/ad_advisory.php?topage=12">12</option>
+                            <option value="/ad_advisory.php?topage=13">13</option>
+                            <option value="/ad_advisory.php?topage=14">14</option>
+                            <option value="/ad_advisory.php?topage=15">15</option>
+                            <option value="/ad_advisory.php?topage=16">16</option>
+                            <option value="/ad_advisory.php?topage=17">17</option>
+                            <option value="/ad_advisory.php?topage=18">18</option>
+                            <option value="/ad_advisory.php?topage=19">19</option>
+                            <option value="/ad_advisory.php?topage=20">20</option>
+                            <option value="/ad_advisory.php?topage=21">21</option>
+                            <option value="/ad_advisory.php?topage=22">22</option>
+                            <option value="/ad_advisory.php?topage=23">23</option>
+                            <option value="/ad_advisory.php?topage=24">24</option>
+                            <option value="/ad_advisory.php?topage=25">25</option>
                         </select></li>
                 </ul>
             </div>
@@ -200,7 +217,7 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php")
 ?>
 
 <script type="text/javascript">
