@@ -1,5 +1,5 @@
 <?php
-	require_once("./include/_inc.php");
+	require_once("_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
@@ -1418,10 +1418,10 @@
 									$mem_photo = $re["mem_photo"];
 									$inupload1 = 1;																		
 									if ( $mem_photo != "" && !strstr($mem_photo, "boy.") > 0 && !strstr($mem_photo, "girl.") > 0 ){
-										echo "<div style=""text-align:center;display:inline-block;"">";
+										echo "<div style='text-align:center;display:inline-block;'>";
 										if ( strstr($mem_photo, "photo/") > 0 ){
 											echo "<a href='dphoto/".$mem_photo."?t=".(int)(rand()*9999)."' class='popup'><img width='200' src='dphoto/".$mem_photo."'></a>";
-									    	$mem_photo = strreplace("photo/", "", $mem_photo);
+									    	$mem_photo = str_replace("photo/", "", $mem_photo);
 										}else{
 											echo "<a href='../photo/".$mem_photo."?t=".(int)(rand()*9999)."' class='popup'><img width='200' src='../photo/".$mem_photo."'></a>";
 										}
@@ -1436,7 +1436,7 @@
 									$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
 									if ( count($result_q) > 0 ){
 										foreach($result_q as $re_q){
-											echo "<div style=""text-align:center;display:inline-block;"">";
+											echo "<div style='text-align:center;display:inline-block;'>";
 											if ( $re_q["types"] == "dmn" ){
 												echo "<a href='dphoto/photo/".$re_q["photo_name"]."' class='popup'><img width='200' src='dphoto/photo/".$re_q["photo_name"]."' style='margin-left:15px;'></a>";
 											}else{
@@ -1472,7 +1472,7 @@
 											if ( is_null($re["web_level"]) || $re["web_level"] = 0  || $_SESSION["MM_UserAuthorization"] == "admin" ){
 												echo "身分證正面&nbsp;&nbsp;<a href='ad_mem_detail.asp?st=delpic&v=mem_p1&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除並開放重新上傳</a><br>";
 											}
-											echo "<a href=""idcard/".$re["mem_p1"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p1"]."'></a>";
+											echo "<a href='idcard/".$re["mem_p1"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p1"]."'></a>";
 										}else{
 											echo "已上傳身分證正面";
 										}
@@ -1504,7 +1504,7 @@
 								if ( $re["mem_p3"] != "" ){
 									if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
 										if ( is_null($re["web_level"]) || $re["web_level"] == 0 || $_SESSION["MM_UserAuthorization"] == "admin" ){
-											echo "<a href=""ad_mem_detail.asp?st=delpic&v=mem_p3&mem_num=".$mem_num."&mem_au=".$re["mem_auto"].""">刪除工作證開放重新上傳</a><br>";
+											echo "<a href='ad_mem_detail.asp?st=delpic&v=mem_p3&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除工作證開放重新上傳</a><br>";
 										}
 										echo "<a href='idcard/".$re["mem_p3"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p3"]."'></a>";
 									}else{
@@ -1561,7 +1561,7 @@
 										echo "<div style='text-align:center;display:inline-block;'>";
 										echo "<a href='idcard/".$re_q["photo_name"]."' class='fancybox'><img width='200' src='idcard/".$re_q["photo_name"]."' style='margin-left:15px;'></a>";
 										if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
-											echo "<br><a href=""?st=proofdel&a=".$re_q["photo_auto"]."&mem_num=".$_REQUEST["mem_num"].""">刪除</a>";
+											echo "<br><a href='?st=proofdel&a=".$re_q["photo_auto"]."&mem_num=".$_REQUEST["mem_num"]."'>刪除</a>";
 										}
 										echo "</div>";
 										$inupload6 = 0;
@@ -1570,9 +1570,9 @@
                             </td>
                         </tr>
                         <?php
-						if ( 1 = 1 ){
+						if ( 1 == 1 ){
 							if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" ){
-								if ( $re["mem_photo") == "" && $re["mem_p1"] == "" && $re["mem_p2"] == "" ){
+								if ( $re["mem_photo"] == "" && $re["mem_p1"] == "" && $re["mem_p2"] == "" ){
 									$SQL_u = "Update member_data Set web_level = 0, web_endtime = NULL Where mem_num=".$re["mem_num"];
 									$rs_u = $SPConn->prepare($SQL_u);
 									$rs_u->execute();
@@ -1602,8 +1602,8 @@
 										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次</td></tr>";
 										break;
 									case 2:
-										echo "<tr><td colspan='4'>此會員目前為真人認證會員(".$re["web_startime"]."~".$re["web_endtime"]."]</td></tr>"
-										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次、約會專家可排約 ".$re["si_real_invite"]." 次"
+										echo "<tr><td colspan='4'>此會員目前為真人認證會員(".$re["web_startime"]."~".$re["web_endtime"]."]</td></tr>";
+										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次、約會專家可排約 ".$re["si_real_invite"]." 次";
 										if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 											echo "<a href='?st=addsirealinvite&mem_num=".$re["mem_num"]."'>+1</a>";
 										}
@@ -1650,7 +1650,10 @@
 										echo "<tr><td colspan='4'>資料效期內共主動排約 ".$p1." 次、被動排約 ".$p2." 次</td></tr>";
 										break;
 									default:
-									if ( $inupload == 0 && $inupload2 == 0 && $inupload3 == 0 && $inupload4 == 0 && $inupload5 == 0 && $inupload6 == 0 ){ ?>
+								}
+							}
+						}
+									if ( $inupload == 0 && $inupload2 == 0 && $inupload3 == 0 && $inupload4 == 0 && $inupload5 == 0 && $inupload6 == 0 ){ }?>
                         <tr>
                             <td colspan=4>資料效期內共主動排約 0 次、被動排約 47 次</td>
                         </tr>

@@ -25,4 +25,13 @@
 			exit;
 		}
 	}
+	
+	//check頁面權限
+	if ( $auth_page == "no" ){
+		echo "<script language=\"javascript\">" ;
+		echo "alert('您沒有查看此頁的權限');";
+		echo "location.href='index.php';";
+		echo "</script>";
+		exit;
+	}
 ?>

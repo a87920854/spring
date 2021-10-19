@@ -67,9 +67,9 @@
 		$subSQL6 = " And wtype='".str_replace("'", "''", $wtype)."'";
 	}
 
-	if ( SqlFilter($_REQUEST["keywOrd"],"tab") != "" ){
-		$keywOrd = SqlFilter($_REQUEST["keywOrd"],"tab");
-		$subSQL7 = $sqlss." And (title Like '%".str_replace("'", "''", $keywOrd)."%' Or supplier Like '%".str_replace("'", "''", $keywOrd)."%')";
+	if ( SqlFilter($_REQUEST["keyword"],"tab") != "" ){
+		$keyword = SqlFilter($_REQUEST["keyword"],"tab");
+		$subSQL7 = $sqlss." And (title Like '%".str_replace("'", "''", $keyword)."%' Or supplier Like '%".str_replace("'", "''", $keyword)."%')";
 	}
 	
 	//取得總筆數
@@ -158,12 +158,30 @@
 								$rs->execute();
 								$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 								fOreach($result as $re){ ?>
-									<option value="<?php echo $re["admin_name"];?>"<?php if ( SqlFilter($_REQUEST["branch"],"tab") ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
+									<option value="<?php echo $re["admin_name"];?>"<?php if ( SqlFilter($_REQUEST["branch"],"tab") == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
 								<?php }?>
 							</Select>
 							<?php if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" ){ ?>
 								<Select name="single" id="single" class="fOrm-control">
 									<option value="">請選擇</option>
+									<?php
+									if ( $_REQUEST["flag"] == "1" ){ 
+										$SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' Order By p_desc2 Desc, lastlogintime Desc";
+									}else{
+										$SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
+									}
+									if ( $branch != "" ){
+										$rs_er = $SPConn->prepare($SQL_er);
+										$rs_er->execute();
+										$result_er=$rs_er->fetchAll(PDO::FETCH_ASSOC);
+										foreach($result_er as $re_er){
+											if ( $re_er["p_name"] != "" ){ $p_name = $re_er["p_name"]; }
+											if ( $re_er["p_other_name"] != "" ){ $p_name = $re_er["p_other_name"]; }
+											echo "<option value='".$re_er["p_user"]."'";
+											if ( $single == $re_er["p_user"] ){ echo " selected";}
+											echo ">".$p_name."</option>";
+										}
+									}?>
 								</Select>
 							<?php }?>
 							
