@@ -1,6 +1,6 @@
 <?php
 	//代碼轉換姓名
-	function singlename($sn){
+	/*function singlename($sn){
 		if ( $sn == "" || empty($sn) == true ){
 			$SingleName = "不明";
 		}else{
@@ -38,6 +38,47 @@
 			}
 		}
 		return $SingleName_real;
+	}*/
+	
+	function SingleName($sn,$type){
+		switch ($type){
+			case "normal":
+				if ( $sn == "" || empty($sn) == true ){
+					$SingleName = "不明";
+				}else{
+					//$SPConn2 = SPConOpen();
+					$SQL = "Select p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
+					$rs = $SPConn->prepare($SQL);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					foreach( $result as $re );
+						if ( count($result) == 0 ){
+							$SingleName = "不明-".$sn;
+						}else{
+							$SingleName = $sn_re["p_other_name"];
+					}
+				}
+				break;
+			case "real":
+				if ( $sn == "" || is_null($sn) == 1 ){
+					$SingleName_real = "不明";
+				}else{
+					$SQL = "Select p_name, p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
+					$rs = $SPConn->prepare($SQL_real);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					foreach($result as $re);
+					if ( count($result) == 0 ){		
+						$SingleName == "不明-".$sn;
+					}else{
+						$SingleName = $re_real["p_name"];
+						if ( $SingleName == "" ){ $SingleName = $re["p_other_name"];}
+					}
+				}
+				break;
+				
+		}
+		return $SingleName;
 	}
 
 	//??

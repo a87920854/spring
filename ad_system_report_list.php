@@ -168,7 +168,7 @@
 								<tr>
 									<td class="center"><?php echo $re["types"];?></td>
 									<td class="center"><?php echo $re["branch"];?></td>
-									<td class="center"><?php if ( $re["single"] != "" ){ echo SingleName($re["single"]);}?></td>
+									<td class="center"><?php if ( $re["single"] != "" ){ echo SingleName("normal",$re["single"]);}?></td>
 									<td class="center"><?php echo $re["note"];?></td>
 									<td class="center"><?php echo Date_EN($re["times"],9);?></td>
 									<td class="center">

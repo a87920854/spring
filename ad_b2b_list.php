@@ -17,7 +17,19 @@
 	//查看此頁權限
 	$auth_page = "non";
 	
+	//資料來源
 	$come = SqlFilter($_REQUEST["come"],"tab");
+	
+	//語法
+	if ( $come != "" ){
+		$SQL = "Select *, d.mem_num As num2 From springclub_b2b_list('".$come."') As c Left Join member_data As d On c.mobile = d.mem_mobile And d.mem_level = 'mem'";
+		if ( SqlFilter($_REQUEST["s1"],"tab") != "" ){
+			$subSQL .= " And mem_username Like '%".str_replace("'", "''",SqlFilter($_REQUEST["s1"],"tab"))."%'";
+		}
+		$SQL .= $subSQL." Order By mem_jointime Desc";
+		echo $SQL;
+		exit;
+	}
 ?>
 <!-- MIDDLE -->
 <section id="middle">
@@ -48,7 +60,7 @@
 								echo "<option value='".$come."'>".$come."</option>";
 							}
 							echo "<option value=''>請選擇</option>";
-							//tabe:from_data
+							//tabe:from_data(資料來源)
 							$SQL = "Select * From from_data Where int_type=1 Order By auto_no";
 							$rs = $SPConn->prepare($SQL);
 							$rs->execute();
@@ -76,9 +88,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan=10 height=200>請選擇來源</td>
-                        </tr>
+						
                         <tr>
                             <td class="center"><%=rs("come")%><%=mem_cc%></td>
                             <td><%=num%></td>
