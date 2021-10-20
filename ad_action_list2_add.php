@@ -1,6 +1,8 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -10,8 +12,8 @@ require("./include/_sidebar.php");
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="ad_action_list2.php">網站活動團控</a></li>
-            <li><a href="ad_action_list2_view.php?id=13169">網站活動團控 - 實體聯誼【單身週末舞會】[13169]</a></li>
-            <li class="active">新增參加人員</li>
+            <li><a href="ad_action_list2_view.php?id=13399">網站活動團控 - 三峽傳藝一日輕旅行[13399]</a></li>
+            <li class="active">修改參加人員</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -21,7 +23,7 @@ require("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>網站活動團控 - 實體聯誼【單身週末舞會】[13169] - 新增參加人員</strong> <!-- panel title -->
+                    <strong>網站活動團控 - 三峽傳藝一日輕旅行[13399] - 修改參加人員</strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -29,20 +31,27 @@ require("./include/_sidebar.php");
 
                 <p>
                 <form action="?st=read" method="post" id="form1" class="form-inline">
-                    <input type="hidden" name="id" value="13169">
+                    <input type="hidden" name="id" value="13399">
                     <input type="text" name="keyword" id="keyword" class="form-control" value="" placeholder="會員編號/身分證字號帶入資料" required>&nbsp;<input type="submit" value="讀取" class="btn btn-default">
 
                 </form>
                 </p>
-                <form action="?st=add" method="post" id="form1" class="form-inline" onSubmit="return chk_form()">
+                <form action="?st=add&kid=243383" method="post" id="form1" class="form-inline" onSubmit="return chk_form()">
                     <table class="table table-striped table-bordered bootstrap-datatable input_small" style="font-size:12px;">
                         <tbody>
 
 
                             <tr>
-                                <td>姓名：<input type="text" name="k_name" id="k_name" value="" class="form-control" required></td>
+                                <td colspan=2>會員編號：<input class="form-control" type="text" value="2014368" disabled>&nbsp;&nbsp;排約預訂及諮詢預訂檢查僅適用有會員編號之參加人員</td>
+                                <input type="hidden" name="mymem_num" id="mymem_num" value="2014368">
+                                <input type="hidden" name="mybranch" id="mybranch" value="新竹">
+                                <input type="hidden" name="mysingle" id="mysingle" value="O200193417">
+                            </tr>
+
+                            <tr>
+                                <td>姓名：<input type="text" name="k_name" id="k_name" value="劉柏均" class="form-control" required></td>
                                 <td>性別：<select name="k_sex" id="k_sex" required>
-                                        <option value="">請選擇</option>
+                                        <option value="男">男</option>
                                         <option value="男">男</option>
                                         <option value="女">女</option>
                                     </select>
@@ -53,7 +62,7 @@ require("./include/_sidebar.php");
                                 <td>身分證字號：<input type="text" name="k_fid" id="k_fid" class="form-control" value="" required></td>
                                 <td>生日：
                                     <select name="k_year1" id="k_year1" required>
-                                        <option value="">請選擇</option>
+                                        <option value="1987">1987</option>
                                         <option value="1941">1941</option>
                                         <option value="1942">1942</option>
                                         <option value="1943">1943</option>
@@ -117,7 +126,7 @@ require("./include/_sidebar.php");
                                         <option value="2001">2001</option>
                                     </select> 年
                                     <select name="k_year2" id="k_year2" required>
-                                        <option value="">請選擇</option>
+                                        <option value="3">3</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -132,7 +141,7 @@ require("./include/_sidebar.php");
                                         <option value="12">12</option>
                                     </select> 月
                                     <select name="k_year3" id="k_year3" required>
-                                        <option value="">請選擇</option>
+                                        <option value="24">24</option>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -171,20 +180,20 @@ require("./include/_sidebar.php");
                             </tr>
                             <tr>
                                 <td>飲食習慣：<select name="k_eat" id="k_eat" required>
-                                        <option value="">請選擇</option>
+                                        <option value="葷食">葷食</option>
                                         <option value="葷食">葷食</option>
                                         <option value="素食">素食</option>
                                     </select></td>
-                                <td>手機：<input type="text" name="k_mobile" id="k_mobile" class="form-control" value="" required>&nbsp;&nbsp;電話：<input type="text" name="k_phone" value="" class="form-control"></td>
+                                <td>手機：<input type="text" name="k_mobile" id="k_mobile" class="form-control" value="0963433479" required>&nbsp;&nbsp;電話：<input type="text" name="k_phone" value="" class="form-control"></td>
                             </tr>
                             <tr>
-                                <td>服務機關：<input type="text" name="k_company" class="form-control" value=""></td>
-                                <td>現任職稱：<input type="text" name="k_company2" class="form-control" value=""></td>
+                                <td>服務機關：<input type="text" name="k_company" class="form-control" value="矽品"></td>
+                                <td>現任職稱：<input type="text" name="k_company2" class="form-control" value="工程師"></td>
                             </tr>
                             <tr>
                                 <td colspan=2>地址：
                                     <select name="k_area" id="k_area" required>
-                                        <option value="" SELECTED>請選擇</option>
+                                        <option value="">請選擇</option>
                                         <option value="基隆市">基隆市</option>
                                         <option value="台北市">台北市</option>
                                         <option value="新北市">新北市</option>
@@ -192,7 +201,7 @@ require("./include/_sidebar.php");
                                         <option value="桃園市">桃園市</option>
                                         <option value="新竹縣">新竹縣</option>
                                         <option value="新竹市">新竹市</option>
-                                        <option value="苗栗縣">苗栗縣</option>
+                                        <option value="苗栗縣" SELECTED>苗栗縣</option>
                                         <option value="苗栗市">苗栗市</option>
                                         <option value="台中縣">台中縣</option>
                                         <option value="台中市">台中市</option>
@@ -219,7 +228,7 @@ require("./include/_sidebar.php");
                                 </td>
                             </tr>
                             <tr>
-                                <td>E-mail：<input name="email" id="email" type="text" class="form-control" value=""></td>
+                                <td>E-mail：<input name="email" id="email" type="text" class="form-control" value="y007449@yahoo.com.tw"></td>
                                 <td>facebook帳號：<input name="fbname" type="text" class="form-control" value=""> ＬＩＮＥ：<input name="lineid" id="lineid" type="text" class="form-control" value=""></td>
                             </tr>
                             <!--  <tr>
@@ -227,14 +236,14 @@ require("./include/_sidebar.php");
         </r>-->
                             <tr>
                                 <td>學歷：<select name="k_school" id="k_school" required>
-                                        <option value="">請選擇</option>
+                                        <option value="大學">大學</option>
                                         <option value="高中">高中</option>
                                         <option value="專科">專科</option>
                                         <option value="大學">大學</option>
                                         <option value="碩士">碩士</option>
                                         <option value="博士">博士</option>
                                     </select></td>
-                                <td>費用：<input type="number" name="money" id="money" value="0" class="form-control"></td>
+                                <td>費用：<input type="number" name="money" id="money" value="" class="form-control"></td>
                             </tr>
 
                             <tr>
@@ -252,19 +261,19 @@ require("./include/_sidebar.php");
 
                                 </td>
                                 <td>公開資料：
-                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="姓名">
+                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="姓名" checked>
                                         姓名</label>
 
-                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="手機">
+                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="手機" checked>
                                         手機</label>
 
-                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="信箱">
+                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="信箱" checked>
                                         信箱</label>
 
-                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="服務單位">
+                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="服務單位" checked>
                                         服務單位</label>
 
-                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="LINE">
+                                    <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="LINE" checked>
                                         LINE</label>
 
                                     <label class="form-check-label"><input class="form-check-input" type="checkbox" name="k_2" value="Facebook">
@@ -279,14 +288,14 @@ require("./include/_sidebar.php");
                                 <td colspan=2>備註：<textarea name="remark" id="remark" class="form-control" style="width:70%;height:80px;"></textarea></td>
                             </tr>
                             <tr>
-                                <td colspan=2>報名時間：2021/9/14 下午 03:06:29</td>
+                                <td colspan=2>報名時間：2021/10/10 上午 10:03:07</td>
                             </tr>
 
                             <tr>
                                 <td colspan=2>
                                     <div align="center">
-                                        <input type="hidden" name="id" value="13169">
-                                        <input id="submit3" type="submit" value="確定新增" class="btn btn-info" style="width:50%;">
+                                        <input type="hidden" name="id" value="13399">
+                                        <input id="submit3" type="submit" value="確定修改" class="btn btn-info" style="width:50%;">
                                     </div>
                                 </td>
                             </tr>
@@ -301,7 +310,11 @@ require("./include/_sidebar.php");
     <!--/row-->
 
 
+    <hr>
 
+
+    <footer>
+    </footer>
     </div>
     </div>
 
@@ -311,11 +324,11 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $mtu = "ad_action_list.";
+    $mtu = "ad_action_list2.";
 
     function chk_form() {
 

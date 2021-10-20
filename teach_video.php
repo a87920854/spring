@@ -1,6 +1,8 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+require_once("_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -26,6 +28,13 @@ require("./include/_sidebar.php");
             <div class="panel-body">
 
                 <p>
+
+                    <input type="button" class="btn btn-success" value="新增教學影片" onclick="location.href='teach_video_add.php?act=ad'">
+                    <input type="button" class="btn btn-info" value="授權及影片播放記錄" onclick="location.href='teach_video_log.php'">
+
+                    <input type="button" class="btn btn-warning" value="授權設定" onclick="location.href='teach_video_set.php'">
+
+                    <input type="button" class="btn btn-danger" value="檔案大小" onclick="location.href='teach_video_size.php'">
 
                 </p>
                 <br><br>
@@ -59,5 +68,5 @@ require("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+require_once("./include/_bottom.php");
 ?>
