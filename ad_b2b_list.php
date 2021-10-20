@@ -17,14 +17,26 @@
 	//查看此頁權限
 	$auth_page = "non";
 	
+	//資料來源
 	$come = SqlFilter($_REQUEST["come"],"tab");
+	
+	//語法
+	if ( $come != "" ){
+		$SQL = "Select *, d.mem_num As num2 From springclub_b2b_list('".$come."') As c Left Join member_data As d On c.mobile = d.mem_mobile And d.mem_level = 'mem'";
+		if ( SqlFilter($_REQUEST["s1"],"tab") != "" ){
+			$subSQL .= " And mem_username Like '%".str_replace("'", "''",SqlFilter($_REQUEST["s1"],"tab"))."%'";
+		}
+		$SQL .= $subSQL." Order By mem_jointime Desc";
+		echo $SQL;
+		//;
+	}
 ?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.php">管理系統</a></li>
+            <li><a href="index.asp">管理系統</a></li>
             <li class="active">廠商認列表</li>
         </ol>
     </header>
@@ -48,7 +60,7 @@
 								echo "<option value='".$come."'>".$come."</option>";
 							}
 							echo "<option value=''>請選擇</option>";
-							//tabe:from_data
+							//tabe:from_data(資料來源)
 							$SQL = "Select * From from_data Where int_type=1 Order By auto_no";
 							$rs = $SPConn->prepare($SQL);
 							$rs->execute();
@@ -76,9 +88,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan=10 height=200>請選擇來源</td>
-                        </tr>
+						
                         <tr>
                             <td class="center"><%=rs("come")%><%=mem_cc%></td>
                             <td><%=num%></td>
@@ -100,7 +110,7 @@
                             </td>
                             <td>
 
-                                <a href="#re" onclick="Mars_popup('ad_b2b_fix.php?num=<%=nums%>&ty=<%=rs("ty")%>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=180,top=200,left=150');">處理</a>
+                                <a href="#re" onclick="Mars_popup('ad_b2b_fix.asp?num=<%=nums%>&ty=<%=rs("ty")%>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=180,top=200,left=150');">處理</a>
 
                             </td>
                         </tr>
@@ -110,9 +120,9 @@
                             </td>
                             <td colspan="6" style="BORDER-bottom: #666666 1px dotted">
 
-                                <a href="#re" onclick="Mars_popup('ad_report.php?mem_num=<%=nums%>&lu=<%=rs("mem_username")%>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">
+                                <a href="#re" onclick="Mars_popup('ad_report.asp?mem_num=<%=nums%>&lu=<%=rs("mem_username")%>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">
 
-                                    <a href="javascript:Mars_popup('ad_report.php?k_id=<%=nums%>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">
+                                    <a href="javascript:Mars_popup('ad_report.asp?k_id=<%=nums%>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">
 
                                         回報(0)</a>，處理情形：<font color="#FF0000" size="2">XX</font>)
                                     <font color=red>不認列原因：</font>

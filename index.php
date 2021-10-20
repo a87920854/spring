@@ -643,7 +643,7 @@
 										}
 										$mem_single = "";
 										if ( $re["mem_branch"] != "" ){
-											$mem_single = "<font color='green'>受理：</font>".$re["mem_branch"]." - ".SingleName($re["mem_single"]);
+											$mem_single = "<font color='green'>受理：</font>".$re["mem_branch"]." - ".SingleName("normel",$re["mem_single"]);
 										}else{
 											$mem_single = "";
 										}
@@ -661,7 +661,7 @@
 										}
 
 										if ( $re["mem_come3"] != "" ){
-											$sup_single = "<br><font color='green'>推薦：</font>".$re["mem_come3"]." - ".SingleName($re["mem_come4"]);
+											$sup_single = "<br><font color='green'>推薦：</font>".$re["mem_come3"]." - ".SingleName("normel",$re["mem_come4"]);
 										}else{
 											$sup_single = "";
 										} ?>
@@ -849,7 +849,7 @@
 						<td><a href="javascript:Mars_popup('ad_report.asp?k_id=<?php echo $re_booking["log_num"];?>&lu=<?php echo $re_booking["log_fid"];?>&ty=<?php echo $re_booking["log_5"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10')">回報(<?php echo $report;?>)</a>&nbsp;&nbsp;處理情形：<?php echo $report_type;?>-<?php echo $report_time;?></td>
 						<?
 						echo "<td>".$re_booking["log_branch"]."</td>";
-						echo "<td>".SingleName($re_booking["log_single"])."</td>";
+						echo "<td>".SingleName("normel",$re_booking["log_single"])."</td>";
 						echo "<td>";
 						$mem_photo = $re_booking["mem_photo"];
 						if ( $mem_photo != "" && ! strstr($mem_photo, "boy.") > 0 && ! strstr($mem_photo, "girl.") > 0 ){
@@ -917,23 +917,23 @@
 							}
 							$mem_single = "";
 							if ( $re_ex["mem_branch"] != "" ){
-								$mem_single = "<font color='green'>受理：</font>".$re_ex["mem_branch"]." - ".SingleName($re_ex["mem_single"]);
+								$mem_single = "<font color='green'>受理：</font>".$re_ex["mem_branch"]." - ".SingleName("normel",$re_ex["mem_single"]);
 							}else{
 								$mem_single = "";
 							}
 								if ( $re_ex["love_single"] != "" ){
-								$love_single = "<br><font color='green'>排約：</font>".SingleName($re_ex["love_single"]);
+								$love_single = "<br><font color='green'>排約：</font>".SingleName("normel",$re_ex["love_single"]);
 							}else{
 								$love_single = "";
 							}
 								if ( $re_ex["call_branch"] != "" ){
-								$call_single = "<br><font color='green'>邀約：</font>".$re_ex["call_branch"]." - ".SingleName($re_ex["call_single"]);
+								$call_single = "<br><font color='green'>邀約：</font>".$re_ex["call_branch"]." - ".SingleName("normel",$re_ex["call_single"]);
 							}else{
 								$call_single = "";
 							}
 							 
 							if ( $re_ex["mem_come3"] != "" ){
-								$sup_single = "<br><font color='green'>推薦：</font>".$re_ex["mem_come3"]." - ".SingleName($re_ex["mem_come4"]);
+								$sup_single = "<br><font color='green'>推薦：</font>".$re_ex["mem_come3"]." - ".SingleName("normel",$re_ex["mem_come4"]);
 							}else{
 								$sup_single = "";
 							}?>
