@@ -2,7 +2,7 @@
 require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -10,8 +10,8 @@ require_once("./include/_sidebar.php")
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li>好好玩管理系統</li>
-            <li class="active">好好玩註冊統計</li>
+            <li><a href="index.php">管理系統</a></li>
+            <li class="active">網路名單圖表</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -21,58 +21,40 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>好好玩註冊統計</strong> <!-- panel title -->
+                    <strong>網路名單圖表</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
+                <form action="?st=send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
+                    <p>
+                        <input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" placeholder="開始時間" value="2021-09-01">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" placeholder="結束時間" value="2021-09-30">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
+                            <option value="">快速選擇</option>
+                            <option value="0">今天</option>
+                            <option value="1">昨天</option>
+                            <option value="2">前天</option>
+                            <option value="3">本周</option>
+                            <option value="4">上周</option>
+                            <option value="5">本月</option>
+                            <option value="6">上月</option>
+                            <option value="7">今年</option>
+                            <option value="8">去年</option>
+                        </select>&nbsp;<input id="send_submit" type="submit" class="btn btn-default" value="送出">
+                    </p>
+                </form>
 
-                <table class="table table-striped table-bordered bootstrap-datatable">
-                    <tr>
-                        <Td colspan=3>有照片：526 男 244 女 770 全</Td>
-                    </tr>
-                    <form action="#send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
-                        <tr>
-                            <td width="80" height="30" align="left">
-                                <font size="2">請選擇時段：</font>
-                            </td>
-                            <td align="left" width="80%"><input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off">
-                                &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())">
-                                    <option value="">快速選擇</option>
-                                    <option value="0">今天</option>
-                                    <option value="1">昨天</option>
-                                    <option value="2">前天</option>
-                                    <option value="3">本周</option>
-                                    <option value="4">上周</option>
-                                    <option value="5">本月</option>
-                                    <option value="6">上月</option>
-                                    <option value="7">今年</option>
-                                    <option value="8">去年</option>
-                                </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
+                <div>'網站行銷','春天網站','DMN名單','DMN網站','約會專家','網站活動','網站排約','行銷活動','迷你約'</div>
+                <div style="text-align:center;margin:10px">
+                    <div id="chart_div"></div>
+                </div>
 
-                            </td>
-                        </tr>
 
-                        <tr>
-                            <td colspan=2 id="outdiv"></td>
-                        </tr>
-                        <tr>
-                            <td id="outmsg" height=20 colspan=2 bgcolor="blue" style="color:white;font-size:12px;">讀取資料中...</td>
-                        </tr>
-                    </form>
-                    </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
         <!--/span-->
 
     </div>
     <!--/row-->
-
-
-    <hr>
     </div>
     <!--/.fluid-container-->
 </section>
@@ -82,8 +64,89 @@ require_once("./include/_sidebar.php")
 require_once("./include/_bottom.php");
 ?>
 
-<script type="text/javascript">
-    $("#outmsg").hide();
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script language="JavaScript">
+    google.charts.load('current', {
+        'packages': ['corechart']
+    });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Time of Day');
+        data.addColumn('number', 'Rating');
+
+        data.addRows([
+            [new Date(2021, 8, 1), 107],
+            [new Date(2021, 8, 2), 93],
+            [new Date(2021, 8, 3), 123],
+            [new Date(2021, 8, 4), 113],
+            [new Date(2021, 8, 5), 137],
+            [new Date(2021, 8, 6), 116],
+            [new Date(2021, 8, 7), 116],
+            [new Date(2021, 8, 8), 108],
+            [new Date(2021, 8, 9), 118],
+            [new Date(2021, 8, 10), 102],
+            [new Date(2021, 8, 11), 82],
+            [new Date(2021, 8, 12), 143],
+            [new Date(2021, 8, 13), 98],
+            [new Date(2021, 8, 14), 116],
+            [new Date(2021, 8, 15), 97],
+            [new Date(2021, 8, 16), 114],
+            [new Date(2021, 8, 17), 112],
+            [new Date(2021, 8, 18), 110],
+            [new Date(2021, 8, 19), 131],
+            [new Date(2021, 8, 20), 106],
+            [new Date(2021, 8, 21), 120],
+            [new Date(2021, 8, 22), 141],
+            [new Date(2021, 8, 23), 121],
+            [new Date(2021, 8, 24), 108],
+            [new Date(2021, 8, 25), 119],
+            [new Date(2021, 8, 26), 125],
+            [new Date(2021, 8, 27), 108],
+            [new Date(2021, 8, 28), 107],
+            [new Date(2021, 8, 29), 81],
+            [new Date(2021, 8, 30), 119],
+        ]);
+
+
+
+        var options = {
+            title: '',
+            width: '100%',
+            height: 600,
+            hAxis: {
+                format: 'yy/M/d',
+                gridlines: {
+                    count: 15
+                }
+            },
+            vAxis: {
+                gridlines: {
+                    color: 'none'
+                },
+                minValue: 0
+            }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+
+        var button = document.getElementById('change');
+
+        button.onclick = function() {
+
+            // If the format option matches, change it to the new option,
+            // if not, reset it to the original format.
+            options.hAxis.format === 'M/d/yy' ?
+                options.hAxis.format = 'MMM dd, yyyy' :
+                options.hAxis.format = 'M/d/yy';
+
+            chart.draw(data, options);
+        };
+    }
     Date.prototype.DateAdd = function(strInterval, Number) {
         var dtTmp = this;
         switch (strInterval) {
@@ -104,28 +167,6 @@ require_once("./include/_bottom.php");
             case 'y':
                 return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
         }
-    }
-
-    function conutice_ajax(n1, n2, n3, n4) {
-        setTimeout(function() {
-            $.ajax({
-                url: 'ad_fun_counts.asp?st=send',
-                data: {
-                    start_time: n1,
-                    ostart_time: n2,
-                    end_time: n3,
-                    nowdays: n4
-                },
-                error: function(xhr) {
-                    alert('Ajax request 發生錯誤');
-                    button_set(1);
-                },
-                success: function(response) {
-                    if ($("#outtable")) $("#outtable").append(response);
-                    else $("#outdiv").html(response);
-                }
-            })
-        }, 3000);
     }
 
     function check_form() {
@@ -151,44 +192,8 @@ require_once("./include/_bottom.php");
             $("#end_time").focus();
             return false;
         }
-        button_set(0);
-        if ($("#outtable")) $("#outtable").html("");
-        $("#outmsg").html("讀取資料中...");
-        $("#outmsg").show();
-        $.ajax({
-            url: 'ad_fun_counts.asp?st=send',
-            data: {
-                start_time: $("#start_time").val(),
-                ostart_time: $("#start_time").val(),
-                end_time: $("#end_time").val()
-            },
-            error: function(xhr) {
-                alert('Ajax request 發生錯誤');
-                button_set(1);
-            },
-            success: function(response) {
-                $("#outdiv").html(response);
-            }
-        });
 
-        return false;
-    }
-
-    function outmsg_show(msg) {
-        $("#outmsg").html(msg);
-        $('html, body').animate({
-            scrollTop: $('body').height()
-        }, 800);
-    }
-
-    function button_set(n) {
-        if (n) {
-            $(":button").attr("disabled", false);
-            $(":submit").attr("disabled", false);
-        } else {
-            $(":button").attr("disabled", true);
-            $(":submit").attr("disabled", true);
-        }
+        return true;
     }
 
     function GetDateStr(AddDayCount) {
@@ -330,54 +335,5 @@ require_once("./include/_bottom.php");
                 $("#end_time").val(getPrevYearDate()[1]);
                 break;
         }
-        $("#counts_form").submit();
     }
-
-    function show_start_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "start_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "start_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                var $sv = $("#start_time").val();
-                $("#end_time").val($sv);
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_start_time();
-
-    function show_end_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "end_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "end_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_end_time();
 </script>

@@ -2,7 +2,7 @@
 require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -10,8 +10,8 @@ require_once("./include/_sidebar.php")
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li>好好玩管理系統</li>
-            <li class="active">好好玩註冊統計</li>
+            <li><a href="index.php">管理系統</a></li>
+            <li class="active">會館新增未入會統計</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -21,49 +21,98 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>好好玩註冊統計</strong> <!-- panel title -->
+                    <strong>會館新增未入會統計</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
 
-                <table class="table table-striped table-bordered bootstrap-datatable">
+                <form action="?st=send" method="post" name="counts_form" id="counts_form" class="form-inline">
+                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="2021/10/01" required>　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="2021/10/21" required>
+                        &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())" class="form-control">
+                            <option value="">快速選擇</option>
+                            <option value="0">今天</option>
+                            <option value="1">昨天</option>
+                            <option value="2">前天</option>
+                            <option value="3">本周</option>
+                            <option value="4">上周</option>
+                            <option value="5">本月</option>
+                            <option value="6">上月</option>
+                            <option value="7">今年</option>
+                            <option value="8">去年</option>
+                        </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
+                    </p>
+                </form>
+
+                <p>在 2021/10/1 00:00 ～ 2021/10/21 23:59 間統計、共 22 天：</p>
+                <table id="outtable" width="100%" height=80 align="center" class="table table-striped table-bordered bootstrap-datatable">
                     <tr>
-                        <Td colspan=3>有照片：526 男 244 女 770 全</Td>
+                        <td></td>
+                        <td>台北</td>
+                        <td>桃園</td>
+                        <td>新竹</td>
+                        <td>台中</td>
+                        <td>台南</td>
+                        <td>高雄</td>
+                        <td>八德</td>
+                        <td>約專</td>
+                        <td>迷你約</td>
+                        <td>總管理處</td>
                     </tr>
-                    <form action="#send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
-                        <tr>
-                            <td width="80" height="30" align="left">
-                                <font size="2">請選擇時段：</font>
-                            </td>
-                            <td align="left" width="80%"><input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off">
-                                &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())">
-                                    <option value="">快速選擇</option>
-                                    <option value="0">今天</option>
-                                    <option value="1">昨天</option>
-                                    <option value="2">前天</option>
-                                    <option value="3">本周</option>
-                                    <option value="4">上周</option>
-                                    <option value="5">本月</option>
-                                    <option value="6">上月</option>
-                                    <option value="7">今年</option>
-                                    <option value="8">去年</option>
-                                </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan=2 id="outdiv"></td>
-                        </tr>
-                        <tr>
-                            <td id="outmsg" height=20 colspan=2 bgcolor="blue" style="color:white;font-size:12px;">讀取資料中...</td>
-                        </tr>
-                    </form>
-                    </td>
+                    <tr>
+                        <td>流水陌call</td>
+                        <td>38</td>
+                        <td>22</td>
+                        <td>2</td>
+                        <td>37</td>
+                        <td>46</td>
+                        <td>281</td>
+                        <td>0</td>
+                        <td>9</td>
+                        <td>4</td>
+                        <td>0</td>
                     </tr>
-                    </tbody>
+                    <tr>
+                        <td>樂得流水call</td>
+                        <td>14</td>
+                        <td>18</td>
+                        <td>1</td>
+                        <td>169</td>
+                        <td>140</td>
+                        <td>192</td>
+                        <td>10</td>
+                        <td>7</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>樂得系統回call</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>3</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td style="color:blue">合計</td>
+                        <td>89</td>
+                        <td>47</td>
+                        <td>516</td>
+                        <td>236</td>
+                        <td>239</td>
+                        <td>506</td>
+                        <td>39</td>
+                        <td>16</td>
+                        <td>4</td>
+                        <td>0</td>
+                    </tr>
                 </table>
+
             </div>
         </div>
         <!--/span-->
@@ -73,6 +122,9 @@ require_once("./include/_sidebar.php")
 
 
     <hr>
+    <footer>
+    </footer>
+
     </div>
     <!--/.fluid-container-->
 </section>
@@ -83,7 +135,6 @@ require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $("#outmsg").hide();
     Date.prototype.DateAdd = function(strInterval, Number) {
         var dtTmp = this;
         switch (strInterval) {
@@ -103,91 +154,6 @@ require_once("./include/_bottom.php");
                 return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
             case 'y':
                 return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
-        }
-    }
-
-    function conutice_ajax(n1, n2, n3, n4) {
-        setTimeout(function() {
-            $.ajax({
-                url: 'ad_fun_counts.asp?st=send',
-                data: {
-                    start_time: n1,
-                    ostart_time: n2,
-                    end_time: n3,
-                    nowdays: n4
-                },
-                error: function(xhr) {
-                    alert('Ajax request 發生錯誤');
-                    button_set(1);
-                },
-                success: function(response) {
-                    if ($("#outtable")) $("#outtable").append(response);
-                    else $("#outdiv").html(response);
-                }
-            })
-        }, 3000);
-    }
-
-    function check_form() {
-        if (!$("#start_time").val()) {
-            alert("請輸入開始時段。");
-            $("#start_time").focus();
-            return false;
-        }
-        if (!$("#end_time").val()) {
-            alert("請輸入結束時段。");
-            $("#end_time").focus();
-            return false;
-        }
-        if (isNaN(Date.parse($("#start_time").val()))) {
-            alert("你輸入的開始時段不是日期格式。");
-            $("#start_time").val("");
-            $("#start_time").focus();
-            return false;
-        }
-        if (isNaN(Date.parse($("#end_time").val()))) {
-            alert("你輸入的結束時段不是日期格式。");
-            $("#end_time").val("");
-            $("#end_time").focus();
-            return false;
-        }
-        button_set(0);
-        if ($("#outtable")) $("#outtable").html("");
-        $("#outmsg").html("讀取資料中...");
-        $("#outmsg").show();
-        $.ajax({
-            url: 'ad_fun_counts.asp?st=send',
-            data: {
-                start_time: $("#start_time").val(),
-                ostart_time: $("#start_time").val(),
-                end_time: $("#end_time").val()
-            },
-            error: function(xhr) {
-                alert('Ajax request 發生錯誤');
-                button_set(1);
-            },
-            success: function(response) {
-                $("#outdiv").html(response);
-            }
-        });
-
-        return false;
-    }
-
-    function outmsg_show(msg) {
-        $("#outmsg").html(msg);
-        $('html, body').animate({
-            scrollTop: $('body').height()
-        }, 800);
-    }
-
-    function button_set(n) {
-        if (n) {
-            $(":button").attr("disabled", false);
-            $(":submit").attr("disabled", false);
-        } else {
-            $(":button").attr("disabled", true);
-            $(":submit").attr("disabled", true);
         }
     }
 
@@ -332,52 +298,4 @@ require_once("./include/_bottom.php");
         }
         $("#counts_form").submit();
     }
-
-    function show_start_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "start_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "start_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                var $sv = $("#start_time").val();
-                $("#end_time").val($sv);
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_start_time();
-
-    function show_end_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "end_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "end_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_end_time();
 </script>

@@ -2,7 +2,7 @@
 require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->
@@ -10,8 +10,8 @@ require_once("./include/_sidebar.php")
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li>好好玩管理系統</li>
-            <li class="active">好好玩註冊統計</li>
+            <li><a href="index.php">管理系統</a></li>
+            <li class="active">DMN-活動統計資料</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -21,49 +21,121 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>好好玩註冊統計</strong> <!-- panel title -->
+                    <strong>DMN-活動統計資料</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
-
-                <table class="table table-striped table-bordered bootstrap-datatable">
-                    <tr>
-                        <Td colspan=3>有照片：526 男 244 女 770 全</Td>
-                    </tr>
-                    <form action="#send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
-                        <tr>
-                            <td width="80" height="30" align="left">
-                                <font size="2">請選擇時段：</font>
-                            </td>
-                            <td align="left" width="80%"><input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off">
-                                &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())">
-                                    <option value="">快速選擇</option>
-                                    <option value="0">今天</option>
-                                    <option value="1">昨天</option>
-                                    <option value="2">前天</option>
-                                    <option value="3">本周</option>
-                                    <option value="4">上周</option>
-                                    <option value="5">本月</option>
-                                    <option value="6">上月</option>
-                                    <option value="7">今年</option>
-                                    <option value="8">去年</option>
-                                </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan=2 id="outdiv"></td>
-                        </tr>
-                        <tr>
-                            <td id="outmsg" height=20 colspan=2 bgcolor="blue" style="color:white;font-size:12px;">讀取資料中...</td>
-                        </tr>
-                    </form>
-                    </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <form action="#send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
+                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off">
+                        &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())">
+                            <option value="">快速選擇</option>
+                            <option value="0">今天</option>
+                            <option value="1">昨天</option>
+                            <option value="2">前天</option>
+                            <option value="3">本周</option>
+                            <option value="4">上周</option>
+                            <option value="5">本月</option>
+                            <option value="6">上月</option>
+                            <option value="7">今年</option>
+                            <option value="8">去年</option>
+                        </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
+                    </p>
+                </form>
+                <div id="outdiv" class="table-responsive">
+                    <div>在 2021/10/21 00:00 ～ 2021/10/21 23:59 間統計、共 1 天：</div>
+                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
+                        <tbody>
+                            <tr>
+                                <td width="140">註冊時間</td>
+                                <td colspan="2">手機版-註冊會員</td>
+                                <td colspan="2">手機APP-註冊會員</td>
+                                <td colspan="2">手機版-一對一約會</td>
+                                <td colspan="2">手機APP-一對一約會</td>
+                                <td colspan="2">手機版-許願池</td>
+                                <td colspan="2">手機APP-許願池</td>
+                                <td colspan="2">手機版-閃婚專案</td>
+                                <td colspan="2">手機APP-閃婚專案</td>
+                                <td colspan="2">手機版-極速配對</td>
+                                <td colspan="2">手機APP-極速配對</td>
+                                <td colspan="2">手機版-緣份倍增</td>
+                                <td colspan="2">手機APP-緣份倍增</td>
+                                <td>委外活動23</td>
+                                <td colspan="2">所有報名</td>
+                                <td colspan="2">性別</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td></td>
+                                <td>新</td>
+                                <td>總</td>
+                                <td>男</td>
+                                <td>女</td>
+                            </tr>
+                            <tr>
+                                <td>2021/10/21(四)</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <td>0</td>
+                                <script type="text/javascript">
+                                    button_set(1);
+                                    outmsg_show("已讀取 1 筆資料完畢。");
+                                </script>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="outmsg" height=20 style="font-size:12px;">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
             </div>
         </div>
         <!--/span-->
@@ -73,6 +145,11 @@ require_once("./include/_sidebar.php")
 
 
     <hr>
+    <footer>
+    </footer>
+    </div>
+    </div>
+
     </div>
     <!--/.fluid-container-->
 </section>
@@ -109,7 +186,7 @@ require_once("./include/_bottom.php");
     function conutice_ajax(n1, n2, n3, n4) {
         setTimeout(function() {
             $.ajax({
-                url: 'ad_fun_counts.asp?st=send',
+                url: 'ad_dmn_counts2.php?st=send',
                 data: {
                     start_time: n1,
                     ostart_time: n2,
@@ -153,10 +230,10 @@ require_once("./include/_bottom.php");
         }
         button_set(0);
         if ($("#outtable")) $("#outtable").html("");
-        $("#outmsg").html("讀取資料中...");
+        $("#outmsg").html("讀取資料中...<img src='img/wait_loading.gif' align='middle'>");
         $("#outmsg").show();
         $.ajax({
-            url: 'ad_fun_counts.asp?st=send',
+            url: 'ad_dmn_counts2.php?st=send',
             data: {
                 start_time: $("#start_time").val(),
                 ostart_time: $("#start_time").val(),
@@ -332,52 +409,4 @@ require_once("./include/_bottom.php");
         }
         $("#counts_form").submit();
     }
-
-    function show_start_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "start_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "start_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                var $sv = $("#start_time").val();
-                $("#end_time").val($sv);
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_start_time();
-
-    function show_end_time() {
-        var TIME_CAL = new Calendar({
-            inputField: "end_time",
-            //cont: "live_time_msg",
-            weekNumbers: false,
-            trigger: "end_time",
-            bottomBar: true,
-            dateFormat: "%Y-%m-%d",
-            //min: Calendar.dateToInt(today),
-            selectionType: Calendar.SEL_SINGLE,
-            showTime: false,
-            onSelect: function() {
-                this.hide();
-            },
-            onBlur: function() {
-                this.hide();
-            }
-        });
-        //TIME_CAL.hide();
-        return TIME_CAL;
-    }
-    show_end_time();
 </script>
