@@ -2,7 +2,7 @@
 	//載入時間
 	//dim pageload_timer
 	//pageload_timer = timer
-	
+
 	//預設編碼
 	ini_set('default_charset', 'Big5');
 	
@@ -940,7 +940,7 @@
 				<?php
 				$photojt = 0;
 				$SQL  = "select count(photo_auto) as tt from photo_data outer apply (select top 1 mem_branch, mem_level from member_data where mem_num = photo_data.mem_num) b where ";
-				$SQL .= "mem_branch='"._SESSION["branch"]."' and accept=0 and mem_level='mem'";
+				$SQL .= "mem_branch='".$_SESSION["branch"]."' and accept=0 and mem_level='mem'";
 				$rs = $SPConn->prepare($SQL);
 				$rs->execute();
 				$result=$rs->fetchAll(PDO::FETCH_ASSOC);
