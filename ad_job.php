@@ -1,4 +1,5 @@
 <?php
+	error_reporting(0); 
 	/*****************************************/
 	//檔案名稱：ad_job.php
 	//後台對應位置：名單/發送記錄>徵人資料
@@ -13,7 +14,8 @@
 	require_once("./include/_sidebar.php");
 	
 	//權限判斷
-	if ( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["MM_UserAuthorization"] != "manager" && $_SESSION["MM_UserAuthorization"] != "love_manager" ){ call_alert("您沒有權限", 1,0);}
+	$auth_limit = "3";
+	require_once("./include/_limit.php");
 	check_page_power("ad_job");
 
 	//刪除資料
@@ -21,16 +23,9 @@
 		$SQL_d = "Delete From job Where auton='".SqlFilter($_REQUEST["an"],"tab")."'";
 		$rs_d = $SPConn->prepare($SQL_d);
 		$rs_d->execute();
-		header("location:win_close.asp?m=刪除中...");
+		header("location:win_close.php?m=刪除中...");
+		exit;
 	}
-	
-	//顯示筆數
-	/*$default_sql_num = 500; //預設顯示筆數
-	if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
-		$subSQL1 = "top ".$default_sql_num." * ";
-	}else{
-		$subSQL1 = "* ";
-	}*/
 	
 	//SQL組合
 	switch ( $_SESSION["MM_UserAuthorization"] ){
@@ -116,7 +111,12 @@
 						if ( count($result) == 0 ){
 							echo "<tr><td colspan='8' height='200'>目前沒有資料</td></tr>";
 						}else{
-							foreach($result as $re){?>
+							foreach($result as $re){
+								if ( $re["all_type"] == "未處理" ){
+									$all_type1 = $re["all_type"];
+								}else{
+									$all_type1 = "<font color='008000'>已處理</font>";
+								} ?>
 								<tr>
 									<td><?php echo $re["names"];?></td>
 									<td><?php echo $re["bdayy"];?></td>
@@ -125,7 +125,12 @@
 									<td><?php echo $re["mobile"];?></td>
 									<td><?php echo $re["email"];?></td>
 									<td width="30%">
-										<font color="#FF0000" size="2">處理情形：(<?php echo $re["all_type"];?>)</font><?php echo $re["all_note"];?><br><?php echo $re["ftime"];?>
+										<font color="#FF0000" size="2"><?php echo $all_type1;?></font>
+										<?php if ( $re["all_type"] == "已處理" ){?>
+											<br>
+											<?php echo "說明：".$re["all_note"];?><br>
+											<?php echo "處理日期：".$re["ftime"];?>
+										<?php }?>
 									</td>
 									<td class="center"><?php echo $re["all_branch"];?></td>
 									<td width=80 class="center">
@@ -133,15 +138,15 @@
 											<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
 											<ul class="dropdown-menu pull-right">
 												<?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){?>
-													<li><a href="javascript:Mars_popup('ad_job_send_branch.php?an=223','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
-													<li><a href="javascript:Mars_popup2('ad_job.php?st=del&an=223','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
+													<li><a href="javascript:Mars_popup('ad_job_send_branch.php?an=<?php echo $re["auton"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
+													<li><a href="javascript:Mars_popup2('ad_job.php?st=del&an=<?php echo $re["auton"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
 												<?php }?>
-												<li><a href="javascript:Mars_popup('ad_job_fix.php?an=223','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
+												<li><a href="javascript:Mars_popup('ad_job_fix.php?an=<?php echo $re["auton"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
 											</ul>
 										</div>
 									</td>
 								</tr>
-						<?php
+							<?php 
 							}
 						}?>
                     </table>

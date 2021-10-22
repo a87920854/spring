@@ -4,7 +4,7 @@
 	//pageload_timer = timer
 	
 	//預設編碼
-	ini_set('default_charset', 'Big5');
+	//ini_set('default_charset', 'Big5');
 	
 	//取得檔名
 	$logfsql_url = $_SERVER["SCRIPT_NAME"];
@@ -167,7 +167,7 @@
 						if ( count($result) > 0 ) {
 							$jt = $re["tt"];
 						}?>
-						<li><a href="ad_love.php"><i class="fa fa-angle-right"></i><span> 排約報名資料<font color"=red">(<?php echo $jt;?>)</font></span></a></li>
+						<li><a href="ad_love.php"><i class="fa fa-angle-right"></i><span> 排約報名資料<font color="red">(<?php echo $jt;?>)</font></span></a></li>
 						<li><a href="ad_action.php"><i class="fa fa-angle-right"></i><span> 活動報名資料</span></a></li>
 						<?php
 						$SQL = "select count(auton) as tt from quest where all_type = '未處理'";
@@ -940,7 +940,7 @@
 				<?php
 				$photojt = 0;
 				$SQL  = "select count(photo_auto) as tt from photo_data outer apply (select top 1 mem_branch, mem_level from member_data where mem_num = photo_data.mem_num) b where ";
-				$SQL .= "mem_branch='"._SESSION["branch"]."' and accept=0 and mem_level='mem'";
+				$SQL .= "mem_branch='".$_SESSION["branch"]."' and accept=0 and mem_level='mem'";
 				$rs = $SPConn->prepare($SQL);
 				$rs->execute();
 				$result=$rs->fetchAll(PDO::FETCH_ASSOC);

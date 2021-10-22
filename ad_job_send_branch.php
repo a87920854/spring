@@ -10,7 +10,7 @@
 	require_once("_inc.php");
 	require_once("./include/_function.php");
 	
-	if ( SqlFilter($_REQUEST["state"] == "add" ){
+	if ( SqlFilter($_REQUEST["state"],"tab") == "add" ){
 		$an = SqlFilter($_REQUEST["an"],"tab");
 		$SQL = "Select * From job Where auton='".$an."'";
 		$rs = $SPConn->prepare($SQL);
@@ -49,16 +49,14 @@
                                         <p>會館：
                                             <select name="pay1" id="pay1" style="height:28px;">
                                                 <option value="">請選擇</option>
-                                                <option value="台北">台北</option>
-                                                <option value="桃園">桃園</option>
-                                                <option value="新竹">新竹</option>
-                                                <option value="台中">台中</option>
-                                                <option value="台南">台南</option>
-                                                <option value="高雄">高雄</option>
-                                                <option value="八德">八德</option>
-                                                <option value="約專">約專</option>
-                                                <option value="迷你約">迷你約</option>
-                                                <option value="總管理處">總管理處</option>
+                                                <?php
+                                                $SQL = "Select * From branch_data Where branch_name Not In ('好好玩旅行社','總管理處') Order By Sort";
+                                                $rs = $SPConn->prepare($SQL);
+                                                $rs->execute();
+                                                $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+                                                foreach($result as $re){ ?>
+                                                    <option value="<?php echo $re["branch_name"]?>"><?php echo $re["branch_name"];?></option>
+                                                <?php }?>
                                             </select>
                                         </p>
                                     </div>
