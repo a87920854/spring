@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(0); 
 /*****************************************/
 //檔案名稱：ad_dmn_business.php
 //後台對應位置：名單/發送記錄>DMN企業專區
@@ -25,7 +25,7 @@ if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
     exit;
 }
 ?>
-
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->

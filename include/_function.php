@@ -541,4 +541,12 @@
 			if ( in_array($mypowers, $page) ){ call_alert("您沒有查看此頁的權限。",0,0);}
 		}
 	}
+
+	//清除Html Code
+	function RemoveHTML($Contents){
+		$txt = preg_replace('/<[^>]*>/', '', $Contents);
+		$txt = str_ireplace("\r\n","",$txt);
+		//$txt=str_ireplace(" ","",$txt);
+		return $txt;
+	}
 ?>

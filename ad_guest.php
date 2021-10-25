@@ -1,10 +1,119 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
-?>
+    error_reporting(0); 
+    /*****************************************/
+    //檔案名稱：ad_quest.php
+    //後台對應位置：名單/發送記錄>客服中心記錄
+    //改版日期：2021.10.25
+    //改版設計人員：Jack
+    //改版程式人員：Queena
+    /*****************************************/
 
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //權限判斷
+    $auth_limit = 3;
+    require_once("./include/_limit.php");
+    check_page_power("ad_guest");
+
+    //組合SQL語法
+    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+        $subSQL1 = "1=1";
+    }else{
+        $subSQL1 = "all_branch='".$_SESSION["branch"]."'";
+    }
+    
+    //組合subSQL語法
+    if ( SqlFilter($_REQUEST["s99"],"tab") != "1" ){
+        $subSQL2 = " And (all_note IS NULL)";
+        $all_type = "未處理";
+    }else{
+        $subSQL2 = " And Not (all_note IS NULL)";
+        $all_type = "已處理";
+    }
+
+    if ( SqlFilter($_REQUEST["c"],"int") != "" ){
+        $c = SqlFilter($_REQUEST["c"],"int");
+    }else{
+        $c = 0;
+    }
+
+    $subSQL3 = " And (web <> 'singleparty' Or web is null)"; //春天/DMN客服中心 
+    $subSQL4 = " And (web = 'singleparty')"; //約專客服中心 
+    $subSQL5 = " And (web = 'singleparty_report')"; //約專會員檢舉
+    //$SQL .= $sqls3.$sqls2.$sqls4." Order By g_auto Desc";
+
+    //取得總筆數(春天/DMN客服中心)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL3;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size1 = 0;
+    }else{
+        $total_size1 = $re["total_size"];
+    }
+
+    //取得總筆數(約專客服中心)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL4;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size2 = 0;
+    }else{
+        $total_size2 = $re["total_size"];
+    }
+
+    //取得總筆數(約專會員檢舉)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL5;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size3 = 0;
+    }else{
+        $total_size3 = $re["total_size"];
+    }
+
+    //取得分頁資料
+    $tPageSize = 50; //每頁幾筆
+    $tPage = 1; //目前頁數
+    if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+    $tPageTotal = ceil((${"total_size".($c+1)}/$tPageSize)); //總頁數
+    if ( $tPageSize*$tPage < ${"total_size".($c+1)} ){
+        $page2 = 50;
+    }else{
+        $page2 = (50-(($tPageSize*$tPage)-${"total_size".($c+1)}));
+    }
+
+    //分頁程式
+    if ( SqlFilter($_REQUEST["c"],"int") == 0 ){ //(春天/DMN客服中心)
+        $SQL  = "Select * From (";
+        $SQL .= "Select TOP ".$page2." * From (";
+        $SQL .= "Select TOP ".($tPageSize*$tPage)." * From guest Where ".$subSQL1.$subSQL2.$subSQL3." Order By g_auto Desc) t1 ";
+        $SQL .= "Where ".$subSQL1.$subSQL2.$subSQL3." Order By g_auto Asc ) t2 Where ".$subSQL1.$subSQL2.$subSQL3." Order By g_auto Desc ";
+    }elseif (  SqlFilter($_REQUEST["c"],"int") == 1 ){ //(約專客服中心)
+        $SQL  = "Select * From (";
+        $SQL .= "Select TOP ".$page2." * From (";
+        $SQL .= "Select TOP ".($tPageSize*$tPage)." * From guest Where ".$subSQL1.$subSQL2.$subSQL4." Order By g_auto Desc) t1 ";
+        $SQL .= "Where ".$subSQL1.$subSQL2.$subSQL4." Order By g_auto Asc ) t2 Where ".$subSQL1.$subSQL2.$subSQL4." Order By g_auto Desc ";
+    }elseif (  SqlFilter($_REQUEST["c"],"int") == 2 ){ //(約專會員檢舉)
+        $SQL  = "Select * From (";
+        $SQL .= "Select TOP ".$page2." * From (";
+        $SQL .= "Select TOP ".($tPageSize*$tPage)." * From guest Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Desc) t1 ";
+        $SQL .= "Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Asc ) t2 Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Desc ";
+    }
+    echo $SQL;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -18,34 +127,28 @@ require_once("./include/_sidebar.php");
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>客服中心　未處理 - 數量：86</strong> <!-- panel title -->
+                    <strong>客服中心　<?php echo $all_type;?> - 數量：<?php echo ${"total_size".($c+1)};?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
                 <div class="col-md-12 padding-bottom-10">
                     <div class="btn-group margin-right-10">
                         <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-
                             <li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>
-
                         </ul>
                     </div>
-
-                    <a class="btn btn-info" href="?c=0" disabled>春天/DMN 客服中心 (86)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1">約專客服中心 (0)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2">約專會員檢舉 (0)</a>
+                    <a class="btn btn-info" href="?c=0" disabled>春天/DMN 客服中心 (<?php echo $total_size1;?>)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1">約專客服中心 (<?php echo $total_size2;?>)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2">約專會員檢舉 (<?php echo $total_size3;?>0)</a>
                     &nbsp;&nbsp;<a class="btn btn-info" href="ad_custom_complaint.php">客戶申訴</a>
                 </div>
 
+                <!--資料列表-->
                 <table class="table table-striped table-bordered bootstrap-datatable">
-
                     <thead>
                         <tr>
                             <th>姓名</th>
@@ -59,61 +162,59 @@ require_once("./include/_sidebar.php");
                             <th>會館</th>
                             <th></th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ( count($result) == 0 ){
+                            echo "<tr><td colspan='8' height='200'>目前沒有資料</td></tr>";
+                        }else{
+                            foreach($result as $re){ 
+                                if ( $re["mem_num"] != "" ){
+						            $g_name = "<a href='ad_mem_detail.asp?mem_num=".$re["mem_num"]."' target='_blank'>".$re["g_name"]."[".$re["mem_num"]."]</a>";
+                                }else{
+                                    $g_name = $re["g_name"];
+                                } ?>
+                                <tr>
+                                    <td class="center"><?php echo $g_name; ?></td>
+                                    <td class="center"><?php echo $re["g_sex"]; ?></td>
+                                    <td class="center"><?php echo $re["g_year"]; ?></td>
+                                    <td class="center"><?php echo $re["g_school"]; ?></td>
+                                    <td class="center"><?php echo $re["g_area"]; ?></td>
+                                    <td class="center"><?php echo $re["g_mobile"]; ?></td>
+                                    <td class="center"><?php echo $re["g_mail"]; ?></td>
+                                    <td style="word-break: break-all;min-width:300px;">
+                                        <?php
+                                        $g_note = $re["g_note"];
+                                        if ( $g_note != "" ){
+                                            //$g_note = RemoveHTML($g_note); //先mark 因格式與線上的不符，沒有刪除htmlcode
+                                            echo str_replace("\r\n","<br>",$g_note);
+                                        }?>
+                                        <font color="#FF0000" size="2">
+                                            <br>處理情形：
+                                            <?php
+                                            if ( $re["all_type"] != "未處理" ){
+                                                echo "(".$re["all_type"].")";
+                                            }
+                                            echo $re["all_note"];?>
+		                                </font><br><?php echo $re["g_time"];?>
+                                    </td>
+                                    <td class="center"><?php echo $re["all_branch"];?></td>
+                                    <td width="80" class="center">
+                                        <div class="btn-group">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                            <ul class="dropdown-menu pull-right">
+                                                <?php
+                                                if ( $_SESSION["MM_UserAuthorization") = "admin" then%>
+                                                <li><a href="javascript:Mars_popup('ad_guard_send_branch.php?g_auto=17401','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
+                                                <li><a href="javascript:Mars_popup2('ad_guest_del.php?g_auto=17401','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
 
-                        <tr>
-                            <td class="center">江琳是渾蛋虛偽死騙子</td>
-                            <td class="center">男</td>
-                            <td class="center"></td>
-                            <td class="center"></td>
-                            <td class="center">新北市</td>
-                            <td class="center">0919576903</td>
-                            <td class="center">my_love_to_apple@yahoo.com.tw</td>
-                            <td style="word-break: break-all;min-width:300px;">桃園騙子會館<br>合約的時間用騙的<br>排約對象也用騙的<br>從開始就在說謊<br>到最後一次排約<br>用了簽約當天問的<br>1.不能生育的能接受嗎---不能<br>2.離婚的能接受嗎--------不能<br>最後一次<br>問了這樣條件的兩個人後就直接把電話掛了<br>並沒有告知後續有無對象安排<br>只發了簡訊告知有排約<br>惡劣啊<br>跟第一個排約對象一樣啊<br>彭姐：這次只是先試試，我知道你不喜歡，但還是請你來試試(第一次叫試試)<br>試個屁啊那次直接變成合約開始的時間(江琳這混蛋騙子根本就騙人啊)<br>從一開始就騙我合約時間<br>最後又用欺瞞的介紹對象<br>更不用說<br>問我有什麼條件<br>開給你們~說沒問題<br>結果還真的都做到<br>100%做到，零失誤啊<br>不要的全做到了<br>江琳是渾蛋虛偽死騙子從頭騙到尾<br>向他反應<br>僅僅只回復&quot;這是誤會&quot;<br>可惡的死騙子<br>反正我最後也沒佔到你們貴公司任何便宜<br>而你們居然用騙的<br>我他媽的在母親節被騙去關在精神病院一小時<br>然後一句道歉的話都沒有收到過<br>僅僅是誤會<br>到死都不會原諒這兩個死騙子<br>尤其是<br>江琳這個混蛋虛偽死騙子<br>怒不可遏<br><br>
-                                <font color="#FF0000" size="2">處理情形：
-                                </font><br>2021/10/24 上午 11:20:28
-                            </td>
-                            <td class="center">桃園</td>
-                            <td width=80 class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_guard_send_branch.php?g_auto=17401','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
-                                        <li><a href="javascript:Mars_popup2('ad_guest_del.php?g_auto=17401','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
-
-                                        <li><a href="javascript:Mars_popup('ad_guest_fix.php?g_auto=17401','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">羅佩瑜</td>
-                            <td class="center">女</td>
-                            <td class="center"></td>
-                            <td class="center"></td>
-                            <td class="center">台中市</td>
-                            <td class="center">0928001050</td>
-                            <td class="center">shadowstranger72@yahoo.com.tw</td>
-                            <td style="word-break: break-all;min-width:300px;">我遇到消費糾紛感受不好<br>請盡速與我聯繫<br>謝謝您<br>
-                                <font color="#FF0000" size="2">處理情形：
-                                </font><br>2021/9/22 下午 12:54:43
-                            </td>
-                            <td class="center">台中</td>
-                            <td width=80 class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-
-                                        <li><a href="javascript:Mars_popup('ad_guard_send_branch.php?g_auto=17371','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
-                                        <li><a href="javascript:Mars_popup2('ad_guest_del.php?g_auto=17371','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
-
-                                        <li><a href="javascript:Mars_popup('ad_guest_fix.php?g_auto=17371','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
+                                                <li><a href="javascript:Mars_popup('ad_guest_fix.php?g_auto=17401','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                        <?php } } ?>
+                    </tbody>
                 </table>
             </div>
             <div class="text-center">共 86 筆、第 1 頁／共 2 頁&nbsp;&nbsp;

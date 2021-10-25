@@ -1,10 +1,92 @@
 <?php
-    require_once("./include/_inc.php");
+    error_reporting(0); 
+    /*****************************************/
+    //檔案名稱：ad_quest.php
+    //後台對應位置：名單/發送記錄>客服中心記錄
+    //改版日期：2021.10.25
+    //改版設計人員：Jack
+    //改版程式人員：Queena
+    /*****************************************/
+
+    require_once("_inc.php");
     require_once("./include/_function.php");
     require_once("./include/_top.php");
     require_once("./include/_sidebar.php");
-?>
 
+    //權限判斷
+    $auth_limit = 3;
+    require_once("./include/_limit.php");
+    check_page_power("ad_guest");
+
+    //組合SQL語法
+    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+        $subSQL1 = "1=1";
+    }else{
+        $subSQL1 = "all_branch='".$_SESSION["branch"]."'";
+    }
+    
+    //組合subSQL語法
+    if ( SqlFilter($_REQUEST["s99"],"tab") != "1" ){
+        $subSQL2 = " And (all_note IS NULL)";
+        $all_type = "未處理";
+    }else{
+        $subSQL2 = " And Not (all_note IS NULL)";
+        $all_type = "已處理";
+    }
+
+    $subSQL3 = " And (web <> 'singleparty' Or web is null)"; //春天/DMN客服中心 
+    $subSQL4 = " And (web = 'singleparty')"; //約專客服中心 
+    $subSQL5 = " And (web = 'singleparty_report')"; //約專會員檢舉
+    //$SQL .= $sqls3.$sqls2.$sqls4." Order By g_auto Desc";
+
+    //取得總筆數(春天/DMN客服中心)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL3;
+    echo $SQL;
+    exit;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size1 = 0;
+    }else{
+        $total_size1 = $re["total_size"];
+    }
+
+    //取得總筆數(約專客服中心)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL4;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size2 = 0;
+    }else{
+        $total_size2 = $re["total_size"];
+    }
+
+    //取得總筆數(約專會員檢舉)
+    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL5;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size3 = 0;
+    }else{
+        $total_size3 = $re["total_size"];
+    }
+/*
+if request("c") = "1" then
+vvt2 = total_size
+vvt1 = total_size2
+vvt3 = total_size3
+else
+vvt1 = total_size
+vvt2 = total_size2
+vvt3 = total_size3
+end if*/
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -18,29 +100,24 @@
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
                     <strong>客服中心　未處理 - 數量：84</strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
                 <div class="col-md-12 padding-bottom-10">
                     <div class="btn-group margin-right-10">
                         <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-
                             <li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>
-
                         </ul>
                     </div>
 
-                    <a class="btn btn-info" href="?c=0" disabled>春天/DMN 客服中心 (84)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1">約專客服中心 (0)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2">約專會員檢舉 (0)</a>
+                    <a class="btn btn-info" href="?c=0" disabled>春天/DMN 客服中心 (<?php echo $total_size1;?>)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1">約專客服中心 (<?php echo $total_size2;?>)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2">約專會員檢舉 (<?php echo $total_size3;?>)</a>
                     &nbsp;&nbsp;<a class="btn btn-info" href="ad_custom_complaint.asp">客戶申訴</a>
                 </div>
 

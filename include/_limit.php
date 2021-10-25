@@ -35,4 +35,12 @@
 			exit;
 		}
 	}
+
+	//**您沒有權限 for ad_dmn_business_fix.asp
+	if ( $auth_limit == "5" ){
+		if ( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["dmnweb"] != "1" ){
+			call_alert("您沒有權限", 1,0);
+			exit;
+		}
+	}
 ?>
