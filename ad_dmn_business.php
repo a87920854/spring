@@ -128,7 +128,7 @@ if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
                                     <td>
                                         <font color="#FF0000" size="2">處理情形：
                                             <?php
-                                            if ( $re["all_type"] != "未處理" ){
+                                            if ( $re["all_type"] == "已處理" ){
                                                 echo "(".$re["all_type"].")";
                                             }
                                             echo $re["all_note"]; ?>
