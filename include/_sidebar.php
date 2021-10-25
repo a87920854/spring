@@ -2,7 +2,7 @@
 	//載入時間
 	//dim pageload_timer
 	//pageload_timer = timer
-	
+
 	//預設編碼
 	//ini_set('default_charset', 'Big5');
 	
