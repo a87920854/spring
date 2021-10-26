@@ -214,7 +214,8 @@
 						}?>
 						<li><a href="ad_infojetmedia_dmn.php"><i class="fa fa-angle-right"></i><span> DMN-億捷創意<font color="red">(<?php echo $jt;?>)</font></span></a></li>                                
 						<?php
-						$SQL = "select count(g_auto) as tt from guest where all_type = '未處理' and (all_note IS NULL)";
+						//$SQL = "select count(g_auto) as tt from guest where all_type = '未處理' and (all_note IS NULL)"; //原程式，應需符合★名單發送功能>客服中心資料頁面數字
+						$SQL = "select count(g_auto) as tt from guest Where 1=1 And (all_note IS NULL) And (web <> 'singleparty' Or web is null)";
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
 						$result=$rs->fetchAll(PDO::FETCH_ASSOC);

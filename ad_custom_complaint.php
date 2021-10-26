@@ -1,8 +1,27 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+	error_reporting(0); 
+	/*****************************************/
+	//檔案名稱：ad_custom_complaint.php
+	//後台對應位置：名單/發送記錄>客服資料中心(客戶申訴)
+	//改版日期：2021.10.26
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
+
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+
+    if ( SqlFilter($_REQUEST["st"],"tab") == "cancel" ){
+        if ( SqlFilter($_REQUEST["an"],"tab") != "" ){
+            $SQL_d = "Delete From system_sign Where auton='".SqlFilter($_REQUEST["an"],"tab")."'";
+            $rs_d = $SPConn->prepare($SQL_d);
+            $rs_d->execute();
+        }
+        header("location:win_close.php?m=取消申請");
+        exit;
+    }
 ?>
 
 <!-- MIDDLE -->

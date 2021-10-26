@@ -109,11 +109,11 @@
         $SQL .= "Select TOP ".($tPageSize*$tPage)." * From guest Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Desc) t1 ";
         $SQL .= "Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Asc ) t2 Where ".$subSQL1.$subSQL2.$subSQL5." Order By g_auto Desc ";
     }
-    echo $SQL;
     $rs = $SPConn->prepare($SQL);
     $rs->execute();
     $result=$rs->fetchAll(PDO::FETCH_ASSOC);
 ?>
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -138,12 +138,16 @@
                     <div class="btn-group margin-right-10">
                         <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                            <li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>
+                            <?php if ( SqlFilter($_REQUEST["s99"],"tab") == "" ){?>
+                                <li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>
+                            <?php }else{ ?>
+                                <li><a href="ad_guest.php" target="_self"><i class="icon-resize-horizontal"></i> 切換未處理</a></li>
+                            <?php }?>
                         </ul>
                     </div>
                     <a class="btn btn-info" href="?c=0" disabled>春天/DMN 客服中心 (<?php echo $total_size1;?>)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1">約專客服中心 (<?php echo $total_size2;?>)</a>
-                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2">約專會員檢舉 (<?php echo $total_size3;?>0)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=1&s99=<?php echo SqlFilter($_REQUEST["s99"],"tab"); ?>">約專客服中心 (<?php echo $total_size2;?>)</a>
+                    &nbsp;&nbsp;<a class="btn btn-info" href="?c=2&s99=<?php echo SqlFilter($_REQUEST["s99"],"tab"); ?>">約專會員檢舉 (<?php echo $total_size3;?>)</a>
                     &nbsp;&nbsp;<a class="btn btn-info" href="ad_custom_complaint.php">客戶申訴</a>
                 </div>
 
@@ -204,11 +208,11 @@
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                             <ul class="dropdown-menu pull-right">
                                                 <?php
-                                                if ( $_SESSION["MM_UserAuthorization") = "admin" then%>
-                                                <li><a href="javascript:Mars_popup('ad_guard_send_branch.php?g_auto=17401','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
-                                                <li><a href="javascript:Mars_popup2('ad_guest_del.php?g_auto=17401','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
-
-                                                <li><a href="javascript:Mars_popup('ad_guest_fix.php?g_auto=17401','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
+                                                if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
+                                                    <li><a href="javascript:Mars_popup('ad_guard_send_branch.php?g_auto=<?php echo $re["g_auto"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
+                                                    <li><a href="javascript:Mars_popup2('ad_guest_del.php?g_auto=<?php echo $re["g_auto"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
+                                                <?php }?>
+                                                <li><a href="javascript:Mars_popup('ad_guest_fix.php?g_auto=<?php echo $re["g_auto"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
                                             </ul>
                                         </div>
                                     </td>
@@ -217,27 +221,14 @@
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 86 筆、第 1 頁／共 2 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_guest.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_guest.php?topage=2 class='text'>2</a></li>
-                    <li><a href=/ad_guest.php?topage=2 class='text' title='Next'>下一頁</a></li>
-                    <li><a href=/ad_guest.php?topage=2 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_guest.php?topage=1" selected>1</option>
-                            <option value="/ad_guest.php?topage=2">2</option>
-                        </select></li>
-                </ul>
-            </div>
+            <?php require_once("./include/_page.php"); ?>
 
         </div>
         <!--/span-->
 
     </div>
     <!--/row-->
-    </div>
-    <!--/.fluid-container-->
+
 </section>
 <!-- /MIDDLE -->
 

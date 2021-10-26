@@ -1,4 +1,4 @@
-<?php if( $total_size > 0) { ?>
+<?php if( (${"total_size".($c+1)} > 0) || $total_size > 0 ) { ?>
 	<div class="text-center">共 <?php echo $total_size;?> 筆、第 <?php echo $tPage;?> 頁／共 <?php echo $tPageTotal;?> 頁&nbsp;&nbsp;
 		<ul class="pagination pagination-md">
 			<li><a href="javascript:GotoPage(1,document.frmpage);">第一頁</a></li>

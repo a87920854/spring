@@ -43,4 +43,12 @@
 			exit;
 		}
 	}
+
+	//**您沒有權限 for ad_guest_del.asp
+	if ( $auth_limit == "6" ){
+        if ( $_SESSION["MM_UserAuthorization"] != "admin" ){
+            call_alert("您沒有權限", 1,0);
+            exit;
+        }
+	}
 ?>
