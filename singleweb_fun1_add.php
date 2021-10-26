@@ -8,7 +8,7 @@
     <div style="line-height:30px;">標題(title)：<input type="text" name="title" id="title" style="width:60%;" value="約會專家 - 穿越不同交友平台，約到最適合的情人"></div>
     <div style="line-height:30px;" style="line-height:30px;">描述(description)：<input type="text" name="description" id="description" style="width:60%;" value="約會專家是一個結合多家大型交友聯誼網站、實體婚友配對、及頂尖兩性愛情的媒合平台。"></div>
     <div style="line-height:30px;">關鍵字(keywords)：<input type="text" name="keywords" id="keywords" style="width:60%;" value="約會,主題約會,戀愛,交友,聯誼,相親,婚友社,配對,愛情,Dating"></div>
-    <div style="text-align:center;margin 0 auto;"><input type="submit" value="送出"></div>
+    <div style="text-align:center;margin: 0 auto;"><input type="submit" value="送出"></div>
 </form>
 <script type="text/javascript">
     function chk_form() {
