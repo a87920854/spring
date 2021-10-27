@@ -335,7 +335,7 @@ require_once("./include/_sidebar.php")
 
                 <!-- 小組業績明細 -->
                 <div class="row">
-                    <div style="padding: 0px 15px;">
+                    <div class="col-md-12">
                         <p>小組業績明細</p>
                         <table class="table table-striped table-bordered bootstrap-datatable">
                             <tbody>
