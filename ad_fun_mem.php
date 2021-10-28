@@ -15,15 +15,125 @@
     //程式開始 *****
 	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
 	check_page_power("ad_fun_mem");
+
+    // 轉入未入會功能
+    if( $_REQUEST["st"] == "trans" ){
+        $mem_auto = $_REQUEST["mem_auto"];
+        $SQL = "SELECT * FROM member_data Where mem_auto = '" .$mem_auto. "'";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+        var_dump($result);
+        if(count($result) > 0){
+            $R3 = $SPConn->query("SELECT * FROM msg_num Where m_auto=1");
+            $mem_num = $R3["m_num"] + 1;
+            $R3 = $SPConn->exec("UPDATE msg_num SET m_num = " .$mem_num. " where m_auto = 1");
+            $RSQL = "INSERT INTO member_data(mem_sex, all_type, mem_level, mem_num, mem_photo) Values ( ";
+
+            $qresult = $SPConn->prepare($RSQL);
+            $qresult = $qrs->execute();
+            if( $result["mem_sex"] == "女" ){
+                $mem_photo = "girl.jpg";
+            }else {
+                $mem_photo = "boy.jpg";
+            }
+
+            $qresult["all_type"] = "已發送";
+            $qresult["mem_level"] = "guest";
+            $qresult["mem_num"] = $mem_num;
+            $qresult["mem_photo"] = $mem_photo;
+            $qresult["mem_time"] = date('Y/m/d H:i:s');
+            
+            $qresult["mem_name"] = $result["mem_name"];
+            $qresult["mem_nick"] = $result["mem_nick"];
+            $qresult["mem_sex"] = $result["mem_sex"];
+            $mem_by = $result["mem_by"];
+            if( $mem_by != "" ){
+                if(chkDate($mem_by)){
+                    if(stristr($str,"-")){
+                        list($yy,$mm,$dd) = explode("-",$mem_by);
+                    }
+                    if(stristr($str,"/")){
+                        list($yy,$mm,$dd) = explode("/",$mem_by);
+                    }
+                    $qresult["mem_by"] = $yy;
+                    $qresult["mem_bm"] = $mm;
+                    $qresult["mem_bd"] = $dd;
+                }
+            }
+            $qresult["mem_phone"] = $result["mem_phone"];
+            $qresult["mem_mobile"] = $result["mem_mobile"];
+            $qresult["mem_mail"] = $result["mem_mail"];
+            $qresult["mem_area"] = $result["mem_area"];
+            $qresult["mem_address"] = $result["mem_address"];
+            $qresult["mem_star"] = $result["mem_star"];
+            $qresult["mem_marry"] = $result["mem_marry"];
+            $qresult["mem_blood"] = $result["mem_blood"];
+            $qresult["mem_school"] = $result["mem_school"];
+            $qresult["mem_job1"] = $result["mem_job1"];
+            $qresult["mem_job2"] = $result["mem_job2"];
+            $qresult["mem_branch"] = $result["mem_branch"];
+            $qresult["mem_single"] = $result["mem_single"];
+            $qresult["mem_cc"] = $result["mem_cc"];
+
+        }
+        
+    }
+
+    $default_sql_num = 500;
+    if( $_REQUEST["vst"] == "full" ){
+        $sqlv = "*";
+        $sqlv2 = "count(mem_auto)";
+    }else{
+        $sqlv = "top " .$default_sql_num. " *";
+        $sqlv2 = "count(mem_auto)";
+    }
+
+    switch ( $_SESSION["MM_UserAuthorization"] ) {
+        case "admin":
+            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE 1 = 1";
+		    $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data WHERE  1 = 1";
+            break;
+        case "branch":
+        case "love":
+            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE mem_branch= '" .$_SESSION["branch"] . "'";
+		    $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data WHERE mem_branch= '" .$_SESSION["branch"] . "'";
+            break;
+        default:
+            $sqls = "SELECT " .$sqlv. " FROM member_data Where UPPER(mem_single) = '" . strtoupper($_SESSION["MM_username"]) . "'";
+            $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
+            break;
+    }
+    if ( $_REQUEST["s1"] != "" ){
+        $sqlss = $sqlss. " and mem_mail like '%" .str_replace("'", "''", $_REQUEST["s1"]). "%'";
+    }
+    if ( $_REQUEST["s2"] != "" ){
+        $cs2 = reset_number($_REQUEST["s2"]);
+	    $sqlss = $sqlss . " and mem_mobile like N'%" .$cs2. "%'";
+    }
+    if ( $_REQUEST["s3"] != "" ){
+        $sqlss = $sqlss. " and mem_name like '%" .str_replace("'", "''", $_REQUEST["s3"]). "%'";
+    }
+    if ( $_REQUEST["s4"] != "" ){
+        $sqlss = $sqlss. " and mem_auto like '%" .str_replace("'", "''", $_REQUEST["s4"]). "%'";
+    }
+    if ( $_REQUEST["s5"] != "" ){
+        $sqlss = $sqlss. " and mem_username like '%" .str_replace("'", "''", $_REQUEST["s5"]). "%'";
+    }
+
+    if ( $_REQUEST["s7"] != "" ){
+        $sqlss = $sqlss. " and UPPER(mem_single) like '%" .str_replace("'", "''", strtoupper($_REQUEST["s7"])). "%'";
+    }
+    if ( $_REQUEST["s8"] != "" ){
+        $sqlss = $sqlss. " and mem_come like '%" .str_replace("'", "''", strtoupper($_REQUEST["s7"])). "%'";
+    }
+
+    // 查看前五百筆
     $SQL = "SELECT top 1 * FROM member_data";
     $rs = $SPConn->prepare($SQL);
     $rs->execute();
-    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
     var_dump($result);
-    if( $_REQUEST["st"] == "trans" ){
-        $mem_auto = $_REQUEST["mem_auto"];
-
-    }
 ?>
 
 <!-- MIDDLE -->
@@ -39,7 +149,6 @@
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">

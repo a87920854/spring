@@ -549,4 +549,25 @@
 		//$txt=str_ireplace(" ","",$txt);
 		return $txt;
 	}
+
+	// 重設數字
+	function reset_number($n){
+		if( $n != ""){
+			$n = trim(str_replace("-", "", $n));
+			$n = str_replace("_", "", $n);
+			$n = str_replace("'", "", $n);
+			$n = str_replace("０", "0", $n);
+			$n = str_replace("１", "1", $n);
+			$n = str_replace("２", "2", $n);
+			$n = str_replace("３", "3", $n);
+			$n = str_replace("４", "4", $n);
+			$n = str_replace("５", "5", $n);
+			$n = str_replace("６", "6", $n);
+			$n = str_replace("７", "7", $n);
+			$n = str_replace("８", "8", $n);
+			$n = str_replace("９", "9", $n);
+		}
+		return $n;
+	}
+	
 ?>
