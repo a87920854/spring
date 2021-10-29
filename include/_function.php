@@ -458,7 +458,7 @@
 			$ad_mem_fix_url = "ad_mem_fix.asp?mem_num=".$mem_num.$islovepages;
 			$showfull = 1;
 		}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
-			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.islovepages;
+			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.$islovepages;
 			if ( $mb1 == $_SESSION["branch"] || $mb2 == $_SESSION["branch"] ){
 				$showfull = 1;
 			}
@@ -532,6 +532,7 @@
 		}else{
 			$num_branch = $all_branchs_arr[$num_branchnum];
 		}
+		return $num_branch;
 	}
 	
 	//權限檢查
