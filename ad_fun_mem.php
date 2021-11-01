@@ -26,7 +26,7 @@
         var_dump($result);
         if(count($result) > 0){
             $query = $SPConn->query("SELECT * FROM msg_num Where m_auto=1");
-            $R3 = $query->fetchAll(PDO::FETCH_ASSOC);    
+            $R3 = $query->fetch(PDO::FETCH_ASSOC);    
             $mem_num = $R3["m_num"] + 1;
             // 讓msg_num table的欄位m_num + 1
             $R3 = $SPConn->exec("UPDATE msg_num SET m_num = " .$mem_num. " where m_auto = 1"); 
@@ -79,17 +79,27 @@
             $qresult = $SPConn->prepare($RSQL);
             $qresult = $qrs->execute();
         }
-        // call_alert("轉換中。", "win_close.asp?m=轉換中", 0);
+        // call_alert("轉換中。", "win_close.php?m=轉換中", 0);
         echo '<meta http-equiv="refresh" content="0;url=win_close.php?m=轉換中" />';
         exit;
     }
 
-    $default_sql_num = 50; //每頁50筆
+    //取得分頁資料
+	$tPageSize = 50; //每頁幾筆
+	$tPage = 1; //目前頁數
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 50;
+	}else{
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));
+	}
+
     if( $_REQUEST["vst"] == "full" ){
         $sqlv = "*";
         $sqlv2 = "count(mem_auto)";
     }else{
-        $sqlv = "top " .$default_sql_num. " *";
+        $sqlv = "top " .$tPageSize. " *";
         $sqlv2 = "count(mem_auto)";
     }
 
@@ -198,14 +208,14 @@
             $total_size = $result["total_size"];
         }
     }
-
+    
     if( $_REQUEST["vst"] == "full" ){
         $total_sizen = $total_size . "　<a href='?vst=n'>[查看前五百筆]</a>";
     }else{
         if( $total_size > 500 ) $total_size = 500;
         $total_sizen = $total_size . "　<a href='?vst=full'>[查看完整清單]</a>";
-    }
-    // var_dump($_SESSION["branch"]);
+    }    
+    
 ?>
 
 <!-- MIDDLE -->
@@ -286,31 +296,28 @@
                             }else{
                                 foreach($result as $re){?>
                                     <tr>
-                                        <?php
-                                            $mem_su = $re["mem_su"];
-                                            if( $mem_su != "" ){
-                                                
-                                            }
-                                            If mem_su <> "" Then
-                                                 If isnumeric(Split(mem_su, ",")(0)) then
-                                                 mem_su = "-" & num_branch(Split(mem_su, ",")(0)) & "-"&Split(mem_su, ",")(1)
-                                                 End if
-                                            End if
-                                            if rs("mem_cc") <> "" then
-                                                mem_cc = " ["&rs("mem_cc")&"]"
-                                            else
-                                                mem_cc = ""
-                                            end if
-                                        ?>
 							            <td><input data-no-uniform="true" type="checkbox" name="nums" value="<?php $re["mem_auto"]; ?>"></td>
                                         <td class="center">
-                                            <?php echo $re["mem_come"] . $re["mem_su"] . $re["mem_cc"];?>
+                                            <?php 
+                                                $mem_su = $re["mem_su"];                                                
+                                                if( $mem_su != "" ){
+                                                    if(is_numeric(explode(",", $mem_su)[0])){
+                                                        $mem_su = "-" . num_branch(explode(",", $mem_su)[0]) . "-" . explode(",", $mem_su)[1];
+                                                    }
+                                                }
+                                                if($re["mem_cc"] != ""){
+                                                    $mem_cc = " [" .$re["mem_cc"]."]";
+                                                }else{
+                                                    $mem_cc = "";
+                                                }
+                                                echo $re["mem_come"] . $mem_su . $mem_cc;
+                                            ?>
                                         </td>
                                         <td><?php echo $re["mem_auto"];?></td>
                                         <td class="center">
-                                            <a href="ad_fun_mem_detail.asp?mem_auto=<?php echo $re["mem_auto"];?>" target="_blank"><?php echo $re["mem_name"];?></a>
-                                            <a href="ad_no_mem_s.asp?mem_mobile=<?php echo $re["mem_mobile"];?>" target="_blank">[查]</a>
-                                            <a href="ad_mem_detail.asp?mem_mobile=<?php echo $re["mem_mobile"];?>" target="_blank">[查春天]</a></td>
+                                            <a href="ad_fun_mem_detail.php?mem_auto=<?php echo $re["mem_auto"];?>" target="_blank"><?php echo $re["mem_name"];?></a>
+                                            <a href="ad_no_mem_s.php?mem_mobile=<?php echo $re["mem_mobile"];?>" target="_blank">[查]</a>
+                                            <a href="ad_mem_detail.php?mem_mobile=<?php echo $re["mem_mobile"];?>" target="_blank">[查春天]</a></td>
                                         <td class="center"><?php echo $re["mem_sex"];?></td>
                                         <td class="center"><?php echo Date_EN($re["mem_by"],1);?></td>
                                         <td class="center"><?php echo $re["mem_school"];?></td>
@@ -359,31 +366,48 @@
                                         <div class="btn-group">
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                             <ul class="dropdown-menu pull-right">
-                                                <li><a href="javascript:Mars_popup('ad_fun_report.asp?k_id=<?php echo $re["mem_auto"];?>&ty=member&rc=會員列表','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<%=report%>)</a></li>
-                                    
-                                                <%IF Session("MM_UserAuthorization") <> "single" Then%>                
-                                                <li><a href="javascript:Mars_popup('ad_fun_send_branch.asp?mem_auto=<?php echo $re["mem_auto"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-arrow-right"></i> 發送</a></li>
-                                                <li><a href="javascript:Mars_popup('ad_fun_mem_fix.asp?mem_auto=<?php echo $re["mem_auto"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');"><i class="icon-file"></i> 修改</a></li>
-                                                <!--<li><a href="ad_register2.asp?mem_auto=<?php echo $re["mem_auto"];?>" target="_blank"><i class="icon-camera"></i> 照片</a></li>-->
-                                                <%End IF%>
-                                                <%if not Session("MM_UserAuthorization") = "admin" and not Session("MM_UserAuthorization") = "branch" then%>
-                                                <%if not rs("trans_spring") = "1" then%>						
-                                                <li><a href="javascript:Mars_popup('?st=trans&mem_auto=<?php echo $re["mem_auto"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=200,top=100,left=100');"><i class="icon-resize-full"></i> 轉入未入會</a></li>
-                                                <%else%>
-                                                <li><a style="color:#ccc"><i class="icon-share" style="color:#ccc"></i> 已轉未入會</a></li>
-                                                <%end if%>
-                                                <%end if%>
-                                            
-                                                <%IF Session("MM_UserAuthorization") = "admin" Then%>
-                                                <li><a href="javascript:Mars_popup2('ad_fun_mem_del.asp?mem_auto=<?php echo $re["mem_auto"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                                <%End IF%>
-                                                <!--<li><a href="javascript:Mars_popup('ad_fun_send_fun.asp?mem_mail=<%=rs("mem_mail")%>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 開發信</a></li>-->
+                                                <?php 
+                                                    $rquery = $FunConn->query("select count(log_auto) as r from log_data where log_num=" .$re["mem_auto"]. " and log_5='member'");
+                                                    $rresult = $rquery->fetch(PDO::FETCH_ASSOC);
+                                                    if( !$rresult ){
+                                                        $report = 0;
+                                                    }else{
+                                                        $report = $rresult["r"];
+                                                    }
+                                                    $rquery2 = $FunConn->query("select top 1 log_4 from log_data where log_num=" .$re["mem_auto"]. " and log_5='member' order by log_auto desc");
+                                                    $rresult2 = $rquery2->fetch(PDO::FETCH_ASSOC);                                              
+                                                    if( !$rresult2 ){
+                                                        $report_text = "無";
+                                                    }else{
+                                                        $report_text = $rresult2["log_4"];
+                                                    }                                                   
+                                                ?>
+                                                <li><a href="ad_fun_mem_detail.php?mem_auto=<?php echo $re["mem_auto"];?>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                                <li><a href="javascript:Mars_popup('ad_fun_report.php?k_id=<?php echo $re["mem_auto"];?>&ty=member&rc=會員列表','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report; ?>)</a></li>
+                                                <?php
+                                                    if( $_SESSION["MM_UserAuthorization"] != "single" ){
+                                                        echo "<li><a href='javascript:Mars_popup('ad_fun_send_branch.php?mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');'><i class='icon-arrow-right'></i> 發送</a></li>";
+                                                        echo "<li><a href='javascript:Mars_popup('ad_fun_mem_fix.php?mem_auto=" .$re["mem_auto"]. "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');'><i class='icon-file'></i> 修改</a></li>";
+                                                        // echo "<li><a href='ad_register2.php?mem_auto=" .$re["mem_auto"]. "' target='_blank'><i class='icon-camera'></i> 照片</a></li>";
+                                                    }
+                                                    if( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" ){
+                                                        if( $re["trans_spring"] != "1" ){
+                                                            echo "<li><a href='javascript:Mars_popup('?st=trans&mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=200,top=100,left=100');'><i class='icon-resize-full'></i> 轉入未入會</a></li>";
+                                                        }else{
+                                                            echo "<li><a style='color:#ccc'><i class='icon-share' style='color:#ccc'></i> 已轉未入會</a></li>";
+                                                        }
+                                                    }
+                                                    if( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                                        echo "<li><a href='javascript:Mars_popup2('ad_fun_mem_del.php?mem_auto=" .$re["mem_auto"]. "','','width=300,height=200,top=100,left=100')'><i class='icon-trash'></i> 刪除</a></li>";
+                                                    }
+                                                ?>             
+                                                <!--<li><a href="javascript:Mars_popup('ad_fun_send_fun.php?mem_mail=<?php $re["mem_mail"]; ?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 開發信</a></li>-->
                                             </ul>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="10" style="BORDER-bottom: #666666 1px dotted">
-                                        (<a href="javascript:Mars_popup('ad_fun_report.asp?k_id=<?php echo $re["mem_auto"]; ?>&ty=member&rc=會員列表','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php $report ?>)</a>
+                                        (<a href="javascript:Mars_popup('ad_fun_report.php?k_id=<?php echo $re["mem_auto"]; ?>&ty=member&rc=會員列表','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report; ?>)</a>
                                         ，處理情形：
                                         <font color="#FF0000" size="2">                                            
                                             <?php 

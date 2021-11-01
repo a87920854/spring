@@ -40,15 +40,15 @@
 		return $SingleName_real;
 	}*/
 	
-	function SingleName($sn,$type){
+	function SingleName($sn,$type){ 
+		$SPConn3 = SPConOpen();
 		switch ($type){
 			case "normal":
 				if ( $sn == "" || empty($sn) == true ){
 					$SingleName = "不明";
 				}else{
-					//$SPConn2 = SPConOpen();
 					$SQL = "Select p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
-					$rs = $SPConn->prepare($SQL);
+					$rs = $SPConn3->prepare($SQL);
 					$rs->execute();
 					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 					foreach( $result as $re );
@@ -64,7 +64,7 @@
 					$SingleName_real = "不明";
 				}else{
 					$SQL = "Select p_name, p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
-					$rs = $SPConn->prepare($SQL_real);
+					$rs = $SPConn3->prepare($SQL_real);
 					$rs->execute();
 					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 					foreach($result as $re);
@@ -262,7 +262,7 @@
 	function chtime($thetime){
 		if ( chkDate($thetime) ){
 			$thetimes = date("Y-d-m H:m:i");
-			$chtime = date("Y",$thetimes)."-".date("M",$thetimes)."-".date("d",$thetimes)." ".date("H",$thetimes).":".date("M",$thetimes);
+			$chtime = date("Y",$thetimes)."-".date("m",$thetimes)."-".date("d",$thetimes)." ".date("H",$thetimes).":".date("m",$thetimes);
 		}else{
 			$chtime = $thetime;
 		}
@@ -458,7 +458,7 @@
 			$ad_mem_fix_url = "ad_mem_fix.asp?mem_num=".$mem_num.$islovepages;
 			$showfull = 1;
 		}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
-			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.$islovepages;
+			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.islovepages;
 			if ( $mb1 == $_SESSION["branch"] || $mb2 == $_SESSION["branch"] ){
 				$showfull = 1;
 			}
@@ -526,6 +526,7 @@
 	
 	$all_branchs_arr = Array("台北", "桃園", "新竹", "台中", "台南", "高雄", "八德", "約專", "迷你約", "總管理處", "好好玩旅行社");
 	function num_branch($num){
+		global $all_branchs_arr;
 		$num_branchnum = $num-1;
 		if ( $num_branchnum < 0 || $num_branchnum > count($all_branchs_arr) ){
 			$num_branch = "err";
@@ -539,7 +540,7 @@
 	function check_page_power($page){
 		$mypowers = $_SESSION["page_powers"];
 		if ( $mypowers != "" ){
-			if ( in_array($mypowers, $page) ){ call_alert("您沒有查看此頁的權限。",0,0);}
+			if ( in_array($page, $mypowers) ){ call_alert("您沒有查看此頁的權限。",0,0);}
 		}
 	}
 
@@ -549,6 +550,46 @@
 		$txt = str_ireplace("\r\n","",$txt);
 		//$txt=str_ireplace(" ","",$txt);
 		return $txt;
+	}
+
+	//狀態文字 for ad_custom_complaint.php
+	function custom_complaint_stats($t){
+    	switch ($t){
+    		case 0:
+				$custom_complaint_stats = "處理中";
+				break;
+    		case 1:
+				//
+				break;
+    		case 2:
+    	  		$custom_complaint_stats = "結案";
+			  	break;
+			default:
+      			$custom_complaint_stats = "不明";
+				break;
+		}
+		return $custom_complaint_stats;
+	}
+
+	//新增記錄到資料庫 for ad_custom_complaint_add.php
+	function addreport($mname, $num, $fid, $mobile, $types, $txt){
+		$SPConn2 = SPConOpen();
+  		if ( $_SESSION["MM_Username"] != "" ){
+			$SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ('";
+			$SQL_i .= strftime("%Y/%m/%d %H:%M:%S")."',";
+			$SQL_i .= $num.",";
+			$SQL_i .= "'".$fid."',";
+			$SQL_i .= "'".$mname."',";
+			$SQL_i .= "'".$_SESSION["p_other_name"]."',";
+			$SQL_i .= "'".$_SESSION["branch"]."',";
+			$SQL_i .= "'".$_SESSION["MM_Username"]."',";
+			$SQL_i .= "'".$mobile."',";
+			$SQL_i .= "'".$types."',";
+			$SQL_i .= "'".$txt."',";
+			$SQL_i .= "'system')";
+			$rs_i = $SPConn2->prepare($SQL_i);
+			$rs_i->execute();
+		}
 	}
 
 	// 重設數字
@@ -570,5 +611,4 @@
 		}
 		return $n;
 	}
-	
 ?>
