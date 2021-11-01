@@ -462,7 +462,7 @@
 			$ad_mem_fix_url = "ad_mem_fix.asp?mem_num=".$mem_num.$islovepages;
 			$showfull = 1;
 		}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
-			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.islovepages;
+			$ad_mem_fix_url = "ad_mem_fix_love.asp?mem_num=".$mem_num.$islovepages;
 			if ( $mb1 == $_SESSION["branch"] || $mb2 == $_SESSION["branch"] ){
 				$showfull = 1;
 			}
@@ -536,6 +536,7 @@
 		}else{
 			$num_branch = $all_branchs_arr[$num_branchnum];
 		}
+		return $num_branch;
 	}
 	
 	//權限檢查
@@ -554,6 +555,7 @@
 		return $txt;
 	}
 
+<<<<<<< HEAD
 	//狀態文字 for ad_custom_complaint.php
 	function custom_complaint_stats($t){
     	switch ($t){
@@ -593,4 +595,26 @@
 			$rs_i->execute();
 		}
 	}
+=======
+	// 重設數字
+	function reset_number($n){
+		if( $n != ""){
+			$n = trim(str_replace("-", "", $n));
+			$n = str_replace("_", "", $n);
+			$n = str_replace("'", "", $n);
+			$n = str_replace("０", "0", $n);
+			$n = str_replace("１", "1", $n);
+			$n = str_replace("２", "2", $n);
+			$n = str_replace("３", "3", $n);
+			$n = str_replace("４", "4", $n);
+			$n = str_replace("５", "5", $n);
+			$n = str_replace("６", "6", $n);
+			$n = str_replace("７", "7", $n);
+			$n = str_replace("８", "8", $n);
+			$n = str_replace("９", "9", $n);
+		}
+		return $n;
+	}
+	
+>>>>>>> 38b59b3863cb9e3d0f1a0b445a466e55d6e46001
 ?>
