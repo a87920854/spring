@@ -1,4 +1,5 @@
 <?php
+ini_set('session.gc_maxlifetime', 1800);	//session時間
 session_start();	//啟動 session
 //------------------------------------------------------------------------
 header("Cache-control: private");

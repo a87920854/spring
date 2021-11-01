@@ -119,7 +119,11 @@
 	function call_alert( $msg, $url, $outtime ){
 		echo "<script language=\"javascript\">" ;
 		echo "alert('" . $msg ."');" ;
-		echo "location.href='" . $url . "';" ;
+		if ( $url != "" ){
+			echo "location.href='" . $url . "';" ;
+		}else{
+			echo "history.back(1)" ;
+		}
 		echo "</script>" ;
 		exit() ;
 	}
@@ -552,6 +556,7 @@
 		return $txt;
 	}
 
+
 	//狀態文字 for ad_custom_complaint.php
 	function custom_complaint_stats($t){
     	switch ($t){
@@ -591,7 +596,7 @@
 			$rs_i->execute();
 		}
 	}
-
+	
 	// 重設數字
 	function reset_number($n){
 		if( $n != ""){
@@ -611,4 +616,5 @@
 		}
 		return $n;
 	}
+
 ?>

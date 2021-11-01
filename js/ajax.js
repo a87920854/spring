@@ -26,6 +26,13 @@ $(function(){
 		removeOptions('single');
 		AjaxLoadSuccess("single",branch,"get_personnel");
 	});	
+
+	//產生祕書名單 for 客戶申訴(ad_custom_complaint_add.php)
+	$("#fix_branch").change(function(){
+		var branch = $("#fix_branch").val();
+		removeOptions('fix_single');
+		AjaxLoadSuccess("fix_single",branch,"get_personnel");
+	});	
 		
 	//產生官網小類選單
 	$("#Class2").change(function(){
@@ -74,17 +81,17 @@ $(function(){
 });	
 	
 function AjaxLoadSuccess(selectbox,branch,rtype,flag,invite){
-	console.log("../ajax/ajax.php?branch="+ branch + "&re_type=" + rtype);
 	$(function(){
 		$.ajax({
-		   type: "POST",
-		   url: "ajax/ajax.php",
-		   data: "branch=" + branch + "&re_type=" + rtype ,
-		   success: function(json){
+			type: "POST",
+		   	url: "ajax/ajax.php",
+		   	data: "branch=" + branch + "&re_type=" + rtype ,
+		   	success: function(json){
 			    onComplete(selectbox,json);
-			  }
+			}
 		});
 	});	
+	//console.log("../ajax/ajax.php?branch="+ branch + "&re_type=" + rtype);
 }
 
 //完成後執行的函數
@@ -95,7 +102,7 @@ function onComplete(selectbox,val)
 			str = eval("(" + str + ")");	
 			for(var i = 0; i < str.data.length; i++){
 				document.getElementById(selectbox).options[i + 1] = new Option(str.data[i].Name,str.data[i].ID);
-				document.getElementById(selectbox).options[value=Name].prop('selected', true);
+				//document.getElementById(selectbox).options[value=Name].prop('selected', true);
 			};
 		}
 	
