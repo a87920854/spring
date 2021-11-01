@@ -103,6 +103,7 @@
 		$page2 = (20-(($tPageSize*$tPage)-$total_size));
 	}
 	
+	//分頁語法
 	$SQL_list  = "Select ".$subSQL1."From (";
 	$SQL_list .= "Select TOP ".$page2." * From (";
 	$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From action_log Where types='list'".$subSQL2.$subSQL3.$subSQL4.$subSQL5.$subSQL6.$subSQL7." Order By auton Desc) t1 Where types='list'".$subSQL2.$subSQL3.$subSQL4.$subSQL5.$subSQL6.$subSQL7." ";
@@ -157,12 +158,12 @@
 								$rs = $SPConn->prepare($SQL);
 								$rs->execute();
 								$result=$rs->fetchAll(PDO::FETCH_ASSOC);
-								fOreach($result as $re){ ?>
+								foreach($result as $re){ ?>
 									<option value="<?php echo $re["admin_name"];?>"<?php if ( SqlFilter($_REQUEST["branch"],"tab") == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
 								<?php }?>
 							</Select>
 							<?php if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" ){ ?>
-								<Select name="single" id="single" class="fOrm-control">
+								<Select name="single" id="single" class="form-control">
 									<option value="">請選擇</option>
 									<?php
 									if ( $_REQUEST["flag"] == "1" ){ 
