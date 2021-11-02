@@ -1,10 +1,10 @@
 <?php
     /*****************************************/
 	//檔案名稱：ad_fun_mem.php
-	//後台對應位置：名單/發送記錄>客服資料中心(客戶申訴)
+	//後台對應位置：好好玩管理系統/會員管理系統
 	//改版日期：2021.10.26
 	//改版設計人員：Jack
-	//改版程式人員：Queena
+	//改版程式人員：Jack
 	/*****************************************/
 
     require_once("_inc.php");
@@ -84,40 +84,7 @@
         exit;
     }
 
-    //取得分頁資料
-	$tPageSize = 50; //每頁幾筆
-	$tPage = 1; //目前頁數
-	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
-	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
-	if ( $tPageSize*$tPage < $total_size ){
-		$page2 = 50;
-	}else{
-		$page2 = (50-(($tPageSize*$tPage)-$total_size));
-	}
-
-    if( $_REQUEST["vst"] == "full" ){
-        $sqlv = "*";
-        $sqlv2 = "count(mem_auto)";
-    }else{
-        $sqlv = "top " .$tPageSize. " *";
-        $sqlv2 = "count(mem_auto)";
-    }
-
-    switch ( $_SESSION["MM_UserAuthorization"] ) {
-        case "admin":
-            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE 1 = 1";
-		    $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data WHERE  1 = 1";
-            break;
-        case "branch":
-        case "love":
-            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'";
-		    $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'";
-            break;
-        default:
-            $sqls = "SELECT " .$sqlv. " FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
-            $sqls2 = "SELECT " .$sqlv2. " as total_size FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
-            break;
-    }
+    // 查詢
     if( $_REQUEST["s1"] != "" ){
         $sqlss = $sqlss. " and mem_mail like '%" .str_replace("'", "''", $_REQUEST["s1"]). "%'";
     }
@@ -188,15 +155,22 @@
     }
     if( $_REQUEST["ff"] == "1" ){
         $sqlss = $sqlss . " and (ff <> '' or not ff is null)";
-	    $sqls = $sqls . $sqlss ." order by ff_time desc";
-    }else{
-        $sqls = $sqls . $sqlss ." order by mem_auto desc";
     }
 
-    $sqls2 = $sqls2 . $sqlss;
-
-    // 查看筆數
-    $rs = $FunConn->prepare($sqls2);
+    //判斷權限並查詢SQL總筆數
+    switch ( $_SESSION["MM_UserAuthorization"] ) {
+        case "admin":          
+		    $allSQL = "SELECT count(mem_auto) as total_size FROM member_data WHERE  1 = 1" .$sqlss;
+            break;
+        case "branch":
+        case "love":
+		    $allSQL = "SELECT count(mem_auto) as total_size FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'" .$sqlss;
+            break;
+        default:
+            $allSQL = "SELECT count(mem_auto) as total_size FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'" .$sqlss;
+            break;
+    }
+    $rs = $FunConn->prepare($allSQL);
     $rs->execute();
     $result = $rs->fetch(PDO::FETCH_ASSOC);
     if (count($result) == 0){
@@ -205,19 +179,58 @@
         if($result["total_size"] == 0 ){
             $total_size = 0;
         }else{
-            $total_size = $result["total_size"];
+            $total_size = $result["total_size"]; //總筆數
         }
+    }	
+    $tPage = 1; //目前頁數
+    $tPageSize = 50; //每頁幾筆
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 50;
+	}else{
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));
+	}
+    
+    // 如果請求參數full則全部列出
+    
+    if( $_REQUEST["vst"] == "full" ){
+        $sqlv = "*";
+    }else{
+        $sqlv =  "top " .$tPageSize. " *";       
     }
+    
+    // 判斷權限並SQL查詢
+    switch ( $_SESSION["MM_UserAuthorization"] ) {
+        case "admin":
+            $sqls = "SELECT " .$sqlv. " FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM member_data WHERE 1 = 1";
+            break;
+        case "branch":
+        case "love":
+            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'";
+            break;
+        default:
+            $sqls = "SELECT " .$sqlv. " FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
+            break;
+    }
+    
+    if( $_REQUEST["ff"] == "1" ){
+	    $sqls = $sqls . $sqlss ." order by ff_time desc ) t1 order by ff_time) t2 order by ff_time desc";
+    }else{
+        $sqls = $sqls . $sqlss ." order by mem_auto desc ) t1 order by mem_auto) t2 order by mem_auto desc";
+    }
+
     
     if( $_REQUEST["vst"] == "full" ){
         $total_sizen = $total_size . "　<a href='?vst=n'>[查看前五百筆]</a>";
     }else{
         if( $total_size > 500 ) $total_size = 500;
         $total_sizen = $total_size . "　<a href='?vst=full'>[查看完整清單]</a>";
-    }    
-    
+    }          
+   
 ?>
 
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -287,7 +300,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php 
+                        <?php                            
                             $rs = $FunConn->prepare($sqls);
                             $rs->execute();
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
@@ -411,9 +424,9 @@
                                         ，處理情形：
                                         <font color="#FF0000" size="2">                                            
                                             <?php 
-                                                echo $re["all_type"] . $re["all_type2"] . $re["mem_branch"];
+                                                echo $re["all_type"] . $re["all_type2"] . "&nbsp;&nbsp" .$re["mem_branch"];
                                                 if ($re["mem_single"] != "") {
-                                                    echo SingleName($re["mem_single"],"normal");
+                                                    echo SingleName($re["mem_single"],"normal"); 
                                                 }
                                             ?>
                                         </font>)
@@ -422,7 +435,7 @@
                                             <?php echo $re["all_note"]; ?>&nbsp;&nbsp;                                            
                                             <?php
                                                 if( $re["ff"] != "" ){
-                                                echo "同意Match - " .$re["ff"]." - " .$re["ff_time"]. "";
+                                                    echo "同意Match - " .$re["ff"]." - " .changeDate(Date_EN($re["ff_time"],6)). "";
                                                 } 
                                             ?>
                                         </td>

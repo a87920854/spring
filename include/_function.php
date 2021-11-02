@@ -55,28 +55,27 @@
 						if ( count($result) == 0 ){
 							$SingleName = "不明-".$sn;
 						}else{
-							$SingleName = $sn_re["p_other_name"];
+							$SingleName = $re["p_other_name"];
 					}
 				}
 				break;
 			case "real":
 				if ( $sn == "" || is_null($sn) == 1 ){
-					$SingleName_real = "不明";
+					$SingleName = "不明";
 				}else{
 					$SQL = "Select p_name, p_other_name From personnel_data Where p_user='".$sn."' Order By p_work Desc";
-					$rs = $SPConn3->prepare($SQL_real);
+					$rs = $SPConn3->prepare($SQL);
 					$rs->execute();
 					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 					foreach($result as $re);
 					if ( count($result) == 0 ){		
-						$SingleName == "不明-".$sn;
+						$SingleName = "不明-".$sn;
 					}else{
-						$SingleName = $re_real["p_name"];
+						$SingleName = $re["p_name"];
 						if ( $SingleName == "" ){ $SingleName = $re["p_other_name"];}
 					}
 				}
-				break;
-				
+				break;				
 		}
 		return $SingleName;
 	}
@@ -117,14 +116,36 @@
 	
 	//彈跳訊息
 	function call_alert( $msg, $url, $outtime ){
-		echo "<script language=\"javascript\">" ;
-		echo "alert('" . $msg ."');" ;
-		if ( $url != "" ){
-			echo "location.href='" . $url . "';" ;
-		}else{
-			echo "history.back(1)" ;
+		switch($url){
+			case "ClOsE":
+				echo "<script language='JavaScript'>";
+				if( $msg != "" ){
+					echo "alert('" .$msg. "');";
+				}
+				echo "window.setTimeout('window.close();');";	
+				echo "</script>";
+				break;
+			case "UpLoAd":
+				echo "<script language='javascript1.2'>";
+				echo "alert('" .$msg. "');opener.window.location.reload();window.setTimeout('window.close();');";
+				echo "</script>";
+				break;
+			case "Reload":
+				echo "<script language='javascript1.2'>";
+				echo "window.location.reload();";
+				echo "</script>";
+				break;
+			default:
+				echo "<script language=\"javascript\">" ;
+				echo "alert('" . $msg ."');";
+				if ( $url != "" ){
+					echo "window.setTimeout(location.href='" . $url . "'," . $outtime .");";
+				}else {
+					echo "window.setTimeout(location.href='history.back(1)'," . $outtime .");";
+				}
+				echo "</script>" ;
+				break;
 		}
-		echo "</script>" ;
 		exit() ;
 	}
 	
