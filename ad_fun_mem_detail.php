@@ -25,25 +25,85 @@
     }
 
     // 照片審查
-    if( $_REQUEST["st"] == "pcheck" ){
-        $SQL = "select p1,p2,p3,p1e,p2e,p3e,mem_photo,mem_photoe,mem_photot from member_data where mem_num = '" .$mem_num. "'";
+    if( $_REQUEST["st"] == "pcheck" ){        
+        switch($_REQUEST["t"]){
+            case "pic":
+                if($_REQUEST["v"] == "1"){
+                    $mem_photoe = "ok";
+                }else{
+                    $mem_photoe = "err";
+                }
+                break;
+            case "p1":
+                if($_REQUEST["v"] == "1"){
+                    $p1e = "ok";
+                }else{
+                    $p1e = "err";
+                }
+                break;
+            case "p2":
+                if($_REQUEST["v"] == "1"){
+                    $p2e = "ok";
+                }else{
+                    $p2e = "err";
+                }
+                break;
+            case "p3":
+                if($_REQUEST["v"] == "1"){
+                    $p3e = "ok";
+                }else{
+                    $p3e = "err";
+                }
+                break;
+        }
+        $SQL = "UPDATE member_data SET mem_photoe = '" .$mem_photoe. "', p1e = '" .$p1e. "', p2e = '" .$p2e. "', p3e = '" .$p3e. "' where mem_num = '" .$mem_num. "'";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
-        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
-        if(count($result) > 0){
-            switch($_REQUEST["t"]){
-                case "pic":
-                    if($_REQUEST["v"] == "1"){
-
-                    }
-
-            }
-        }
     }
 
-    // 照片刪除
+    // 刪除照片
     if( $_REQUEST["st"] == "pdel" ){
-
+        $rs = $FunConn->prepare("select p1,p2,p3,p1e,p2e,p3e,mem_photo,mem_photoe,mem_photot from member_data where mem_num = '" .$mem_num. "'"); 
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $urlpath = dirname(__FILE__) . "\\images\\goldcardf\\";
+            switch($_REQUEST["t"]){
+                case "pic":
+                    $mem_photo = null;
+                    $mem_photoe = null;
+                    $pic = $result["mem_photo"];
+                    $urlpath = dirname(__FILE__) . "\\images\\photo\\";
+                    $SQL =  "UPDATE member_data SET mem_photo = '" .$mem_photo. "', mem_photoe = '" .$mem_photoe. "' where mem_num = '" .$mem_num. "'";
+                    break;
+                case "p1":
+                    $p1 = null;
+                    $p1e = null;
+                    $pic = $result["p1"];
+                    $SQL =  "UPDATE member_data SET p1 = '" .$p1. "', p1e = '" .$p1e. "' where mem_num = '" .$mem_num. "'";
+                    break;
+                case "p2":
+                    $p2 = null;
+                    $p2e = null;
+                    $pic = $result["p2"];
+                    $SQL =  "UPDATE member_data SET p2 = '" .$p2. "', p2e = '" .$p2e. "' where mem_num = '" .$mem_num. "'";
+                    break;
+                case "p3":
+                    $p3 = null;
+                    $p3e = null;
+                    $pic = $result["p3"];
+                    $SQL =  "UPDATE member_data SET p2 = '" .$p3. "', p3e = '" .$p3e. "' where mem_num = '" .$mem_num. "'";
+                    break;
+            }
+            $rs2 = $FunConn->prepare($SQL); 
+            $rs2->execute();
+    
+            if($rs2){
+                DelFile($urlpath . $pic ); //刪除照片實際檔案位置
+            }
+        }
+        reURL("ad_fun_mem_detail.php?mem_num=" . $mem_num);
+        exit;
     }
 
     // 讀取會員資料
@@ -76,7 +136,7 @@
         <ol class="breadcrumb">
             <li>好好玩管理系統</li>
             <li><a href="ad_fun_mem.php">會員管理系統</a></li>
-            <li class="active">會員詳細資料 - 編號 <?php echo $mem_auto; ?> - <?php echo $result["mem_name"]; ?></li>
+            <li class="active">會員詳細資料 - 編號 <?php echo $mem_auto;?> - <?php echo $result["mem_name"]; ?></li>
         </ol>
     </header>
     <!-- /page title -->
@@ -144,7 +204,7 @@
                             <td>
                                 <div align="right">生日：</div>
                             </td>
-                            <td><?php echo $result["mem_by"]; ?></td>
+                            <td><?php echo Date_EN($result["mem_by"],1); ?></td>
                             <td>
                                 <div align="right">手機：</div>
                             </td>
@@ -214,7 +274,7 @@
                             <td>
                                 <div align="right">服務機關/職務名稱：</div>
                             </td>
-                            <td><?php echo $result["mem_job"]; ?><?php echo $result["mem_job2"]; ?></td>
+                            <td><?php echo $result["mem_job"]; ?>/<?php echo $result["mem_job2"]; ?></td>
                             <td>
                                 <div align="right">婚姻狀態：</div>
                             </td>
@@ -255,28 +315,93 @@
                         <td width="33.3%"></td>
                         <td width="33.3%"></td>
                     </tr>
-                    <tr>
-                        <td><a href="http://www.funtour.com.tw/images/photo/10005268_mem_photo_741232020721115027598.jpg" class="fancybox"><img src="http://www.funtour.com.tw/images/photo/10005268_mem_photo_741232020721115027598.jpg" style="width:90%"></a><br>2020/7/21 上午 11:50:27</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:center;"><a href="?st=pcheck&v=1&t=pic&mem_num=10005268" class="btn btn-success">通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="?st=pcheck&v=0&t=pic&mem_num=10005268" class="btn btn-danger">不通過審核</a></td>
-                    </tr>
+                    <?php 
+                        echo "<tr>";
+                        if($result["mem_photo"] != ""){
+                            echo "<td><a href='http://www.funtour.com.tw/images/photo/" . $result["mem_photo"] . "' class='fancybox'><img src='http://www.funtour.com.tw/images/photo/" . $result["mem_photo"] . "' style='width:90%'></a><br>" . changeDate(Date_EN($result["mem_photot"], 6)) . "</td>";
+                        }else{
+                            echo "<td colspan=3>未上傳</td>";
+                        }     
+                        echo "</tr>";
+
+                        echo "<tr>";
+                        if($result["mem_photo"] != ""){
+                            if($result["mem_photoe"] == "ok"){
+                                echo "<td style='text-align:center;color:green'>審核通過<br><a href='#e' onClick=\"Mars_popup('ad_fun_mem_detail.asp?st=pdel&t=pic&mem_num=" . $result["mem_num"] . "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=100,left=100')\">刪除開放重傳</a></td>";
+                            }elseif($result["mem_photoe"] == "err"){
+                                echo "<td style='text-align:center;color:red'>不通過</td>";
+                            }else{
+                                echo "<td style='text-align:center;'><a href='?st=pcheck&v=1&t=pic&mem_num=" . $result["mem_num"] . "' class='btn btn-success'>通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='?st=pcheck&v=0&t=pic&mem_num=" . $result["mem_num"] . "' class='btn btn-danger'>不通過審核</a></td>";
+                            }
+                        }else{
+                            echo "<td></td>";
+                        }
+                        echo "</tr>"
+                    ?>
                     <tr>
                         <td width="33.3%">身分證正面</td>
                         <td width="33.3%">身分證反面</td>
                         <td width="33.3%">工作證或識別證</td>
                     </tr>
-                    <tr>
-                        <td><a href="http://www.funtour.com.tw/images/goldcardf/10005268_p1_3560292020721115114175.jpg" class="fancybox"><img src="http://www.funtour.com.tw/images/goldcardf/10005268_p1_3560292020721115114175.jpg" style="width:90%"></a></td>
-                        <td><a href="http://www.funtour.com.tw/images/goldcardf/10005268_p2_7793842020721115133670.jpg" class="fancybox"><img src="http://www.funtour.com.tw/images/goldcardf/10005268_p2_7793842020721115133670.jpg" style="width:90%"></a></td>
-                        <td><a href="http://www.funtour.com.tw/images/goldcardf/10005268_p3_8268232020721115152356.jpg" class="fancybox"><img src="http://www.funtour.com.tw/images/goldcardf/10005268_p3_8268232020721115152356.jpg" style="width:90%"></a></td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:center;"><a href="?st=pcheck&v=1&t=p1&mem_num=10005268" class="btn btn-success">通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="?st=pcheck&v=0&t=p1&mem_num=10005268" class="btn btn-danger">不通過審核</a></td>
-                        <td style="text-align:center;"><a href="?st=pcheck&v=1&t=p2&mem_num=10005268" class="btn btn-success">通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="?st=pcheck&v=0&t=p2&mem_num=10005268" class="btn btn-danger">不通過審核</a></td>
-                        <td style="text-align:center;"><a href="?st=pcheck&v=1&t=p3&mem_num=10005268" class="btn btn-success">通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="?st=pcheck&v=0&t=p3&mem_num=10005268" class="btn btn-danger">不通過審核</a></td>
-                    </tr>
+                    <?php
+                        echo "<tr>"; 
+                        if($result["p1"] != ""){
+                            echo "<td><a href='http://www.funtour.com.tw/images/goldcardf/" . $result["p1"] . "' class='fancybox'><img src='http://www.funtour.com.tw/images/goldcardf/" . $result["p1"] . "' style='width:90%'></a></td>";
+                        }else{
+                            echo "<td>未上傳</td>";
+                        }
 
+                        if($result["p2"] != ""){
+                            echo "<td><a href='http://www.funtour.com.tw/images/goldcardf/" . $result["p2"] . "' class='fancybox'><img src='http://www.funtour.com.tw/images/goldcardf/" . $result["p2"] . "' style='width:90%'></a></td>";
+                        }else{
+                            echo "<td>未上傳</td>";
+                        }
+
+                        if($result["p3"] != ""){
+                            echo "<td><a href='http://www.funtour.com.tw/images/goldcardf/" . $result["p3"] . "' class='fancybox'><img src='http://www.funtour.com.tw/images/goldcardf/" . $result["p3"] . "' style='width:90%'></a></td>";
+                        }else{
+                            echo "<td>未上傳</td>";
+                        }
+                        echo "</tr>";
+
+                        echo "<tr>"; 
+                        if($result["p1"] != ""){
+                            if($result["p1e"] == "ok"){
+                                echo "<td style='text-align:center;color:green'>審核通過<br><a href='#e' onClick='Mars_popup('ad_fun_mem_detail.asp?st=pdel&t=p1&mem_num=" . $result["mem_num"] . "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=100,left=100')'>刪除開放重傳</a></td>";
+                            }elseif($result["p1e"] == "err"){
+                                echo "<td style='text-align:center;color:red'>不通過</td>";
+                            }else{
+                                echo "<td style='text-align:center;'><a href='?st=pcheck&v=1&t=p1&mem_num=" . $result["mem_num"] . "' class='btn btn-success'>通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='?st=pcheck&v=0&t=p1&mem_num=" . $result["mem_num"] . "' class='btn btn-danger'>不通過審核</a></td>";
+                            }                            
+                        }else{
+                            echo "<td></td>";
+                        }
+
+                        if($result["p2"] != ""){
+                            if($result["p2e"] == "ok"){
+                                echo "<td style='text-align:center;color:green'>審核通過<br><a href='#e' onClick='Mars_popup('ad_fun_mem_detail.asp?st=pdel&t=p2&mem_num=" . $result["mem_num"] . "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=100,left=100')'>刪除開放重傳</a></td>";
+                            }elseif($result["p2e"] == "err"){
+                                echo "<td style='text-align:center;color:red'>不通過</td>";
+                            }else{
+                                echo "<td style='text-align:center;'><a href='?st=pcheck&v=1&t=p2&mem_num=" . $result["mem_num"] . "' class='btn btn-success'>通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='?st=pcheck&v=0&t=p2&mem_num=" . $result["mem_num"] . "' class='btn btn-danger'>不通過審核</a></td>";
+                            }                            
+                        }else{
+                            echo "<td></td>";
+                        }
+
+                        if($result["p3"] != ""){
+                            if($result["p3e"] == "ok"){
+                                echo "<td style='text-align:center;color:green'>審核通過<br><a href='#e' onClick='Mars_popup('ad_fun_mem_detail.asp?st=pdel&t=p3&mem_num=" . $result["mem_num"] . "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=100,left=100')'>刪除開放重傳</a></td>";
+                            }elseif($result["p3e"] == "err"){
+                                echo "<td style='text-align:center;color:red'>不通過</td>";
+                            }else{
+                                echo "<td style='text-align:center;'><a href='?st=pcheck&v=1&t=p3&mem_num=" . $result["mem_num"] . "' class='btn btn-success'>通過審核</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='?st=pcheck&v=0&t=p3&mem_num=" . $result["mem_num"] . "' class='btn btn-danger'>不通過審核</a></td>";
+                            }                            
+                        }else{
+                            echo "<td></td>";
+                        }
+                        echo "</tr>";
+                    ?>
                 </table>
 
             </div>

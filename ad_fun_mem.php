@@ -79,8 +79,7 @@
             $qresult = $SPConn->prepare($RSQL);
             $qresult = $qrs->execute();
         }
-        // call_alert("轉換中。", "win_close.php?m=轉換中", 0);
-        echo '<meta http-equiv="refresh" content="0;url=win_close.php?m=轉換中" />';
+        reURL("win_close.php?m=轉換中");
         exit;
     }
 
@@ -157,7 +156,7 @@
         $sqlss = $sqlss . " and (ff <> '' or not ff is null)";
     }
 
-    //判斷權限並查詢SQL總筆數
+    //判斷權限並查詢SQL總筆數    
     switch ( $_SESSION["MM_UserAuthorization"] ) {
         case "admin":          
 		    $allSQL = "SELECT count(mem_auto) as total_size FROM member_data WHERE  1 = 1" .$sqlss;
@@ -173,13 +172,13 @@
     $rs = $FunConn->prepare($allSQL);
     $rs->execute();
     $result = $rs->fetch(PDO::FETCH_ASSOC);
-    if (count($result) == 0){
+    if (!$result){
         $total_size = 0;
     }else{
-        if($result["total_size"] == 0 ){
-            $total_size = 0;
-        }else{
+        if( $_REQUEST["vst"] == "full" ){
             $total_size = $result["total_size"]; //總筆數
+        }else{
+            $total_size =  500;  //限制顯示500筆     
         }
     }	
     $tPage = 1; //目前頁數
@@ -192,8 +191,7 @@
 		$page2 = (50-(($tPageSize*$tPage)-$total_size));
 	}
     
-    // 如果請求參數full則全部列出
-    
+    // 如果請求參數full則全部列出    
     if( $_REQUEST["vst"] == "full" ){
         $sqlv = "*";
     }else{
@@ -399,19 +397,19 @@
                                                 <li><a href="javascript:Mars_popup('ad_fun_report.php?k_id=<?php echo $re["mem_auto"];?>&ty=member&rc=會員列表','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report; ?>)</a></li>
                                                 <?php
                                                     if( $_SESSION["MM_UserAuthorization"] != "single" ){
-                                                        echo "<li><a href='javascript:Mars_popup('ad_fun_send_branch.php?mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');'><i class='icon-arrow-right'></i> 發送</a></li>";
-                                                        echo "<li><a href='javascript:Mars_popup('ad_fun_mem_fix.php?mem_auto=" .$re["mem_auto"]. "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');'><i class='icon-file'></i> 修改</a></li>";
-                                                        // echo "<li><a href='ad_register2.php?mem_auto=" .$re["mem_auto"]. "' target='_blank'><i class='icon-camera'></i> 照片</a></li>";
+                                                        echo "<li><a href=\"javascript:Mars_popup('ad_fun_send_branch.php?mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');\"><i class='icon-arrow-right'></i> 發送</a></li>";
+                                                        echo "<li><a href=\"javascript:Mars_popup('ad_fun_mem_fix.php?mem_auto=" .$re["mem_auto"]. "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');\"><i class='icon-file'></i> 修改</a></li>";
+                                                        // echo "<li><a href=\"ad_register2.php?mem_auto=" .$re["mem_auto"]. "\" target='_blank'><i class='icon-camera'></i> 照片</a></li>";
                                                     }
                                                     if( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" ){
                                                         if( $re["trans_spring"] != "1" ){
-                                                            echo "<li><a href='javascript:Mars_popup('?st=trans&mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=200,top=100,left=100');'><i class='icon-resize-full'></i> 轉入未入會</a></li>";
+                                                            echo "<li><a href=\"javascript:Mars_popup('?st=trans&mem_auto=" .$re["mem_auto"]. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=200,top=100,left=100');\"><i class='icon-resize-full'></i> 轉入未入會</a></li>";
                                                         }else{
                                                             echo "<li><a style='color:#ccc'><i class='icon-share' style='color:#ccc'></i> 已轉未入會</a></li>";
                                                         }
                                                     }
                                                     if( $_SESSION["MM_UserAuthorization"] == "admin" ){
-                                                        echo "<li><a href='javascript:Mars_popup2('ad_fun_mem_del.php?mem_auto=" .$re["mem_auto"]. "','','width=300,height=200,top=100,left=100')'><i class='icon-trash'></i> 刪除</a></li>";
+                                                        echo "<li><a href=\"javascript:Mars_popup2('ad_fun_mem_del.php?mem_auto=" .$re["mem_auto"]. "','','width=300,height=200,top=100,left=100')\"><i class='icon-trash'></i> 刪除</a></li>";
                                                     }
                                                 ?>             
                                                 <!--<li><a href="javascript:Mars_popup('ad_fun_send_fun.php?mem_mail=<?php $re["mem_mail"]; ?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=320,top=10,left=10');"><i class="icon-envelope"></i> 開發信</a></li>-->
