@@ -13,4 +13,3 @@
 <script type="text/javascript" src="assets/js/app.js"></script>
 <!--<script type="text/javascript" src="js/util.js"></script>-->
 <script type="text/JavaScript" src="js/ajax.js"></script>
-<script type="text/JavaScript" src="include/script.js"></script>

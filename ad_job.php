@@ -23,8 +23,9 @@
 		$SQL_d = "Delete From job Where auton='".SqlFilter($_REQUEST["an"],"tab")."'";
 		$rs_d = $SPConn->prepare($SQL_d);
 		$rs_d->execute();
-		header("location:win_close.php?m=刪除中...");
-		exit;
+		reURL("win_close.php?m=刪除中...");
+		//header("location:win_close.php?m=刪除中...");
+		//exit;
 	}
 	
 	//SQL組合

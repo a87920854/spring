@@ -638,4 +638,11 @@
 		return $n;
 	}
 
+	//轉址
+	function reURL( $rurl ){
+		echo "<script language=\"javascript\">" ;
+		echo "window.location.href = '".$rurl."'";
+		echo "</script>" ;
+		exit;
+	}
 ?>

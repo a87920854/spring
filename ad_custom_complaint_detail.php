@@ -22,17 +22,18 @@
             $result=$rs->fetchAll(PDO::FETCH_ASSOC);
             foreach($result as $re);
             if ( count($result) > 0 ){
+
                 //urlpath = server.mappath("webfile/paper")
                 $filename = $re["filename"];
                 if ( $filename != "" ){
                     $path = dirname(__FILE__)."\Upload\\".$filename;
                     DelFile($path);
                     $log_data = 1;
-                    //刪除記錄
-                    $SQL_d = "Delete From ad_custom_complaint Where auton='".SqlFilter($_REQUEST["an"],"tab")."' And types='reply'";
-                    $rs_d = $SPConn->prepare($SQL_d);
-                    $rs_d->execute();
                 }
+                //刪除記錄
+                $SQL_d = "Delete From ad_custom_complaint Where auton='".SqlFilter($_REQUEST["an"],"tab")."' And types='reply'";
+                $rs_d = $SPConn->prepare($SQL_d);
+                $rs_d->execute();
             }
 
             if ( $log_data == 1 ){
@@ -49,8 +50,9 @@
                 $rs_i->execute();
             }
         }
-        header("location:win_close.php?m=刪除中…");
-        exit;
+        reURL("win_close.php?m=刪除中…");
+        //header("location:win_close.php?m=刪除中…");
+        //exit;
     }
     
     //上傳檔案*程式
@@ -119,6 +121,7 @@
         $SQL_i .= "'reply')";
         $rs_i = $SPConn->prepare($SQL_i);
         $rs_i->execute();
+        reURL("ad_custom_complaint_detail.php?id=".$num);
        // header("location:ad_custom_complaint_detail.php?id=".$num);
     }
 
@@ -138,7 +141,8 @@
         $SQL_i .= "'reply')";
         $rs_i = $SPConn->prepare($SQL_i);
         $rs_i->execute();
-        header("location:ad_custom_complaint_detail.php?id=".SqlFilter($_REQUEST["num"],"tab"));
+        reURL("ad_custom_complaint_detail.php?id=".SqlFilter($_REQUEST["num"],"tab"));
+        //header("location:ad_custom_complaint_detail.php?id=".SqlFilter($_REQUEST["num"],"tab"));
     }
 
     //結案歸檔*程式
@@ -172,6 +176,7 @@
         $rs_i->execute();        
         addreport("系統", "", "", $cphone, "系統紀錄", $_SESSION["pname"]." 於 ".chtime(date("Y-d-m H:m:i"))." 將客戶申訴案件 - ".$num." 結案歸檔");
         //header("location:win_close.php?m=結案歸檔中...");
+        reURL("win_close.php?m=結案歸檔中...");
     }
 
     //if ( SqlFilter($_REQUEST["id"],"tab") == "" ){ call_alert("編號錯誤。", 0,0); }
@@ -193,6 +198,7 @@
         $isfixd = "";
     }
 ?>
+<script type="text/JavaScript" src="include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
