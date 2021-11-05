@@ -425,10 +425,3 @@
 <?php
 require_once("./include/_bottom.php");
 ?>
-
-<script type="text/javascript">
-    $mtu = "ad_fun_mem.";
-    $(function() {
-
-    });
-</script>

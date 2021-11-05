@@ -84,6 +84,7 @@
 		_mtu();
 		_ajaxmodal();
 		_checkreservation();
+		_sideMenuActive();
 
 		/** Bootstrap Tooltip **/ 
 		jQuery("[data-toggle=tooltip]").tooltip();
@@ -94,6 +95,24 @@
         });
         
 	}
+
+/** sidebar menu click active **/ 
+function _sideMenuActive(){
+	//取得當前網址檔名
+	var url = location.pathname;
+	var fileNameArry = url.split("/");
+	var fileName = fileNameArry.slice(-1)[0];
+	//符合檔名則加上active
+	jQuery("#sideNav ul li a").each(function() {		
+		if($(this).attr("href") == fileName) {
+			$(this).parent("li").addClass("active");			
+			if($(this).parents("ul").length) {				
+				$(this).parents("ul").addClass("in");
+			}			
+		}
+	});
+}
+
 function _goTop() {
 	jQuery(window).scroll(function() {
 			_toTop();
@@ -196,23 +215,6 @@ function _checkreservation() {
 }
 
 function _mtu() {
-	if(typeof $nowmtu != 'undefined' && typeof $mtu == 'undefined') $mtu = $nowmtu;	
-	
-	if($mtu.length > 0 && jQuery("#sideNav").length > 0) {
-		
-		jQuery("#sideNav ul li a").each(function() {		
-			if($(this).attr("href").substr(0, $mtu.length) == $mtu) {
-				$(this).parent("li").addClass("active");
-				
-				if($(this).parents("ul").length) {
-					
-					$(this).parents("ul").addClass("in");
-				}
-				
-			}
-		});		
-	}
-	
 	if(jQuery("select").length) {
 		jQuery("select").each(function() {
 		var $thissel = $(this);
@@ -2213,8 +2215,7 @@ function _mtu() {
 
 	}
 
-
-
+	
 
 
 

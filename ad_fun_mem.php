@@ -228,7 +228,6 @@
    
 ?>
 
-<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
