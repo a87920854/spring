@@ -22,9 +22,9 @@
         $SQL = "SELECT * FROM member_data Where mem_auto = '" .$mem_auto. "'";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
-        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
         var_dump($result);
-        if(count($result) > 0){
+        if($result){
             $query = $SPConn->query("SELECT * FROM msg_num Where m_auto=1");
             $R3 = $query->fetch(PDO::FETCH_ASSOC);    
             $mem_num = $R3["m_num"] + 1;
