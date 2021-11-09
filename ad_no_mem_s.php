@@ -13,22 +13,7 @@
 
     if($_SESSION["MM_Username"] == ""){
         call_alert("請重新登入。","login.html",0);
-    }
-
-    // 查手機黑名單
-    $blackbtn = "";
-    $qsql = "select beca from call_list where fn = '" .$_REQUEST["mem_mobile"]. "' and types='val'";
-    $qrs = $SPConn->prepare($qsql);
-    $qrs->execute();
-    $qresult = $qrs->fetch(PDO::FETCH_ASSOC);
-    if($qresult){
-        $blackbtn = "<center><span style='color:red'>此電話號碼 " .$_REQUEST["mem_mobile"]. " 已被加入黑名單 - " .$qresult["beca"]. "</span></center>";
-    }
-    if($blackbtn != ""){
-        echo $blackbtn;
-    }
-
-
+    }    
 ?>
 <html>
 <head>
@@ -42,7 +27,20 @@
         }        
     </style>
 </head>
-
+<?php 
+    // 查手機黑名單
+    $blackbtn = "";
+    $qsql = "select beca from call_list where fn = '" .$_REQUEST["mem_mobile"]. "' and types='val'";
+    $qrs = $SPConn->prepare($qsql);
+    $qrs->execute();
+    $qresult = $qrs->fetch(PDO::FETCH_ASSOC);
+    if($qresult){
+        $blackbtn = "<center><span style='color:red'>此電話號碼 " .$_REQUEST["mem_mobile"]. " 已被加入黑名單 - " .$qresult["beca"]. "</span></center>";
+    }
+    if($blackbtn != ""){
+        echo $blackbtn;
+    }
+?>
 <body leftmargin="0" topmargin="5">
 
     <table width="950" border="1" align="center" style="border-collapse:collapse;">
@@ -67,10 +65,51 @@
         <?php
             if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "總管理處"){
                 $sql = "SELECT * FROM member_data Where mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
-            }else if($_SESSION["branch"] == "八德"){
-                $sql = "SELECT * FROM member_data Where mem_branch = '八德' and mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
+            }else{
+                if($_SESSION["branch"] == "八德"){
+                    $sql = "SELECT * FROM member_data Where mem_branch = '八德' and mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
+                }elseif($_SESSION["branch"] == "約專"){
+                    $sql = "SELECT * FROM member_data Where mem_branch = '約專' and mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
+                }elseif($_SESSION["branch"] == "迷你約"){
+                    $sql = "SELECT * FROM member_data Where mem_branch = '迷你約' and mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
+                }else{
+                    $sql = "SELECT * FROM member_data Where not mem_branch in ('約專', '迷你約', '八德') and mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
+                }
             }
+            $rs = $SPConn->prepare($sql);
+            $rs->execute();
+            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+            foreach($result as $re);
+            if($result){
+                $mem_cc = chk_cc($re["mem_cc"], $re["mem_num"], $re["mem_lc"]);               
+            }
+            
         ?>
+        <tr>
+            <td width="165"><?php echo Date_EN($re["mem_time"],9);?></td>
+            <td width="131">                
+                <?php 
+                    echo $re["mem_come"];
+                    if($re["mem_come2"] != ""){
+                        echo $re["mem_come2"];
+                    };
+                    echo $mem_cc;
+                ?>
+            </td>
+            <td width="78"><?php echo $re["mem_name"];?></td>
+            <td width="100"><?php echo $re["mem_mobile"];?></td>
+            <td width="151"><?php echo $re["mem_level"];?></td>
+            <td width="113"><?php echo $re["all_type"];?></td>
+            <td width="90"><?php echo $re["mem_branch"];?></td>
+            <td width="70">
+                <?php 
+                    if($re["mem_name"] != ""){
+                        echo SingleName($re["mem_single"],"normal");
+                    }
+                    
+                ?>
+            </td>
+        </tr>
         <tr>
             <td colspan=8 style="text-align:left;padding:5px;background:#f2f2f2">最後回報：台南王秀玲 - 預約聯絡 - 王秀玲於2021/5/15 下午 08:29:33預約 2021/05/17 19:00 聯絡，內容：未接 - 2021/5/15 下午 08:29:00</td>
         </tr>
@@ -91,7 +130,9 @@
             <td bgcolor="#FFFFCC">處理會館</td>
             <td bgcolor="#FFFFCC">處理秘書</td>
         </tr>
+        <?php
 
+        ?>
     </table>
     <br>
     <table width="950" border="1" align="center" style="border-collapse:collapse;">
