@@ -75,6 +75,38 @@
 						if ( $SingleName == "" ){ $SingleName = $re["p_other_name"];}
 					}
 				}
+				break;
+			case "auto":
+				if ( $sn == "" || is_null($sn) == 1 ){
+					$SingleName = "不明";
+				}else{
+					$SQL = "SELECT p_branch, p_other_name FROM personnel_data Where p_auto='".$sn."' order by p_work desc";
+					$rs = $SPConn3->prepare($SQL);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					foreach($result as $re);				
+					if ( count($result) == 0 ){	
+						$SingleName = "不明-無此編號";							
+					}else{
+						$SingleName = $re["p_branch"]. "-" .$re["p_other_name"];
+					}
+				}
+				break;
+			case "ch":
+				if ( $sn == "" || is_null($sn) == 1 ){
+					$SingleName = "不明";
+				}else{
+					$SQL = "SELECT name FROM b2b_manager Where uid='".$sn."'";
+					$rs = $SPConn3->prepare($SQL);
+					$rs->execute();
+					$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+					foreach($result as $re);
+					if ( count($result) == 0 ){		
+						$SingleName = "不明-無此編號";
+					}else{
+						$SingleName = $re["name"];
+					}
+				}
 				break;				
 		}
 		return $SingleName;
@@ -644,4 +676,37 @@
 		echo "window.location.href = '".$rurl."'";
 		echo "</script>" ;
 	}
+
+	// 去除字串的特殊符號(, . ")
+	function fixtext($strs){
+        if($strs != ""){
+            $strs = str_replace(" ", "", $strs);
+            $strs = str_replace(",", "", $strs);
+            $strs = str_replace(".", "", $strs);
+            $strs = str_replace("\"", "", $strs);
+        }
+        return $strs;
+    }
+    
+	// 推廣來源
+    function chk_cc($cc, $mm, $lc){
+        if($cc != ""){
+            if(explode("-",$cc)[0] == "sale"){
+                $sales = fixtext(explode("-",$cc)[1]);
+                $mem_cc_single = SingleName($sales, "auto");
+                if( strpos($mem_cc_single,"不明")> 0){
+                    $cc = "推廣：" .$mem_cc_single. "&nbsp;<a href='#r' onclick=\"Mars_popup('ad_no_mem.asp?st=mem_cc_fix&mem_num=" .$mm. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=150,top=10,left=10');\">修正</a>";
+                }else{
+                    $cc = "推廣：" .$mem_cc_single;
+                }
+                $cc = " [" .$cc. "]";
+            }else{
+                $cc = "";
+            }
+            if($lc != ""){
+                $cc = $cc. " [lc:".$lc."]";
+            }           
+        }
+        return $cc;
+    }
 ?>

@@ -28,35 +28,39 @@
     if( $_REQUEST["st"] == "pcheck" ){        
         switch($_REQUEST["t"]){
             case "pic":
+                $key = "mem_photoe";
                 if($_REQUEST["v"] == "1"){
-                    $mem_photoe = "ok";
+                    $val = "ok";
                 }else{
-                    $mem_photoe = "err";
+                    $val = "err";
                 }
                 break;
             case "p1":
+                $key = "p1e";
                 if($_REQUEST["v"] == "1"){
-                    $p1e = "ok";
+                    $val = "ok";
                 }else{
-                    $p1e = "err";
+                    $val = "err";
                 }
                 break;
             case "p2":
+                $key = "p2e";
                 if($_REQUEST["v"] == "1"){
-                    $p2e = "ok";
+                    $val = "ok";
                 }else{
-                    $p2e = "err";
+                    $val = "err";
                 }
                 break;
             case "p3":
+                $key = "p3e";
                 if($_REQUEST["v"] == "1"){
-                    $p3e = "ok";
+                    $val = "ok";
                 }else{
-                    $p3e = "err";
+                    $val = "err";
                 }
                 break;
         }
-        $SQL = "UPDATE member_data SET mem_photoe = '" .$mem_photoe. "', p1e = '" .$p1e. "', p2e = '" .$p2e. "', p3e = '" .$p3e. "' where mem_num = '" .$mem_num. "'";
+        $SQL = "UPDATE member_data SET " .$key. " = '" .$val. "' where mem_num = '" .$mem_num. "'";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
     }
