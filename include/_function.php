@@ -80,7 +80,7 @@
 		return $SingleName;
 	}
 
-	//??
+	//取得回報數量
 	function get_report_num($mobile){
 		$gresult = 0;
 		$SPConn1 = SPConOpen();
@@ -343,7 +343,7 @@
 					$reDate = date("Y/m/d H:i:s",strtotime($dtDate));
 					break;
 				case 7:
-					$reDate = date("Y.m.d H:i:s",strtotime($dtDate));
+					$reDate = date("Y-m-d H:i:s",strtotime($dtDate));
 					break;
 				case 8:
 					$reDate = date("Y.m",strtotime($dtDate));
@@ -643,6 +643,5 @@
 		echo "<script language=\"javascript\">" ;
 		echo "window.location.href = '".$rurl."'";
 		echo "</script>" ;
-		exit;
 	}
 ?>

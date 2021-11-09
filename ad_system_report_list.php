@@ -99,7 +99,6 @@
 	$SQL .= "Select TOP ".$page2." * From (";
 	$SQL .= "Select TOP ".($tPageSize*$tPage)." * From system_report Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc) t1 Where ".$subSQL2.$subSQL3.$subSQL4." ";
 	$SQL .= "Order By times) t2 Where ".$subSQL2.$subSQL3.$subSQL4." Order By times Desc";
-	echo $SQL;
 	$rs = $SPConn->prepare($SQL);
 	$rs->execute();
 	$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -140,7 +139,7 @@
                 </p>
 				<p>
 					<span class="text-status">所有資料狀態 </span> ▶&nbsp;
-					<a class="btn btn-info<?php if ( $tr == 3 ){ echo " btn-active";} ?>" onclick="javascript:stype(3);">未處理/處理中</a>
+					<a class="btn btn-info<?php if ( $tr == 3 || $tr == "" ){ echo " btn-active";} ?>" onclick="javascript:stype(3);">未處理/處理中</a>
 					<a class="btn btn-info<?php if ( $tr == 1 ){ echo " btn-active";} ?>" onclick="javascript:stype(1);">已處理</a>
 					<a class="btn btn-info<?php if ( $tr == 2 ){ echo " btn-active";} ?>" onclick="javascript:stype(2);">不需處理</a>
 				</p>
