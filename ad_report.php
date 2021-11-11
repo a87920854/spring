@@ -23,10 +23,11 @@
         call_alert("讀取編號有誤。", "ClOsE", 0);
     }
     
-    //Set rs = Server.CreateObject("ADODB.Recordset")
     if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
         $SQL_d = "Delete From log_data Where log_auto = ".SqlFilter($_REQUEST["la"],"int");
-        reURL("ad_report.asp?k_id=".SqlFilter($_REQUEST["k_id"],"int")."&lu=".SqlFilter($_REQUEST["lu"],"int")."&ty=".$ty);
+        $rs_d = $SPConn->prepare($SQL_d);
+        $rs_d->execute();
+        reURL("ad_report.php?k_id=".SqlFilter($_REQUEST["k_id"],"int")."&lu=".SqlFilter($_REQUEST["lu"],"int")."&ty=".$ty);
     }
     if ( SqlFilter($_REQUEST["st"],"tab") == "send" ){
         if ( SqlFilter($_REQUEST["ty"],"tab") == "member" ){    
@@ -83,7 +84,7 @@
             $in_log_4 = SqlFilter($_REQUEST["log_4"],"tab");
         }
 
-        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_3, log_5, log_service, log_6, log_6_time) Values ( ";
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_3, log_5, log_service, log_6, log_6_time, log_4) Values ( ";
         $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
         $SQL_i .= "'".SqlFilter($_REQUEST["k_id"],"tab")."',";
         $SQL_i .= "'".SqlFilter($_REQUEST["log_fid"],"tab")."',";
@@ -101,8 +102,8 @@
         $SQL_i .= "'".$in_log_4."')";
         $rs_i = $SPConn->prepare($SQL_i);
         $rs_i->execute();
-        updatemyreservation();
-        reURL("win_close.asp");
+        //updatemyreservation();
+        reURL("win_close.php");
     }
 ?>
 <html lang="en-US">
@@ -357,7 +358,7 @@
                             }else{
                                 echo "<span class='label' style='background-color:#666699'>私</span>&nbsp;&nbsp;";
                             }
-                            echo "<b><span class='label label-primary'>".chtime($re["log_time"])."</span>&nbsp;&nbsp;<span class='names'>".$re["log_branch"]."-".$re["log_name"]," 回報 <span class='hide'>".$mynum."</span></span>&nbsp;&nbsp;".$u_name."&nbsp;&nbsp;<span class='label label-success'>".$re["log_2"];
+                            echo "<b><span class='label label-primary'>".Date_EN($re["log_time"],9)."</span>&nbsp;&nbsp;<span class='names'>".$re["log_branch"]."-".$re["log_name"]," 回報 <span class='hide'>".$mynum."</span></span>&nbsp;&nbsp;".$u_name."&nbsp;&nbsp;<span class='label label-success'>".$re["log_2"];
                             if ( $re["log_3"] != "" ){
 	                            echo " - ".$re["log_3"];
                             }
@@ -442,11 +443,11 @@
                 </tr>
                 <tr>
                     <td style="width:80px;">回報時間</td>
-                    <td style="text-align:left"><small><?php echo date("Y-m-d H:s:i");?> 由 <?php echo SingleName($_SESSION["MM_Username"]);?><span class="hide">(<?php echo $_SESSION["MM_Username"];?>)</span> 回報</small></td>
+                    <td style="text-align:left"><small><?php echo date("Y-m-d H:s:i");?> 由 <?php echo SingleName($_SESSION["MM_Username"],"normal");?><span class="hide">(<?php echo $_SESSION["MM_Username"];?>)</span> 回報</small></td>
                 </tr>
                 <input type="hidden" name="k_id" value="<?php echo $_REQUEST["k_id"];?>">
                 <input type="hidden" name="k_mobile" value="<?php echo $k_mobile;?>">
-                <input type="hidden" name="log_name" value="<?php echo SingleName($_SESSION["MM_Username"]);?>">
+                <input type="hidden" name="log_name" value="<?php echo SingleName($_SESSION["MM_Username"],"normal");?>">
                 <input type="hidden" name="log_username" value="<?php echo $u_name;?>">
                 <input type="hidden" name="log_aid" value="<?php echo $mem_num;?>">
                 <input type="hidden" name="log_fid" value="<?php echo $mem_username;?>">

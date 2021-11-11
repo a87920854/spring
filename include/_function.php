@@ -286,7 +286,7 @@
 			$singleid = $_SESSION["MM_Username"];
 			setcookie("reservation_alert","",time()+3600); //建立cookie
 			$SQL = "Select Distinct log_6_time From log_data Where log_single='".$singleid."' And ((log_6 <> '' Or Not log_6 Is Null) And datediff(n, getdate(), log_6_time) >= 0 And datediff(d, getdate(), log_6_time) = 0) Order By log_6_time Asc";
-			$rs = $SPConn->prepare($SQL);
+			$rs = $SPConn2->prepare($SQL);
 			$rs->execute();
 			$result=$rs->fetchAll(PDO::FETCH_ASSOC);
 			if ( count($result) > 0 ){

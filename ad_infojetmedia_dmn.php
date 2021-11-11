@@ -261,7 +261,7 @@
                                     } ?>
                                 <tr>
                                     <td align="center"><?php echo changeDate($re["times"]);?></td>
-                                    <td align="center"><?php echo $re["names"];?><?php if ( $stat !=1 ){?>(<a href="ad_no_mem_s.asp?mem_mobile=<?php echo $mobile;?>" target="_blank">查</a>)<?php }?></td>
+                                    <td align="center"><?php echo $re["names"];?><?php if ( $stat !=1 ){?>(<a href="ad_no_mem_s.php?mem_mobile=<?php echo $mobile;?>" target="_blank">查</a>)<?php }?></td>
                                     <td align="center"><?php echo $re["sex"];?></td>
                                     <td align="center"><?php echo $re["age"];?></td>
                                     <td align="center"><?php echo $re["school"];?></td>
