@@ -12,12 +12,12 @@
     require_once("./include/_top.php");
     require_once("./include/_sidebar.php");
 
-    $mem_auto = $_REQUEST["mem_auto"];
-    $mem_au = $_REQUEST["mem_au"];
-    $mem_num = $_REQUEST["mem_num"];
+    $mem_auto = SqlFilter($_REQUEST["mem_auto"],"int");
+    $mem_au = SqlFilter($_REQUEST["mem_au"],"tab");
+    $mem_num = SqlFilter($_REQUEST["mem_num"],"int");
 
     // 會員讀取
-    if( $mem_auto == "" && $mem_au == "" ){
+    if( $mem_auto == "" && $mem_au == "" && $mem_num == ""){
         call_alert("會員編號讀取有誤。","ClOsE",0);
     }
     if( $_SESSION["MM_Username"] == "" ){

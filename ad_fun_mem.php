@@ -138,14 +138,14 @@
         if( $_REQUEST["s22"] > $_REQUEST["s23"]){
             call_alert("日期請由小到大選擇。",0,0);
         }
-        $s22 = $_REQUEST["s22"]. " 00:00";
-        $s23 = $_REQUEST["s23"]. " 23:59";
+        $s22 = SqlFilter($_REQUEST["s22"],"int"). " 00:00";
+        $s23 = SqlFilter($_REQUEST["s23"],"int"). " 23:59";
     }
     if( $s22 != "" && $s23 != "" ){
         $sqlss = $sqlss. " and mem_time between '" .$s22. "' and '" .$s23. "'";
     }
     if( $_REQUEST["s27"] != "" && $_REQUEST["s28"] != "" ){
-        $sqlss = $sqlss. " and year(mem_by) between '" .$_REQUEST["s28"]. "' and '".$_REQUEST["s27"]. "'";
+        $sqlss = $sqlss. " and year(mem_by) between '" .SqlFilter($_REQUEST["s28"],"int"). "' and '".SqlFilter($_REQUEST["s27"],"int"). "'";
     }elseif( $_REQUEST["s27"] != "" ){
         $sqlss = $sqlss & " and year(mem_by) = " .SqlFilter($_REQUEST["s27"],"int");
     }

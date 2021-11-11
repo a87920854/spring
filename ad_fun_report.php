@@ -14,7 +14,7 @@
     call_alert("請重新登入。","ClOsE",0);
     exit;
   }
-  $ty = $_REQUEST["ty"];
+  $ty = SqlFilter($_REQUEST["ty"],"tab");
   if($ty == ""){
     $ty = "lovekeyin";
   }
@@ -25,9 +25,9 @@
 
   // 刪除功能
   if( $_REQUEST["st"] == "del" ){
-    $rs = $FunConn->prepare("delete from log_data where log_auto = " . $_REQUEST["la"]);
+    $rs = $FunConn->prepare("delete from log_data where log_auto = " . SqlFilter($_REQUEST["la"],"tab"));
     $rs->execute();
-    $url = "ad_fun_report.asp?k_id=" . $_REQUEST["k_id"] . "&ty=" . $ty;
+    $url = "ad_fun_report.asp?k_id=" . SqlFilter($_REQUEST["k_id"],"int") . "&ty=" . $ty;
     reURL($url);
     exit;
   }
@@ -36,13 +36,13 @@
   if( $_REQUEST["st"] == "send" ){
     switch($ty){
       case "member":
-        $SQL = "update member_data set all_type='" . $_REQUEST["log_2"] . "',all_type2='" . $_REQUEST["log_3"] . "' where mem_auto=" . $_REQUEST["k_id"];
+        $SQL = "update member_data set all_type='" . SqlFilter($_REQUEST["log_2"],"tab") . "',all_type2='" . SqlFilter($_REQUEST["log_3"],"tab") . "' where mem_auto=" . SqlFilter($_REQUEST["k_id"],"int");
         break;
       case "gmember":
-        $SQL = "update goldcard_data set all_type='" . $_REQUEST["log_2"] . "',all_type2='" . $_REQUEST["log_3"] . "' where mem_auto=" . $_REQUEST["k_id"];
+        $SQL = "update goldcard_data set all_type='" . SqlFilter($_REQUEST["log_2"],"tab") . "',all_type2='" . SqlFilter($_REQUEST["log_3"],"tab") . "' where mem_auto=" . SqlFilter($_REQUEST["k_id"],"int");
         break;
       default:
-        $SQL = "update love_keyin set all_type='" . $_REQUEST["log_2"] . "',all_type2='" . $_REQUEST["log_3"] . "' where k_id=" . $_REQUEST["k_id"];
+        $SQL = "update love_keyin set all_type='" . SqlFilter($_REQUEST["log_2"],"tab") . "',all_type2='" . SqlFilter($_REQUEST["log_3"],"tab") . "' where k_id=" . SqlFilter($_REQUEST["k_id"],"int");
         break;      
     }
     $rs = $FunConn->prepare($SQL);
@@ -50,22 +50,22 @@
 
     // 新增log
     $log_time = date("Y-m-d H:i:s");
-    $log_num = $_REQUEST["k_id"];
-    $log_username = $_REQUEST["log_username"];
-    $log_name = $_REQUEST["log_name"];
-    $log_branch = $_REQUEST["log_branch"];
-    $log_single = $_SESSION["MM_Username"];
-    $log_1 = $_REQUEST["k_mobile"];
-    $log_2 = $_REQUEST["log_2"];
+    $log_num = SqlFilter($_REQUEST["k_id"],"int");
+    $log_username = SqlFilter($_REQUEST["log_username"],"tab");
+    $log_name = SqlFilter($_REQUEST["log_name"],"tab");
+    $log_branch = SqlFilter($_REQUEST["log_branch"],"tab");
+    $log_single = SqlFilter($_REQUEST["MM_Username"],"tab");
+    $log_1 = SqlFilter($_REQUEST["k_mobile"],"int");
+    $log_2 = SqlFilter($_REQUEST["log_2"],"tab");
     if( ($_REQUEST["log_3"] != "") && ($_REQUEST["log_3"] != "請選擇") ){
-      $log_3 = str_replace(" ", "", $_REQUEST["log_3"]);
+      $log_3 = SqlFilter($_REQUEST["log_3"],"tab");
     }
-    $log_4 = $_REQUEST["log_4"];
-    $log_5 = $_REQUEST["ty"];
+    $log_4 = SqlFilter($_REQUEST["log_4"],"tab");
+    $log_5 = SqlFilter($_REQUEST["ty"],"tab");
     if( ($_REQUEST["log_6"] != "") && ($_REQUEST["log_6"] != "點此預約下次通話") && chkDate($_REQUEST["log_6"]) ){
-      $log_6 = $_REQUEST["log_6"];
+      $log_6 = SqlFilter($_REQUEST["log_6"],"tab");
     }
-    $rc = $_REQUEST["rc"];
+    $rc = SqlFilter($_REQUEST["rc"],"tab");
     $SQL2 = "INSERT INTO log_data (log_time, log_num, log_username, log_name, log_branch, log_single, log_1, log_2, log_3, log_4, log_5, log_6, rc) ";
     $SQL2 .=  "VALUES (" . $log_time ."," . $log_num ."," . $log_username ."," . $log_name ."," . $log_branch ."," . $log_single ."," . $log_1 ."," . $log_2 ."," . $log_3 ."," . $log_4 ."," . $log_5 ."," . $log_6 ."," . $rc . ")";
     $rs2 =  $FunConn->prepare($SQL2);
@@ -77,13 +77,13 @@
   // 讀取資料
   switch($ty){
     case "member":
-      $SQL = "select mem_name as r1, mem_mobile as r2, all_type as r3, all_type2 as r4 from member_data where mem_auto=" . $_REQUEST["k_id"];
+      $SQL = "select mem_name as r1, mem_mobile as r2, all_type as r3, all_type2 as r4 from member_data where mem_auto=" . SqlFilter($_REQUEST["k_id"],"int");
       break;
     case "gmember":
-      $SQL = "select mem_name as r1, mem_mobile as r2, all_type as r3, all_type2 as r4 from goldcard_data where mem_auto=" . $_REQUEST["k_id"];
+      $SQL = "select mem_name as r1, mem_mobile as r2, all_type as r3, all_type2 as r4 from goldcard_data where mem_auto=" . SqlFilter($_REQUEST["k_id"],"int");
       break;
     default:
-      $SQL = "select k_name as r1, k_mobile as r2, all_type as r3, all_type2 as r4 from love_keyin where k_id=" . $_REQUEST["k_id"];
+      $SQL = "select k_name as r1, k_mobile as r2, all_type as r3, all_type2 as r4 from love_keyin where k_id=" . SqlFilter($_REQUEST["k_id"],"int");
       break;      
   }  
   $rs = $FunConn->prepare($SQL);
@@ -178,7 +178,7 @@
         </table>
         <table width="660" border="1" cellpadding="1">
           <?php 
-            $rs2 = $FunConn->prepare("SELECT top 200 * FROM log_data WHERE log_num =" . $_REQUEST["k_id"] . " and log_5='" . $ty . "' order by log_time desc");
+            $rs2 = $FunConn->prepare("SELECT top 200 * FROM log_data WHERE log_num =" . SqlFilter($_REQUEST["k_id"],"int") . " and log_5='" . $ty . "' order by log_time desc");
             $rs2->execute();
             $result2 = $rs2->fetchAll(PDO::FETCH_ASSOC); 
             if(!$result2){
@@ -199,7 +199,7 @@
                     <?php
                       echo $re["log_name"] . "　";
                       if( $_SESSION["MM_UserAuthorization"] == "admin" ){                        
-                        echo "<a href=\"?st=del&la=" . $re["log_auto"] . "&k_id=" . $_REQUEST["k_id"] . "&ty=" . $ty . "\">刪</a>";
+                        echo "<a href=\"?st=del&la=" . $re["log_auto"] . "&k_id=" . SqlFilter($_REQUEST["k_id"],"int") . "&ty=" . $ty . "\">刪</a>";
                       }
                       echo "<br>" . changeDate($re["log_time"]) . "</td></tr>";
                     ?>
@@ -240,13 +240,13 @@
               <td>回報時間</td>
               <td><?php echo changeDate(date("Y/m/d H:i:s")); ?> 由 <?php echo SingleName($_SESSION["MM_Username"],"normal"); ?> (<?php echo $_SESSION["MM_Username"];?>) 回報</td>
             </tr>
-            <input type="hidden" name="k_id" value="<?php echo $_REQUEST["k_id"]; ?>">
+            <input type="hidden" name="k_id" value="<?php echo SqlFilter($_REQUEST["k_id"],"int"); ?>">
             <input type="hidden" name="k_mobile" value="<?php echo $k_mobile; ?>">
             <input type="hidden" name="log_name" value="<?php echo SingleName($_SESSION["MM_Username"],"normal"); ?>">
             <input type="hidden" name="log_username" value="<?php echo $u_name; ?>">
-            <input type="hidden" name="log_branch" value="<?php echo $_SESSION["branch"]; ?>">
+            <input type="hidden" name="log_branch" value="<?php echo SqlFilter($_REQUEST["branch"],"tab"); ?>">
             <input type="hidden" name="ty" value="<?php echo $ty; ?>">
-            <input type="hidden" name="rc" value="<?php echo $_REQUEST["rc"]; ?>">
+            <input type="hidden" name="rc" value="<?php echo SqlFilter($_REQUEST["rc"],"tab"); ?>">
           </table>
       </td>
     </tr>
