@@ -1,6 +1,112 @@
-<!doctype html>
-<html lang="en-US">
+<?php
+	/*****************************************/
+	//檔案名稱：ad_report.php
+	//後台對應位置：名單/發送記錄>DATEMENOW-億捷創意(回報頁面)
+	//改版日期：2021.11.08
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+
+    //pageload_timer = timer
+    //response.charset="utf-8"
+    
+    if ( SqlFilter($_REQUEST["ty"],"tab") == "member" ){
+        $ty = "member";
+    }else{
+        $ty = "lovekeyin";
+    }
+    
+    if ( SqlFilter($_REQUEST["k_id"],"tab") == "" && SqlFilter($_REQUEST["mem_num"],"tab") == "" ){
+        call_alert("讀取編號有誤。", "ClOsE", 0);
+    }
+    
+    if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+        $SQL_d = "Delete From log_data Where log_auto = ".SqlFilter($_REQUEST["la"],"int");
+        $rs_d = $SPConn->prepare($SQL_d);
+        $rs_d->execute();
+        reURL("ad_report.php?k_id=".SqlFilter($_REQUEST["k_id"],"int")."&lu=".SqlFilter($_REQUEST["lu"],"int")."&ty=".$ty);
+    }
+    if ( SqlFilter($_REQUEST["st"],"tab") == "send" ){
+        if ( SqlFilter($_REQUEST["ty"],"tab") == "member" ){    
+            if ( SqlFilter($_REQUEST["log_aid"],"tab") != "" ){
+                $SQL = "Select all_type, mem_single, mem_mobile From member_data Where mem_num='" . SqlFilter($_REQUEST["log_aid"],"tab");
+                $subSQL  = "mem_num='" . SqlFilter($_REQUEST["log_aid"],"tab");
+            }elseif ( SqlFilter($_REQUEST["log_fid"],"tab") != "" ){
+                $SQL = "Select all_type, mem_single, mem_mobile From member_data Where mem_username='" . SqlFilter($_REQUEST["log_fid"],"tab");
+                $subSQL = "mem_username='" . SqlFilter($_REQUEST["log_fid"],"tab");
+            }
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+            foreach($result as $re);
+            if ( count($result)> 0 ){
+                $mem_mobile = $re["mem_mobile"];
+                $mem_single = $re["mem_single"];
+                $SQL_u = "Update member_data Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")." Where ".$subSQL;
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+            if ( strtoupper($mem_single) == strtoupper($_SESSION["MM_Username"]) ){
+                $SQL_u = "Update member_data Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")."' Where mem_mobile ='" .$mem_mobile."' And mem_single='" .$mem_single."'";
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+        }else{
+            $SQL_u = "Update love_keyin Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")."' Where k_id = " . SqlFilter($_REQUEST["k_id"],"int");
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+        }
+         
+        $log_2 = SqlFilter($_REQUEST["log_2"],"tab");
+        if ( $log_2 == "請假三個月" || $log_2 == "請假半年" || $log_2 == "請假一年" ){
+            $log_service = 1;
+        }elseif ( $log_2 == "已排約" || $log_2 == "約後關懷" || $log_2 == "排約未滿5次" || $log_2 == "排約無效" ){
+            $log_service = 1;
+        }elseif ( $log_2 == "名單資訊" || $log_2 == "客訴反映" || $log_2 == "聯繫狀況" || $log_2 == "排約注意" ){
+            $log_service = 1;
+        }elseif ( $log_2 == "已是全卡會員" ){
+            $log_service = 1;
+        }else{
+            $log_service = 0;
+        }
+         
+        //新增log
+        if ( $log_service == 1 ){ $in_log_service = 1;}
+        if ( chkDate($_REQUEST[""]) ){
+            $in_log_6 = SqlFilter($_REQUEST["log_6"],"tab");
+            $log_6_time = SqlFilter($_REQUEST["log_6"],"tab") . " ". SqlFilter($_REQUEST["log_6_time1"],"tab").":".SqlFilter($_REQUEST["log_6_time2"],"tab");
+            $in_log_6_time = new DateTime($log_6_time);
+            $in_log_4 = $_SESSION["p_other_name"]."於".date("Y-m-d H:s:i")."預約 ".SqlFilter($_REQUEST["log_6"],"tab") . " ".SqlFilter($_REQUEST["log_6_time1"],"tab").":".SqlFilter($_REQUEST["log_6_time2"],"tab")." 聯絡，內容：".SqlFilter($_REQUEST["log_4"],"tab");
+        }else{
+            $in_log_4 = SqlFilter($_REQUEST["log_4"],"tab");
+        }
+
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_3, log_5, log_service, log_6, log_6_time, log_4) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["k_id"],"tab")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["log_fid"],"tab")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["log_username"],"tab")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["log_name"],"tab")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["log_branch"],"tab")."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["k_mobile"],"tab")."',";
+        $SQL_i .= "'".$log_2."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["log_3"],"tab")."',";
+        $SQL_i .= "'".SqlFilter($_REQUEST["ty"],"tab")."',";
+        $SQL_i .= "'".$in_log_service."',";
+        $SQL_i .= "'".$in_log_6."',";
+        $SQL_i .= "'".$in_log_6_time."',";
+        $SQL_i .= "'".$in_log_4."')";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();
+        //updatemyreservation();
+        reURL("win_close.php");
+    }
+?>
+<html lang="en-US">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
@@ -173,55 +279,106 @@
         }
     </style>
 </head>
-
 <body>
+<?php
+    $mem_use = 0;
+    if ( $ty == "member" ){
+        if ( SqlFilter($_REQUEST["mem_num"],"tab") != "" ){
+	        $subSQL = " mem_num='".SqlFilter($_REQUEST["mem_num"],"tab")."'";
+        }else{
+	        $subSQL = " mem_auto='".SqlFilter($_REQUEST["k_id"],"tab")."'";
+        }
+        $SQL = "Select mem_num As r0, mem_username As r00, mem_name As r1, mem_mobile As r2, all_type As r3, mem_level As r4 From member_data Where".$subSQL;
+    }else{
+        $SQL = "Select k_name As r1, k_mobile As r2, all_type As r3 From love_keyin Where k_id='".SqlFilter($_REQUEST["k_id"],"tab")."'";
+    }
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    
+    if ( count($result) == 0 ){
+        $u_name = "不明";
+        echo "<tr><td>資料讀取錯誤</td></tr>";
+        exit;
+    }else{
+        if ( $re["r1"]  != "" ){
+            $u_name = $re["r1"];
+        }
+        if ( $u_name == "" ){
+            $u_name = "不明";
+        }
+        $k_mobile = $re["r2"];
+    }
 
+    $all_type = $re["r3"];
+    if ( $ty == "member" ){
+        $mem_num = $re["r0"];
+        $mem_username = $re["r00"];
+        $mem_level = $re["r4"];
+        if ( $mem_level == "mem" ){
+	        $mem_use = 1;
+        }
+    }
+?>
     <div class="content">
         <div class="row">
             <div>
-                <h4>0975772688 - 回報系統 <a href="#m" onclick="fastmove()" class="btn btn-default btn-xs pull-right">快速回報內容</a><a href="#c" onclick="window.close()" class="btn btn-danger btn-xs pull-right" style="margin-right:5px;">關閉本頁</a></h4>
+                <h4><?php echo $k_mobile;?> - 回報系統 <a href="#m" onclick="fastmove()" class="btn btn-default btn-xs pull-right">快速回報內容</a><a href="#c" onclick="window.close()" class="btn btn-danger btn-xs pull-right" style="margin-right:5px;">關閉本頁</a></h4>
             </div>
             <ul class="timeline">
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#ff6600">公</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-08 20:17</span>&nbsp;&nbsp;<span class="names">台中-台中督導 回報 <span class="hide">member[4221875]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">系統紀錄 - 成功</span></b>&nbsp;&nbsp;<a href="?st=del&la=4221875&k_id=1984554&lu=K122260199&ty=member&s=97348077" class="btn btn-xs btn-default">刪</a>
-                        <p>由 陳素娟/陳素娟 處理 詹前程(主) 與 傅琪庭(被) 於 2021/9/8 下午 06:00:00 預訂排約，結果：成功</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#ff6600">公</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-08 20:16</span>&nbsp;&nbsp;<span class="names">台中-陳素娟 回報 <span class="hide">member[4221860]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">系統紀錄</span></b>&nbsp;&nbsp;<a href="?st=del&la=4221860&k_id=1984554&lu=K122260199&ty=member&s=97348077" class="btn btn-xs btn-default">刪</a>
-                        <p>由 陳素娟 處理 詹前程 與 傅琪庭 於 2021/9/8 下午 06:00:00 至 台中 排約 - 系統紀錄</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#666699">私</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-08 18:45</span>&nbsp;&nbsp;<span class="names">台中-台中督導 回報 <span class="hide">member[4221313]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">系統紀錄</span></b>&nbsp;&nbsp;<a href="?st=del&la=4221313&k_id=1984554&lu=K122260199&ty=member&s=97348077" class="btn btn-xs btn-default">刪</a>
-                        <p>台中督導於2021/9/8 下午 06:45:15新增本會員，會員權益為璀璨VIP會員-二年期 - 效期至2021/9/8~2023/9/8</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#666699">私</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-07 20:56</span>&nbsp;&nbsp;<span class="names">台南-彭春福 回報 <span class="hide">member[4219729]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">已邀約</span></b>&nbsp;&nbsp;<a href="?st=del&la=4219729&k_id=1984554&lu=K122260199&ty=member&s=E222367725" class="btn btn-xs btn-default">刪</a>
-                        <p>由 台中督導 回報約見結果： 參加／收費情形：刷125000 優3000 - 系統紀錄</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#666699">私</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-07 20:56</span>&nbsp;&nbsp;<span class="names">台中-彭春福 回報 <span class="hide">member[4219728]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">已邀約</span></b>&nbsp;&nbsp;<a href="?st=del&la=4219728&k_id=1984554&lu=K122260199&ty=member&s=97348077" class="btn btn-xs btn-default">刪</a>
-                        <p>由 台中督導 回報約見結果： 參加／收費情形：刷125000 優3000 - 系統紀錄</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#666699">私</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-07 20:53</span>&nbsp;&nbsp;<span class="names">台南-台南督導 回報 <span class="hide">member[4219704]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">已成交</span></b>&nbsp;&nbsp;<a href="?st=del&la=4219704&k_id=1984554&lu=K122260199&ty=member&s=12989178" class="btn btn-xs btn-default">刪</a>
-                        <p>刷125000優3千。</p>
-                    </div>
-                </li>
-                <li>
-                    <div class="cont"><span class="label" style="background-color:#666699">私</span>&nbsp;&nbsp;<b><span class="label label-primary">2021-09-07 15:54</span>&nbsp;&nbsp;<span class="names">台南-吳琪雅 回報 <span class="hide">system[4218398]</span></span>&nbsp;&nbsp;詹前程&nbsp;&nbsp;<span class="label label-success">已邀約</span></b>&nbsp;&nbsp;<a href="?st=del&la=4218398&k_id=1984554&lu=K122260199&ty=member&s=E222367725" class="btn btn-xs btn-default">刪</a>
-                        <p>由 開發：胡淑貞，邀約：吳琪雅 預約 2021/9/7 下午 06:30:00 由 台南 邀約至 台中 參觀(會館約見)，聯絡情形及接待注意事項： - 系統紀錄</p>
-                    </div>
-                </li>
+                <?php
+                    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+	                    // echo "Select Top 300 * From log_data Where log_1 = '".$k_mobile."' And log_1 <> '0912345678' Order By log_auto Desc";
+                        //exit;
+                        $SQL = "Select Top 300 * From log_data Where log_1 ='".$k_mobile."' And log_1 <> '0912345678' Order By log_auto Desc";
+                    }elseif (  $_SESSION["MM_UserAuthorization"] == "branch" ){
+                        $SQL = "Select Top 300 * From log_data Where log_1 ='".$k_mobile."' And log_1 <> '0912345678' And log_branch='".$_SESSION["branch"]."' Order By log_auto Desc";
+                    }elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+	                    $rbranch = $_SESSION["lovebranch"];
+	                    $rbranch1 = str_replace(",", "','", $rbranch);
+                        $SQL = "Select Top 300 * From log_data Where log_1 ='".$k_mobile."' And log_1 <> '0912345678' And ((log_single = '".$_SESSION["MM_Username"]."') Or (log_branch In ('".$rbranch1."') And log_service=1)) Order By log_auto Desc";
+                    }else{
+                        $SQL = "Select Top 300 * From log_data Where log_1 ='".$k_mobile."' And log_1 <> '0912345678' And ((log_single = '".$_SESSION["MM_Username"]."') Or (log_branch = '".$_SESSION["branch"]."' And log_service = 1)) Order By log_auto Desc";
+                    }
+                    $rs = $SPConn->prepare($SQL);
+                    $rs->execute();
+                    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+                    if ( count($result) == 0 ){
+                        echo "<li>目前無任何回報紀錄</li>";
+                    }else{
+                        foreach($result as $re){
+	                        $mynum = "".$re["log_5"]."[".$re["log_auto"]."]";
+                            echo "<li><div class='cont'>";
+                            if ( $_SESSION["MM_Username"] == "KYOE" || $_SESSION["MM_Username"] == "tsaiwen216" ){
+	                            echo $re["log_auto"]."<br>";
+                            }
+                            if ( $re["log_service"] == 1 ){
+                                echo "<span class='label' style='background-color:#ff6600'>公</span>&nbsp;&nbsp;";
+                            }else{
+                                echo "<span class='label' style='background-color:#666699'>私</span>&nbsp;&nbsp;";
+                            }
+                            echo "<b><span class='label label-primary'>".Date_EN($re["log_time"],9)."</span>&nbsp;&nbsp;<span class='names'>".$re["log_branch"]."-".$re["log_name"]," 回報 <span class='hide'>".$mynum."</span></span>&nbsp;&nbsp;".$u_name."&nbsp;&nbsp;<span class='label label-success'>".$re["log_2"];
+                            if ( $re["log_3"] != "" ){
+	                            echo " - ".$re["log_3"];
+                            }
+                            echo "</span></b>";
+
+                            if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                echo "&nbsp;&nbsp;<a href='?st=del&la=".$re["log_auto"]."&k_id=".SqlFilter($_REQUEST["k_id"],"tab")."&lu=".$mem_username."&ty=".$ty."&s=".$re["log_single"]."' class='btn btn-xs btn-default'>刪</a>";
+                            }
+                            echo "<p>".$re["log_4"]."";
+                            if ( $re["log_6"] != "" ){
+	                            //echo $re["log_6"];
+                            }
+                            echo "</p></div></li>";
+                        }
+                    }?>
             </ul>
         </div>
     </div>
     <center>
-        <form id="report_cont" method="post" action="?st=send&ty=member" onsubmit="return check_sform()">
+        <form id="report_cont" method="post" action="?st=send&ty=<?php echo $ty;?>" onsubmit="return check_sform()">
             <table width="90%" border="1" cellpadding="1">
                 <tr>
                     <td colspan=4 style="color:#fff;background:#336699">新增回報紀錄</td>
@@ -231,89 +388,49 @@
                     <td style="text-align:left">
                         <select name="log_2" id="log_2" class="form-control">
                             <option value="" selected>請選擇</option>
-                            <option value="" disabled>--- 會員約見 ---</option>
-                            <option value="升卡約見">升卡約見</option>
-                            <option value="續約約見">續約約見</option>
-                            <option value="" disabled>--- 已入會 ---</option>
-                            <option value="已成交">已成交</option>
-                            <option value="已是全卡會員">已是全卡會員</option>
-                            <option value="" disabled>--- 已邀約 ---</option>
-                            <option value="已邀約">已邀約</option>
-                            <option value="已邀約本週">已邀約本週</option>
-                            <option value="已邀約本月">已邀約本月</option>
-                            <option value="已邀約未到現場">已邀約未到現場</option>
-                            <option value="可邀約A">可邀約A</option>
-                            <option value="可邀約B">可邀約B</option>
-                            <option value="可邀約C">可邀約C</option>
-                            <option value="邀約完需再次提醒">邀約完需再次提醒</option>
-                            <option value="" disabled>--- 需加強 ---</option>
-                            <option value="未接">未接</option>
-                            <option value="未接4次以上">未接4次以上</option>
-                            <option value="未接1">未接1</option>
-                            <option value="未接2">未接2</option>
-                            <option value="未接3">未接3</option>
-                            <option value="預約聯絡">預約聯絡</option>
-                            <option value="有到未參">有到未參</option>
-                            <option value="長期經營">長期經營</option>
-                            <option value="重點經營">重點經營</option>
-                            <option value="到期未續約">到期未續約</option>
-                            <option value="需加強推廣活動">需加強推廣活動</option>
-                            <option value="需要再排約">需要再排約</option>
-                            <option value="已來訪考慮中">已來訪考慮中</option>
-                            <option value="" disabled>--- 排約狀況 ---</option>
-                            <option value="已排約">已排約</option>
-                            <option value="約後關懷">約後關懷</option>
-                            <option value="排約未滿5次">排約未滿5次</option>
-                            <option value="排約無效">排約無效</option>
-                            <option value="" disabled>--- 公開資料 ---</option>
-                            <option value="名單資訊">名單資訊</option>
-                            <option value="客訴反映">客訴反映</option>
-                            <option value="聯繫狀況">聯繫狀況</option>
-                            <option value="排約注意">排約注意</option>
-                            <option value="" disabled>--- 休息中 ---</option>
-                            <option value="請假三個月">請假三個月</option>
-                            <option value="請假半年">請假半年</option>
-                            <option value="請假一年">請假一年</option>
-                            <option value="" disabled>--- 活動咖 ---</option>
-                            <option value="課程">課程</option>
-                            <option value="喜歡戶外活動">喜歡戶外活動</option>
-                            <option value="喜歡室內活動">喜歡室內活動</option>
-                            <option value="喜歡國外旅遊">喜歡國外旅遊</option>
-                            <option value="" disabled>--- 重覆 ---</option>
-                            <option value="重覆名單">重覆名單</option>
-                            <option value="舊會員">舊會員</option>
-                            <option value="" disabled>--- 無效 ---</option>
-                            <option value="無效">無效</option>
-                            <option value="黑名單">黑名單</option>
-                            <option value="不要再聯絡">不要再聯絡</option>
-                            <option value="拒絕">拒絕</option>
-                            <option value="暫時拒絕">暫時拒絕</option>
-                            <option value="空號">空號</option>
-                            <option value="手機號暫停">手機號暫停</option>
-                            <option value="已結婚">已結婚</option>
-                            <option value="目前交往中">目前交往中</option>
-                            <option value="年紀太小">年紀太小</option>
-                            <option value="總管理回收名單">總管理回收名單</option>
-                            <option value="條件不符暫不約">條件不符暫不約</option>
-                            <option value="已解約">已解約</option>
+                            <!--mem_use = 1 -->
+                            <?php
+                            $SQL1 = "Select option_txt,option_title From report_option Where option_sort = 0 And mem_use = 1 Order By option_sort";
+                            $rs1 = $SPConn->prepare($SQL1);
+                            $rs1->execute();
+                            $result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($result1 as $re1){
+                                echo "<option value='' disabled>--- ".$re1["option_txt"]." ---</option>";
+                                $SQL2 = "Select option_txt From report_option Where option_title = ".$re1["option_title"]." Order By option_sort";
+                                $rs2 = $SPConn->prepare($SQL2);
+                                $rs2->execute();
+                                $result2=$rs2->fetchAll(PDO::FETCH_ASSOC);
+                                foreach($result2 as $re2){
+                                    echo "<option value='".$re2["option_txt"]."'>".$re2["option_txt"]."</option>";
+                                }
+                            }
+                            ?>
+                            <!--mem_use = 2 -->
+                            <?php
+                            $SQL1 = "Select option_txt,option_title From report_option Where option_sort = 0 And mem_use = 0 Order By option_sort";
+                            $rs1 = $SPConn->prepare($SQL1);
+                            $rs1->execute();
+                            $result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($result1 as $re1){
+                                echo "<option value='' disabled>--- ".$re1["option_txt"]." ---</option>";
+                                $SQL2 = "Select option_txt From report_option Where option_title = ".$re1["option_title"]." Order By option_sort";
+                                $rs2 = $SPConn->prepare($SQL2);
+                                $rs2->execute();
+                                $result2=$rs2->fetchAll(PDO::FETCH_ASSOC);
+                                foreach($result2 as $re2){
+                                    echo "<option value='".$re2["option_txt"]."'>".$re2["option_txt"]."</option>";
+                                }
+                            }
+                            ?>
                         </select>
                         <div class="input-group" style="margin-top:10px;">
                             <input type="text" style="width:160px;display:none;" name="log_6" id="log_6" class="datepicker form-control" placeholder="點此選擇下次通話日期" autocomplete="off">
-                            <select name="log_6_time1" id="log_6_time1" class="form-control" style="width:auto;display:none;">
-                                <option value="10">10 時</option>
-                                <option value="11">11 時</option>
-                                <option value="12">12 時</option>
-                                <option value="13">13 時</option>
-                                <option value="14">14 時</option>
-                                <option value="15">15 時</option>
-                                <option value="16">16 時</option>
-                                <option value="17">17 時</option>
-                                <option value="18">18 時</option>
-                                <option value="19">19 時</option>
-                                <option value="20">20 時</option>
-                                <option value="21">21 時</option>
-                                <option value="22">22 時</option>
-                            </select><select name="log_6_time2" id="log_6_time2" class="form-control" style="width:auto;display:none;">
+                            <select name="log_6_time1" id="log_6_time1" class="form-control" style="width:auto;display:none;"><!--←目前隱藏狀態-->
+                                <?php for ( $i=10;$i<=22;$i++ ){ ?>
+                                    <option value="<?php echo $i;?>"><?php echo $i;?> 時</option>
+                                <?php }?>
+                            </select>
+                            <select name="log_6_time2" id="log_6_time2" class="form-control" style="width:auto;display:none;"><!--←目前隱藏狀態-->
                                 <option value="00">00 分</option>
                                 <option value="30">30 分</option>
                             </select>
@@ -326,18 +443,18 @@
                 </tr>
                 <tr>
                     <td style="width:80px;">回報時間</td>
-                    <td style="text-align:left"><small>2021/9/28 下午 03:29:52 由 JACK<span class="hide">(JACK0906)</span> 回報</small></td>
+                    <td style="text-align:left"><small><?php echo date("Y-m-d H:s:i");?> 由 <?php echo SingleName($_SESSION["MM_Username"],"normal");?><span class="hide">(<?php echo $_SESSION["MM_Username"];?>)</span> 回報</small></td>
                 </tr>
-                <input type="hidden" name="k_id" value="1984554">
-                <input type="hidden" name="k_mobile" value="0975772688">
-                <input type="hidden" name="log_name" value="JACK">
-                <input type="hidden" name="log_username" value="詹前程">
-                <input type="hidden" name="log_aid" value="2082523">
-                <input type="hidden" name="log_fid" value="K122260199">
-                <input type="hidden" name="log_branch" value="總管理處">
-                <input type="hidden" name="ty" value="member">
+                <input type="hidden" name="k_id" value="<?php echo $_REQUEST["k_id"];?>">
+                <input type="hidden" name="k_mobile" value="<?php echo $k_mobile;?>">
+                <input type="hidden" name="log_name" value="<?php echo SingleName($_SESSION["MM_Username"],"normal");?>">
+                <input type="hidden" name="log_username" value="<?php echo $u_name;?>">
+                <input type="hidden" name="log_aid" value="<?php echo $mem_num;?>">
+                <input type="hidden" name="log_fid" value="<?php echo $mem_username;?>">
+                <input type="hidden" name="log_branch" value="<?php echo $_SESSION["branch"];?>">
+                <input type="hidden" name="ty" value="<?php echo $ty;?>">
                 <tr>
-                    <td colspan=4 align="center"><input id="bsub" type="submit" class="btn btn-primary" style="width:60%" value="新增回報"></td>
+                    <td colspan=4" align="center"><input id="bsub" type="submit" class="btn btn-primary" style="width:60%" value="新增回報"></td>
                 </tr>
             </table>
         </form>

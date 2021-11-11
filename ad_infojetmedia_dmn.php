@@ -1,10 +1,190 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
-?>
+	error_reporting(0); 
+	/*****************************************/
+	//檔案名稱：ad_infojetmedia_dmn.php
+	//後台對應位置：名單/發送記錄>DMN億捷創意
+	//改版日期：2021.11.3
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+
+    //判斷權限
+    $auth_limit = "2";
+    require_once("./include/_limit.php");
+
+    //更新狀態
+    if ( SqlFilter($_REQUEST["st"],"tab") == "double" ){
+        $SQL_u = "Update infojetmedia_dmn Set stat=2 Where auton=".SqlFilter($_REQUEST["auton"],"tab");
+        $rs_u = $SPConn->prepare($SQL_u);
+        $rs_u->execute();
+        reURL("ad_infojetmedia_dmn.php");
+        exit;
+    }
+
+    if ( SqlFilter($_REQUEST["st"],"tab") == "trans" ){
+        $SQL = "Select * From infojetmedia_dmn Where auton=".SqlFilter($_REQUEST["auton"],"int");
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+        foreach($result as $re);
+        if ( count($result) > 0 ){                
+            $SQL1 = "Select * From msg_num Where m_auto=1";
+            $rs1 = $SPConn->prepare($SQL1);
+            $rs1->execute();
+            $result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+            foreach($result1 as $re1);
+            $mem_num = $re1["m_num"] + 1;
+            $SQL_u = "Update msg_num set m_num = ". $mem_num ." Where m_auto = 1";
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+            if ( $re["sex"] == "女" ){
+                $mem_photo = "girl.jpg";
+            }else{
+                $mem_photo = "boy.jpg";
+            }
+
+            //INSERT member_data
+            $SQL_i  = "Insert Into ad_index_data(all_type, mem_level, mem_num, mem_photo, mem_come, mem_cc, mem_time, mem_name, mem_sex, mem_blood, mem_marry, mem_mobile, mem_by, ";
+            $SQL_i .= "mem_bm, mem_bd, mem_area, mem_mail, mem_school, all_note) Values ( ";
+            $SQL_i .= "'未處理',";
+            $SQL_i .= "'guest',";
+            $SQL_i .= "'".$mem_num."',";
+            $SQL_i .= "'".$mem_photo."',";
+            $SQL_i .= "'億捷創意-DMN',";
+            $SQL_i .= "'".$re["regc"]."',";
+            $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+            $SQL_i .= "'".$re["names"]."',";
+            $SQL_i .= "'".$re["sex"]."',";
+            $SQL_i .= "'A',";
+            $SQL_i .= "'未婚',";
+            $SQL_i .= "'".$re["mobile"]."',";
+            if ( chkDate($re["age"]) ){
+                $SQL_i .= "'".date("Y",$re["age"])."',";
+                $SQL_i .= "'".date("m",$re["age"])."',";
+                $SQL_i .= "'".date("d",$re["age"])."',";
+            }else{
+                $SQL_i .= "'',";
+                $SQL_i .= "'',";
+                $SQL_i .= "'',";
+            }
+            $SQL_i .= "'".$re["city"]."',";
+            if ( $re["email"] != "" ){
+                $SQL_i .= "'".$re["email"]."',";
+            }else{
+                $SQL_i .= "'',";
+            }
+            $SQL_i .= "'".$re["school"]."',";
+            $SQL_i .= "'".$re["times"]."- 自 DateMeNow-億捷創意 轉換')";
+            $rs_i = $SPConn->prepare($SQL_i);
+            $rs_i->execute();
+            $mem_auto = mysql_insert_id();
+            echo $mem_auto;
+            exit;
+            
+            //UPDATE msg_num
+            $SQL_u = "Update msg_num Set mem_auto=".$mem_auto.",stat=1";
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+        }
+        reURL("ad_infojetmedia_dmn.asp");
+        exit;
+    }
+    
+    //刪除資料
+    if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+        $SQL_d = "Delete From infojetmedia_dmn Where auton=".SqlFilter($_REQUEST["auton"],"int");
+        $rs_d = $SPConn->prepare($SQL_d);
+        $rs_d->execute();
+        reURL("win_close.asp?m=資料刪除中");
+        exit;
+    }
+
+    //程式
+    $stat = SqlFilter($_REQUEST["stat"],"tab");
+    switch ($stat){
+	    case "2":
+            $subSQL = "stat = 2";
+            $d1 = "";
+            $d2 = "";
+            $d3 = "disabled";
+            break;
+	    case "1":
+	        $subSQL = "stat = 1";
+	        $d1 = "";
+	        $d2 = "disabled";
+	        $d3 = "";
+            break;
+        default:
+	        $subSQL = "stat = 0";
+	        $d1 = "disabled";
+	        $d2 = "";
+	        $d3 = "";
+            break;
+    }
+
+    /*if request("vst") = "full" then
+    	sqls = "1 = 1"
+    end if*/
+
+    if ( SqlFilter($_REQUEST["times1"],"tab") != "" ){
+        $t1 = SqlFilter($_REQUEST["times1"],"tab");
+        if ( chkDATE($t1) == false){
+            call_alert("起始日期有誤。", 0, 0);
+        }
+        $t1 = $t1 . " 00:00";
+    }
+
+    if ( SqlFilter($_REQUEST["times2"],"tab") != "" ){
+        $t2 = SqlFilter($_REQUEST["times2"],"tab");
+        if ( chkDate($t2) == false ){
+            call_alert("結束日期有誤。", 0, 0);
+        }
+        $t2 = $t2 . " 23:59";
+    }
+
+    if ( $t1 != "" && $t2 != "" ){
+	    $subSQL = " And times Between '".$t1."' And '".$t2."'";
+	    //$t1 = datevalue($t1);
+	    //$t2 = datevalue($t2);
+    }
+
+    //取得總筆數
+    $SQL = "Select count(auton) As total_size From infojetmedia_dmn Where ".$subSQL;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 || $re["total_size"] == 0 ) {
+        $total_size = 0;
+    }else{
+        $total_size = $re["total_size"];
+    }
+
+    //取得分頁資料
+    $tPageSize = 50; //每頁幾筆
+    $tPage = 1; //目前頁數
+    if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+    $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+    if ( $tPageSize*$tPage < $total_size ){
+        $page2 = 50;
+    }else{
+        $page2 = (50-(($tPageSize*$tPage)-$total_size));
+    }
+
+    //分頁語法
+    $SQL  = "Select * From (";
+    $SQL .= "Select TOP ".$page2." * From (";
+    $SQL .= "Select TOP ".($tPageSize*$tPage)." * From infojetmedia_dmn Where ".$subSQL." Order By times Desc) t1 Where ".$subSQL." Order By times Desc ) t2 Where ".$subSQL." Order By times Desc ";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+?>
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -18,726 +198,117 @@ require_once("./include/_sidebar.php");
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>DateMeNow-億捷創意 - 數量：300</strong> <!-- panel title -->
+                    <strong>DateMeNow-億捷創意 - 數量：<?php echo $total_size;?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
                 <div class="col-md-12">
-                    <p><a href="ad_infojetmedia_dmn.php" class="btn btn-info disabled">未處理</a>&nbsp;&nbsp;<a href="ad_infojetmedia_dmn.php?stat=1" class="btn btn-warning ">已處理</a>&nbsp;&nbsp;<a href="ad_infojetmedia_dmn.php?stat=2" class="btn btn-primary ">重複</a>
+                    <p>
+                        <span class="text-status">目前資料狀態 </span> ▶&nbsp;
+                        <a href="ad_infojetmedia_dmn.php" class="btn btn-info<?php if ( $stat == "" ){?> btn-active<?php }?>"<?php if ( $stat == "" ){?> disabled<?php }?>>未處理</a>
+                        <a href="ad_infojetmedia_dmn.php?stat=1" class="btn btn-info<?php if ( $stat == 1 ){?> btn-active<?php }?>"<?php if ( $stat == 1 ){?> disabled<?php }?>>已處理</a>
+                        <a href="ad_infojetmedia_dmn.php?stat=2" class="btn btn-info<?php if ( $stat == 2 ){?> btn-active<?php }?>"<?php if ( $stat == 2 ){?> disabled<?php }?>>重複</a>
                     </p>
                     <p>
-                    <form name="form1" method="post" action="?vst=full&stat=0" style="margin:0px;">
-                        &nbsp;&nbsp;日期：
-                        <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times1" value="">
-                        ～
-                        <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times2" value="">
-                        <input type="submit" name="Submit" style="height:28px;margin-top:-7px;" value="查詢">
-                    </form>
+                        <form name="form1" method="post" action="?vst=full&stat=0" style="margin:0px;">
+                            &nbsp;&nbsp;日期：
+                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times1" value="">
+                            ～
+                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times2" value="">
+                            <input type="submit" name="Submit" style="height:28px;margin-top:-7px;" value="查詢">
+                        </form>
                     </p>
-                    <table class="table table-striped table-bordered bootstrap-datatable">
+                    <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                         <thead>
                             <tr>
-                                <th>時間</th>
-                                <th>姓名</th>
-                                <th>性別</th>
-                                <th>生日</th>
-                                <th>學歷</th>
-                                <th>手機</th>
-                                <th>Email</th>
-                                <th>地區</th>
-                                <th>註冊來源</th>
-                                <th>註冊時間</th>
-                                <th></th>
+                                <th width="12%">時間</th>
+                                <th width="8%">姓名</th>
+                                <th width="3%">性別</th>
+                                <th width="8%">生日</th>
+                                <th width="6%">學歷</th>
+                                <th width="6%">手機</th>
+                                <th width="10%">Email</th>
+                                <th width="8%">地區</th>
+                                <th width="15%">註冊來源</th>
+                                <th width="12%">註冊時間</th>
+                                <th>&nbsp;</th>
                             </tr>
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:43:25</td>
-                                <td align="center">李芳庭(<a href="ad_no_mem_s.php?mem_mobile=0952270286" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1991-11-14</td>
-                                <td align="center">大學</td>
-                                <td align="center">0952270286</td>
-                                <td align="center">tryagain2286289@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 11:50:30</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1708"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1708','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:43:25</td>
-                                <td align="center">陳廷亦(<a href="ad_no_mem_s.php?mem_mobile=0918322170" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1981-11-21</td>
-                                <td align="center">大學</td>
-                                <td align="center">0918322170</td>
-                                <td align="center">tingyi1121@yahoo.com.tw</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 11:49:56</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1709"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1709','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:42:13</td>
-                                <td align="center">曾郁玲(<a href="ad_no_mem_s.php?mem_mobile=0966093999" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1981-01-21</td>
-                                <td align="center">大學</td>
-                                <td align="center">0966093999</td>
-                                <td align="center">joyce0121@gmail.com</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 14:36:05</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1706"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1706','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:42:13</td>
-                                <td align="center">陳致愷(<a href="ad_no_mem_s.php?mem_mobile=0982112471" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1990-11-25</td>
-                                <td align="center">大學</td>
-                                <td align="center">0982112471</td>
-                                <td align="center">ppolp0301@gmail.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 13:45:20</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1707"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1707','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:39:55</td>
-                                <td align="center">廖憶蓁(<a href="ad_no_mem_s.php?mem_mobile=0903559345" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1979-12-25</td>
-                                <td align="center">大學</td>
-                                <td align="center">0903559345</td>
-                                <td align="center">joyceliao1225@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 20:08:01</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1701"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1701','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:39:55</td>
-                                <td align="center">林沛緹(<a href="ad_no_mem_s.php?mem_mobile=0975723816" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1986-03-24</td>
-                                <td align="center">大學</td>
-                                <td align="center">0975723816</td>
-                                <td align="center">abawpenny@gmail.com</td>
-                                <td align="center">桃園市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 20:22:24</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1702"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1702','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:39:55</td>
-                                <td align="center">李承寰(<a href="ad_no_mem_s.php?mem_mobile=0926051755" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1992-06-09</td>
-                                <td align="center">大學</td>
-                                <td align="center">0926051755</td>
-                                <td align="center">a1237002003@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 19:29:53</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1703"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1703','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:39:55</td>
-                                <td align="center">黃昕慧(<a href="ad_no_mem_s.php?mem_mobile=0913012887" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1992-05-08</td>
-                                <td align="center">大學</td>
-                                <td align="center">0913012887</td>
-                                <td align="center">yoyo508123@yahoo.com.tw</td>
-                                <td align="center">桃園市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 19:21:56</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1704"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1704','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:39:55</td>
-                                <td align="center">呂竹軒(<a href="ad_no_mem_s.php?mem_mobile=0926567056" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1986-11-15</td>
-                                <td align="center">大學</td>
-                                <td align="center">0926567056</td>
-                                <td align="center">cntwbot@gmail.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 20:20:09</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1705"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1705','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:38:42</td>
-                                <td align="center">呂鎮良(<a href="ad_no_mem_s.php?mem_mobile=0925256176" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1991-12-16</td>
-                                <td align="center">大學</td>
-                                <td align="center">0925256176</td>
-                                <td align="center">liang_1216@yahoo.com.tw</td>
-                                <td align="center">桃園市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 20:27:43</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1697"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1697','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:38:42</td>
-                                <td align="center">石瑞渝(<a href="ad_no_mem_s.php?mem_mobile=0979151099" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1987-01-05</td>
-                                <td align="center">大學</td>
-                                <td align="center">0979151099</td>
-                                <td align="center">a912873465@gmail.com</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 21:28:44</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1698"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1698','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:38:42</td>
-                                <td align="center">紀至軒(<a href="ad_no_mem_s.php?mem_mobile=0930820199" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1992-09-26</td>
-                                <td align="center">大學</td>
-                                <td align="center">0930820199</td>
-                                <td align="center">riventw78213@gmail.com</td>
-                                <td align="center">桃園市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 21:54:45</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1699"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1699','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/26 上午 12:38:42</td>
-                                <td align="center">吳珮瑄(<a href="ad_no_mem_s.php?mem_mobile=0955697266" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1992-01-03</td>
-                                <td align="center">大學</td>
-                                <td align="center">0955697266</td>
-                                <td align="center">aa28520@gmail.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-25 22:25:35</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1700"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1700','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 01:24:09</td>
-                                <td align="center">陳怡靜(<a href="ad_no_mem_s.php?mem_mobile=0956928610" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1992-04-20</td>
-                                <td align="center">大學</td>
-                                <td align="center">0956928610</td>
-                                <td align="center">mary2003729@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-23 21:59:20</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1671"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1671','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 01:22:53</td>
-                                <td align="center">周辰陽(<a href="ad_no_mem_s.php?mem_mobile=0930807201" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1992-06-14</td>
-                                <td align="center">大學</td>
-                                <td align="center">0930807201</td>
-                                <td align="center">sweet_810614@yahoo.com.tw</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-24 00:26:32</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1669"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1669','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 01:09:55</td>
-                                <td align="center">黃誌韋(<a href="ad_no_mem_s.php?mem_mobile=0980817340" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1990-09-22</td>
-                                <td align="center">大學</td>
-                                <td align="center">0980817340</td>
-                                <td align="center">a32343234@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-24 00:39:57</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1668"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1668','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 12:45:44</td>
-                                <td align="center">張雪芳(<a href="ad_no_mem_s.php?mem_mobile=0911211802" target="_blank">查</a>)</td>
-                                <td align="center">女</td>
-                                <td align="center">1987-08-05</td>
-                                <td align="center">大學</td>
-                                <td align="center">0911211802</td>
-                                <td align="center">sa760805@gmail.com</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-hongbao.com</td>
-                                <td align="center">2016-07-23 23:18:27</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1667"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1667','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 12:44:26</td>
-                                <td align="center">鄭立昇(<a href="ad_no_mem_s.php?mem_mobile=0917690701" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1993-04-26</td>
-                                <td align="center">大學</td>
-                                <td align="center">0917690701</td>
-                                <td align="center">smile690701@yahoo.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-23 22:39:07</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1665"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1665','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/24 上午 12:44:26</td>
-                                <td align="center">陳星瑋(<a href="ad_no_mem_s.php?mem_mobile=0972150239" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1989-04-14</td>
-                                <td align="center">大學</td>
-                                <td align="center">0972150239</td>
-                                <td align="center">h78414@gmail.com</td>
-                                <td align="center">桃園市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-23 23:19:17</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=double&auton=1666"><i class="icon-share"></i> 此電話重複</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1666','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/23 上午 12:42:02</td>
-                                <td align="center">王吉宏(<a href="ad_no_mem_s.php?mem_mobile=0976072589" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1979-07-25</td>
-                                <td align="center">大學</td>
-                                <td align="center">0976072589</td>
-                                <td align="center">jerrywang0725@hotmail.com.tw</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-22 14:42:41</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1664"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1664','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/23 上午 12:40:48</td>
-                                <td align="center">黃彥達(<a href="ad_no_mem_s.php?mem_mobile=0911011102" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1987-08-09</td>
-                                <td align="center">專科</td>
-                                <td align="center">0911011102</td>
-                                <td align="center">da19870809@gmail.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-22 19:46:21</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1658"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1658','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/23 上午 12:40:48</td>
-                                <td align="center">魏立涵(<a href="ad_no_mem_s.php?mem_mobile=0911843686" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1993-01-30</td>
-                                <td align="center">大學</td>
-                                <td align="center">0911843686</td>
-                                <td align="center">andywei0130@gmail.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-22 17:50:47</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1659"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1659','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/23 上午 12:40:48</td>
-                                <td align="center">黃星凱(<a href="ad_no_mem_s.php?mem_mobile=0916117616" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1981-06-06</td>
-                                <td align="center">專科</td>
-                                <td align="center">0916117616</td>
-                                <td align="center">duersbh66@yahoo.com.com</td>
-                                <td align="center">新北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-22 20:11:41</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1660"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1660','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <td align="center">2016/7/23 上午 12:40:48</td>
-                                <td align="center">楊正瑜(<a href="ad_no_mem_s.php?mem_mobile=0980305511" target="_blank">查</a>)</td>
-                                <td align="center">男</td>
-                                <td align="center">1981-04-09</td>
-                                <td align="center">碩士</td>
-                                <td align="center">0980305511</td>
-                                <td align="center">qing41000@gmail.com</td>
-                                <td align="center">台北市</td>
-                                <td align="center">www.tw-prizes.com</td>
-                                <td align="center">2016-07-22 19:23:31</td>
-                                <td align="center">
-
-                                    <div class="btn-group">
-                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                        <ul class="dropdown-menu pull-right">
-
-                                            <li><a href="?st=trans&auton=1661"><i class="icon-share"></i> 轉入未入會資料</a></li>
-
-                                            <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=1661','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                        </ul>
-                                    </div>
-
-                                </td>
-                            </tr>
-
-
-                            </tbody>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ( count($result) == 0 ){
+                                echo "<tr><td colspan='10'>目前已無資料</td></tr>";
+                            }else{
+                                foreach($result as $re){
+	                                $mobile = $re["mobile"];
+	                                $havee = 0;
+                                    $SQL1 = "Select Top 1 * From member_data Where mem_branch = '八德' And mem_mobile='".$mobile."'";
+                                    $rs1 = $SPConn->prepare($SQL1);
+                                    $rs1->execute();
+                                    $result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+                                    if ( count($result1) > 0 ){
+		                                $havee = 1;
+                                    }
+	                                $SQL1 = "Select Top 1 * From love_keyin Where all_branch = '八德' And k_mobile='".$mobile."'";
+                                    $rs1 = $SPConn->prepare($SQL1);
+                                    $rs1->execute();
+                                    $result1=$rs1->fetchAll(PDO::FETCH_ASSOC);
+                                    if ( count($result1) > 0 ){
+		                                $havee = 1;
+                                    } ?>
+                                <tr>
+                                    <td align="center"><?php echo changeDate($re["times"]);?></td>
+                                    <td align="center"><?php echo $re["names"];?><?php if ( $stat !=1 ){?>(<a href="ad_no_mem_s.php?mem_mobile=<?php echo $mobile;?>" target="_blank">查</a>)<?php }?></td>
+                                    <td align="center"><?php echo $re["sex"];?></td>
+                                    <td align="center"><?php echo $re["age"];?></td>
+                                    <td align="center"><?php echo $re["school"];?></td>
+                                    <td align="center"><?php echo $mobile;?></td>
+                                    <td align="center"><?php echo $re["email"];?></td>
+                                    <td align="center"><?php echo $re["city"];?></td>
+                                    <td align="center"><?php echo $re["regc"];?></td>
+                                    <td align="center"><?php echo $re["regt"];?></td>
+                                    <td align="center">
+                                    <?php if ( $stat == 0 ){ ?>
+                                        <div class="btn-group">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                            <ul class="dropdown-menu pull-right">
+                                                <?php if ( $havee == 1 && SqlFilter($_REQUEST["stat"],"tab") != "1" ){?>
+                                                    <li><a href="?st=double&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 此電話重複</a></li>
+                                                <?php }elseif ( SqlFilter($_REQUEST["stat"],"tab") != "1" ){ ?>
+                                                    <li><a href="?st=trans&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 轉入未入會資料</a></li>
+                                                <?php }?>
+                                                <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=<?php echo $re["auton"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                            </ul>
+                                        </div>
+                                    <?php }elseif ( $stat == 1 ){
+                                        $reports = get_report_num($mobile);
+                                        if ( substr_count($reports, "|+|") > 0 ){
+                                            $reports_array = explode("|+|", $reports);
+                                            $report = $reports_array[0];
+                                            $report_text = $reports_array[1];
+                                        }else{
+                                            $report = 0;
+                                            $report_text = "無";
+                                        }
+                                    ?>
+                                        <a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re["mem_auto"];?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>
+                                    <?php }?>
+                                    </td>
+                                </tr>
+                            <?php }}?>
+                        </tbody>
                     </table>
                 </div>
-                <div class="text-center">共 300 筆、第 1 頁／共 6 頁&nbsp;&nbsp;
-                    <ul class='pagination pagination-md'>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=1&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full>第一頁</a></li>
-                        <li class='active'><a href="#">1</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=2&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>2</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=3&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>3</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=4&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>4</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=5&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>5</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=6&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>6</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=2&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text' title='Next'>下一頁</a></li>
-                        <li><a href=/ad_infojetmedia_dmn.php?topage=6&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full class='text'>最後一頁</a></li>
-                        <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                                <option value="/ad_infojetmedia_dmn.php?topage=1&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full" selected>1</option>
-                                <option value="/ad_infojetmedia_dmn.php?topage=2&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full">2</option>
-                                <option value="/ad_infojetmedia_dmn.php?topage=3&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full">3</option>
-                                <option value="/ad_infojetmedia_dmn.php?topage=4&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full">4</option>
-                                <option value="/ad_infojetmedia_dmn.php?topage=5&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full">5</option>
-                                <option value="/ad_infojetmedia_dmn.php?topage=6&Submit=%E6%9F%A5%E8%A9%A2&times2=&times1=&stat=0&vst=full">6</option>
-                            </select></li>
-                    </ul>
-                </div>
-
+                <?php require_once("./include/_page.php"); ?>
             </div>
             <!--/span-->
-
         </div>
         <!--/row-->
-
+    </div>
 </section>
 <!-- /MIDDLE -->
 
-<?php
-require_once("./include/_bottom.php")
-?>
+<?php require_once("./include/_bottom.php");?>

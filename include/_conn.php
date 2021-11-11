@@ -2,6 +2,7 @@
 	//設定conn name
 	$SPConn = SPConOpen();	//春天會館
 	$SPConn1 = SPConOpen();	//春天會館 for _function
+	$SPConn2 = SPConOpen();	//春天會館 for _function
 	$FunConn = FunOpen();	//好好玩旅行社
 	$DMNConn = DMNOpen();	//datemenow
 

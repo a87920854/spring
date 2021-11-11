@@ -43,6 +43,7 @@
 ?>
 <body leftmargin="0" topmargin="5">
 
+    <!-- 春天會員 春天會員 春天會員 春天會員 春天會員 -->
     <table width="950" border="1" align="center" style="border-collapse:collapse;">
         <tr>
             <td colspan="8" bgcolor="#FFFFCC">
@@ -61,7 +62,6 @@
             <td bgcolor="#FFFFCC">處理會館</td>
             <td bgcolor="#FFFFCC">處理秘書</td>
         </tr>
-
         <?php
             if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "總管理處"){
                 $sql = "SELECT * FROM member_data Where mem_mobile = '" .$_REQUEST["mem_mobile"]. "' and mem_mobile <> '0912345678' ORDER BY mem_auto DESC";
@@ -136,11 +136,14 @@
         ?>
     </table>
     <br>
+
+
+    <!-- 春天排約 春天排約 春天排約 春天排約 春天排約 -->
     <table width="950" border="1" align="center" style="border-collapse:collapse;">
         <tr>
             <td colspan="6" bgcolor="#FFFFCC">
                 <div align="center">
-                    <font color=purple>春天排約</font>
+                    <font color="purple">春天排約</font>
             </td>
         </tr>
         <tr>
@@ -165,11 +168,56 @@
             $rs3->execute();
             $result3 = $rs3->fetchAll(PDO::FETCH_ASSOC);
             if($result3){
-                foreach($result3 as $re3){?>
+                foreach($result3 as $re3){
+                    //2021.09.16 采雯新增
+                    if ( $fr == "" ){   //由未入會入
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" And $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re3["k_name"];
+                            $show_mobile = $re3["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re3["mem_single"] ){
+                                $show_name = $re3["k_name"];
+                                $show_mobile = $re3["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re3["k_mobile"],4)."******";
+                            }
+                        }
+                    }else{
+                        //由會員系統入
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re3["k_name"];
+                            $show_mobile = $re3["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re3["mem_single"] ){
+                                $show_name = $re3["k_name"];
+                                $show_mobile = $re3["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re3["k_mobile"],4)."******";
+                            }
+                        }
+                    }
+
+                    //由好好玩會員入
+                    if ( $fr == "f" ){
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re3["k_name"];
+                            $show_mobile = $re3["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re3["mem_single"] ){
+                                $show_name = $re3["k_name"];
+                                $show_mobile = $re3["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re3["k_mobile"],4)."******";
+                            }
+                        }
+                    }?>
                     <tr>
                         <td width="163"><?php echo Date_EN($re3["k_time"],9);?></td>
-                        <td width="96"><?php echo $re3["k_name"];?></td>
-                        <td width="149"><?php echo $re3["k_mobile"];?></td>
+                        <td width="96"><?php echo $show_name;?></td>
+                        <td width="149"><?php echo $show_mobile;?></td>
                         <td width="197"><?php echo $re3["all_type"];?></td>
                         <td width="105"><?php echo $re3["all_branch"];?></td>
                         <td width="100">
@@ -183,6 +231,10 @@
         <?php }} ?>
     </table>
     <br>
+    <!-- //春天排約 春天排約 春天排約 春天排約 春天排約 -->
+
+
+    <!-- 春天活動 春天活動 春天活動 春天活動 春天活動 -->
     <table width="950" border="1" align="center" style="border-collapse:collapse;">
         <tr>
             <td colspan="9" bgcolor="#FFFFCC">
@@ -234,7 +286,54 @@
             $rs4->execute();
             $result4 = $rs4->fetchAll(PDO::FETCH_ASSOC);
             if($result4){
-                foreach($result4 as $re4){?>
+                foreach($result4 as $re4){
+
+                    //2021.09.16 采雯新增
+                    if ( $fr == "" ){   //由未入會入
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re4["k_name"];
+                            $show_mobile = $re4["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re4["all_single"] ){
+                                $show_name = $re4["k_name"];
+                                $show_mobile = $re4["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re4["k_mobile"],4)."******";
+                            }
+                        }
+                    }else{
+                        //由會員系統入		
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re4["k_name"];
+                            $show_mobile = $re4["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re4["all_single"] ){
+                                $show_name = $re4["k_name"];
+                                $show_mobile = $re4["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re4["k_mobile"],4)."******";
+                            }
+                        }
+                    }
+                
+                    //由好好玩會員入
+                    if ( $fr == "f" ){
+                        if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                            $show_name = $re4["k_name"];
+                            $show_mobile = $re4["k_mobile"];
+                        }else{
+                            if ( $_SESSION["MM_Username"] == $re4["all_single"] ){
+                                $show_name = $re4["k_name"];
+                                $show_mobile = $re4["k_mobile"];
+                            }else{
+                                $show_name = "*****";
+                                $show_mobile = substr($re4["k_mobile"],4)."******";
+                            }
+                        }
+                    }
+                    ?>
                     <tr>
                         <td width="163"><div align="center" class="style1"><?php echo Date_EN($re3["k_time"],9); ?></div></td>
                         <td width="96"><div align="center" class="style1"><?php echo $re4["k_come"]; ?></div></td>
@@ -255,6 +354,9 @@
         <?php }} ?>
     </table>
     <br>
+    <!-- //春天活動 春天活動 春天活動 春天活動 春天活動 -->
+
+    <!-- 好好玩會員 好好玩會員 好好玩會員 好好玩會員 好好玩會員 -->
     <?php 
         if( ($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch") && $_SESSION["branch"] != "八德" ){ ?>
             <table width="950" border="1" align="center" style="border-collapse:collapse;">
@@ -286,7 +388,42 @@
                     $rs5->execute();
                     $result5 = $rs5->fetchAll(PDO::FETCH_ASSOC);
                     if($result5){
-                        foreach($result5 as $re5){?>
+                        foreach($result5 as $re5){
+                            //2021.09.16 采雯新增
+                            if ( $fr == "" ){   //由未入會入
+                                if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                                    $show_name = $re5["mem_name"];
+                                    $show_mobile = $re5["mem_mobile"];
+                                }else{
+                                    if ( $_SESSION["MM_Username"] == $re5["mem_single"] ){
+                                        $show_name = $re5["mem_name"];
+                                        $show_mobile = $re5["mem_mobile"];
+                                    }else{
+                                        $show_name = "*****";
+                                        $show_mobile = substr($re5["mem_mobile"],4)."******";
+                                    }
+                                }
+                            }else{
+                                //由會員系統入		
+                                if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                                    $show_name = $re5["mem_name"];
+                                    $show_mobile = $re5["mem_mobile"];
+                                }else{
+                                    if ( $re5["mem_level"] == "mem" ){
+                                        $show_name = $re5["mem_name"];
+                                        $show_mobile = $re5["mem_mobile"];
+                                    }else{
+                                        if ( $_SESSION["MM_Username"] == $re5["mem_single"] ){
+                                            $show_name = $re5["mem_name"];
+                                            $show_mobile = $re5["mem_mobile"];
+                                        }else{
+                                            $show_name = "*****";
+                                            $show_mobile = substr($re5["mem_mobile"],4)."******";
+                                        }
+                                    }
+                                }
+                            }
+                            ?>
                             <tr>
                                 <td width="165"><?php echo Date_EN($re5["mem_time"],9); ?></td>
                                 <td width="131">
@@ -312,7 +449,8 @@
                             </tr>             
                 <?php }} ?>
             </table>    
-            <br>    
+            <br>
+            <!-- //春天活動 春天活動 春天活動 春天活動 春天活動 -->
             <table width="950" border="1" align="center" style="border-collapse:collapse;">
                 <tr>
                     <td colspan="7" bgcolor="#FFFFCC">
@@ -343,7 +481,37 @@
                     $rs6->execute();
                     $result6 = $rs6->fetchAll(PDO::FETCH_ASSOC);
                     if($result6){
-                        foreach($result6 as $re6){?>
+                        foreach($result6 as $re6){
+                            //2021.09.16 采雯新增
+                            if ( $fr == "" ){   //由未入會入
+                                if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                                    $show_name = $re6["k_name"];
+                                    $show_mobile = $re6["k_mobile"];
+                                }else{
+                                    if ( $_SESSION["MM_Username"] == $re6["all_single"] ){
+                                        $show_name = $re6["k_name"];
+                                        $show_mobile = $re6["k_mobile"];
+                                    }else{
+                                        $show_name = "*****";
+                                        $show_mobile = substr($re["k_mobile"],4)."******";
+                                    }
+                                }
+                            }else{
+                                //由會員系統入
+                                if ( $_SESSION["MM_UserAuthorization"] != "single" && $_SESSION["MM_UserAuthorization"] != "love" ){
+                                    $show_name = $re6["k_name"];
+                                    $show_mobile = $re6["k_mobile"];
+                                }else{
+                                    if ( $_SESSION["MM_Username"] == $re6["all_single"] ){
+                                        $show_name = $re6["k_name"];
+                                        $show_mobile = $re6["k_mobile"];
+                                    }else{
+                                        $show_name = "*****";
+                                        $show_mobile = substr($re6["k_mobile"],4)."******";
+                                    }
+                                }
+                            }
+                            ?>
                             <tr>
                                 <td width="163"><?php echo Date_EN($re6["k_time"],9); ?></td>
                                 <td width="80"><?php  echo $re6["k_name"]; ?>  </td>
@@ -365,5 +533,4 @@
     <br><br>
     <center><input type="button" onclick="javascript:window.close();" value="關閉視窗" style="width:950px;height:100px;">
 </body>
-
 </html>

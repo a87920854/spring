@@ -20,9 +20,9 @@ if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
     $SQL = "Delete From business_contact Where id='".SqlFilter($_REQUEST["id"],"tab")."'";
     $rs = $DMNConn->prepare($SQL);
     $rs->execute();
-    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
-    header("location:win_close.asp?m=刪除中...");
-    exit;
+    reURL("win_close.php?m=刪除中...");
+    //header("location:win_close.php?m=刪除中...");
+    //exit;
 }
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
@@ -139,9 +139,9 @@ if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
                                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                             <ul class="dropdown-menu pull-right">
                                                 <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
-                                                    <li><a href="javascript:Mars_popup2('ad_dmn_business.php?st=del&id=10','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
+                                                    <li><a href="javascript:Mars_popup2('ad_dmn_business.php?st=del&id=<?php echo $re["id"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=300,height=200,top=150,left=150');"><i class="icon-trash"></i> 刪除</a></li>
                                                 <?php }?>
-                                                <li><a href="javascript:Mars_popup('ad_dmn_business_fix.php?id=10','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
+                                                <li><a href="javascript:Mars_popup('ad_dmn_business_fix.php?id=<?php echo $re["id"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=500,height=320,top=100,left=100');"><i class="icon-pencil"></i> 處理</a></li>
                                             </ul>
                                         </div>
                                     </td>
