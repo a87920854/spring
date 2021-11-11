@@ -698,15 +698,15 @@
                     $cc = "推廣：" .$mem_cc_single. "&nbsp;<a href='#r' onclick=\"Mars_popup('ad_no_mem.asp?st=mem_cc_fix&mem_num=" .$mm. "','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=150,top=10,left=10');\">修正</a>";
                 }else{
                     $cc = "推廣：" .$mem_cc_single;
-                }
-                $cc = " [" .$cc. "]";
-            }else{
-                $cc = "";
+                }                
             }
-            if($lc != ""){
-                $cc = $cc. " [lc:".$lc."]";
-            }           
-        }
+			$cc = " [" .$cc. "]";  					    
+        }else{
+			$cc = "";
+		}
+		if($lc != ""){
+			$cc = $cc. " [lc:".$lc."]";
+		}
         return $cc;
     }
 ?>
