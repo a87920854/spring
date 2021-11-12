@@ -11,7 +11,7 @@
   require_once("./include/_function.php");
 
   if($_REQUEST["state"] == "add"){
-      $mem_auto = SqlFilter($_REQUEST["mem_auto"],"int");      
+      $mem_auto = SqlFilter($_REQUEST["mem_auto"],"tab");      
       $SQL = "UPDATE member_data SET mem_branch ='" . SqlFilter($_REQUEST["log_branch"],"tab") . "', mem_single ='" . SqlFilter($_REQUEST["single"],"tab") . "', all_type ='已發送' WHERE mem_auto ='" . $mem_auto ."'";
       $rs = $FunConn->prepare($SQL);
       $rs->execute();

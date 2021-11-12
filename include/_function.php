@@ -709,4 +709,16 @@
 		}
         return $cc;
     }
+
+	// 把REQUEST轉成字串
+	function requestStr(){		
+		if($_REQUEST){
+			foreach($_REQUEST as $key => $value){
+				$requestStr = $requestStr . "&" . $key . "=" .$value;
+			}
+		}else{
+			$requestStr = "";
+		}
+		return $requestStr;
+	}
 ?>

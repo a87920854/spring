@@ -65,9 +65,9 @@
             $all_note = "由 " .$_SESSION["pname"]. " 自好好玩資料[" .$result["mem_auto"]."] 轉換";
 
             $RSQL = "INSERT INTO member_data(all_type, mem_level, mem_num, mem_photo, 
-            mem_time, mem_name, mem_nick, mem_sex, mem_by, mem_bm, mem_bd, mem_phone, mem_mobile, 
-            mem_mail, mem_area, mem_address, mem_star, mem_blood, mem_school, mem_job1, mem_job2,
-            mem_branch, mem_single, mem_cc, mem_come, all_note) Values ( ";
+                    mem_time, mem_name, mem_nick, mem_sex, mem_by, mem_bm, mem_bd, mem_phone, mem_mobile, 
+                    mem_mail, mem_area, mem_address, mem_star, mem_blood, mem_school, mem_job1, mem_job2,
+                    mem_branch, mem_single, mem_cc, mem_come, all_note) Values ( ";
             $RSQL .= "'".$all_type."', '".$mem_level."', '".$mem_num."', '".$mem_photo."'";
             $RSQL .= "'".$mem_time."', '".$result["mem_name"]."', '".$result["mem_nick"]."'";
             $RSQL .= "'".$result["mem_sex"]."', '".$mem_by."', '".$mem_bm."', '".$mem_bd."'";
@@ -131,7 +131,7 @@
     if( $_REQUEST["s97"] != "" ){
         $sqlss = $sqlss. " and mem_cc = '" .SqlFilter($_REQUEST["s97"],"tab"). "'";
     }
-    if( ($_REQUEST["s22"] != "" && $_REQUEST["s23"] = "") || ($_REQUEST["s22"] = "" && $_REQUEST["s23"] != "") ){
+    if( ($_REQUEST["s22"] != "" && $_REQUEST["s23"] == "") || ($_REQUEST["s22"] == "" && $_REQUEST["s23"] != "") ){
         call_alert("資料日期選擇起始和結束時間。",0,0);
     }
     if( $_REQUEST["s22"] != "" && $_REQUEST["s23"] != "" ){
@@ -178,7 +178,11 @@
         if( $_REQUEST["vst"] == "full" ){
             $total_size = $result["total_size"]; //總筆數
         }else{
-            $total_size =  500;  //限制顯示500筆     
+            if($result["total_size"] > 500 ) {
+                $total_size =  500; //限制到500筆
+            }else{
+                $total_size =  $result["total_size"];
+            }   
         }
     }	
     $tPage = 1; //目前頁數
@@ -254,10 +258,15 @@
                         <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
                             <!--<li><a href="ad_register1.php" target="_blank"><i class="icon-star"></i> 新增會員資料</a></li>-->
-
-                            <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>
-
+                            <?php 
+                                if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch") { ?>
+                                    <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>
+                            <?php } ?>              
                             <li><a href="ad_fun_mem_f.php"><i class="icon-tag"></i> 進階搜尋</a></li>
+                            <?php if($_REQUEST["vst"] == "full"){ ?>
+                                <li class="divider"></li>                                
+								<li><a href="#e" onclick="Mars_popup('ad_fun_mem_excel.php?a=b<?php echo requestStr(); ?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-tag"></i> 匯出 Excel</a></li>
+                            <?php } ?> 
 
                         </ul>
                     </div>　
