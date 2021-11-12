@@ -28,7 +28,7 @@
 		}
 	}
 
-	//**您沒有權限 for ad_dmn_business.asp
+	//**您沒有權限 for ad_dmn_business.php
 	if ( $auth_limit == "4" ){
 		if ( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["MM_UserAuthorization"] != "manager" && $_SESSION["MM_UserAuthorization"] != "love_manager" && $_SESSION["dmnweb"] != "1" ){
 			call_alert("您沒有權限", 1,0);
@@ -36,7 +36,7 @@
 		}
 	}
 
-	//**您沒有權限 for ad_dmn_business_fix.asp
+	//**您沒有權限 for ad_dmn_business_fix.php
 	if ( $auth_limit == "5" ){
 		if ( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["dmnweb"] != "1" ){
 			call_alert("您沒有權限", 1,0);
@@ -44,9 +44,17 @@
 		}
 	}
 
-	//**您沒有權限 for ad_guest_del.asp
+	//**您沒有權限 for ad_guest_del.php
 	if ( $auth_limit == "6" ){
         if ( $_SESSION["MM_UserAuthorization"] != "admin" ){
+            call_alert("您沒有權限", 1,0);
+            exit;
+        }
+	}
+
+	//**您沒有權限 for ad_nofix.php
+	if ( $auth_limit == "7" ){
+        if ( $_SESSION["MM_UserAuthorization"] == "action" ){
             call_alert("您沒有權限", 1,0);
             exit;
         }

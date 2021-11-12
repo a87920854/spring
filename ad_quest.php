@@ -2,8 +2,8 @@
     error_reporting(0); 
     /*****************************************/
     //檔案名稱：ad_quest.php
-    //後台對應位置：名單/發送記錄>客服中心記錄
-    //改版日期：2021.10.25
+    //後台對應位置：名單/發送記錄>問卷報名資料
+    //改版日期：2021.11.12
     //改版設計人員：Jack
     //改版程式人員：Queena
     /*****************************************/
@@ -13,79 +13,163 @@
     require_once("./include/_top.php");
     require_once("./include/_sidebar.php");
 
-    //權限判斷
-    $auth_limit = 3;
-    require_once("./include/_limit.php");
-    check_page_power("ad_guest");
+    $default_sql_num = 500;
 
-    //組合SQL語法
-    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
-        $subSQL1 = "1=1";
-    }else{
-        $subSQL1 = "all_branch='".$_SESSION["branch"]."'";
+    if ( SqlFilter($_REQUEST["st"],"tab") == "ch" ){
+	    //Set rs = Server.CreateObject("ADODB.Recordset")
+	    //Set qrs = Server.CreateObject("ADODB.Recordset")
+	    //rs.open "select * from quest where auton="&request("an")&"", SPCon, 1, 3
+        $SQL = "Select * From quest Where auton = ".SqlFilter($_REQUEST["an"],"int");
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+	    if ( count($result) > 0 ){
+            $SQL2 = "Select * From member_data Where mem_mobile='".$re["phone"]."'";
+            $rs2 = $SPConn->prepare($SQL2);
+            $rs2->execute();
+            $result2 = $rs2->fetchAll(PDO::FETCH_ASSOC);
+            if ( count($result2) == 0 ){
+                $SQL3 = "Select * From msg_num Where m_auto = 1";
+                $rs3 = $SPConn->prepare($SQL3);
+                $rs3->execute();
+                foreach ($result3 as $re3);
+                $mem_num = ($re3["m_num"] + 1);
+                //Update msg_num
+       		    $SQL_u = "Update msg_num Set m_num = ". $mem_num ." Where m_auto = 1";
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+  			    if ( $re["sex"] == "女" ){
+  				    $mem_photo = "girl.jpg";
+                }else{
+  				    $mem_photo = "boy.jpg";
+                }
+  
+                //Insert member_data
+                $SQL_i  = "Insert Into member_data(";
+                $SQL_i .= "all_type, mem_level, mem_num, mem_photo, mem_come, mem_time, mem_name, mem_sex, mem_by, mem_bm, mem_bd, mem_blood, mem_marry, mem_mail, mem_mobile, ";
+                $SQL_i .= "mem_area, mem_school, mem_job2, mem_p1, mem_p2, mem_p3 ) Values (";
+                $SQL_i .= "'未處理',";
+                $SQL_i .= "'guest',";
+                $SQL_i .= "'".$mem_num."',";
+                $SQL_i .= "'".$mem_photo."',";
+                $SQL_i .= "'問卷(".$re["id"]."-".$re["auton"].")',";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["name"]."',";
+                $SQL_i .= "'".$re["sex"]."',";
+                if ( chkDate($re["bday"]) ){
+                    $SQL_i .= "'".date("Y",$re["bday"])."',";
+                    $SQL_i .= "'".date("m",$re["bday"])."',";
+                    $SQL_i .= "'".date("d",$re["bday"])."',";
+                }else{
+                    $SQL_i .= "'',";
+                    $SQL_i .= "'',";
+                    $SQL_i .= "'',";
+                }
+                $SQL_i .= "'A',";
+                $SQL_i .= "'".$re["marry"]."',";
+                $SQL_i .= "'".$re["email"]."',";
+                $SQL_i .= "'".$re["phone"]."',";
+                $SQL_i .= "'".$re["area"]."',";
+                $SQL_i .= "'".$re["school"]."',";
+                $SQL_i .= "'".$re["job2"]."',";
+                $SQL_i .= "'".$re["p1"]."',";
+                $SQL_i .= "'".$re["p2"]."',";
+                $SQL_i .= "'".$re["p3"]."')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+                //Update quest
+                $SQL_u = "Update quest Set isc = 1, all_type = '已處理' where auton = ".SqlFilter($_REQUEST["an"],"int");
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+        }
+        reURL("ad_quest.php?topage=".SqlFilter($_REQUEST["topage"],"tab"));
+    }
+
+    //刪除
+    if ( SqlFilter($_REQUEST["st"],"tab") == "del" ){
+	    //Set rs = Server.CreateObject("ADODB.Recordset")
+        $SQL_d = "Delete From quest Where auton = ".SqlFilter($_REQUEST["an"],"int");
+        $rs_d = $SPConn->prepare($SQL_d);
+        $rs_d->execute();
+	    reURL("ad_quest.asp?topage=".SqlFilter($_REQUEST["topage"],"tab"));
     }
     
-    //組合subSQL語法
-    if ( SqlFilter($_REQUEST["s99"],"tab") != "1" ){
-        $subSQL2 = " And (all_note IS NULL)";
-        $all_type = "未處理";
-    }else{
-        $subSQL2 = " And Not (all_note IS NULL)";
-        $all_type = "已處理";
-    }
+If request("vst") = "full" Then
+  sqlv = "*"
+  sqlv2 = "count(auton)"
+Else
+  sqlv = "top "&default_sql_num&" *"
+  sqlv2 = "count(auton)"
+End If
 
-    $subSQL3 = " And (web <> 'singleparty' Or web is null)"; //春天/DMN客服中心 
-    $subSQL4 = " And (web = 'singleparty')"; //約專客服中心 
-    $subSQL5 = " And (web = 'singleparty_report')"; //約專會員檢舉
-    //$SQL .= $sqls3.$sqls2.$sqls4." Order By g_auto Desc";
+IF Request("a1") <> "" Then
+	kt1 = Request("a1")&"/"&Request("a2")&"/1"
+	If Not isdate(kt1) Then
+  		Call Alert("起始日期不正確。",0,0)
+	End if
+End IF
 
-    //取得總筆數(春天/DMN客服中心)
-    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL3;
-    echo $SQL;
-    exit;
-    $rs = $SPConn->prepare($SQL);
-    $rs->execute();
-    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
-    foreach($result as $re);
-    if ( count($result) == 0 || $re["total_size"] == 0 ) {
-        $total_size1 = 0;
-    }else{
-        $total_size1 = $re["total_size"];
-    }
+IF Request("b1") <> "" Then
+	kt2 = Request("b1")&"/"&Request("b2")&"/1"
+	If isdate(kt2) Then
+		kt2 = dateadd("d",-1,dateadd("m",1,kt2))
+	Else
+		Call Alert("結束日期不正確。",0,0)
+	End if
+End If
 
-    //取得總筆數(約專客服中心)
-    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL4;
-    $rs = $SPConn->prepare($SQL);
-    $rs->execute();
-    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
-    foreach($result as $re);
-    if ( count($result) == 0 || $re["total_size"] == 0 ) {
-        $total_size2 = 0;
-    }else{
-        $total_size2 = $re["total_size"];
-    }
-
-    //取得總筆數(約專會員檢舉)
-    $SQL = "Select count(g_auto) As total_size From guest Where ".$subSQL1.$subSQL2.$subSQL5;
-    $rs = $SPConn->prepare($SQL);
-    $rs->execute();
-    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
-    foreach($result as $re);
-    if ( count($result) == 0 || $re["total_size"] == 0 ) {
-        $total_size3 = 0;
-    }else{
-        $total_size3 = $re["total_size"];
-    }
-/*
-if request("c") = "1" then
-vvt2 = total_size
-vvt1 = total_size2
-vvt3 = total_size3
+IF Session("MM_UserAuthorization") = "admin" then
+	sqls = "SELECT "&sqlv&" FROM quest WHERE 1=1"
+	sqls2 = "SELECT "&sqlv2&" as total_size FROM quest WHERE 1=1"
 else
-vvt1 = total_size
-vvt2 = total_size2
-vvt3 = total_size3
-end if*/
+    sqls = "SELECT "&sqlv&" FROM quest WHERE branch='"&session("branch")&"'"
+	sqls2 = "SELECT "&sqlv2&" as total_size FROM quest WHERE branch='"&session("branch")&"'"	  	
+end if
+
+If Not request("sear") = "1" then
+	If request("s99") <> "" then
+    	sqlss = sqlss & " and all_type <> '未處理'"
+	    all_type = "已處理"
+	Else
+    	sqlss = sqlss & " and (all_type = '未處理' or all_type is null)"
+	    all_type = "未處理"
+    End If
+Else
+	all_type = "資料搜尋"
+End if
+	 
+If request("s2") <> "" Then
+	cs2 = reset_number(request("s2"))
+ 	sqlss = sqlss & " and k_mobile like '%"&cs2&"%'"
+End If
+
+If request("s3") <> "" Then
+	sqlss = sqlss & " and k_name like '%" + Replace(request("s3"), "'", "''") + "%'"
+End If
+
+If request("s7") <> "" Then
+	sqlss = sqlss & " and all_single like '%" + Replace(request("s7"), "'", "''") + "%'"
+End If
+
+If request("s6") <> "" Then
+	sqlss = sqlss & " and all_branch like '%" + Replace(request("s6"), "'", "''") + "%'"
+End If
+
+If isdate(kt1) And isdate(kt2) Then
+	If datediff("d", kt1, kt2) < 0 Then
+		Call Alert("結束日期不能小於起始日期。", 0, 0)
+	End if
+ 	sqlss = sqlss & " and times between '"&kt1&"' and '"&kt2&"'"
+End If
+
+sqls = sqls & sqlss &" order by times desc, id asc"
+sqls2 = sqls2 & sqlss
+
+
+
+
+
 ?>
 <!-- MIDDLE -->
 <section id="middle">

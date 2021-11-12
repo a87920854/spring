@@ -130,7 +130,7 @@
                 $result2 = $rs2->fetchAll(PDO::FETCH_ASSOC);
                 foreach($result2 as $re2);
                 if($result2){
-                    echo "<tr><td colspan=8 style='text-align:left;padding:5px;background:#f2f2f2'>最後回報：".$re2["log_branch"]."".SingleName($re2["log_single"],"normal")." - ".$re2["log_2"]." - ".$re2["log_4"]." - ".$re2["log_time"]."</td></tr>";
+                    echo "<tr><td colspan=8 style='text-align:left;padding:5px;background:#f2f2f2'>最後回報：".$re2["log_branch"]."".SingleName($re2["log_single"],"normal")." - ".$re2["log_2"]." - ".$re2["log_4"]." - ".changeDate($re2["log_time"])."</td></tr>";
                 }
             }
         ?>

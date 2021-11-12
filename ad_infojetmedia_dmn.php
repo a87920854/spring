@@ -82,9 +82,7 @@
             $SQL_i .= "'".$re["times"]."- 自 DateMeNow-億捷創意 轉換')";
             $rs_i = $SPConn->prepare($SQL_i);
             $rs_i->execute();
-            $mem_auto = mysql_insert_id();
-            echo $mem_auto;
-            exit;
+            $mem_auto = $pdo -> lastInsertId();
             
             //UPDATE msg_num
             $SQL_u = "Update msg_num Set mem_auto=".$mem_auto.",stat=1";
@@ -108,28 +106,24 @@
     $stat = SqlFilter($_REQUEST["stat"],"tab");
     switch ($stat){
 	    case "2":
-            $subSQL = "stat = 2";
+            $subSQL1 = " stat = 2";
             $d1 = "";
             $d2 = "";
             $d3 = "disabled";
             break;
 	    case "1":
-	        $subSQL = "stat = 1";
+	        $subSQL1 = " stat = 1";
 	        $d1 = "";
 	        $d2 = "disabled";
 	        $d3 = "";
             break;
         default:
-	        $subSQL = "stat = 0";
+	        $subSQL1 = " stat = 0";
 	        $d1 = "disabled";
 	        $d2 = "";
 	        $d3 = "";
             break;
     }
-
-    /*if request("vst") = "full" then
-    	sqls = "1 = 1"
-    end if*/
 
     if ( SqlFilter($_REQUEST["times1"],"tab") != "" ){
         $t1 = SqlFilter($_REQUEST["times1"],"tab");
@@ -148,13 +142,13 @@
     }
 
     if ( $t1 != "" && $t2 != "" ){
-	    $subSQL = " And times Between '".$t1."' And '".$t2."'";
+	    $subSQL2 = " And times Between '".$t1."' And '".$t2."'";
 	    //$t1 = datevalue($t1);
 	    //$t2 = datevalue($t2);
     }
 
     //取得總筆數
-    $SQL = "Select count(auton) As total_size From infojetmedia_dmn Where ".$subSQL;
+    $SQL = "Select count(auton) As total_size From infojetmedia_dmn Where ".$subSQL1.$subSQL2;
     $rs = $SPConn->prepare($SQL);
     $rs->execute();
     $result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -179,12 +173,22 @@
     //分頁語法
     $SQL  = "Select * From (";
     $SQL .= "Select TOP ".$page2." * From (";
-    $SQL .= "Select TOP ".($tPageSize*$tPage)." * From infojetmedia_dmn Where ".$subSQL." Order By times Desc) t1 Where ".$subSQL." Order By times Desc ) t2 Where ".$subSQL." Order By times Desc ";
+    $SQL .= "Select TOP ".($tPageSize*$tPage)." * From infojetmedia_dmn Where ".$subSQL1.$subSQL2." Order By times Desc) t1 Where".$subSQL1.$subSQL2." Order By times Asc) t2 Where".$subSQL1.$subSQL2." Order By times Desc ";
     $rs = $SPConn->prepare($SQL);
     $rs->execute();
     $result=$rs->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
+<script type="text/JavaScript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $("#U1").click(function(){
+	var time1 = $("#times1").val();
+    var time2 = $("#times2").val();
+	Mars_popup("ad_infojetmedia_dmn_excel.php?times1="+time1+"&times2="+time2);
+	});
+});
+</script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -211,13 +215,15 @@
                         <a href="ad_infojetmedia_dmn.php" class="btn btn-info<?php if ( $stat == "" ){?> btn-active<?php }?>"<?php if ( $stat == "" ){?> disabled<?php }?>>未處理</a>
                         <a href="ad_infojetmedia_dmn.php?stat=1" class="btn btn-info<?php if ( $stat == 1 ){?> btn-active<?php }?>"<?php if ( $stat == 1 ){?> disabled<?php }?>>已處理</a>
                         <a href="ad_infojetmedia_dmn.php?stat=2" class="btn btn-info<?php if ( $stat == 2 ){?> btn-active<?php }?>"<?php if ( $stat == 2 ){?> disabled<?php }?>>重複</a>
+                        <?php if ( $stat == 1 ){ ?>&nbsp;&nbsp;<input name="U1" type="button" class="btn btn-success" id="U1" value="匯出Excel"><?php }?>
                     </p>
                     <p>
                         <form name="form1" method="post" action="?vst=full&stat=0" style="margin:0px;">
                             &nbsp;&nbsp;日期：
-                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times1" value="">
+                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" id="times1" name="times1" value="<?php echo SqlFilter($_REQUEST["times1"],"tab");?>">
                             ～
-                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times2" value="">
+                            <input type="text" class="datepicker" autocomplete="off" style="width:100px;" id="times2" name="times2" value="<?php echo SqlFilter($_REQUEST["times2"],"tab");?>">
+                            <input type="hidden" name="stat" id="stat" value="<?php echo SqlFilter($_REQUEST["stat"],"tab");?>">
                             <input type="submit" name="Submit" style="height:28px;margin-top:-7px;" value="查詢">
                         </form>
                     </p>
@@ -259,46 +265,47 @@
                                     if ( count($result1) > 0 ){
 		                                $havee = 1;
                                     } ?>
-                                <tr>
-                                    <td align="center"><?php echo changeDate($re["times"]);?></td>
-                                    <td align="center"><?php echo $re["names"];?><?php if ( $stat !=1 ){?>(<a href="ad_no_mem_s.php?mem_mobile=<?php echo $mobile;?>" target="_blank">查</a>)<?php }?></td>
-                                    <td align="center"><?php echo $re["sex"];?></td>
-                                    <td align="center"><?php echo $re["age"];?></td>
-                                    <td align="center"><?php echo $re["school"];?></td>
-                                    <td align="center"><?php echo $mobile;?></td>
-                                    <td align="center"><?php echo $re["email"];?></td>
-                                    <td align="center"><?php echo $re["city"];?></td>
-                                    <td align="center"><?php echo $re["regc"];?></td>
-                                    <td align="center"><?php echo $re["regt"];?></td>
-                                    <td align="center">
-                                    <?php if ( $stat == 0 ){ ?>
-                                        <div class="btn-group">
-                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                            <ul class="dropdown-menu pull-right">
-                                                <?php if ( $havee == 1 && SqlFilter($_REQUEST["stat"],"tab") != "1" ){?>
-                                                    <li><a href="?st=double&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 此電話重複</a></li>
-                                                <?php }elseif ( SqlFilter($_REQUEST["stat"],"tab") != "1" ){ ?>
-                                                    <li><a href="?st=trans&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 轉入未入會資料</a></li>
-                                                <?php }?>
-                                                <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=<?php echo $re["auton"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-                                            </ul>
-                                        </div>
-                                    <?php }elseif ( $stat == 1 ){
-                                        $reports = get_report_num($mobile);
-                                        if ( substr_count($reports, "|+|") > 0 ){
-                                            $reports_array = explode("|+|", $reports);
-                                            $report = $reports_array[0];
-                                            $report_text = $reports_array[1];
-                                        }else{
-                                            $report = 0;
-                                            $report_text = "無";
-                                        }
-                                    ?>
-                                        <a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re["mem_auto"];?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>
-                                    <?php }?>
-                                    </td>
-                                </tr>
-                            <?php }}?>
+                                    <tr>
+                                        <td align="center"><?php echo changeDate($re["times"]);?></td>
+                                        <td align="center"><?php echo $re["names"];?><?php if ( $stat !=1 ){?>(<a href="ad_no_mem_s.php?mem_mobile=<?php echo $mobile;?>" target="_blank">查</a>)<?php }?></td>
+                                        <td align="center"><?php echo $re["sex"];?></td>
+                                        <td align="center"><?php echo $re["age"];?></td>
+                                        <td align="center"><?php echo $re["school"];?></td>
+                                        <td align="center"><?php echo $mobile;?></td>
+                                        <td align="center"><?php echo $re["email"];?></td>
+                                        <td align="center"><?php echo $re["city"];?></td>
+                                        <td align="center"><?php echo $re["regc"];?></td>
+                                        <td align="center"><?php echo $re["regt"];?></td>
+                                        <td align="center">
+                                        <?php if ( $stat == 0 ){ ?>
+                                            <div class="btn-group">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                                <ul class="dropdown-menu pull-right">
+                                                    <?php if ( $havee == 1 && SqlFilter($_REQUEST["stat"],"tab") != "1" ){?>
+                                                        <li><a href="?st=double&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 此電話重複</a></li>
+                                                    <?php }elseif ( SqlFilter($_REQUEST["stat"],"tab") != "1" ){ ?>
+                                                        <li><a href="?st=trans&auton=<?php echo $re["auton"];?>"><i class="icon-share"></i> 轉入未入會資料</a></li>
+                                                    <?php }?>
+                                                    <li><a href="javascript:Mars_popup2('ad_infojetmedia_dmn.php?st=del&auton=<?php echo $re["auton"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                                </ul>
+                                            </div>
+                                        <?php }elseif ( $stat == 1 ){
+                                            $reports = get_report_num($mobile);
+                                            if ( substr_count($reports, "|+|") > 0 ){
+                                                $reports_array = explode("|+|", $reports);
+                                                $report = $reports_array[0];
+                                                $report_text = $reports_array[1];
+                                            }else{
+                                                $report = 0;
+                                                $report_text = "無";
+                                            }
+                                        ?>
+                                            <a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re["mem_auto"];?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>
+                                        <?php }?>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                            <?php }?>
                         </tbody>
                     </table>
                 </div>
