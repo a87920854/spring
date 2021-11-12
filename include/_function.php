@@ -713,6 +713,7 @@
 	// 把REQUEST轉成字串
 	function requestStr(){		
 		if($_REQUEST){
+			$requestStr = "";
 			foreach($_REQUEST as $key => $value){
 				$requestStr = $requestStr . "&" . $key . "=" .$value;
 			}
