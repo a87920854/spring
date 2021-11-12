@@ -1,6 +1,212 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+    /*****************************************/
+	//檔案名稱：ad_fun_mem.php
+	//後台對應位置：好好玩管理系統/會員管理系統
+	//改版日期：2021.10.26
+	//改版設計人員：Jack
+	//改版程式人員：Jack
+	/*****************************************/
+
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
+    check_page_power("ad_fun_action1");    
+    
+
+    if( $_REQUEST["a1"] != ""){ 
+        $kt1 = SqlFilter($_REQUEST["a1"],"int") . "/" . SqlFilter($_REQUEST["a2"],"int") . "/1 00:01";
+        if( !chkDate($kt1) ){
+            call_alert("起始日期不正確。",0,0);
+        }
+    }
+
+    if($_REQUEST["b1"] != ""){
+        $kt2 = SqlFilter($_REQUEST["b1"],"int"). "/" .SqlFilter($_REQUEST["b2"],"int"). "/1";
+        if(chkDate($kt2)){
+            $kt2 = date('Y/m/d',strtotime( $kt2.'+1 month' ));
+            $kt2 = date('Y/m/d',strtotime( $kt2.'-1 day' ));
+            $kt2 = $kt2 . " 23:59";
+         }else{
+            call_alert("起始日期不正確。",0,0);
+         }
+    }
+
+    if($_REQUEST["a3"] != ""){
+        $kt3 = SqlFilter($_REQUEST["a3"],"int") . "/" . SqlFilter($_REQUEST["a4"],"int") . "/1 00:01";
+        if( !chkDate($kt3) ){
+            call_alert("起始日期不正確。",0,0);
+        }
+    }
+    
+    if($_REQUEST["b3"] != ""){
+        $kt4 = SqlFilter($_REQUEST["b3"],"int"). "/" .SqlFilter($_REQUEST["b4"],"int"). "/1";
+        if(chkDate($kt4)){
+            $kt4 = date('Y/m/d',strtotime( $kt4.'+1 month' ));
+            $kt4 = date('Y/m/d',strtotime( $kt4.'-1 day' ));
+            $kt4 = $kt4 . " 23:59";
+         }else{
+            call_alert("起始日期不正確。",0,0);
+         }
+    }
+    
+    $default_sql_num = 500; // 初始查詢數字    
+    if( $_REQUEST["vst"] == "full" ){
+        $sqlv = "*";
+        $sqlv2 = "count(k_id)";        
+    }else{
+        $sqlv = "top" .$default_sql_num. " *";
+        $sqlv2 = "count(k_id)";
+    }
+
+    // 權限判斷
+    switch($_SESSION["MM_UserAuthorization"]){
+        case "admin":
+            $sqls = "SELECT ".$sqlv." FROM love_keyin WHERE all_kind <> '國外旅遊'";
+            $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin WHERE all_kind <> '國外旅遊'";
+            if($_REQUEST["sear"] != "1"){
+                if($_REQUEST["s99"] != ""){
+                    $sqlss = $sqlss . " and all_type <> '未處理'";
+	                $all_type = "已處理";
+                }else{
+                    $sqlss = $sqlss . " and all_type = '未處理'";
+	                $all_type = "未處理";
+                }
+            }else{
+                $all_type = "資料搜尋";
+            }
+            break;
+        case "branch":
+        case "love":
+        case "pay":
+            $query = $SPConn->query("SELECT * FROM personnel_data Where p_user='".$_SESSION["MM_username"]."'");
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            $sqls = "SELECT ".$sqlv." FROM love_keyin WHERE all_kind <> '國外旅遊' and all_branch= '".$result["p_branch"]."'";
+	        $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin WHERE all_kind <> '國外旅遊' and all_branch= '".$result["p_branch"]."'";
+            break;
+        default:
+            $sqls = "SELECT ".$sqlv." FROM love_keyin Where all_kind <> '國外旅遊' and all_single = '".$_SESSION["MM_username"]."'";
+            $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin Where all_kind <> '國外旅遊' and all_single = '".$_SESSION["MM_username"]."'";
+            break;
+    }
+
+    if ( $_SESSION["MM_Username"] == "13085797" ){
+        $sqls = "SELECT ".$sqlv." FROM love_keyin WHERE all_kind <> '國外旅遊'";
+	    $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin WHERE all_kind <> '國外旅遊'";
+        if($_REQUEST["sear"] != "1"){
+            if($_REQUEST["s99"] !=""){
+                $sqlss = $sqlss . " and all_type <> '未處理'";
+	            $all_type = "已處理";
+            }else{
+                $sqlss = $sqlss . " and all_type = '未處理'";
+	            $all_type = "未處理";
+            }
+        }else{
+            $all_type = "資料搜尋";
+        }
+    }
+
+    // 信箱搜尋
+    if($_REQUEST["s1"] != "" ){
+        $sqlss = $sqlss . " and k_yn like '%" .SqlFilter($_REQUEST["s1"],"tab")."%'";
+    }
+    
+    // 以手機號碼搜尋
+    if($_REQUEST["s2"] != "" ){
+        $cs2 = reset_number(SqlFilter($_REQUEST["s2"],"int"));
+	    $sqlss = $sqlss . " and k_mobile like '%" .$cs2. "%'";
+    }
+
+    // 以姓名搜尋
+    if($_REQUEST["s3"] != "" ){
+        $sqlss = $sqlss . " and k_name like '%" .SqlFilter($_REQUEST["s3"],"tab")."%'";
+    }
+
+    // 以活動搜尋
+    if($_REQUEST["s4"] != "" ){
+        $sqlss = $sqlss . " and action_title like '%" .SqlFilter($_REQUEST["s4"],"tab")."%'";
+    }
+
+    // 以會館搜尋
+    if($_REQUEST["s6"] != "" ){
+        $sqlss = $sqlss . " and all_branch like '%" .SqlFilter($_REQUEST["s6"],"tab")."%'";
+    }
+
+    // 以秘書搜尋
+    if($_REQUEST["s7"] != "" ){
+        $sqlss = $sqlss . " and all_single like '%" .SqlFilter($_REQUEST["s7"],"tab")."%'";
+    }
+
+    // 以區域搜尋
+    if($_REQUEST["s11"] != "" ){
+        $sqlss = $sqlss . " and k_area like '%" .SqlFilter($_REQUEST["s11"],"tab")."%'";
+    }
+
+    // 以編號搜尋
+    if($_REQUEST["ac"] != "" ){
+        $sqlss = $sqlss . " and ac_auto like '%" .SqlFilter($_REQUEST["ac"],"int")."%'";
+    }
+
+    // 以??搜尋
+    if($_REQUEST["s97"] != "" ){
+        $sqlss = $sqlss . " and k_cc ='" .SqlFilter($_REQUEST["s97"],"tab")."'";
+    }
+
+    // 以時間段搜尋
+    if($_REQUEST["s27"] != "" && $_REQUEST["s28"] != ""){
+        $sqlss = $sqlss . " and year(k_year) between '" .SqlFilter($_REQUEST["s28"],"int")."' and '" .SqlFilter($_REQUEST["s27"],"int")."'";
+    }elseif($_REQUEST["s27"] != ""){
+        $sqlss = $sqlss . "and year(k_year) = '" .SqlFilter($_REQUEST["s27"],"int")."'";
+    }
+
+    // 以時間段搜尋
+    if(chkDate($kt1) && chkDate($kt2)){
+        if(date_diff($kt1,$kt2)<0){
+            call_alert("結束日期不能小於起始日期。", 0, 0);
+        }
+        $sqlss = $sqlss . " and k_time between '".$kt1."' and '".$kt2."'";
+    }
+
+    // 以活動時間段搜尋
+    if(chkDate($kt3) && chkDate($kt4)){
+        if(date_diff($kt3,$kt4)<0){
+            call_alert("結束日期不能小於起始日期。", 0, 0);
+        }
+        $sqlss = $sqlss . " and action_time between '".$kt3."' and '".$kt4."'";
+    }
+    
+
+    $sqls = $sqls . $sqlss ." order by k_id desc";
+    $sqls2 = $sqls2 . $sqlss;
+
+    // 查詢總筆數
+    $rs = $FunConn->prepare($sqls2);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if (!$result){
+        $total_size = 0;
+    }else{
+        if( $_REQUEST["vst"] == "full" ){
+            $total_size = $result["total_size"]; //總筆數
+        }else{
+            if($result["total_size"] > 500 ) {
+                $total_size =  500;
+            }else{
+                $total_size =  $result["total_size"];
+            }  
+        }
+    }
+
+    if($_REQUEST["vst"] == "full"){
+        $total_sizen = $total_size . "　<a href='?vst=n&s99=".$_REQUEST["s99"]."'>[查看前五百筆]</a>";
+    }else{
+        if( $total_size > 500 ) $total_size = 500;
+        $total_sizen = $total_size . "　<a href='?vst=full&s99=".$_REQUEST["s99"]."'>[查看完整清單]</a>";
+    }
 ?>
 
 <!-- MIDDLE -->
@@ -20,7 +226,7 @@ require("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>好好玩國內報名　 - 數量：0　<a href="?vst=full&s99=">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>好好玩國內報名　 - 數量：<?php echo $total_sizen; ?></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -64,9 +270,9 @@ require("./include/_sidebar.php");
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan=8 height=200>目前沒有資料</td>
-                            </tr>
+                            <?php
+                                
+                            ?>
                         </tbody>
                     </table>
                 </div>

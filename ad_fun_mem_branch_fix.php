@@ -11,13 +11,13 @@
     require_once("_inc.php");
     require_once("./include/_function.php");
 
-    $mem_auto = $_REQUEST["mem_auto"];
+    $mem_auto = SqlFilter($_REQUEST["mem_auto"],"int");
 
     if($_REQUEST["state"] == "add"){
         if($_SESSION["MM_UserAuthorization"] == "admin"){
-            $SQL = "UPDATE member_data SET mem_branch ='" .$_REQUEST["branch"]. "', mem_single = '" .$_REQUEST["single"]. "' Where mem_auto = '" .$mem_auto. "'";
+            $SQL = "UPDATE member_data SET mem_branch ='" .SqlFilter($_REQUEST["branch"],"tab"). "', mem_single = '" .SqlFilter($_REQUEST["single"],"tab"). "' Where mem_auto = '" .$mem_auto. "'";
         }else{
-            $SQL = "UPDATE member_data SET mem_single = '" .$_REQUEST["single"]. "' Where mem_auto = '" .$mem_auto. "'";
+            $SQL = "UPDATE member_data SET mem_single = '" .SqlFilter($_REQUEST["single"],"tab"). "' Where mem_auto = '" .$mem_auto. "'";
         }       
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
@@ -144,7 +144,7 @@
                                 <td colspan="2" bgcolor="#DA5893">
                                     <div align="center">
                                         <input name="Submit" type="submit" id="Submit2" style="font-size: 9pt" value="確定送出">
-                                        <input name="mem_auto" type="hidden" id="mem_auto" value="<?php echo  $_REQUEST["mem_auto"]; ?>">
+                                        <input name="mem_auto" type="hidden" id="mem_auto" value="<?php echo  SqlFilter($_REQUEST["mem_auto"],"int"); ?>">
                                     </div>
                                 </td>
                             </tr>

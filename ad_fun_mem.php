@@ -65,9 +65,9 @@
             $all_note = "由 " .$_SESSION["pname"]. " 自好好玩資料[" .$result["mem_auto"]."] 轉換";
 
             $RSQL = "INSERT INTO member_data(all_type, mem_level, mem_num, mem_photo, 
-            mem_time, mem_name, mem_nick, mem_sex, mem_by, mem_bm, mem_bd, mem_phone, mem_mobile, 
-            mem_mail, mem_area, mem_address, mem_star, mem_blood, mem_school, mem_job1, mem_job2,
-            mem_branch, mem_single, mem_cc, mem_come, all_note) Values ( ";
+                    mem_time, mem_name, mem_nick, mem_sex, mem_by, mem_bm, mem_bd, mem_phone, mem_mobile, 
+                    mem_mail, mem_area, mem_address, mem_star, mem_blood, mem_school, mem_job1, mem_job2,
+                    mem_branch, mem_single, mem_cc, mem_come, all_note) Values ( ";
             $RSQL .= "'".$all_type."', '".$mem_level."', '".$mem_num."', '".$mem_photo."'";
             $RSQL .= "'".$mem_time."', '".$result["mem_name"]."', '".$result["mem_nick"]."'";
             $RSQL .= "'".$result["mem_sex"]."', '".$mem_by."', '".$mem_bm."', '".$mem_bd."'";
@@ -85,72 +85,72 @@
 
     // 查詢
     if( $_REQUEST["s1"] != "" ){
-        $sqlss = $sqlss. " and mem_mail like '%" .str_replace("'", "''", $_REQUEST["s1"]). "%'";
+        $sqlss = $sqlss. " and mem_mail like '%" .SqlFilter($_REQUEST["s1"],"tab"). "%'";
     }
     if( $_REQUEST["s2"] != "" ){
-        $cs2 = reset_number($_REQUEST["s2"]);
+        $cs2 = reset_number(SqlFilter($_REQUEST["s2"],"int"));
 	    $sqlss = $sqlss . " and mem_mobile like N'%" .$cs2. "%'";
     }
     if( $_REQUEST["s3"] != "" ){
-        $sqlss = $sqlss. " and mem_name like '%" .str_replace("'", "''", $_REQUEST["s3"]). "%'";
+        $sqlss = $sqlss. " and mem_name like '%" .SqlFilter($_REQUEST["s3"],"tab"). "%'";
     }
     if( $_REQUEST["s4"] != "" ){
-        $sqlss = $sqlss. " and mem_auto like '%" .str_replace("'", "''", $_REQUEST["s4"]). "%'";
+        $sqlss = $sqlss. " and mem_auto like '%" .SqlFilter($_REQUEST["s4"],"int"). "%'";
     }
     if( $_REQUEST["s5"] != "" ){
-        $sqlss = $sqlss. " and mem_username like '%" .str_replace("'", "''", $_REQUEST["s5"]). "%'";
+        $sqlss = $sqlss. " and mem_username like '%" .SqlFilter($_REQUEST["s5"],"tab"). "%'";
     }
 
     if( $_REQUEST["s7"] != "" ){
-        $sqlss = $sqlss. " and UPPER(mem_single) like '%" .str_replace("'", "''", strtoupper($_REQUEST["s7"])). "%'";
+        $sqlss = $sqlss. " and UPPER(mem_single) like '%" .strtoupper(SqlFilter($_REQUEST["s7"],"tab")). "%'";
     }
     if( $_REQUEST["s8"] != "" ){
-        $sqlss = $sqlss. " and mem_come like '%" .str_replace("'", "''", $_REQUEST["s8"]). "%'";
+        $sqlss = $sqlss. " and mem_come like '%" .SqlFilter($_REQUEST["s8"],"tab"). "%'";
     }
     if( $_REQUEST["s10"] != "" ){
-        $sqlss = $sqlss. " and mem_school like '%" .str_replace("'", "''", $_REQUEST["s10"]). "%'";
+        $sqlss = $sqlss. " and mem_school like '%" .SqlFilter($_REQUEST["s10"],"tab"). "%'";
     }
     if( $_REQUEST["s11"] != "" ){
-        $sqlss = $sqlss. " and mem_area like '%" .str_replace("'", "''", $_REQUEST["s11"]). "%'";
+        $sqlss = $sqlss. " and mem_area like '%" .SqlFilter($_REQUEST["s11"],"tab"). "%'";
     }
     if( $_REQUEST["s12"] != "" ){
-        $sqlss = $sqlss. " and mem_branch like '%" .str_replace("'", "''", $_REQUEST["s12"]). "%'";
+        $sqlss = $sqlss. " and mem_branch like '%" .SqlFilter($_REQUEST["s12"],"tab"). "%'";
     }
     if( $_REQUEST["s13"] != "" ){
-        $sqlss = $sqlss. " and mem_single like '%" .str_replace("'", "''", $_REQUEST["s12"]). "%'";
+        $sqlss = $sqlss. " and mem_single like '%" .SqlFilter($_REQUEST["s13"],"tab"). "%'";
     }
     if( $_REQUEST["m1"] != "" ){
-        $sqlss = $sqlss. " and month(mem_by) = '" .str_replace("'", "''", $_REQUEST["m1"]). "'";
+        $sqlss = $sqlss. " and month(mem_by) = '" .SqlFilter($_REQUEST["m1"],"tab"). "'";
     }
     if( $_REQUEST["d1"] != "" ){
-        $sqlss = $sqlss. " and day(mem_by) = '" .str_replace("'", "''", $_REQUEST["d1"]). "'";
+        $sqlss = $sqlss. " and day(mem_by) = '" .SqlFilter($_REQUEST["d1"],"tab"). "'";
     }
     if( $_REQUEST["s21"] != "" ){
-        $sqlss = $sqlss. " and mem_sex like '%" .str_replace("'", "''", $_REQUEST["s21"]). "%'";
+        $sqlss = $sqlss. " and mem_sex like '%" .SqlFilter($_REQUEST["s21"],"tab"). "%'";
     }
     if( $_REQUEST["s97"] != "" ){
-        $sqlss = $sqlss. " and mem_cc = '" .str_replace("'", "''", $_REQUEST["s97"]). "'";
+        $sqlss = $sqlss. " and mem_cc = '" .SqlFilter($_REQUEST["s97"],"tab"). "'";
     }
-    if( ($_REQUEST["s22"] != "" && $_REQUEST["s23"] = "") || ($_REQUEST["s22"] = "" && $_REQUEST["s23"] != "") ){
+    if( ($_REQUEST["s22"] != "" && $_REQUEST["s23"] == "") || ($_REQUEST["s22"] == "" && $_REQUEST["s23"] != "") ){
         call_alert("資料日期選擇起始和結束時間。",0,0);
     }
     if( $_REQUEST["s22"] != "" && $_REQUEST["s23"] != "" ){
         if( $_REQUEST["s22"] > $_REQUEST["s23"]){
             call_alert("日期請由小到大選擇。",0,0);
         }
-        $s22 = $_REQUEST["s22"]. " 00:00";
-        $s23 = $_REQUEST["s23"]. " 23:59";
+        $s22 = SqlFilter($_REQUEST["s22"],"int"). " 00:00";
+        $s23 = SqlFilter($_REQUEST["s23"],"int"). " 23:59";
     }
     if( $s22 != "" && $s23 != "" ){
         $sqlss = $sqlss. " and mem_time between '" .$s22. "' and '" .$s23. "'";
     }
     if( $_REQUEST["s27"] != "" && $_REQUEST["s28"] != "" ){
-        $sqlss = $sqlss. " and year(mem_by) between '" .$_REQUEST["s28"]. "' and '".$_REQUEST["s27"]. "'";
+        $sqlss = $sqlss. " and year(mem_by) between '" .SqlFilter($_REQUEST["s28"],"int"). "' and '".SqlFilter($_REQUEST["s27"],"int"). "'";
     }elseif( $_REQUEST["s27"] != "" ){
-        $sqlss = $sqlss & " and year(mem_by) = " .str_replace("'", "''", $_REQUEST["s28"]);
+        $sqlss = $sqlss & " and year(mem_by) = " .SqlFilter($_REQUEST["s27"],"int");
     }
     if( $_REQUEST["a1"] != "" ){
-        $sqlss = $sqlss. " and all_type like '%" .str_replace("'", "''", $_REQUEST["a1"]). "%'";
+        $sqlss = $sqlss. " and all_type like '%" .SqlFilter($_REQUEST["a1"],"tab"). "%'";
     }
     if( $_REQUEST["ff"] == "1" ){
         $sqlss = $sqlss . " and (ff <> '' or not ff is null)";
@@ -178,7 +178,11 @@
         if( $_REQUEST["vst"] == "full" ){
             $total_size = $result["total_size"]; //總筆數
         }else{
-            $total_size =  500;  //限制顯示500筆     
+            if($result["total_size"] > 500 ) {
+                $total_size =  500; //限制到500筆
+            }else{
+                $total_size =  $result["total_size"];
+            }   
         }
     }	
     $tPage = 1; //目前頁數
@@ -254,10 +258,15 @@
                         <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
                         <ul class="dropdown-menu">
                             <!--<li><a href="ad_register1.php" target="_blank"><i class="icon-star"></i> 新增會員資料</a></li>-->
-
-                            <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>
-
+                            <?php 
+                                if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch") { ?>
+                                    <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>
+                            <?php } ?>              
                             <li><a href="ad_fun_mem_f.php"><i class="icon-tag"></i> 進階搜尋</a></li>
+                            <?php if($_REQUEST["vst"] == "full"){ ?>
+                                <li class="divider"></li>                                
+								<li><a href="#e" onclick="Mars_popup('ad_fun_mem_excel.php?a=b<?php echo requestStr(); ?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');"><i class="icon-tag"></i> 匯出 Excel</a></li>
+                            <?php } ?> 
 
                         </ul>
                     </div>　

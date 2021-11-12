@@ -11,34 +11,34 @@
     require_once("_inc.php");
     require_once("./include/_function.php");
 
-    $mem_auto = $_REQUEST["mem_auto"];
+    $mem_auto = SqlFilter($_REQUEST["mem_auto"],"int");
 
     // 修改資料
     if($_REQUEST["state"] == "add"){        
-        $mem_by = $_REQUEST["mem_by"]. "/" .$_REQUEST["mem_bm"]. "/" .$_REQUEST["mem_bd"];
+        $mem_by = SqlFilter($_REQUEST["mem_by"],"int"). "/" .SqlFilter($_REQUEST["mem_bm"],"int"). "/" .SqlFilter($_REQUEST["mem_bd"],"int");
         // $mem_mobile = reset_number($_REQUEST["mem_mobile"]);
         if(!chkDate($mem_by)){
             call_alert("出生年月日期不正確。", 1, 1);
         }
         $sql2 = "UPDATE member_data SET
-                mem_username ='"    .$_REQUEST["mem_username"]. "',
-                mem_passwd = '"     .$_REQUEST["mem_passwd"]. "',
-                mem_name = '"       .$_REQUEST["mem_name"]. "',
-                mem_sex = '"        .$_REQUEST["mem_sex"]. "',
+                mem_username ='"    .SqlFilter($_REQUEST["mem_username"],"tab"). "',
+                mem_passwd = '"     .SqlFilter($_REQUEST["mem_passwd"],"tab"). "',
+                mem_name = '"       .SqlFilter($_REQUEST["mem_name"],"tab"). "',
+                mem_sex = '"        .SqlFilter($_REQUEST["mem_sex"],"tab"). "',
                 mem_by = '"         .$mem_by. "',
-                mem_phone = '"      .$_REQUEST["mem_phone"]. "',
-                mem_mail = '"       .$_REQUEST["mem_mail"]. "',
-                mem_msn = '"        .$_REQUEST["mem_msn"]. "',
-                mem_address = '"    .$_REQUEST["mem_address"]. "',
-                mem_area = '"       .$_REQUEST["mem_area"]. "',
-                mem_he = '"         .$_REQUEST["mem_he"]. "',
-                mem_we = '"         .$_REQUEST["mem_we"]. "',
-                mem_star = '"       .$_REQUEST["mem_star"]. "',
-                mem_blood = '"      .$_REQUEST["mem_blood"]. "',
-                mem_school = '"     .$_REQUEST["mem_school"]. "',
-                mem_job1 = '"       .$_REQUEST["mem_job1"]. "',
-                mem_job2 = '"       .$_REQUEST["mem_job2"]. "',
-                mem_marry = '"      .$_REQUEST["mem_marry"]. "',
+                mem_phone = '"      .SqlFilter($_REQUEST["mem_phone"],"tab"). "',
+                mem_mail = '"       .SqlFilter($_REQUEST["mem_mail"],"tab"). "',
+                mem_msn = '"        .SqlFilter($_REQUEST["mem_msn"],"tab"). "',
+                mem_address = '"    .SqlFilter($_REQUEST["mem_address"],"tab"). "',
+                mem_area = '"       .SqlFilter($_REQUEST["mem_area"],"tab"). "',
+                mem_he = '"         .SqlFilter($_REQUEST["mem_he"],"int"). "',
+                mem_we = '"         .SqlFilter($_REQUEST["mem_we"],"int"). "',
+                mem_star = '"       .SqlFilter($_REQUEST["mem_star"],"tab"). "',
+                mem_blood = '"      .SqlFilter($_REQUEST["mem_blood"],"tab"). "',
+                mem_school = '"     .SqlFilter($_REQUEST["mem_school"],"tab"). "',
+                mem_job1 = '"       .SqlFilter($_REQUEST["mem_job1"],"tab"). "',
+                mem_job2 = '"       .SqlFilter($_REQUEST["mem_job2"],"tab"). "',
+                mem_marry = '"      .SqlFilter($_REQUEST["mem_marry"],"tab"). "',
                 mem_uptime = '"     .date("Y-m-d H:i:s"). "'                
                 Where mem_auto = '" .$mem_auto. "'";
         $rs2 = $FunConn->prepare($sql2);

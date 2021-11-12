@@ -11,8 +11,8 @@
   require_once("./include/_function.php");
 
   if($_REQUEST["state"] == "add"){
-      $mem_auto = $_REQUEST["mem_auto"];      
-      $SQL = "UPDATE member_data SET mem_branch ='" . $_REQUEST["branch"] . "', mem_single ='" . $_REQUEST["single"] . "', all_type ='已發送' WHERE mem_auto ='" . $mem_auto ."'";
+      $mem_auto = SqlFilter($_REQUEST["mem_auto"],"tab");      
+      $SQL = "UPDATE member_data SET mem_branch ='" . SqlFilter($_REQUEST["log_branch"],"tab") . "', mem_single ='" . SqlFilter($_REQUEST["single"],"tab") . "', all_type ='已發送' WHERE mem_auto ='" . $mem_auto ."'";
       $rs = $FunConn->prepare($SQL);
       $rs->execute();
       if($rs){
@@ -132,7 +132,7 @@
                                 <td colspan="2" bgcolor="#336699">
                                     <div align="center">
                                         <input name="Submit" type="submit" id="Submit2" style="font-size: 9pt" value="確定送出">
-                                        <input name="mem_auto" type="hidden" id="mem_auto" value="<?php echo  $_REQUEST["mem_auto"]; ?>">
+                                        <input name="mem_auto" type="hidden" id="mem_auto" value="<?php echo SqlFilter($_REQUEST["mem_auto"],"int"); ?>">
                                     </div>
                                 </td>
                             </tr>
