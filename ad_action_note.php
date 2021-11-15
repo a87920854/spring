@@ -87,10 +87,10 @@
 	//查看清單連結文字
 	if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
 		$count_href = "　<a href='?vst=n'>[查看前五百筆]</a>";
-		}else{
-			if ( $total_size > 500 ){ $total_size = 500;}
-			$count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
-		}
+	}else{
+		if ( $total_size > 500 ){ $total_size = 500;}
+		$count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
+	}
 	
 	//取得分頁資料
 	$tPageSize = 20; //每頁幾筆
