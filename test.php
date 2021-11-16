@@ -1,14 +1,11 @@
 <?php
-	require_once("include/_inc.php");
-	require_once("include/_function.php");
-	
-	$SPConn = SPConOpen();
-	
-	call_alert("我是測試訊息","123.php",0);
-	
-	$query = $SPConn->prepare("SELECT count(*) as t FROM menu_m");
-      if (!empty($gender)) $query->bindValue(':gender', $gender, PDO::PARAM_STR);
-      $query->execute();
-	  $numsrow = $query->fetch()["t"];
-	  echo $numsrow;
+	$date3 = "5555";
+	$arr = [1,2,3,4,5];
+	$date1=date_create("2013/03/15");
+	$date2=date_create("2013/12/12");
+	$diff=date_diff($date1,$date2,);
+	// var_dump($diff->days);
+	echo "我是不是愛上你{$date3}";
+	$str = 'abcdefg';
+
 ?>

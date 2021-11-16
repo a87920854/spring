@@ -1,8 +1,27 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+
+    /*****************************************/
+	//檔案名稱：ad_fun_love_f.php
+	//後台對應位置：好好玩管理系統/好好玩國內報名>功能(進階搜尋)
+	//改版日期：2021.11.15
+	//改版設計人員：Jack
+	//改版程式人員：Jack
+	/*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if ($_SESSION["MM_Username"] == "") {
+		call_alert("請重新登入。", "login.php", 0);
+	}
+
+    if($_SESSION["MM_UserAuthorization"] == "action"){
+        call_alert("您沒有查看此頁的權限。", "login.php", 0);
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -78,226 +97,70 @@ require_once("./include/_sidebar.php");
                                 <td>年次：
                                     <select name="s27" id="s27">
                                         <option value="" selected>請選擇</option>
-                                        <option value="2001">2001 - 20 歲</option>
-                                        <option value="2000">2000 - 21 歲</option>
-                                        <option value="1999">1999 - 22 歲</option>
-                                        <option value="1998">1998 - 23 歲</option>
-                                        <option value="1997">1997 - 24 歲</option>
-                                        <option value="1996">1996 - 25 歲</option>
-                                        <option value="1995">1995 - 26 歲</option>
-                                        <option value="1994">1994 - 27 歲</option>
-                                        <option value="1993">1993 - 28 歲</option>
-                                        <option value="1992">1992 - 29 歲</option>
-                                        <option value="1991">1991 - 30 歲</option>
-                                        <option value="1990">1990 - 31 歲</option>
-                                        <option value="1989">1989 - 32 歲</option>
-                                        <option value="1988">1988 - 33 歲</option>
-                                        <option value="1987">1987 - 34 歲</option>
-                                        <option value="1986">1986 - 35 歲</option>
-                                        <option value="1985">1985 - 36 歲</option>
-                                        <option value="1984">1984 - 37 歲</option>
-                                        <option value="1983">1983 - 38 歲</option>
-                                        <option value="1982">1982 - 39 歲</option>
-                                        <option value="1981">1981 - 40 歲</option>
-                                        <option value="1980">1980 - 41 歲</option>
-                                        <option value="1979">1979 - 42 歲</option>
-                                        <option value="1978">1978 - 43 歲</option>
-                                        <option value="1977">1977 - 44 歲</option>
-                                        <option value="1976">1976 - 45 歲</option>
-                                        <option value="1975">1975 - 46 歲</option>
-                                        <option value="1974">1974 - 47 歲</option>
-                                        <option value="1973">1973 - 48 歲</option>
-                                        <option value="1972">1972 - 49 歲</option>
-                                        <option value="1971">1971 - 50 歲</option>
-                                        <option value="1970">1970 - 51 歲</option>
-                                        <option value="1969">1969 - 52 歲</option>
-                                        <option value="1968">1968 - 53 歲</option>
-                                        <option value="1967">1967 - 54 歲</option>
-                                        <option value="1966">1966 - 55 歲</option>
-                                        <option value="1965">1965 - 56 歲</option>
-                                        <option value="1964">1964 - 57 歲</option>
-                                        <option value="1963">1963 - 58 歲</option>
-                                        <option value="1962">1962 - 59 歲</option>
-                                        <option value="1961">1961 - 60 歲</option>
-                                        <option value="1960">1960 - 61 歲</option>
-                                        <option value="1959">1959 - 62 歲</option>
-                                        <option value="1958">1958 - 63 歲</option>
-                                        <option value="1957">1957 - 64 歲</option>
-                                        <option value="1956">1956 - 65 歲</option>
-                                        <option value="1955">1955 - 66 歲</option>
-                                        <option value="1954">1954 - 67 歲</option>
-                                        <option value="1953">1953 - 68 歲</option>
-                                        <option value="1952">1952 - 69 歲</option>
-                                        <option value="1951">1951 - 70 歲</option>
-                                        <option value="1950">1950 - 71 歲</option>
-                                        <option value="1949">1949 - 72 歲</option>
-                                        <option value="1948">1948 - 73 歲</option>
-                                        <option value="1947">1947 - 74 歲</option>
-                                        <option value="1946">1946 - 75 歲</option>
-                                        <option value="1945">1945 - 76 歲</option>
-                                        <option value="1944">1944 - 77 歲</option>
-                                        <option value="1943">1943 - 78 歲</option>
-                                        <option value="1942">1942 - 79 歲</option>
-                                        <option value="1941">1941 - 80 歲</option>
+                                        <?php 
+                                            for($i=20;$i<=80;$i++){
+                                                echo "<option value='".(date("Y")-$i)."'>".(date("Y")-$i)." - ".$i." 歲</option>";
+                                            }                                            
+                                        ?>                                  
                                     </select> ~ <select name="s28" id="s28">
-                                        <option value="" selected>請選擇</option>
-                                        <option value="2001">2001 - 20 歲</option>
-                                        <option value="2000">2000 - 21 歲</option>
-                                        <option value="1999">1999 - 22 歲</option>
-                                        <option value="1998">1998 - 23 歲</option>
-                                        <option value="1997">1997 - 24 歲</option>
-                                        <option value="1996">1996 - 25 歲</option>
-                                        <option value="1995">1995 - 26 歲</option>
-                                        <option value="1994">1994 - 27 歲</option>
-                                        <option value="1993">1993 - 28 歲</option>
-                                        <option value="1992">1992 - 29 歲</option>
-                                        <option value="1991">1991 - 30 歲</option>
-                                        <option value="1990">1990 - 31 歲</option>
-                                        <option value="1989">1989 - 32 歲</option>
-                                        <option value="1988">1988 - 33 歲</option>
-                                        <option value="1987">1987 - 34 歲</option>
-                                        <option value="1986">1986 - 35 歲</option>
-                                        <option value="1985">1985 - 36 歲</option>
-                                        <option value="1984">1984 - 37 歲</option>
-                                        <option value="1983">1983 - 38 歲</option>
-                                        <option value="1982">1982 - 39 歲</option>
-                                        <option value="1981">1981 - 40 歲</option>
-                                        <option value="1980">1980 - 41 歲</option>
-                                        <option value="1979">1979 - 42 歲</option>
-                                        <option value="1978">1978 - 43 歲</option>
-                                        <option value="1977">1977 - 44 歲</option>
-                                        <option value="1976">1976 - 45 歲</option>
-                                        <option value="1975">1975 - 46 歲</option>
-                                        <option value="1974">1974 - 47 歲</option>
-                                        <option value="1973">1973 - 48 歲</option>
-                                        <option value="1972">1972 - 49 歲</option>
-                                        <option value="1971">1971 - 50 歲</option>
-                                        <option value="1970">1970 - 51 歲</option>
-                                        <option value="1969">1969 - 52 歲</option>
-                                        <option value="1968">1968 - 53 歲</option>
-                                        <option value="1967">1967 - 54 歲</option>
-                                        <option value="1966">1966 - 55 歲</option>
-                                        <option value="1965">1965 - 56 歲</option>
-                                        <option value="1964">1964 - 57 歲</option>
-                                        <option value="1963">1963 - 58 歲</option>
-                                        <option value="1962">1962 - 59 歲</option>
-                                        <option value="1961">1961 - 60 歲</option>
-                                        <option value="1960">1960 - 61 歲</option>
-                                        <option value="1959">1959 - 62 歲</option>
-                                        <option value="1958">1958 - 63 歲</option>
-                                        <option value="1957">1957 - 64 歲</option>
-                                        <option value="1956">1956 - 65 歲</option>
-                                        <option value="1955">1955 - 66 歲</option>
-                                        <option value="1954">1954 - 67 歲</option>
-                                        <option value="1953">1953 - 68 歲</option>
-                                        <option value="1952">1952 - 69 歲</option>
-                                        <option value="1951">1951 - 70 歲</option>
-                                        <option value="1950">1950 - 71 歲</option>
-                                        <option value="1949">1949 - 72 歲</option>
-                                        <option value="1948">1948 - 73 歲</option>
-                                        <option value="1947">1947 - 74 歲</option>
-                                        <option value="1946">1946 - 75 歲</option>
-                                        <option value="1945">1945 - 76 歲</option>
-                                        <option value="1944">1944 - 77 歲</option>
-                                        <option value="1943">1943 - 78 歲</option>
-                                        <option value="1942">1942 - 79 歲</option>
-                                        <option value="1941">1941 - 80 歲</option>
+                                        <option value="" selected>請選擇</option>                
+                                        <?php 
+                                            for($i=20;$i<=80;$i++){
+                                                echo "<option value='".(date("Y")-$i)."'>".(date("Y")-$i)." - ".$i." 歲</option>";
+                                            }                                            
+                                        ?>       
                                     </select>
                                 </td>
                             </tr>
                             <td>自訂來源：
                                 <select name="s97" id="s97">
                                     <option value="">請選擇</option>
-                                    <option value="banner_funtour_0120">banner_funtour_0120</option>
-                                    <option value="banner_funtour_0202">banner_funtour_0202</option>
-                                    <option value="banner_funtour_0507">banner_funtour_0507</option>
-                                    <option value="banner_funtour_0528">banner_funtour_0528</option>
-                                    <option value="banner_funtour_0531">banner_funtour_0531</option>
-                                    <option value="blog_funtour_hokkaido">blog_funtour_hokkaido</option>
-                                    <option value="blog_PhotoAds_Funtour">blog_PhotoAds_Funtour</option>
-                                    <option value="blog_pofiles">blog_pofiles</option>
-                                    <option value="EDM_0217title">EDM_0217title</option>
-                                    <option value="EDM_0322sign">EDM_0322sign</option>
-                                    <option value="EDM_1017_GlodCancel">EDM_1017_GlodCancel</option>
-                                    <option value="Email_EDM_0518">Email_EDM_0518</option>
-                                    <option value="Email_EDM_Angus">Email_EDM_Angus</option>
-                                    <option value="facebook">facebook</option>
-                                    <option value="FACEBOOK_FUNTOUR">FACEBOOK_FUNTOUR</option>
-                                    <option value="facebook_funtour_0113">facebook_funtour_0113</option>
-                                    <option value="facebook_funtour_domestictourism">facebook_funtour_domestictourism</option>
-                                    <option value="facebook_funtour_hokkaido">facebook_funtour_hokkaido</option>
-                                    <option value="facebook_macao">facebook_macao</option>
-                                    <option value="facebook_pofiles">facebook_pofiles</option>
-                                    <option value="facebook_poster">facebook_poster</option>
-                                    <option value="fb">fb</option>
-                                    <option value="FB_1018">FB_1018</option>
-                                    <option value="FB_ActionLink_Funtour">FB_ActionLink_Funtour</option>
-                                    <option value="FB_PhotoAds_Funtour">FB_PhotoAds_Funtour</option>
-                                    <option value="fb02">fb02</option>
-                                    <option value="funtor_lineat">funtor_lineat</option>
-                                    <option value="funtour">funtour</option>
-                                    <option value="funtour.springclub">funtour.springclub</option>
-                                    <option value="funtour_app">funtour_app</option>
-                                    <option value="funtour_banner">funtour_banner</option>
-                                    <option value="funtour_blog">funtour_blog</option>
-                                    <option value="funtour_edm_20200806">funtour_edm_20200806</option>
-                                    <option value="funtour_edm_20200827">funtour_edm_20200827</option>
-                                    <option value="funtour_facebook">funtour_facebook</option>
-                                    <option value="funtour_facebook_20171206">funtour_facebook_20171206</option>
-                                    <option value="funtour_fb_post">funtour_fb_post</option>
-                                    <option value="funtour_fb02">funtour_fb02</option>
-                                    <option value="funtour_home_Rightblock">funtour_home_Rightblock</option>
-                                    <option value="funtour_homepage">funtour_homepage</option>
-                                    <option value="funtour_lineat">funtour_lineat</option>
-                                    <option value="funtour_lineat_0503">funtour_lineat_0503</option>
-                                    <option value="funtour_lineat_0813">funtour_lineat_0813</option>
-                                    <option value="funtour_lineat_1018">funtour_lineat_1018</option>
-                                    <option value="funtour_lineat_1230">funtour_lineat_1230</option>
-                                    <option value="funtour_lineat_20171205">funtour_lineat_20171205</option>
-                                    <option value="funtour_lineat_dialogue">funtour_lineat_dialogue</option>
-                                    <option value="funtour_lineat_homepage0505">funtour_lineat_homepage0505</option>
-                                    <option value="funtour_loneat_message">funtour_loneat_message</option>
-                                    <option value="funtour_mail_biweekly">funtour_mail_biweekly</option>
-                                    <option value="funtour_officialwebsite">funtour_officialwebsite</option>
-                                    <option value="funtour_SMS_20200728">funtour_SMS_20200728</option>
-                                    <option value="funtourfb__pofiles">funtourfb__pofiles</option>
-                                    <option value="LINE">LINE</option>
-                                    <option value="line@">line@</option>
-                                    <option value="LINE_1018">LINE_1018</option>
-                                    <option value="lineat_funtour_1121">lineat_funtour_1121</option>
-                                    <option value="lineat_funtour_1230">lineat_funtour_1230</option>
-                                    <option value="lineat_funtour_activity1231">lineat_funtour_activity1231</option>
-                                    <option value="lineat_funtour_korea1212">lineat_funtour_korea1212</option>
-                                    <option value="lineat_pofiles">lineat_pofiles</option>
-                                    <option value="sale-696">sale-696</option>
-                                    <option value="sale-777">sale-777</option>
-                                    <option value="singleparty_covid19_edm">singleparty_covid19_edm</option>
-                                    <option value="singleparty_funtourevent_FB_0802">singleparty_funtourevent_FB_0802</option>
-                                    <option value="singleparty_sale_logo">singleparty_sale_logo</option>
-                                    <option value="sms_auto_send">sms_auto_send</option>
-                                    <option value="springclub_officialwebsite_homepage">springclub_officialwebsite_homepage</option>
-                                    <option value="Yahoo_cpc_Asiapac">Yahoo_cpc_Asiapac</option>
-                                    <option value="憟賢末?呸PP?冽">憟賢末?呸PP?冽</option>
+                                    <?php
+                                        $SQL = "select distinct k_cc from love_keyin where not k_cc is null and k_cc <> ''";
+                                        $rs = $FunConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                        if($result){
+                                            foreach($result as $re){
+                                                echo "<option value='".$re["k_cc"]."'>".trim($re["k_cc"])."</option>";
+                                            }                                            
+                                        }
+                                    ?>
                                 </select>
                             </td>
                             </tr>
                             <tr>
                                 <td>會館：
-                                    <select name="s6" id="s6">
+                                    <select name="branch" id="branch">
+                                        <?php                                            
+                                            $SQL = "Select * From branch_data Where admin_sOrt<>99 ".$subSQL."Order By admin_SOrt";
+                                            $rs = $SPConn->prepare($SQL);
+                                            $rs->execute();
+                                            $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+                                            foreach($result as $re){ ?>
+                                                <option value="<?php echo $re["admin_name"];?>"<?php if ( SqlFilter($_REQUEST["branch"],"tab") == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
+                                        <?php }?>
+                                    </select> <select name="single" id="single">
                                         <option value="">請選擇</option>
-                                        <option value="台北">台北</option>
-                                        <option value="桃園">桃園</option>
-                                        <option value="新竹">新竹</option>
-                                        <option value="台中">台中</option>
-                                        <option value="台南">台南</option>
-                                        <option value="高雄">高雄</option>
-                                        <option value="八德">八德</option>
-                                        <option value="約專">約專</option>
-                                        <option value="迷你約">迷你約</option>
-                                        <option value="總管理處">總管理處</option>
-                                        <option value="好好玩旅行社">好好玩旅行社</option>
-                                    </select> <select name="s7" id="s7">
-                                        <option value="">請選擇</option>
+                                        <?php
+                                            if ( $_REQUEST["flag"] == "1" ){ 
+                                                $SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' Order By p_desc2 Desc, lastlogintime Desc";
+                                            }else{
+                                                $SQL_er = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".SqlFilter($_REQUEST["branch"],"tab")."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
+                                            }
+                                            if ( $branch != "" ){
+                                                $rs_er = $SPConn->prepare($SQL_er);
+                                                $rs_er->execute();
+                                                $result_er=$rs_er->fetchAll(PDO::FETCH_ASSOC);
+                                                foreach($result_er as $re_er){
+                                                    if ( $re_er["p_name"] != "" ){ $p_name = $re_er["p_name"]; }
+                                                    if ( $re_er["p_other_name"] != "" ){ $p_name = $re_er["p_other_name"]; }
+                                                    echo "<option value='".$re_er["p_user"]."'";
+                                                    if ( $single == $re_er["p_user"] ){ echo " selected";}
+                                                    echo ">".$p_name."</option>";
+                                                }
+                                            }
+                                        ?>
                                     </select> <label><input type="checkbox" id="showout"> 顯示離職</label>
                                 </td>
                             </tr>

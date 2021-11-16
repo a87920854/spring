@@ -170,7 +170,7 @@
             <td height="25" bgcolor="#336699">
               <div align="center">
                 <font color="#990066" size="3"><strong>
-                    <font color="#FFFFFF">孫偉文 - 好好玩旅行社回報系統</font>
+                    <font color="#FFFFFF"><?php echo $u_name; ?> - 好好玩旅行社回報系統</font>
                   </strong></font>
               </div>
             </td>

@@ -59,14 +59,13 @@
         $sqlv = "*";
         $sqlv2 = "count(k_id)";        
     }else{
-        $sqlv = "top" .$default_sql_num. " *";
+        $sqlv = "top " .$default_sql_num. " *";
         $sqlv2 = "count(k_id)";
     }
 
-    // 權限判斷
+    // 權限判斷(只取全部的筆數)
     switch($_SESSION["MM_UserAuthorization"]){
         case "admin":
-            $sqls = "SELECT ".$sqlv." FROM love_keyin WHERE all_kind <> '國外旅遊'";
             $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin WHERE all_kind <> '國外旅遊'";
             if($_REQUEST["sear"] != "1"){
                 if($_REQUEST["s99"] != ""){
@@ -85,11 +84,9 @@
         case "pay":
             $query = $SPConn->query("SELECT * FROM personnel_data Where p_user='".$_SESSION["MM_username"]."'");
             $result = $query->fetch(PDO::FETCH_ASSOC);
-            $sqls = "SELECT ".$sqlv." FROM love_keyin WHERE all_kind <> '國外旅遊' and all_branch= '".$result["p_branch"]."'";
 	        $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin WHERE all_kind <> '國外旅遊' and all_branch= '".$result["p_branch"]."'";
             break;
         default:
-            $sqls = "SELECT ".$sqlv." FROM love_keyin Where all_kind <> '國外旅遊' and all_single = '".$_SESSION["MM_username"]."'";
             $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin Where all_kind <> '國外旅遊' and all_single = '".$_SESSION["MM_username"]."'";
             break;
     }
@@ -165,7 +162,10 @@
 
     // 以時間段搜尋
     if(chkDate($kt1) && chkDate($kt2)){
-        if(date_diff($kt1,$kt2)<0){
+        $kt1 = date_create($kt1);
+        $kt2 = date_create($kt2);
+        $diff = date_diff($kt1,$kt2);
+        if($diff->days < 0){
             call_alert("結束日期不能小於起始日期。", 0, 0);
         }
         $sqlss = $sqlss . " and k_time between '".$kt1."' and '".$kt2."'";
@@ -173,16 +173,16 @@
 
     // 以活動時間段搜尋
     if(chkDate($kt3) && chkDate($kt4)){
-        if(date_diff($kt3,$kt4)<0){
+        $kt3 = date_create($kt3);
+        $kt4 = date_create($kt4);
+        $diff = date_diff($kt3,$kt4);
+        if($diff->days < 0){
             call_alert("結束日期不能小於起始日期。", 0, 0);
         }
         $sqlss = $sqlss . " and action_time between '".$kt3."' and '".$kt4."'";
-    }
-    
-
-    $sqls = $sqls . $sqlss ." order by k_id desc";
+    }   
+    // 總筆數SQL
     $sqls2 = $sqls2 . $sqlss;
-
     // 查詢總筆數
     $rs = $FunConn->prepare($sqls2);
     $rs->execute();
@@ -200,6 +200,35 @@
             }  
         }
     }
+
+    $tPage = 1; //目前頁數
+    $tPageSize = 50; //每頁幾筆
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 50;
+	}else{
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));
+	}
+
+    // 權限判斷(取資料)
+    switch($_SESSION["MM_UserAuthorization"]){
+        case "admin":
+            $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM love_keyin WHERE all_kind <> '國外旅遊'";
+            break;
+        case "branch":
+        case "love":
+        case "pay":
+            $query = $SPConn->query("SELECT * FROM personnel_data Where p_user='".$_SESSION["MM_username"]."'");
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM love_keyin WHERE all_kind <> '國外旅遊' and all_branch= '".$result["p_branch"]."'";
+            break;
+        default:
+            $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM love_keyin Where all_kind <> '國外旅遊' and all_single = '".$_SESSION["MM_username"]."'";
+            break;
+    }
+    // SQL
+    $sqls = $sqls . $sqlss ." order by k_id desc ) t1 order by k_id) t2 order by k_id desc";
 
     if($_REQUEST["vst"] == "full"){
         $total_sizen = $total_size . "　<a href='?vst=n&s99=".$_REQUEST["s99"]."'>[查看前五百筆]</a>";
@@ -226,7 +255,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>好好玩國內報名　 - 數量：<?php echo $total_sizen; ?></strong> <!-- panel title -->
+                    <strong>好好玩國內報名　<?php echo $all_type; ?> - 數量：<?php echo $total_sizen; ?></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -235,9 +264,20 @@
                 <div class="btn-group pull-left margin-right-10">
 							<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
 							<ul class="dropdown-menu">
-							    <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>							    
-								<li><a href="?s99=1" target="_self"><i class="icon-resize-horizontal"></i> 切換已處理</a></li>								
-							    <li><a href="javascript:mutil_send();"><i class="icon-tag"></i> 多選發送</a></li>								
+                            <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>
+                                <?php 
+                                    if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_Username"] == "13085797" ){
+                                        if($all_type == "未處理"){
+                                            echo "<li><a href='?s99=1' target='_self'><i class='icon-resize-horizontal'></i> 切換已處理</a></li>";
+                                        }
+                                        if($all_type == "已處理"){
+                                            echo "<li><a href='ad_fun_action1.php' target='_self'><i class='icon-resize-horizontal'></i> 切換未處理</a></li>";
+                                        }
+                                    }
+                                    if($_SESSION["MM_UserAuthorization"] == "admin"){
+                                        echo "<li><a href='javascript:mutil_send();'><i class='icon-tag'></i> 多選發送</a></li>";
+                                    }
+                                ?>		
 								<li><a href="ad_fun_love_f.php?t=0"><i class="icon-tag"></i> 進階搜尋</a></li>
 								<li><a href="ad_fun_action_add.php"><i class="icon-plus-sign"></i> 新增報名資料</a></li>
 							</ul>
@@ -271,11 +311,113 @@
                         </thead>
                         <tbody>
                             <?php
-                                
+                                $rs = $FunConn->prepare($sqls);
+                                $rs->execute();
+                                $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                if(!$result){
+                                    echo "<tr><td colspan=8 height=200>目前沒有資料</td></tr>";
+                                }else{
+                                    foreach($result as $re){ ?>
+                                        <tr>
+                                            <td><input data-no-uniform="true" type="checkbox" name="nums" value="<?php echo $re["k_id"]; ?>"></td>
+                                            <td class="center"><a href="javascript:Mars_popup('ad_fun_detail.php?k_id=<?php echo $re["k_id"]; ?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re["k_name"]; ?></a> 
+                                                <a href="ad_no_mem_s.php?mem_mobile=<?php echo $re["k_mobile"]; ?>" target="_blank">[查]</a>
+                                                <a href="ad_mem_detail.php?mem_mobile=<?php echo $re["k_mobile"]; ?>" target="_blank">[查春天]</a>
+                                            </td>										
+                                            <td class="center"><?php echo $re["k_sex"]; ?></td>
+                                            <td class="center"><?php echo $re["k_mobile"]; ?></td>
+                                            <td class="center"><?php echo $re["k_area"]; ?></td>
+                                            <td class="center"><?php echo $re["action_branch"]; ?></td>
+                                            <td class="center">
+                                                <?php 
+                                                    if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_Username"] == "13085797" || $_SESSION["MM_UserAuthorization"] == "branch"){
+                                                        echo "<a href='ad_fun_action_list_singup1.php?ac=" .$re["ac_auto"]. "'>". $re["action_title"]. "</a>";
+                                                    }else{
+                                                        echo $re["action_title"];
+                                                    }
+                                                    if($_SESSION["MM_UserAuthorization"] == "admin" && $all_type != "未處理"){
+                                                        echo "<a href='javascript:Mars_popup('ad_fun_send_love_all_branch.php?ac_auto=".$re["ac_auto"]."&ac_title=".$re["action_title"]."','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');'>總發</a>";
+                                                    }
+                                                ?>                                            
+                                            </td>
+                                            <td class="center">
+                                                <?php
+                                                    $um = "";
+                                                    if($re["p1"] != "" && $re["p1e"] == "ok"){
+                                                        $um = $um . "身正";
+                                                    }
+                                                    if($re["p2"] != "" && $re["p2e"] == "ok"){
+                                                        $um = $um . "<br>身反";
+                                                    }
+                                                    if($re["p3"] != "" && $re["p3e"] == "ok"){
+                                                        $um = $um . "<br>工證";
+                                                    }
+                                                    if($um == ""){
+                                                        $um = "無";
+                                                    }
+                                                    echo  $um;
+                                                ?>          							
+                                            </td>
+                                            <td class="center">
+                                                <?php 
+                                                    $rquery = $FunConn->query("select count(log_auto) as r from log_data where log_num=".$re["k_id"]." and log_5='lovekeyin'");
+                                                    $rresult = $rquery->fetch(PDO::FETCH_ASSOC);
+                                                    if( !$rresult || $rresult["r"] == 0){
+                                                        $report = 0;
+                                                    }else{
+                                                        $report = $rresult["r"];
+                                                    }                                               
+                                                ?>
+                                                
+                                                <div class="btn-group">
+                                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                                    <ul class="dropdown-menu pull-right">						
+                                                        <li><a href="javascript:Mars_popup('ad_fun_detail.php?k_id=<?php echo $re["k_id"]; ?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><i class="icon-file"></i> 詳細</a></li>                                                       
+                                                        <?php 
+                                                            if($_SESSION["MM_UserAuthorization"] != "single"){
+                                                                echo "<li><a href=\"javascript:Mars_popup('ad_fun_send_love_branch.php?k_id=" .$re["k_id"]. "','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');\"><i class='icon-file'></i> 發送</a></li>";
+                                                            }
+                                                            if($re["all_type"] != "未處理"){
+                                                                echo "<li><a href=\"javascript:Mars_popup('ad_fun_report.php?k_id=" .$re["k_id"]. "&ty=lovekeyin&rc=國內活動','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');\"><i class='icon-list-alt'></i> 回報(".$report.")</a></li>";
+                                                            }
+                                                            if($_SESSION["MM_UserAuthorization"] == "admin"){
+                                                                echo "<li><a href='#' onClick=\"Mars_popup2('ad_fun_love_del.php?k_id=" .$re["k_id"]. "','','width=300,height=200,top=100,left=100')\"><i class='icon-trash'></i> 刪除</a></li>";
+                                                            }
+                                                        ?>  
+                                                    </ul>
+                                                </div>								
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="border-bottom: #666666 1px dotted">
+                                                <?php
+                                                    if($re["k_come"] !=""){
+                                                        echo $re["k_come"] . "　";
+                                                    }
+                                                    if($re["k_cc"] != ""){
+                                                        $k_cc = $re["k_cc"];
+                                                        if(explode("-",$k_cc)[0] == "sale"){
+                                                            echo "推廣：" .SingleName(explode("-",$k_cc)[1],"auto")."　";
+                                                        }
+                                                        if($re["all_single"] != ""){
+                                                           $single = SingleName($re["all_single"],"normal");
+                                                        }
+                                                        echo "廣告來源：".$k_cc."　"; 
+                                                    }else{
+                                                        $k_cc = "";
+                                                    }
+                                                    echo changeDate($re["k_time"])."(<a href=\"javascript:Mars_popup('ad_fun_report.php?k_id=" .$re["k_id"]. "&ty=lovekeyin&rc=國內活動','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');\">回報(".$report.")</a>，
+                                                         處理情形：<font color='#FF0000' size='2'>" .$re["all_type"]. $re["all_type2"]. "　 ".$re["all_branch"] .$single."</font>) 內容：" .$re["all_note"];
+                                                ?>
+                                             </td>
+                                        </tr>
+                                    <?php }
+                                }
                             ?>
                         </tbody>
                     </table>
                 </div>
+                <?php require_once("./include/_page.php"); ?>
             </div>
             <!--/span-->
 

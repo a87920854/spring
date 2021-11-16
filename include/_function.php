@@ -650,7 +650,7 @@
 		}
 	}
 	
-	// 重設數字
+	// 格式化數字(全形→半形)
 	function reset_number($n){
 		if( $n != ""){
 			$n = trim(str_replace("-", "", $n));

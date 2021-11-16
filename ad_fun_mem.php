@@ -209,10 +209,10 @@
             break;
         case "branch":
         case "love":
-            $sqls = "SELECT " .$sqlv. " FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'";
+            $sqls = "SELECT " .$sqlv. " FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM member_data WHERE mem_branch= '" .$_SESSION["branch"]. "'";
             break;
         default:
-            $sqls = "SELECT " .$sqlv. " FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
+            $sqls = "SELECT " .$sqlv. " FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM member_data Where UPPER(mem_single) = '" .strtoupper($_SESSION["MM_username"]). "'";
             break;
     }
     
