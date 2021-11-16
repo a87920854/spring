@@ -32,5 +32,12 @@ if ( $action != "login" ){
 		echo "</script>";
 		exit;
 	}
-	}
+}
+
+//topage
+if ( $_REQUEST["topage"] != "" && is_numeric($_REQUEST["topage"]) ){
+	$topage = intval($_REQUEST["topage"]);
+}else{
+	$topage = 1;
+}
 ?>
