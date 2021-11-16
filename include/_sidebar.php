@@ -169,7 +169,8 @@
 						}?>
 						<li><a href="ad_love.php"><i class="fa fa-angle-right"></i><span> 排約報名資料<font color="red">(<?php echo $jt;?>)</font></span></a></li>
 						<li><a href="ad_action.php"><i class="fa fa-angle-right"></i><span> 活動報名資料</span></a></li>
-						<?php
+						<?php //20211116 hide By Queena 已無使用 
+						/*
 						$SQL = "select count(auton) as tt from quest where all_type = '未處理'";
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
@@ -178,8 +179,8 @@
 						$jt = 0;
 						if ( count($result) > 0 ) {
 							$jt = $re["tt"];
-						}?>
-						<li><a href="ad_quest.php"><i class="fa fa-angle-right"></i><span> 問卷報名資料<font color="red">(<?php echo $jt;?>)</font></span></a></li>
+						}*/?>
+						<!--<li><a href="ad_quest.php"><i class="fa fa-angle-right"></i><span> 問卷報名資料<font color="red">(<?php //echo $jt;?>)</font></span></a></li>-->
 						<?php
 						$SQL = "select count(auton) as tt from join_log";
 						$rs = $SPConn->prepare($SQL);
@@ -192,7 +193,8 @@
 						}?>
 						<li><a href="ad_nofix.php"><i class="fa fa-angle-right"></i><span> 未完成名單資料<font color="red">(<?php echo $jt;?>)</font></span></a></li>
 						<!--<li><a href="ad_otherc.php"><i class="fa fa-angle-right-list"></i><span> 外部名單</span></a></li>-->
-						<?php
+						<?php //20211116 Hide By Queena 久久合作一次先隱藏
+						/*
 						$SQL = "select count(auton) as tt from infojetmedia where stat = 0";
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
@@ -201,9 +203,10 @@
 						$jt = 0;
 						if ( count($result) > 0 ) {
 							$jt = $re["tt"];
-						}?>
-						<li><a href="ad_infojetmedia.php"><i class="fa fa-angle-right"></i><span> 春天-億捷創意<font color="red">(<?php echo $jt;?>)</font></span></a></li>
-						<?php
+						}*/?>
+						<!--<li><a href="ad_infojetmedia.php"><i class="fa fa-angle-right"></i><span> 春天-億捷創意<font color="red">(<?php //echo $jt;?>)</font></span></a></li>20211116 hide By Queena 久久合作一次先隱藏-->
+						<?php //20211116 hide By Queena 久久合作一次先隱藏
+						/*
 						$SQL = "select count(auton) as tt from infojetmedia_dmn where stat = 0";
 						$rs = $SPConn->prepare($SQL);
 						$rs->execute();
@@ -211,8 +214,8 @@
 						$jt = 0;
 						if ( count($result) > 0 ) {
 							$jt = $re["tt"];
-						}?>
-						<li><a href="ad_infojetmedia_dmn.php"><i class="fa fa-angle-right"></i><span> DMN-億捷創意<font color="red">(<?php echo $jt;?>)</font></span></a></li>                                
+						}*/?>
+						<!--<li><a href="ad_infojetmedia_dmn.php"><i class="fa fa-angle-right"></i><span> DMN-億捷創意<font color="red">(<?php //echo $jt;?>)</font></span></a></li>20211116 hide By Queena 久久合作一次先隱藏--->
 						<?php
 						//$SQL = "select count(g_auto) as tt from guest where all_type = '未處理' and (all_note IS NULL)"; //原程式，應需符合★名單發送功能>客服中心資料頁面數字
 						$SQL = "select count(g_auto) as tt from guest Where 1=1 And (all_note IS NULL) And (web <> 'singleparty' Or web is null)";
@@ -492,7 +495,7 @@
 				<li><a href="ad_counts_branch.php"><i class="main-icon fa fa-angle-double-right"></i><span> 會館新增未入會統計</span></a></li>						
 				<li><a href="ad_love.php"><i class="main-icon fa fa-angle-double-right"></i><span> 排約報名資料</span></a></li>
 				<li><a href="ad_action.php"><i class="main-icon fa fa-angle-double-right"></i><span> 活動報名資料</span></a></li>
-				<li><a href="ad_quest.php"><i class="main-icon fa fa-angle-double-right"></i><span> 問卷報名資料</span></a></li>
+				<!--<li><a href="ad_quest.php"><i class="main-icon fa fa-angle-double-right"></i><span> 問卷報名資料</span></a></li> 20211116 Hide By Queena 已無使用-->
 				<?php
 				$jt2 = 0;
 				$SQL = "select count(auton) as tt from invite where stats=0 and datediff(d, n11, getdate()) = 0 and (branch='".$_SESSION["branch"]."' or branch3='".$_SESSION["branch"]&"')";
@@ -647,7 +650,7 @@
 				<li><a href="ad_no_mem.php"><i class="main-icon fa fa-angle-double-right"></i><span> 未入會資料</span></a></li>
 				<li><a href="ad_invite.php"><i class="main-icon fa fa-angle-double-right"></i><span> 約見紀錄表</span></a></li>
 				<li><a href="ad_action.php"><i class="main-icon fa fa-angle-double-right"></i><span> 活動報名資料</span></a></li>			
-				<li><a href="ad_quest.php"><i class="main-icon fa fa-angle-double-right"></i><span> 問卷報名資料</span></a></li>	
+				<!--<li><a href="ad_quest.php"><i class="main-icon fa fa-angle-double-right"></i><span> 問卷報名資料</span></a></li>20211116 Hide By Queena 已無使用-->
 				<h3> --- 會員服務 ---</h3>
 				<li><a href="ad_single_optimization.php"><i class="main-icon fa fa-angle-double-right"></i><span> 優化單身資料庫</span></a></li>
 				<li><a href="ad_single_atm.php"><i class="main-icon fa fa-angle-double-right"></i><span> 分期服務記錄</span></a></li>

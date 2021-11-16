@@ -1,10 +1,242 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
-?>
+    error_reporting(0); 
+	/*****************************************/
+	//檔案名稱：ad_job.php
+	//後台對應位置：名單/發送記錄>徵人資料
+	//改版日期：2021.10.19
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+    check_page_power("ad_action");
+
+    if ( SqlFilter($_REQUEST["st"],"tab") == "trans" ){
+        $SQL = "Select * From love_keyin Where all_kind = '活動' And k_id='".SqlFilter($_REQUEST["k_id"],"tab")."'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+        if ( count($result) > 0 ){
+		    //R2.open "Select top 1 * from member_data where 1=0", SPCon, 1, 3
+		    //if R2.eof then
+            $SQL1 = "Select * From msg_num Where m_auto = 1";
+            $rs1 = $SPConn->prepare($SQL1);
+            $rs1->execute();
+            $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+            foreach($result1 as $re1);
+            $mem_num = ($re["m_num"] + 1);
+            $SQL_u = "Update msg_num Set m_num = ". $mem_num ." Where m_auto = 1";
+            $rsu = $SPConn->prepare($SQL_u);
+            $rsu->execute();
+            if ( $re["k_sex"] == "女"){ $mem_photo = "girl.jpg"; }else{ $mem_photo = "boy.jpg"; }
+
+            //新增 member_data
+            $SQL_i  = "Insert Into member_data(";
+            $SQL_i .= "all_type, mem_level, mem_num, mem_photo, mem_come, mem_come, mem_come2, mem_come6, mem_come6_name, mem_cc, mem_time, mem_name, mem_sex, mem_blood, mem_marry";
+            $SQL_i .= "mem_by, mem_bm, mem_bd, mem_area, mem_mail, mem_job2, mem_msn, mem_school, mem_branch, mem_single, all_note) Values (";
+            $SQL_i .= "'已發送',";
+            $SQL_i .= "'guest',";
+            $SQL_i .= "'".$mem_num."',";
+            $SQL_i .= "'".$mem_photo."',";
+            if ( $re["k_come"] != "" ){
+                $SQL_i .= "'".$re["k_come"]."',";
+                if ( $re["k_come"] != "委外活動23" ){
+                    $SQL_i .= "'通路合作',";
+                    $SQL_i .= "'活動報名',";
+                    $SQL_i .= "'pr23',";
+                    $SQL_i .= "'貳叁公關',";
+                }else{
+                    $SQL_i .= "'',";
+                    $SQL_i .= "'',";
+                    $SQL_i .= "'',";
+                    $SQL_i .= "'',";
+                }
+            }else{
+                $SQL_i .= "'網站活動',";
+            }
+            $SQL_i .= "'".$re["k_cc"]."',";
+            $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+            $SQL_i .= "'".$re["k_name"]."',";
+            $SQL_i .= "'".$re["k_sex"]."',";
+            $SQL_i .= "'A',";
+            if ( $re["k_marry"] != "" ){
+                $SQL_i .= "'".$re["k_marry"]."',";
+            }else{
+                $SQL_i .= "'未婚',";
+            }
+            if ( chkDate($re["k_bday"]) ){
+                $SQL_i .= "'".date("Y",$re["k_bday"])."',";
+                $SQL_i .= "'".date("m",$re["k_bday"])."',";
+                $SQL_i .= "'".date("d",$re["k_bday"])."',";
+            }else{
+                $SQL_i .= "'',";
+                $SQL_i .= "'',";
+                $SQL_i .= "'',";
+            }
+            $SQL_i .= "'".$re["k_area"]."',";
+            $SQL_i .= "'".$re["k_yn"]."',";
+            $SQL_i .= "'".$re["k_job"]."',";
+            $SQL_i .= "'".$re["k_line"]."',";
+            $SQL_i .= "'".$re["k_school"]."',";
+            $SQL_i .= "'".$re["all_branch"]."',";
+            $SQL_i .= "'".$re["all_single"]."',";
+            $SQL_i .= "'由".$_SESSION["pname"]."自 活動報名資料[".$re["k_id"]."] 轉換',";
+            $rs_i = $SPConn->prepare($SQL_i);
+            $rs_i->execute();
+            //Update love_kyein
+            $SQL_u = "Update love_keyin Set k_trans = 1";
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+        }
+    }
+    reURL("ad_action.php?a=b".SqlFilter("st","tab"));
+
+    $default_sql_num = 200;
+    
+    //top組合語法
+    if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
+        $subSQL1 = "*";
+        //sqlv2 = "count(k_id)"
+    }else{
+        $subSQL1 = "Top ".$default_sql_num." *";
+    }
+
+    if ( ( SqlFilter($_REQUEST["a1"],"tab") != "" && SqlFilter($_REQUEST["b1"],"tab") == "" ) || ( SqlFilter($_REQUEST["a1"],"tab") == "" && SqlFilter($_REQUEST["b1"],"tab") != "" ) ) {
+        call_alert("日期選擇起始和結束時間。",0,0);
+    }
+    if ( SqlFilter($_REQUEST["a1"],"tab") > SqlFilter($_REQUEST["b1"],"tab" ){ call_alert("日期請由小到大選擇",0,0)}
+    if SqlFilter($_REQUEST["a1"],"tab") != "" ){
+        $a1 = SqlFilter($_REQUEST["a1"],"tab") &" 00:00";
+    }else{
+        $a1 = "1900/1/1";
+    }
+
+    if ( SqlFilter($_REQUEST["b1"],"tab") != "" ){
+        $b1 = SqlFilter($_REQUEST["b1"],"tab") ." 23:59";
+    }else{
+        $b1 = "2020/12/31";
+    }
+
+    //Select ".$subSQL1." From love_keyin As dba Where
+    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+        $subSQL2 = " all_kind = '活動'";
+	    if ( SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+            if ( SqlFilter($_REQUEST["s99"],"tab") != "" ){
+                $subSQL3 = " And all_type <> '未處理'";
+	            $all_type = "已處理";
+            }else{
+                $subSQL3 = " And all_type = '未處理'";
+	            $all_type = "未處理";
+            }
+        }else{
+	        $all_type = "資料搜尋";
+	    }
+    }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ) {	  
+        $subSQL2 = "all_kind = '活動' And all_branch = '".$_SESSION["branch"]."'";
+    }elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+	    $subSQL2 = "all_kind = '活動' and all_single = '".$_SESSION["MM_username"]."'";
+    }
+
+    if ( SqlFilter($_REQUEST["s2"],"tab") != "" ){
+        $cs2 = reset_number(SqlFilter($_REQUEST["s2"],"tab"));
+        $subSQL3 = " And k_mobile Like '%".$cs2."%'";
+    }
+
+    if ( SqlFilter($_REQUEST["s3"],"tab") != "" ){
+        $subSQL4 = " And k_name Like '%" . str_Replace("'", "''", SqlFilter($_REQUEST["s3"],"tab")) . "%'";
+    }
+
+    if ( SqlFilter($_REQUEST["s7"],"tab") != "" ){
+        $subSQL5 = " And all_single Like '%" . str_Replace("'", "''", SqlFilter($_REQUEST["s7"],"tab")) . "%'";
+    }
+
+    if ( SqlFilter($_REQUEST["s6"],"tab") != "" ){
+        $subSQL6 = " And all_branch Like '%" . str_Replace("'", "''", SqlFilter($_REQUEST["s6"],"tab")) . "%'";
+    }
+
+    if ( SqlFilter($_REQUEST["s8"],"tab") != "" ){
+        $subSQL6 = " And k_sex Like '%" . str_Replace("'", "''", SqlFilter($_REQUEST["s8"],"tab")) . "%'";
+    }
+
+    if ( SqlFilter($_REQUEST["s95"],"tab") != "" ){
+        $subSQL7 = " And action_title = '" . str_Replace("'", "''", SqlFilter($_REQUEST["s95"],"tab")) . "'";
+    }
+
+    if ( SqlFilter($_REQUEST["s97"],"tab") != "" ){
+        $subSQL8 = " And k_cc = '" . str_Replace("'", "''", SqlFilter($_REQUEST["s97"],"tab")) . "'";
+    }
+
+    if ( SqlFilter($_REQUEST["a1"],"tab") != "" ){
+        $subSQL7 = " And k_time between '".$a1."' And '".$b1."'";
+    }
+
+    if ( SqlFilter($_REQUEST["stt"],"tab") != "" ){
+        $subSQL7 = " And all_type = '".SqlFilter($_REQUEST["stt"],"tab")."'";
+    }
+
+    if ( SqlFilter($_REQUEST["s9"],"tab") != "" ){
+        $subSQL7 = " And k_come = '".SqlFilter($_REQUEST["s9"],"tab")."'";
+    }
+
+    if ( SqlFilter($_REQUEST["sv"],"tab") != "" ){
+	    $sv = SqlFilter($_REQUEST["sv"],"tab");
+	if instr(sv, "-") > 0 then
+		sv1 = split(sv, "-")(0)
+		sv2 = split(sv, "-")(1)
+		sv3 = split(sv, "-")(2)
+	sqlss = sqlss & " and action_branch = '"&sv1&"'"
+	sqlss = sqlss & " and action_title = '"&sv2&"'"
+	'sqlss = sqlss & " and datediff(d, action_time, '"&sv3&"')=0"	
+	end if
+	
+end if
+
+if request("nodouble") = "1" then
+	select case Session("MM_UserAuthorization")
+		case "admin"
+		sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile)) <= 1"
+		case "branch"
+		sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '"&session("branch")&"')) <= 1"		
+	  case else
+	  sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '"&session("branch")&"') and (all_single = '"&Session("MM_username")&"')) <= 1"			  
+	end select
+	
+end if
+
+if not request("sear") = "1" then	
+if request("ty") = "1" then
+	sqlss = sqlss & " and action_kind = '網站活動'"
+	tit = "網站活動"
+else
+	sqlss = sqlss & " and (action_kind <> '網站活動' or action_kind is null)"
+	tit = "會館活動"
+end if
+else
+	tit = "所有活動"
+end if
+
+
+
+
+select case request("orderby")
+	
+case "1" '依資料時間排序
+sqls = sqls & sqlss &" order by k_time desc"
+case "2" '依督導發送排序
+sqls = sqls & sqlss &" order by send_time desc"
+case else
+sqls = sqls & sqlss &" order by k_id desc"
+end select
+
+sqls2 = sqls2 & sqlss
+}
+?>
 <!-- MIDDLE -->
 <section id="middle">
+
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
@@ -15,8 +247,6 @@ require("./include/_sidebar.php");
     <!-- /page title -->
 
     <div id="content" class="padding-20">
-
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">

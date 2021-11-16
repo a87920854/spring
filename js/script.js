@@ -4,6 +4,8 @@ function GotoPage(tPage,theForm){
 }
 
 function Mars_popup(theURL,winName,features) { //【火星人】Version 1.0
+	var wLeft = (screen.width – w) / 2;
+	var wTop = (screen.height – h) / 2;
 	if(winName == '') winName = '_blank';
 	window.open(theURL,winName,features);
 }

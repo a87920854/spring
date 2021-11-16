@@ -12,6 +12,7 @@
     require_once("./include/_function.php");
     require_once("./include/_top.php");
     require_once("./include/_sidebar.php");
+    
 
     if ( SqlFilter($_REQUEST["st"],"tab") == "ch" ){
 	    //Set rs = Server.CreateObject("ADODB.Recordset")
@@ -81,7 +82,7 @@
                 $rs_u->execute();
             }
         }
-        reURL("ad_quest.php?topage=".SqlFilter($_REQUEST["topage"],"tab"));
+        reURL("ad_quest.php?topage=".SqlFilter($_REQUEST["topage"],"int"));
     }
 
     //刪除
@@ -90,7 +91,7 @@
         $SQL_d = "Delete From quest Where auton = ".SqlFilter($_REQUEST["an"],"int");
         $rs_d = $SPConn->prepare($SQL_d);
         $rs_d->execute();
-	    reURL("ad_quest.asp?topage=".SqlFilter($_REQUEST["topage"],"tab"));
+	    reURL("ad_quest.php?topage=".SqlFilter($_REQUEST["topage"],"tab"));
     }
     
     $default_sql_num = 500;
@@ -134,6 +135,8 @@
 
     //取得總筆數
     $SQL = "Select count(auton) As total_size From quest Where ".$subSQL2.$subSQL3.$subSQL4.$subSQL5;
+    echo $SQL;
+    exit;
     $rs = $SPConn->prepare($SQL);
     $rs->execute();
     $result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -168,12 +171,13 @@
 	$SQL_list .= "Select TOP ".$page2." * From (";
 	$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From quest Where ".$subSQL2.$subSQL3.$subSQL4.$subSQL5." Order By times Desc, id Asc) t1 Where ".$subSQL2.$subSQL3.$subSQL4.$subSQL5." ";
 	$SQL_list .= "Order By times Desc, id Asc) t2 Where ".$subSQL2.$subSQL3.$subSQL4.$subSQL5." Order By times Desc, id Asc";
-
 	$rs_list = $SPConn->prepare($SQL_list);
 	$rs_list->execute();
 	$result_list=$rs_list->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
+<script type="text/JavaScript" src="./js/jquery-3.1.1.min.js"></script>
+
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -207,12 +211,12 @@
                         </ul>
                     </div>
 
-                    <form id="searchform" action="ad_love.asp?vst=full&sear=1" method="post" target="_self" class="form-inline pull-left" onsubmit="return chk_search_form()">
+                    <form id="searchform" method="post" target="_self" class="form-inline pull-left" onsubmit=" return chk_search_form();">
                         <select name="keyword_type" id="keyword_type">
                             <option value="s2">手機</option>
                             <option value="s3">姓名</option>
                         </select>
-                        <input id="keyword" name="keyword" id="keyword" class="form-control" type="text">
+                        <input name="keyword" id="keyword" class="form-control" type="text">
                         <input type="submit" value="送出" class="btn btn-default">
                     </form>
 				</div>
@@ -242,7 +246,7 @@
                                     <td><input data-no-uniform="true" type="checkbox" name="nums" value="<?php echo $re_list["auton"];?>"></td>
                                     <td class="center"><?php echo $re_list["id"];?> - <?php echo $re_list["branch"];?></td>
                                     <td class="center">
-                                        <a href="javascript:Mars_popup('ad_quest_v.php?an=<?php echo $re_list["auton"];?>','','status=yes,menubar=yes,re_listsizable=yes,scrollbars=yes,width=600,height=700,top=150,left=150');"><?php echo $re_list["name"];?></a>
+                                        <a href="javascript:Mars_popup('ad_quest_v.php?an=<?php echo $re_list["auton"];?>','','status=yes,menubar=yes,re_listsizable=yes,scrollbars=yes,width=650,height=730,top=150,left=150');"><?php echo $re_list["name"];?></a>
                                          [<a href="ad_no_mem_s.php?mem_mobile=<?php echo $re_list["phone"];?>" target="_blank">查</a>]</td>
                                     <td class="center"><?php echo $re_list["sex"];?></td>
                                     <td class="center"><?php echo $re_list["phone"];?></td>
@@ -253,48 +257,25 @@
                                     <td class="center" align="center">
                                     <?php
                                         if ( $re_list["isc"] == 0 ){
-                                            $ch = "<a href='?st=ch&an=".$re["auton"]."&topage=".$topage."'>轉換及處理</a>";
+                                            $ch = "<a href='?st=ch&an=".$re_list["auton"]."&topage=".$topage."'>轉換及處理</a>";
                                         }else{
                                             $ch = "轉換及處理";
                                         }
                                         ?>
-                                        <a href="javascript:Mars_popup('ad_quest_v.php?an=<?php echo $re["auton"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=600,height=700,top=200,left=200');">詳細</a> | 
-                                        <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ echo $ch;?> | <a href="?st=del&an=<?php echo $re["auton"];?>&topage=<?php echo $topage;?>">刪除</a><?php }?>
+                                        <a href="javascript:Mars_popup('ad_quest_v.php?an=<?php echo $re_list["auton"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=650,height=730,top=200,left=200');">詳細</a> | 
+                                        <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ echo $ch;?> | <a href="?st=del&an=<?php echo $re_list["auton"];?>&topage=<?php echo $topage;?>">刪除</a><?php }?>
                                     </td>
                                 </tr>
                             <?php }?>
                         <?php }?>
                     </tbody>
                 </table>            
-            </div><?php require_once("./include/_page.php"); ?>
+            </div><?php //require_once("./include/_page.php"); ?>
         </div><!--/span-->
     </div><!--/row-->
 </section>
 
 <script type="text/javascript">
-    $(function() {
-        $("#selnums").on("click", function() {
-            if($(this).prop("checked")) 
-                $("input[name='nums']").each(function() {
-                $(this).prop("checked", true);
-                });
-            else
-                $("input[name='nums']").each(function() {
-	            $(this).prop("checked", false);
-            });
-        });
-    });
-    
-    function mutil_send() {
-        var $allnum = [];
-        $("input[name='nums']").each(function() {
-	        if($(this).val() && $(this).prop("checked")) $allnum.push($(this).val());
-        });
-
-        if($allnum.length <= 0) alert("請勾選要發送的會員。");
-        else Mars_popup('ad_send_love_branch_mutil.asp?k_id='+$allnum,'','scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');
-    }
-
     function chk_search_form() {
         if(!$("#keyword_type").val()) {
             alert("請選擇要搜尋的類型。");
@@ -306,7 +287,7 @@
             $("#keyword").focus();
 	        return false;
         }
-        location.href="ad_quest.asp?sear=1&vst=full&"+$("#keyword_type").val()+"="+$("#keyword").val();
+        location.href="ad_quest.php?sear=1&vst=full&"+$("#keyword_type").val()+"="+$("#keyword").val();
         return false;
     }
 </script>
