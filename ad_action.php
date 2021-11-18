@@ -107,8 +107,8 @@
     if ( ( SqlFilter($_REQUEST["a1"],"tab") != "" && SqlFilter($_REQUEST["b1"],"tab") == "" ) || ( SqlFilter($_REQUEST["a1"],"tab") == "" && SqlFilter($_REQUEST["b1"],"tab") != "" ) ) {
         call_alert("日期選擇起始和結束時間。",0,0);
     }
-    if ( SqlFilter($_REQUEST["a1"],"tab") > SqlFilter($_REQUEST["b1"],"tab" ){ call_alert("日期請由小到大選擇",0,0)}
-    if SqlFilter($_REQUEST["a1"],"tab") != "" ){
+    if ( SqlFilter($_REQUEST["a1"],"tab") > SqlFilter($_REQUEST["b1"],"tab" )){ call_alert("日期請由小到大選擇",0,0); }
+    if ( SqlFilter($_REQUEST["a1"],"tab") != "" ){
         $a1 = SqlFilter($_REQUEST["a1"],"tab") &" 00:00";
     }else{
         $a1 = "1900/1/1";
@@ -183,56 +183,55 @@
 
     if ( SqlFilter($_REQUEST["sv"],"tab") != "" ){
 	    $sv = SqlFilter($_REQUEST["sv"],"tab");
-	if instr(sv, "-") > 0 then
-		sv1 = split(sv, "-")(0)
-		sv2 = split(sv, "-")(1)
-		sv3 = split(sv, "-")(2)
-	sqlss = sqlss & " and action_branch = '"&sv1&"'"
-	sqlss = sqlss & " and action_title = '"&sv2&"'"
-	'sqlss = sqlss & " and datediff(d, action_time, '"&sv3&"')=0"	
-	end if
-	
-end if
+	    if ( substr_count($sv, "-") > 0 ){
+            $sv_array = explode("-",$sv);
+		    $sv1 = $sv_array[0];
+		    $sv2 = $sv_array[1];
+		    $sv3 = $sv_array[2];
+	        $sqlss = $sqlss . " And action_branch = '". $sv1. "'";
+	        $sqlss = $sqlss . " And action_title = '" . $sv2. "'";
+	        //sqlss = sqlss & " and datediff(d, action_time, '"&sv3&"')=0"	
+        }
+    }
 
-if request("nodouble") = "1" then
-	select case Session("MM_UserAuthorization")
-		case "admin"
-		sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile)) <= 1"
-		case "branch"
-		sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '"&session("branch")&"')) <= 1"		
-	  case else
-	  sqlss = sqlss & " and (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '"&session("branch")&"') and (all_single = '"&Session("MM_username")&"')) <= 1"			  
-	end select
-	
-end if
+    if ( SqlFilter($_REQUEST["nodouble"],"tab") == "1" ){
+	    switch ( $_SESSION["MM_UserAuthorization"] ){
+		    case "admin":
+		        $sqlss = $sqlss . " And (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile)) <= 1";
+                break;
+		    case "branch":
+		        $sqlss = $sqlss . " And (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '".$_SESSION["branch"]."')) <= 1";
+                break;
+	        default:
+	            $sqlss = $sqlss . " And (SELECT count(k_id) FROM love_keyin as dbb Where (all_kind = '活動') AND (k_mobile = dba.k_mobile) and (all_branch = '".$_SESSION["branch"]."') and (all_single = '".$_SESSION["MM_username"]."')) <= 1";
+                break;
+        }
+    }
 
-if not request("sear") = "1" then	
-if request("ty") = "1" then
-	sqlss = sqlss & " and action_kind = '網站活動'"
-	tit = "網站活動"
-else
-	sqlss = sqlss & " and (action_kind <> '網站活動' or action_kind is null)"
-	tit = "會館活動"
-end if
-else
-	tit = "所有活動"
-end if
+    if ( SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+        if ( SqlFilter($_REQUEST["ty"],"tab") == "1" ){
+	        $sqlss = $sqlss . " And action_kind = '網站活動'";
+	        $tit = "網站活動";
+        }else{
+	        $sqlss = $sqlss . " and (action_kind <> '網站活動' or action_kind is null)";
+	        $tit = "會館活動";
+        }
+    }else{
+	    $tit = "所有活動";
+    }
 
-
-
-
-select case request("orderby")
-	
-case "1" '依資料時間排序
-sqls = sqls & sqlss &" order by k_time desc"
-case "2" '依督導發送排序
-sqls = sqls & sqlss &" order by send_time desc"
-case else
-sqls = sqls & sqlss &" order by k_id desc"
-end select
-
-sqls2 = sqls2 & sqlss
-}
+    switch (SqlFilter($_REQUEST["orderby"],"tab")){
+        case "1":   //依資料時間排序
+            $sqls = $sqls . $sqlss ." order by k_time desc";
+            break;
+        case "2":   //依督導發送排序
+            $sqls = $sqls . $sqlss ." order by send_time desc";
+            break;
+        default:
+            $sqls = $sqls . $sqlss ." order by k_id desc";
+            break;
+    }
+    $sqls2 = $sqls2 . $sqlss;
 ?>
 <!-- MIDDLE -->
 <section id="middle">
