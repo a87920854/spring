@@ -152,7 +152,7 @@
                 </div>
 
                 <!--資料列表-->
-                <table class="table table-striped table-bordered bootstrap-datatable">
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>
                             <th>姓名</th>
