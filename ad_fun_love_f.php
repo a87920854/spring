@@ -132,15 +132,17 @@
                             <tr>
                                 <td>會館：
                                     <select name="branch" id="branch">
+                                        <option value="">請選擇</option>
                                         <?php                                            
-                                            $SQL = "Select * From branch_data Where admin_sOrt<>99 ".$subSQL."Order By admin_SOrt";
+                                            $SQL = "Select * From branch_data Where admin_name Not In ('線上諮詢') Order By admin_sort";
                                             $rs = $SPConn->prepare($SQL);
                                             $rs->execute();
                                             $result=$rs->fetchAll(PDO::FETCH_ASSOC);
                                             foreach($result as $re){ ?>
                                                 <option value="<?php echo $re["admin_name"];?>"<?php if ( SqlFilter($_REQUEST["branch"],"tab") == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
                                         <?php }?>
-                                    </select> <select name="single" id="single">
+                                    </select>
+                                    <select name="single" id="single">
                                         <option value="">請選擇</option>
                                         <?php
                                             if ( $_REQUEST["flag"] == "1" ){ 
@@ -161,93 +163,48 @@
                                                 }
                                             }
                                         ?>
-                                    </select> <label><input type="checkbox" id="showout"> 顯示離職</label>
+                                    </select> 
+                                    <label>
+                                        <input type="checkbox" id="showout"> 顯示離職
+                                    </label>
                                 </td>
                             </tr>
                             <tr>
                                 <td>活動日期：
                                     <select name="a3">
                                         <option value="" selected>請選擇</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2017">2017</option>
-                                        <option value="2016">2016</option>
-                                        <option value="2015">2015</option>
-                                        <option value="2014">2014</option>
-                                        <option value="2013">2013</option>
-                                        <option value="2012">2012</option>
-                                        <option value="2011">2011</option>
-                                        <option value="2010">2010</option>
-                                        <option value="2009">2009</option>
-                                        <option value="2008">2008</option>
-                                        <option value="2007">2007</option>
-                                        <option value="2006">2006</option>
-                                        <option value="2005">2005</option>
-                                        <option value="2004">2004</option>
-                                        <option value="2003">2003</option>
-                                        <option value="2002">2002</option>
-                                        <option value="2001">2001</option>
-                                        <option value="2000">2000</option>
+                                        <?php
+                                            for($i=date("Y");$i>=2000;$i--){
+                                                echo "<option value='".$i."'>".$i."</option>";                                           
+                                            }
+                                        ?>
                                     </select>
                                     年
                                     <select name="a4">
                                         <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
+                                        <?php 
+                                            for($i=1;$i<=12;$i++){
+                                                echo "<option value='".$i."'>".$i."</option>";  
+                                            }
+                                        ?>
                                     </select>
                                     月至
                                     <select name="b3">
                                         <option value="">請選擇</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2017">2017</option>
-                                        <option value="2016">2016</option>
-                                        <option value="2015">2015</option>
-                                        <option value="2014">2014</option>
-                                        <option value="2013">2013</option>
-                                        <option value="2012">2012</option>
-                                        <option value="2011">2011</option>
-                                        <option value="2010">2010</option>
-                                        <option value="2009">2009</option>
-                                        <option value="2008">2008</option>
-                                        <option value="2007">2007</option>
-                                        <option value="2006">2006</option>
-                                        <option value="2005">2005</option>
-                                        <option value="2004">2004</option>
-                                        <option value="2003">2003</option>
-                                        <option value="2002">2002</option>
-                                        <option value="2001">2001</option>
-                                        <option value="2000">2000</option>
+                                        <?php
+                                            for($i=date("Y");$i>=2000;$i--){
+                                                echo "<option value='".$i."'>".$i."</option>";                                           
+                                            }
+                                        ?>
                                     </select>
                                     年
                                     <select name="b4">
                                         <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
+                                        <?php 
+                                            for($i=1;$i<=12;$i++){
+                                                echo "<option value='".$i."'>".$i."</option>";  
+                                            }
+                                        ?>
                                     </select>
                                     月
                                 </td>
@@ -256,86 +213,38 @@
                                 <td>資料時間：
                                     <select name="a1">
                                         <option value="" selected>請選擇</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2017">2017</option>
-                                        <option value="2016">2016</option>
-                                        <option value="2015">2015</option>
-                                        <option value="2014">2014</option>
-                                        <option value="2013">2013</option>
-                                        <option value="2012">2012</option>
-                                        <option value="2011">2011</option>
-                                        <option value="2010">2010</option>
-                                        <option value="2009">2009</option>
-                                        <option value="2008">2008</option>
-                                        <option value="2007">2007</option>
-                                        <option value="2006">2006</option>
-                                        <option value="2005">2005</option>
-                                        <option value="2004">2004</option>
-                                        <option value="2003">2003</option>
-                                        <option value="2002">2002</option>
-                                        <option value="2001">2001</option>
-                                        <option value="2000">2000</option>
+                                        <?php
+                                            for($i=date("Y");$i>=2000;$i--){
+                                                echo "<option value='".$i."'>".$i."</option>";                                           
+                                            }
+                                        ?>
                                     </select>
                                     年
                                     <select name="a2">
                                         <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
+                                        <?php 
+                                            for($i=1;$i<=12;$i++){
+                                                echo "<option value='".$i."'>".$i."</option>";  
+                                            }
+                                        ?>
                                     </select>
                                     月至
                                     <select name="b1">
                                         <option value="">請選擇</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2017">2017</option>
-                                        <option value="2016">2016</option>
-                                        <option value="2015">2015</option>
-                                        <option value="2014">2014</option>
-                                        <option value="2013">2013</option>
-                                        <option value="2012">2012</option>
-                                        <option value="2011">2011</option>
-                                        <option value="2010">2010</option>
-                                        <option value="2009">2009</option>
-                                        <option value="2008">2008</option>
-                                        <option value="2007">2007</option>
-                                        <option value="2006">2006</option>
-                                        <option value="2005">2005</option>
-                                        <option value="2004">2004</option>
-                                        <option value="2003">2003</option>
-                                        <option value="2002">2002</option>
-                                        <option value="2001">2001</option>
-                                        <option value="2000">2000</option>
+                                        <?php
+                                            for($i=date("Y");$i>=2000;$i--){
+                                                echo "<option value='".$i."'>".$i."</option>";                                           
+                                            }
+                                        ?>
                                     </select>
                                     年
                                     <select name="b2">
                                         <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
+                                        <?php 
+                                            for($i=1;$i<=12;$i++){
+                                                echo "<option value='".$i."'>".$i."</option>";  
+                                            }
+                                        ?>
                                     </select>
                                     月
                                 </td>
@@ -373,8 +282,6 @@ require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $mtu = "ad_fun_action1.";
-
 
     function take_action() {
         if (!$("#search_page").val()) {
@@ -385,19 +292,16 @@ require_once("./include/_bottom.php");
         return true;
     }
     $(function() {
-        $("#s6").on("change", function() {
-            personnel_get("s6", "s7");
-        });
         $("#showout").on("click", function() {
-            if (!$("#s6").val()) {
+            if (!$("#branch").val()) {
                 alert("請先選擇會館。");
                 $(this).prop("checked", false);
                 return false;
             }
             if ($(this).prop("checked")) {
-                personnel_get_funsend("s6", "s7", 1);
+                personnel_get_funsend("branch", "single", 1);
             } else {
-                personnel_get_funsend("s6", "s7", 0);
+                personnel_get_funsend("branch", "single", 0);
             }
         });
     });

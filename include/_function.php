@@ -132,14 +132,20 @@
 			   $report_sql1 = "Select count(log_auto) As r From log_data Where log_1 ='".$mobile."' And ((log_single = '".$_SESSION["MM_Username"]."') or (log_branch='".$_SESSION["branch"]."' And log_service=1))";
 			   $report_sql2 = "Select log_time, log_2, log_4 From log_data Where log_1 ='".$mobile."' And ((log_single = '".$_SESSION["MM_Username"]."') or (log_branch='".$_SESSION["branch"]."' And log_service=1)) Order By log_auto Desc";
 			}
+			
 			$rs_grn = $SPConn1->prepare($report_sql2);
 			$rs_grn->execute();
-			$result_grn=$rs_grn->fetchAll(PDO::FETCH_ASSOC);
-			foreach($result_grn as $re_grn);
+			$result_grn = $rs_grn->fetchAll(PDO::FETCH_ASSOC);
 			if ( count($result_grn) == 0 ){
 				$gresult = "0|+|無|+|無|+|NULL";
 			}else{
-				$gresult = count($result_grn)."|+|".$re_grn["log_4"]."|+|".$re_grn["log_2"]."|+|".$re_grn["log_time"];
+				$c = 0;
+				foreach($result_grn as $re_grn){
+					$c++;
+					if ( $c == 1 ){
+						$gresult = count($result_grn)."|+|".$re_grn["log_4"]."|+|".$re_grn["log_2"]."|+|".$re_grn["log_time"];
+					}
+				}
 			}
 			
 		}
@@ -170,7 +176,7 @@
 			default:
 				echo "<script language=\"javascript\">" ;
 				echo "alert('" . $msg ."');";
-				if ( $url != "" ){
+				if ( $url != "" && !is_numeric($url)){
 					echo "window.setTimeout(location.href='" . $url . "'," . $outtime .");";
 				}else {
 					echo "window.setTimeout(location.href='history.back(1)'," . $outtime .");";
@@ -721,25 +727,5 @@
 			$requestStr = "";
 		}
 		return $requestStr;
-	}
-
-	//格式化數字(全形→半形)
-	function reset_number($n){
-		if ( $n != "" ){
-			$n = trim(str_replace("-", "",$n));
-			$n = str_replace("_", "",$n);
-			$n = str_replace("'", "",$n);
-			$n = str_replace("０", "0",$n);
-			$n = str_replace("１", "1",$n);
-			$n = str_replace("２", "2",$n);
-			$n = str_replace("３", "3",$n);
-			$n = str_replace("４", "4",$n);
-			$n = str_replace("５", "5",$n);
-			$n = str_replace("６", "6",$n);
-			$n = str_replace("７", "7",$n);
-			$n = str_replace("８", "8",$n);
-			$n = str_replace("９", "9",$n);
-		}
-		return $n;
 	}
 ?>

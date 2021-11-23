@@ -11,7 +11,7 @@
     require_once("_inc.php");
     require_once("./include/_function.php");
 
-    $sql = "DELETE FROM member_data WHERE mem_auto = " .$_REQUEST["mem_auto"];
+    $sql = "DELETE FROM member_data WHERE mem_auto = " .SqlFilter($_REQUEST["mem_auto"],"int");
     $rs = $FunConn->prepare($sql);
     $rs->execute();
 ?>

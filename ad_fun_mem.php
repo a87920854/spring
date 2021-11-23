@@ -113,11 +113,11 @@
     if( $_REQUEST["s11"] != "" ){
         $sqlss = $sqlss. " and mem_area like '%" .SqlFilter($_REQUEST["s11"],"tab"). "%'";
     }
-    if( $_REQUEST["s12"] != "" ){
-        $sqlss = $sqlss. " and mem_branch like '%" .SqlFilter($_REQUEST["s12"],"tab"). "%'";
+    if( $_REQUEST["branch"] != "" ){
+        $sqlss = $sqlss. " and mem_branch like '%" .SqlFilter($_REQUEST["branch"],"tab"). "%'";
     }
-    if( $_REQUEST["s13"] != "" ){
-        $sqlss = $sqlss. " and mem_single like '%" .SqlFilter($_REQUEST["s13"],"tab"). "%'";
+    if( $_REQUEST["single"] != "" ){
+        $sqlss = $sqlss. " and mem_single like '%" .SqlFilter($_REQUEST["single"],"tab"). "%'";
     }
     if( $_REQUEST["m1"] != "" ){
         $sqlss = $sqlss. " and month(mem_by) = '" .SqlFilter($_REQUEST["m1"],"tab"). "'";
@@ -138,8 +138,8 @@
         if( $_REQUEST["s22"] > $_REQUEST["s23"]){
             call_alert("日期請由小到大選擇。",0,0);
         }
-        $s22 = SqlFilter($_REQUEST["s22"],"int"). " 00:00";
-        $s23 = SqlFilter($_REQUEST["s23"],"int"). " 23:59";
+        $s22 = SqlFilter($_REQUEST["s22"],"tab"). " 00:00";
+        $s23 = SqlFilter($_REQUEST["s23"],"tab"). " 23:59";
     }
     if( $s22 != "" && $s23 != "" ){
         $sqlss = $sqlss. " and mem_time between '" .$s22. "' and '" .$s23. "'";

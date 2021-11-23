@@ -1,8 +1,8 @@
 <?php
     /*****************************************/
-	//檔案名稱：ad_fun_mem.php
-	//後台對應位置：好好玩管理系統/會員管理系統
-	//改版日期：2021.10.26
+	//檔案名稱：ad_fun_action1.php
+	//後台對應位置：好好玩管理系統/好好玩國內報名
+	//改版日期：2021.11.19
 	//改版設計人員：Jack
 	//改版程式人員：Jack
 	/*****************************************/
@@ -153,30 +153,24 @@
         $sqlss = $sqlss . " and k_cc ='" .SqlFilter($_REQUEST["s97"],"tab")."'";
     }
 
-    // 以時間段搜尋
+    // 以年齡段搜尋
     if($_REQUEST["s27"] != "" && $_REQUEST["s28"] != ""){
         $sqlss = $sqlss . " and year(k_year) between '" .SqlFilter($_REQUEST["s28"],"int")."' and '" .SqlFilter($_REQUEST["s27"],"int")."'";
     }elseif($_REQUEST["s27"] != ""){
         $sqlss = $sqlss . "and year(k_year) = '" .SqlFilter($_REQUEST["s27"],"int")."'";
     }
 
-    // 以時間段搜尋
-    if(chkDate($kt1) && chkDate($kt2)){
-        $kt1 = date_create($kt1);
-        $kt2 = date_create($kt2);
-        $diff = date_diff($kt1,$kt2);
-        if($diff->days < 0){
+    // 以資料時間段搜尋
+    if(chkDate($kt1) && chkDate($kt2)){        
+        if(strtotime($kt1) > strtotime($kt2)){
             call_alert("結束日期不能小於起始日期。", 0, 0);
         }
         $sqlss = $sqlss . " and k_time between '".$kt1."' and '".$kt2."'";
     }
 
     // 以活動時間段搜尋
-    if(chkDate($kt3) && chkDate($kt4)){
-        $kt3 = date_create($kt3);
-        $kt4 = date_create($kt4);
-        $diff = date_diff($kt3,$kt4);
-        if($diff->days < 0){
+    if(chkDate($kt3) && chkDate($kt4)){        
+        if(strtotime($kt3) > strtotime($kt4)){
             call_alert("結束日期不能小於起始日期。", 0, 0);
         }
         $sqlss = $sqlss . " and action_time between '".$kt3."' and '".$kt4."'";
