@@ -1,5 +1,5 @@
 <?php
-	require_once("./include/_inc.php");
+	require_once("_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
@@ -173,7 +173,7 @@
 								<tr>
 									<td class="center"><?php echo $re["types"];?></td>
 									<td class="center"><?php echo $re["branch"];?></td>
-									<td class="center"><?php if ( $re["single"] != "" ){ echo SingleName($re["single"]);}?></td>
+									<td class="center"><?php if ( $re["single"] != "" ){ echo SingleName($re["single"],"normel");}?></td>
 									<td class="center"><?php echo $re["note"];?></td>
 									<td class="center"><?php echo Date_EN($re["times"],9);?></td>
 									<td class="center">

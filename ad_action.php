@@ -14,6 +14,8 @@
 	require_once("./include/_sidebar.php");
     check_page_power("ad_action");
 
+    $ty = SqlFilter($_REQUEST["ty"],"tab");
+
     if ( SqlFilter($_REQUEST["st"],"tab") == "trans" ){
         $SQL = "Select * From love_keyin Where all_kind = '活動' And k_id='".SqlFilter($_REQUEST["k_id"],"tab")."'";
         $rs = $SPConn->prepare($SQL);
@@ -307,8 +309,8 @@
 
                     <form id="searchform" action="ad_love.php?vst=full&sear=1" method="post" target="_self" class="form-inline pull-left" onsubmit="return chk_search_form()">
                         <select name="keyword_type" id="keyword_type" class="form-control">
-                            <option value="s2">手機</option>
-                            <option value="s3">姓名</option>
+                            <option value="s2"<?php if ( SqlFilter($_REQUEST["s2"],"tab") != "" ){ echo " selected";}?>>手機</option>
+                            <option value="s3"<?php if ( SqlFilter($_REQUEST["s3"],"tab") != "" ){ echo " selected";}?>>姓名</option>
                         </select>
                         <input id="keyword" name="keyword" id="keyword" class="form-control" type="text">
                         <input type="submit" value="送出" class="btn btn-default">
@@ -316,16 +318,10 @@
                 </div>
 
                 <p style="clear:both">
-
-              
-					<span class="text-status">資料狀態 </span> ▶&nbsp;
-					<a class="btn btn-info<?php if ( $tr == 3 || $tr == "" ){ echo " btn-active";} ?>" onclick="javascript:stype(3);">網站活動</a>
-					<a class="btn btn-info<?php if ( $tr == 1 ){ echo " btn-active";} ?>" onclick="javascript:stype(1);">會館活動</a>
-			
-
-
-
-                    <a class="btn btn-success" href="ad_action.php?ty=1">網站活動</a> <a class="btn btn-success" href="ad_action.php?ty=0" disabled>會館活動</a>
+                    <span class="text-status">搜尋關鍵字：<?php echo SqlFilter($_REQUEST["s3"],"tab");?></span>&nbsp;▶&nbsp;
+                    <a class="btn btn-info<?php if ( $ty == "" ){ echo " btn-active";} ?>" <?php if ( $ty == "" ){?> style="cursor:auto;"<?php }?> href="ad_action.php">會館活動</a>
+					<a class="btn btn-info<?php if ( $ty == 1 ){ echo " btn-active";} ?>" <?php if ( $ty == 1 ){?> style="cursor:auto;"<?php }?> href="ad_action.php?ty=1">網站活動</a>
+                    
                     <select class="form-control2 pull-right" onchange="location.href='ad_action.php'+$(this).val()+''" autocomplete="off">
                         <option value="?orderby=0">預設排序</option>
                         <option value="?orderby=1">依資料時間排序</option>
