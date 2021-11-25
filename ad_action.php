@@ -358,7 +358,7 @@
                                 } ?>
                                 <tr id="showtr_<?php echo $re_list["k_id"];?>" style="background-color:<?php echo $bgc;?>">
 							        <td><input data-no-uniform="true" type="checkbox" name="nums" value="<?php echo $re_list["k_id"];?>"></td>
-								    <td class="center"><?php echo $ismem;?><a href="#c" onclick=Mars_popup('ad_love_detail.asp?k_id=<?php echo $re_list["k_id"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re_list["k_name"];?></a>
+								    <td class="center"><?php echo $ismem;?><a href="#c" onclick="Mars_popup('ad_love_detail.php?k_id=<?php echo $re_list["k_id"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re_list["k_name"];?></a>
                                         <?php
                                         $doub = "";
                                         if ( $re_list["k_mobile"] != "" And $re_list["k_mobile"] != "0912345678" ){
@@ -387,11 +387,11 @@
 			                                }
                                         }			
 			                            if ( $check_double == 1 ){
-			                                $doub = " <span class='label label-warning'><a href='ad_no_mem_s.asp?mem_mobile=".$re_list["k_mobile"]."' target='_blank' style='color:white;'>重</a></span>";
+			                                $doub = " <span class='label label-warning'><a href='ad_no_mem_s.php?mem_mobile=".$re_list["k_mobile"]."' target='_blank' style='color:white;'>重</a></span>";
                                         } ?>
 								        <div style="float:right">
                                             <?php echo $doub;?>
-                                            <a href="ad_no_mem_s.asp?mem_mobile=<?php echo $re_list["k_mobile"];?>" target="_blank"><span class="label label-info">查</span></a>
+                                            <a href="ad_no_mem_s.php?mem_mobile=<?php echo $re_list["k_mobile"];?>" target="_blank"><span class="label label-info">查</span></a>
 								            <?php
 								            $isfav = 0;
                                             switch ($_SESSION["MM_UserAuthorization"]){								
@@ -424,9 +424,9 @@
 
 								            if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){                
                                                 if ( $ddoub != "" ){
-									                echo "<a href='#c' onclick='alert('暫停使用')' style='color:white;' data-toggle='tooltip' title='".$ddoub."'>";
+									                echo "<a href='#c' onclick=alert('暫停使用') style='color:white;' data-toggle='tooltip' title='".$ddoub."'>";
                                                 }else{
-									                echo "<a href='#c' onclick='alert('暫停使用')'>";
+									                echo "<a href='#c' onclick=alert('暫停使用')>";
 								                }
 								
 								                if ( $re_list["k_area"] != "" ){
@@ -473,14 +473,14 @@
 			    		                <div class="btn-group">							
 							                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
 							                <ul class="dropdown-menu pull-right">
-								                <li><a href="javascript:Mars_popup('ad_love_detail.asp?k_id=<?php $re_list["k_id"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><i class="icon-file"></i> 詳細</a></li>
+								                <li><a href="javascript:Mars_popup('ad_love_detail.php?k_id=<?php echo $re_list["k_id"];?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><i class="icon-file"></i> 詳細</a></li>
 								                
                                                 <?php if ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
-								                    <li><a href="javascript:Mars_popup('ad_send_love_branch.asp?k_id=<?php echo $re_list["k_id"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');"><i class="icon-file"></i> 修改處理祕書</a></li>
+								                    <li><a href="javascript:Mars_popup('ad_send_love_branch.php?k_id=<?php echo $re_list["k_id"];?>','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');"><i class="icon-file"></i> 修改處理祕書</a></li>
                 								<?php }?>
 								                
                                                 <?php if ( $re_list["all_type"] != "未處理" ){ ?>
-								                    <li><a href="javascript:Mars_popup('ad_report.asp?k_id=<?php $re_list["k_id"];?>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report;?>)</a></li>
+								                    <li><a href="javascript:Mars_popup('ad_report.php?k_id=<?php $re_list["k_id"];?>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report;?>)</a></li>
                                                 <?php }?>
 								                
                                                 <?php if ( $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" ){ ?>
@@ -493,7 +493,7 @@
                                                 <?php }?>
 
                                                 <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){?>
-								                    <li><a href="#" onClick="Mars_popup2('ad_love_del.asp?k_id=<?php echo $re_list["k_id"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+								                    <li><a href="#" onClick="Mars_popup2('ad_love_del.php?k_id=<?php echo $re_list["k_id"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
 								                <?php }?>
 							                </ul>
 						                </div>								
@@ -522,7 +522,7 @@
 					                        }
 					                        echo $k_come;
                                         }?>
-			                            (<a href="javascript:Mars_popup('ad_report.asp?k_id=<?php echo $re_list["k_id"];?>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>，
+			                            (<a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re_list["k_id"];?>&ty=love','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>，
                                         處理情形：<font color="#FF0000" size="2"><?php echo $re_list["all_type"].$re_list["all_branch"];?>
                                         <?php if ( $re_list["all_single"] != "" ){ echo SingleName($re_list["all_single"],"normal");} ?></font>)
                                         內容：<?php echo $report_text;?>
