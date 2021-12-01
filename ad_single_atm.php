@@ -161,12 +161,12 @@
 									echo "<td>".$re["mem_jointime"]."</td>";
 									echo "<td>".$re["call_branch"]."</td>";
 									if ( $re["call_single"] != "" ){
-										echo "<td>".SingleName_real($re["call_single"])."</td>";
+										echo "<td>".SingleName($re["call_single"],"real")."</td>";
 									}else{
 										echo "<td></td>";
 									}
 									echo "<td>".$re["mem_branch"]."</td>";
-									echo "<td>".SingleName_real($re["mem_single"])."</td>";
+									echo "<td>".SingleName($re["mem_single"],"real")."</td>";
 									echo "<td>".$re["mem_come"]."</td>";
 									echo "<td><a href='ad_mem_detail.php?mem_num=".$re["mem_num"]."' target='_blank'>".$re["mem_name"]."</a>";
 									echo " <a href='ad_mem_pay_detail.php?mem_username=".$re["pay_user"]."&uname=".$re["mem_name"]."' class='btn btn-xs btn-warning'>收支</a>";

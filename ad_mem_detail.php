@@ -1,4 +1,12 @@
 <?php
+	/*****************************************/
+	//檔案名稱：ad_mem_detail.php
+	//後台對應位置：名單/發送記錄>會員明細
+	//改版日期：2021.10.18
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
+
 	require_once("_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
@@ -99,8 +107,6 @@
 			if ( (integer)SqlFilter($_REQUEST["web_level"],"int") >= 2 && $re["mem_level"] == "mem" ){
 				call_alert("要升級成真人認證或璀璨會員須先將會員等級變更成已入會。", 0,0);
 			}
-			
-			
 			
 			$havefid = 0;
 			$SQL1 = "Select mem_num, web_level From member_data Where mem_username = '".$cardid."'";
@@ -749,7 +755,6 @@
 								}?>
                             </td>
                         </tr>
-
                         <tr>
                             <td>
                                 <div align="right">個性：</div>
@@ -789,7 +794,6 @@
                             </td>
                             <td colspan="3"><?php echo $re["mem_da6"];?></td>
                         </tr>
-
                         <tr>
                             <td valign="top">
                                 <div align="right">自我介紹：</div>
@@ -811,36 +815,30 @@
                             </td>
                             <td colspan="3">
                                 <table class="table table-bordered">
-									     	<?php        	
-          	$allnums = array("1,2,3,4,5,6,7,8,9,91,10,11,12,13,14,15,16,17,18,181,19,191,20,201,21,211,22,23,231,24,25,251,26,27,271,28,29,291,30,31,32,321,33");
-          	$ii = 0;
-          	foreach ($allnums as $ai){
-				if ($ii == 0 ){
-					echo "<tr>";
-				}
-				echo "<td>".$re["mem".$ai]."</td>";
-          	
-				if ($ii == 8 ){
-					$ii = 0;
-					echo "</tr>";
-				}else{
-					$ii = $ii+1;
-				}
-            }
-            
-          	?>
-									
-									
-									
+									<?php        	
+          							$allnums = array("1,2,3,4,5,6,7,8,9,91,10,11,12,13,14,15,16,17,18,181,19,191,20,201,21,211,22,23,231,24,25,251,26,27,271,28,29,291,30,31,32,321,33");
+          							$ii = 0;
+          							foreach ($allnums as $ai){
+										if ($ii == 0 ){
+											echo "<tr>";
+										}
+										echo "<td>".$re["mem".$ai]."</td>";         	
+										if ($ii == 8 ){
+											$ii = 0;
+											echo "</tr>";
+										}else{
+											$ii = $ii+1;
+										}
+            						}												
+          							?>
                                 </table>
                             </td>
                         </tr>
-
                         <tr>
                             <td>
                                 <div align="right">類型：</div>
                             </td>
-                            <td colspan=2>
+                            <td colspan="2">
                                 <label class="checkbox"><input disabled type="checkbox" name="si_enterprise" id="si_enterprise" value="1"<?php if ( $re["si_enterprise"] == "1" ){ echo " checked";}?>><i></i> 企業會員</label>
                                 <label class="checkbox"><input disabled type="checkbox" name="mem_vip" id="mem_vip" value="1"<?php if ( $re["mem_vip"] == "1" ){ echo " checked";}?>><i></i> 優質會員</label>
                                 <label class="checkbox"><input disabled type="checkbox" name="mem_hot" id="mem_hot" value="1"<?php if ( $re["mem_hot"] == "1" ){ echo " checked";}?>><i></i> 超人氣會員</label>
@@ -1247,14 +1245,14 @@
                                 <div align="right">會館/秘書：</div>
                             </td>
                             <td colspan=4>
-                                <font color=green>受理</font>：<?php echo $mem_branch;?>-<?php echo SingleName($mem_single);?>
+                                <font color=green>受理</font>：<?php echo $mem_branch;?>-<?php echo SingleName($mem_single,"normal");?>
 								<?php if ( $mem_branch2 != "" ){?>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">跨區</font>：<?php echo $mem_branch2?>-<?php echo SingleName($mem_single2);?>
 								<?php }?>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>排約</font>：
                                 <?php
 									if ( $re["love_single"] != "" ){
-										echo SingleName($re["love_single"]);
+										echo SingleName($re["love_single"],"normal");
 									}else{
 										echo "無";
 									}
@@ -1262,7 +1260,7 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>邀約</font>：
                                 <?php
 									if ( $re["call_branch"] != "" ){
-										echo $re["call_branch"]." - ".SingleName($re["call_single"]);
+										echo $re["call_branch"]." - ".SingleName($re["call_single"],"normal");
 									}else{
 										echo "無";
 									}
@@ -1357,7 +1355,7 @@
                             <td>
                                 <div align="right">輸入：</div>
                             </td>
-                            <td><?php echo SingleName($re["keyin_single"]);?></td>
+                            <td><?php echo SingleName($re["keyin_single"],"normal");?></td>
                         </tr>
                         <tr>
                             <td>
@@ -1448,7 +1446,7 @@
 												if ( $re_q["accept_single"] != "" ){
 													echo " - ".SingleName($re_q["accept_single"])."審";
 												}
-											elseif ( $re_q["accept"] == "-1" ){ 
+											}elseif ( $re_q["accept"] == "-1" ){ 
 												echo "<br><font color='blue'>審核不通過，".$re_q["acceptm"]."</font>";
 											}else{
 												echo "<br><font color='green'>待審核</font>";

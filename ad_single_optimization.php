@@ -1,9 +1,16 @@
 <?php
-	require_once("./include/_inc.php");
+	/*****************************************/
+	//檔案名稱：ad_single_optimization.php
+	//後台對應位置：名單/發送記錄>優化單身資料庫
+	//改版日期：2021.10.8
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
+
+	require_once("_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
-	
 	
 	$date1 = SqlFilter($_REQUEST["date1"],"tab");
 	$date2 = SqlFilter($_REQUEST["date2"],"tab");
@@ -196,7 +203,7 @@
 										if ( $diff->format("%R%a") < 0 ){
 											$first_love_time2 = "<font color='red'>".date("Y-m-d",strtotime($re["first_love_time2"]))."</font>";
 										}else{
-											$first_love_time2 = date("Y-m-d",strtotime($re["first_love_time2"]));
+											$first_love_time2 = date("Y/m/d",strtotime($re["first_love_time2"]));
 											
 										}
 									}else{
@@ -205,7 +212,7 @@
 
 									//邀約會館
 									if ( $re["call_single"] != "" ){
-										$call_single = SingleName_real($re["call_single"]);
+										$call_single = SingleName($re["call_single"],"real");
 									}else{
 										$call_single = "";
 									}
@@ -220,12 +227,12 @@
 									if ( empty($fixmoney) == 1 ){ $fixmoney = 0;} ?>
 									<tr>
 										<td><?php echo $i;?></td>
-										<td><?php echo date("Y-m-d",strtotime($re["mem_jointime"]));?></td>
+										<td><?php echo date("Y/m/d",strtotime($re["mem_jointime"]));?></td>
 										<td><?php echo $first_love_time2;?></td>
 										<td><?php echo $re["call_branch"];?></td>
 										<td><?php echo $call_single;?></td>
 										<td><?php echo $re["mem_branch"];?></td>
-										<td><?php echo SingleName_real($re["mem_single"]);?></td>
+										<td><?php echo SingleName($re["mem_single"],"real");?></td>
 										<td><?php echo $re["mem_come"];?></td>
 										<td><a href="ad_mem_detail.php?mem_num=<?php echo $re["mem_num"];?>" target="_blank"><?php echo $re["mem_name"];?></a></td>
 										<td><?php echo $re["mem_sex"];?></td>
