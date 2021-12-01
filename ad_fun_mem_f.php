@@ -218,15 +218,9 @@
                             <tr>
                                 <td>處理情形：
                                     <select name="a1" id="a1">
-                                        <option value="">請選擇</option>
-                                        <option value="">請選擇</option>
-                                        <option value="有意願">有意願</option>
-                                        <option value="無意願">無意願</option>
-                                        <option value="下次聯絡">下次聯絡</option>
-                                        <option value="未接">未接</option>
-                                        <option value="停話">停話</option>
-                                        <option value="PASS春天">PASS春天</option>
-                                        <option value="勿再聯絡">勿再聯絡</option>
+                                        <?php 
+                                            fun_report_option();
+                                        ?>                                        
                                     </select>
                                 </td>
                             </tr>
@@ -251,22 +245,16 @@
                             <tr>
                                 <td><input type="reset" name="reset" value="清空條件" style="height:28px;">　<input type="submit" name="Submit" value="開始搜尋" style="height:28px;"></td>
                             </tr>
+                        <tbody>
                     </table>
                 </form>
-                </td>
-                </tr>
-                </tbody>
-                </table>
             </div>
         </div>
         <!--/span-->
 
     </div>
     <!--/row-->
-    <hr>
-
-    <footer>
-    </footer>
+    
     </div>
     </div>
 

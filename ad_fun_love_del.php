@@ -35,7 +35,7 @@
         }
 
         // 刪除本筆資料
-        $SQL = "DELETE FROM love_keyin WHERE k_id ='" . $_REQUEST["k_id"] . "'";
+        $SQL = "DELETE FROM love_keyin WHERE k_id ='" . SqlFilter($_REQUEST["k_id"],"int") . "'";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
     }

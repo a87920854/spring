@@ -1,8 +1,326 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/
+    //檔案名稱：ad_fun_action_list_padd.php
+    //後台對應位置：好好玩管理系統/好好玩國內團控/(活動名)/修改報名資料
+    //改版日期：2021.11.25
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if ($_SESSION["MM_Username"] == "") {
+		call_alert("請重新登入。", "login.php", 0);
+	}
+
+    $ac = SqlFilter($_REQUEST["ac"],"int");
+    $id = SqlFilter($_REQUEST["id"],"int");
+
+    // 新增資料
+    if($_REQUEST["st"] == "add"){
+        $ttime = SqlFilter($_REQUEST["k_year1"],"int") . "/" . SqlFilter($_REQUEST["k_year2"],"int") . "/" . SqlFilter($_REQUEST["k_year3"],"int");
+        if(chkDate($ttime)){
+            call_alert("請選擇生日。",0,0);
+        }
+        if($_REQUEST["a"] == "b"){
+            $SQL = "select ac_branch, ac_title, ac_note1, ac_time from actionf_data where ac_auto = " .$ac;
+        }else{
+            $SQL = "select ac_branch, ac_title, ac_note1, ac_time from action_data where ac_auto = " .$ac;
+        }
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $action_branch = $result["ac_branch"];
+            $action_title = $result["ac_title"];
+            $action_note = $result["ac_note1"];
+            $action_time = $result["ac_time"];
+        }
+        $k_time = date("Y/m/d H:i:s");
+        $all_branch = $_SESSION["branch"];
+        $all_single = $_SESSION["MM_Username"];
+        $k_come =  SqlFilter($_REQUEST["k_come"],"tab");
+        $k_area = SqlFilter($_REQUEST["k_area"],"tab");
+        $k_name = SqlFilter($_REQUEST["k_name"],"tab");
+        $k_sex = SqlFilter($_REQUEST["k_sex"],"tab");
+        $k_marry = SqlFilter($_REQUEST["k_marry"],"tab");
+        $k_star = SqlFilter($_REQUEST["k_star"],"tab");
+        $k_workcity = SqlFilter($_REQUEST["mem_workcity"],"tab");
+        $k_mobile = SqlFilter($_REQUEST["k_mobile"],"tab");
+        $k_yn = SqlFilter($_REQUEST["k_yn"],"tab");
+        $k_year = $ttime;
+        $k_school = SqlFilter($_REQUEST["k_school"],"tab");
+        $k_phone1 = SqlFilter($_REQUEST["k_phone1"],"tab");
+        $k_phone2 = SqlFilter($_REQUEST["k_phone2"],"tab");
+        $k_company = SqlFilter($_REQUEST["k_company"],"tab");
+        $k_company2 = SqlFilter($_REQUEST["k_company2"],"tab");
+        $k_address = SqlFilter($_REQUEST["k_address"],"tab");
+        $k_user = strtoupper(SqlFilter($_REQUEST["k_user"],"tab"));
+        $k_eat = SqlFilter($_REQUEST["k_eat"],"tab");
+        $k_2 = SqlFilter($_REQUEST["k_2"],"tab");
+        $lineid = SqlFilter($_REQUEST["lineid"],"tab");
+
+        if($_REQUEST["a"] == "b"){
+            $all_kind = "國外旅遊";
+            $k_money = SqlFilter($_REQUEST["k_money"],"tab");
+            $ename = SqlFilter($_REQUEST["ename"],"tab");
+            $passport = SqlFilter($_REQUEST["passport"],"tab");
+            if(chkDate($_REQUEST["passport_t1"])){
+                $passport_t1 = SqlFilter($_REQUEST["passport_t1"],"tab");            
+            }
+            if(chkDate($_REQUEST["passport_t2"])){
+                $passport_t2 = SqlFilter($_REQUEST["passport_t2"],"tab");
+            }
+            $action_time = SqlFilter($_REQUEST["da"],"tab");
+            $rd = "ad_fun_action_list_singup2.php?a=b&da=".SqlFilter($_REQUEST["da"],"tab");
+        }else{
+            $all_kind = "活動";
+            $action_time = $action_time;
+            $rd = "ad_fun_action_list_singup1.php?a=a";
+        }
+        $all_type = "已發送";
+        
+        $ac_1 = SqlFilter($_REQUEST["ac_1"],"tab");
+        $ac_2 = SqlFilter($_REQUEST["ac_2"],"tab");
+        $ac_3 = SqlFilter($_REQUEST["ac_3"],"tab");
+        $k_eat1 = SqlFilter($_REQUEST["k_eat1"],"tab");
+        $k_eat2 = SqlFilter($_REQUEST["k_eat2"],"tab");
+        $is_local = 1;
+        
+        if($_REQUEST["remark"] != ""){            
+            $remark = SqlFilter($_REQUEST["remark"],"tab");
+        }else{
+           $remark = "";
+        }        
+        $SQL = "INSERT INTO love_keyin (k_time, all_branch, all_single, k_come, k_area, k_name, 
+                k_sex, k_marry, k_star, k_workcity, k_mobile, k_yn, k_year, k_school, k_phone1, k_phone2, k_company, k_company2, 
+                k_address, k_user, k_eat, k_2, lineid, action_branch, action_title, action_note, ac_auto,
+                all_kind, k_money, ename, passport, passport_t1, passport_t2, action_time, all_type, 
+                ac_1, ac_2, ac_3, k_eat1, k_eat2, is_local, remark) VALUES ('"
+                .$k_time."', '"
+                .$all_branch."', '"
+                .$all_single."', '"
+                .$k_come."', '"
+                .$k_area."', '"
+                .$k_name."', '"
+                .$k_sex."', '"
+                .$k_marry."', '"
+                .$k_star."', '"
+                .$k_workcity."', '"
+                .$k_mobile."', '"
+                .$k_yn."', '"
+                .$k_year."', '"
+                .$k_school."', '"
+                .$k_phone1."', '"
+                .$k_phone2."', '"
+                .$k_company."', '"
+                .$k_company2."', '"
+                .$k_address."', '"
+                .$k_user."', '"
+                .$k_eat."', '"
+                .$k_2."', '"
+                .$lineid."', '"
+                .$action_branch."', '"
+                .$action_title."', '"
+                .$action_note."', '"
+                .$ac."', '"
+                .$all_kind."', '"
+                .$k_money."', '"
+                .$ename."', '"
+                .$passport."', '"
+                .$passport_t1."', '"
+                .$passport_t2."', '"
+                .$action_time."', '"
+                .$all_type."', '"
+                .$ac_1."', '"
+                .$ac_2."', '"
+                .$ac_3."', '"
+                .$k_eat1."', '"
+                .$k_eat2."', '"
+                .$is_local."', '"
+                .$remark."')";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL($rd."&ac=".$ac);
+            exit();
+        }
+    }
+
+    // 修改資料
+    if($_REQUEST["st"] == "edit"){
+        if($_REQUEST["ac"] == "" || $_REQUEST["id"] == ""){
+            call_alert("無法讀取資料。",0,0);
+            exit();
+        }
+        $k_year = SqlFilter($_REQUEST["k_year1"],"int") . "/" . SqlFilter($_REQUEST["k_year2"],"int") . "/" . SqlFilter($_REQUEST["k_year3"],"int");
+        $k_come =  SqlFilter($_REQUEST["k_come"],"tab");
+        $k_area = SqlFilter($_REQUEST["k_area"],"tab");
+        $k_name = SqlFilter($_REQUEST["k_name"],"tab");
+        $k_sex = SqlFilter($_REQUEST["k_sex"],"tab");
+        $k_marry = SqlFilter($_REQUEST["k_marry"],"tab");
+        $k_star = SqlFilter($_REQUEST["k_star"],"tab");
+        $k_workcity = SqlFilter($_REQUEST["mem_workcity"],"tab");
+        $k_mobile = SqlFilter($_REQUEST["k_mobile"],"tab");
+        $k_yn = SqlFilter($_REQUEST["k_yn"],"tab");
+        $k_school = SqlFilter($_REQUEST["k_school"],"tab");
+        $k_phone1 = SqlFilter($_REQUEST["k_phone1"],"tab");
+        $k_phone2 = SqlFilter($_REQUEST["k_phone2"],"tab");
+        $k_company = SqlFilter($_REQUEST["k_company"],"tab");
+        $k_company2 = SqlFilter($_REQUEST["k_company2"],"tab");
+        $k_address = SqlFilter($_REQUEST["k_address"],"tab");
+        $k_user = strtoupper(SqlFilter($_REQUEST["k_user"],"tab"));
+        $k_eat = SqlFilter($_REQUEST["k_eat"],"tab");
+        $k_2 = SqlFilter($_REQUEST["k_2"],"tab");
+        $lineid = SqlFilter($_REQUEST["lineid"],"tab");        
+        $ac_1 = SqlFilter($_REQUEST["ac_1"],"tab");
+        $ac_2 = SqlFilter($_REQUEST["ac_2"],"tab");
+        $ac_3 = SqlFilter($_REQUEST["ac_3"],"tab");
+        $k_eat1 = SqlFilter($_REQUEST["k_eat1"],"tab");
+        $k_eat2 = SqlFilter($_REQUEST["k_eat2"],"tab");
+        if($_REQUEST["a"] == "b"){            
+            $k_money = SqlFilter($_REQUEST["k_money"],"tab");
+            $ename = SqlFilter($_REQUEST["ename"],"tab");
+            $passport = SqlFilter($_REQUEST["passport"],"tab");
+            if(chkDate($_REQUEST["passport_t1"])){
+                $passport_t1 = SqlFilter($_REQUEST["passport_t1"],"tab");            
+            }
+            if(chkDate($_REQUEST["passport_t2"])){
+                $passport_t2 = SqlFilter($_REQUEST["passport_t2"],"tab");
+            }
+        }
+        if($_REQUEST["remark"] != ""){            
+            $remark = SqlFilter($_REQUEST["remark"],"tab");
+        }else{
+           $remark = "";
+        }     
+        $SQL = "UPDATE love_keyin SET                
+                k_come = '".$k_come."',
+                k_area = '".$k_area."', 
+                k_name = '".$k_name."', 
+                k_sex = '".$k_sex."', 
+                k_marry = '".$k_marry."', 
+                k_star = '".$k_star."', 
+                k_workcity = '".$k_workcity."', 
+                k_mobile = '".$k_mobile."', 
+                k_yn = '".$k_yn."', 
+                k_year = '".$k_year."', 
+                k_school = '".$k_school."', 
+                k_phone1 = '".$k_phone1."', 
+                k_phone2 = '".$k_phone2."', 
+                k_company = '".$k_company."', 
+                k_company2 = '".$k_company2."', 
+                k_address = '".$k_address."', 
+                k_user = '".$k_user."', 
+                k_eat = '".$k_eat."', 
+                k_2 = '".$k_2."', 
+                lineid = '".$lineid."', 
+                k_money = '".$k_money."', 
+                ename = '".$ename."', 
+                passport = '".$passport."', 
+                passport_t1 = '".$passport_t1."', 
+                passport_t2 = '".$passport_t2."',
+                ac_1 = '".$ac_1."', 
+                ac_2 = '".$ac_2."', 
+                ac_3 = '".$ac_3."', 
+                k_eat1 = '".$k_eat1."', 
+                k_eat2 = '".$k_eat2."', 
+                remark = '".$remark."' WHERE k_id = '".$id."'";
+
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            if($_REQUEST["a"] == "b"){
+                reURL("ad_fun_action_list_singup2.php?ac=".$ac."&da=".SqlFilter($_REQUEST["da"],"tab"));
+                exit();
+            }else{
+                reURL("ad_fun_action_list_padd.php?id=".$id."&ac=".$ac);
+                exit();
+            }            
+        }
+    }
+
+    // 讀取本筆資料
+    if($_REQUEST["a"] == "b"){
+        $SQL = "elect ac_title from actionf_data where ac_auto = " .$ac;
+    }else{
+        $SQL = "select ac_title, ac_eat1, ac_eat2 from action_data where ac_auto = " .$ac;
+    }
+
+    $rs = $FunConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if($result){
+        $ac_title = $result["ac_title"];
+        if($_REQUEST["a"] != "b"){
+            $ac_eat1 = $result["ac_eat1"];
+            $ac_eat2 = $result["ac_eat2"];
+        }
+    } 
+
+    if($_REQUEST["id"] != ""){
+        $ww = "修改";
+        if($_REQUEST["a"] == "b"){
+            $ww2 = "edit&a=b&id=" .$id;
+            $SQL = "select * from love_keyin where all_kind='國外旅遊' and k_id = " .$id;
+        }else{
+            $ww2 = "edit&id=" .$id;
+            $SQL = "select * from love_keyin where k_id = " .$id;
+        }
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if(!$result){
+            call_alert("無法讀取資料。",0,0);
+        }else{
+            $k_name = $result["k_name"];
+            $k_sex = $result["k_sex"];
+            $k_user = $result["k_user"];
+            $k_year = $result["k_year"];
+            $k_eat = $result["k_eat"];
+            $k_marry = $result["k_marry"];
+            $k_phone1 = $result["k_phone1"];
+            $k_phone2 = $result["k_phone2"];
+            $k_mobile = $result["k_mobile"];
+            $k_company = $result["k_company"];
+            $k_company2 = $result["k_company2"];
+            $k_area = $result["k_area"];
+            $k_address = $result["k_address"];
+            $k_yn = $result["k_yn"];
+            $ac_1 = $result["ac_1"];
+            $ac_2 = $result["ac_2"];
+            $ac_3 = $result["ac_3"];
+            $lineid = $result["lineid"];
+            $k_school = $result["k_school"];
+            $k_come = $result["k_come"];
+            $remark = $result["remark"];
+            $k_time = $result["k_time"];
+            $k_money = $result["k_money"];
+            $ename = $result["ename"];
+            $passport = $result["passport"];
+            $passport_t1 = $result["passport_t1"];
+            $passport_t2 = $result["passport_t2"];
+            $k_eat1 = $result["k_eat1"];
+            $k_eat2 = $result["k_eat2"];
+            $k_star = $result["k_star"];
+            $k_workcity = $result["k_workcity"];
+        }
+    }else{
+        $ww = "新增";
+        if($_REQUEST["a"] == "b"){
+            $ww2 = "add&a=b&da=" .SqlFilter($_REQUEST["da"],"tab");
+        }else{
+            $ww2 = "add";
+        }
+        $k_time = date("Y/m/d H:i:s");
+        $ac_1 = 0;
+        $ac_2 = 0;
+    }   
+
 ?>
 
 <!-- MIDDLE -->
@@ -11,13 +329,15 @@ require_once("./include/_sidebar.php");
     <header id="page-header">
         <ol class="breadcrumb">
             <li>好好玩管理系統</li>
-
-
-            <li><a href="ad_fun_action_list1.php">好好玩國內團控</a></li>
-            <li><a href="ad_fun_action_list_singup1.php?ac=3059">桃源仙谷遇見愛｜遊賞花田+祕境探索+烤肉饗宴+拍照任務【無法成團將不另行通知】</a></li>
-
-
-            <li class="active">新增報名資料</li>
+            <?php 
+                if($_REQUEST["a"] == "b"){
+                   echo "<li><a href='ad_fun_action_list2.php'>好好玩國外團控</a></li>";  
+                }else{
+                    echo "<li><a href='ad_fun_action_list1.php'>好好玩國內團控</a></li>";
+                    echo "<li><a href=\"ad_fun_action_list_singup1.php?ac=".$ac."\">".$ac_title."</a></li>";
+                }
+            ?>
+            <li class="active"><?php echo $ww; ?>報名資料</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -27,287 +347,235 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>桃源仙谷遇見愛｜遊賞花田+祕境探索+烤肉饗宴+拍照任務【無法成團將不另行通知】新增報名資料</strong> <!-- panel title -->
+                    <strong><?php echo $ac_title; ?> <?php echo $ww; ?>報名資料</strong> <!-- panel title -->
                 </span>
             </div>
             <div class="panel-body">
 
-                <form id="addform" action="?st=add" method="post" target="_self" class="form-inline" onsubmit="return chk_form()">
+                <form id="addform" action="?st=<?php echo $ww2; ?>" method="post" target="_self" class="form-inline" onsubmit="return chk_form()">
                     <table class="table table-striped table-bordered bootstrap-datatable input_small" style="font-size:12px;">
                         <tbody>
                             <tr>
-                                <td>姓名：<input type="text" name="k_name" id="k_name" value="" class="form-control"></td>
-                                <td>性別：<select name="k_sex" id="k_sex">
+                                <td>姓名：<input type="text" name="k_name" id="k_name" value="<?php echo $k_name; ?>" class="form-control"></td>
+                                <td>性別：
+                                    <select name="k_sex" id="k_sex">
                                         <option value="">請選擇</option>
-                                        <option value="男">男</option>
-                                        <option value="女">女</option>
+                                        <?php  
+                                            $gender = array("男","女");
+                                            foreach($gender as $gen){
+                                                if($k_sex == $gen){
+                                                    echo "<option value='".$gen."' selected>".$gen."</option>";                                                    
+                                                }else{
+                                                    echo "<option value='".$gen."'>".$gen."</option>";
+                                                }                                                
+                                            }
+                                        ?>                                       
                                     </select>
 
                                     　婚姻：
                                     <select name="k_marry" id="k_marry" style="font-size: 9pt">
                                         <option value="">請選擇</option>
-                                        <option value="未婚">未婚</option>
-                                        <option value="已婚">已婚</option>
-                                        <option value="二春">二春</option>
+                                        <?php
+                                            $marry = array("未婚","已婚","二春");
+                                            foreach($marry as $ma){
+                                                if($k_marry == $ma){
+                                                    echo "<option value='".$ma."' selected>".$ma."</option>";                                                    
+                                                }else{
+                                                    echo "<option value='".$ma."'>".$ma."</option>";
+                                                }                                                
+                                            }                                                                                        
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
                             <tr>
-                                <td>身分證字號：<input type="text" name="k_user" id="k_user" class="form-control" value=""></td>
+                                <td>身分證字號：<input type="text" name="k_user" id="k_user" class="form-control" value="<?php echo $k_user; ?>"></td>
                                 <td>生日：
                                     <select name="k_year1" id="k_year1">
-                                        <option value="">請選擇</option>
-                                        <option value="1941">1941</option>
-                                        <option value="1942">1942</option>
-                                        <option value="1943">1943</option>
-                                        <option value="1944">1944</option>
-                                        <option value="1945">1945</option>
-                                        <option value="1946">1946</option>
-                                        <option value="1947">1947</option>
-                                        <option value="1948">1948</option>
-                                        <option value="1949">1949</option>
-                                        <option value="1950">1950</option>
-                                        <option value="1951">1951</option>
-                                        <option value="1952">1952</option>
-                                        <option value="1953">1953</option>
-                                        <option value="1954">1954</option>
-                                        <option value="1955">1955</option>
-                                        <option value="1956">1956</option>
-                                        <option value="1957">1957</option>
-                                        <option value="1958">1958</option>
-                                        <option value="1959">1959</option>
-                                        <option value="1960">1960</option>
-                                        <option value="1961">1961</option>
-                                        <option value="1962">1962</option>
-                                        <option value="1963">1963</option>
-                                        <option value="1964">1964</option>
-                                        <option value="1965">1965</option>
-                                        <option value="1966">1966</option>
-                                        <option value="1967">1967</option>
-                                        <option value="1968">1968</option>
-                                        <option value="1969">1969</option>
-                                        <option value="1970">1970</option>
-                                        <option value="1971">1971</option>
-                                        <option value="1972">1972</option>
-                                        <option value="1973">1973</option>
-                                        <option value="1974">1974</option>
-                                        <option value="1975">1975</option>
-                                        <option value="1976">1976</option>
-                                        <option value="1977">1977</option>
-                                        <option value="1978">1978</option>
-                                        <option value="1979">1979</option>
-                                        <option value="1980">1980</option>
-                                        <option value="1981">1981</option>
-                                        <option value="1982">1982</option>
-                                        <option value="1983">1983</option>
-                                        <option value="1984">1984</option>
-                                        <option value="1985">1985</option>
-                                        <option value="1986">1986</option>
-                                        <option value="1987">1987</option>
-                                        <option value="1988">1988</option>
-                                        <option value="1989">1989</option>
-                                        <option value="1990">1990</option>
-                                        <option value="1991">1991</option>
-                                        <option value="1992">1992</option>
-                                        <option value="1993">1993</option>
-                                        <option value="1994">1994</option>
-                                        <option value="1995">1995</option>
-                                        <option value="1996">1996</option>
-                                        <option value="1997">1997</option>
-                                        <option value="1998">1998</option>
-                                        <option value="1999">1999</option>
-                                        <option value="2000">2000</option>
-                                        <option value="2001">2001</option>
+                                        <?php
+                                            $year = date("Y", strtotime($k_year)); //出生年
+                                            for( $i = date("Y")-20; $i >= date("Y")-80; $i--){
+                                                if($k_year != "" && $i == $year){
+                                                    echo "<option value='" .$i. "' selected>" .$i. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$i. "'>" .$i. "</option>";
+                                                }
+                                            }                                        
+                                        ?>
                                     </select> 年
                                     <select name="k_year2" id="k_year2">
-                                        <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
+                                        <?php
+                                            $month = date("n", strtotime($k_year)); //出生月
+                                            for( $i = 1; $i <= 12; $i++){
+                                                if($k_year != "" && $i == $month){
+                                                    echo "<option value='" .$i. "' selected>" .$i. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$i. "'>" .$i. "</option>";
+                                                }
+                                            }                                        
+                                        ?>
                                     </select> 月
                                     <select name="k_year3" id="k_year3">
-                                        <option value="">請選擇</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                        <option value="13">13</option>
-                                        <option value="14">14</option>
-                                        <option value="15">15</option>
-                                        <option value="16">16</option>
-                                        <option value="17">17</option>
-                                        <option value="18">18</option>
-                                        <option value="19">19</option>
-                                        <option value="20">20</option>
-                                        <option value="21">21</option>
-                                        <option value="22">22</option>
-                                        <option value="23">23</option>
-                                        <option value="24">24</option>
-                                        <option value="25">25</option>
-                                        <option value="26">26</option>
-                                        <option value="27">27</option>
-                                        <option value="28">28</option>
-                                        <option value="29">29</option>
-                                        <option value="30">30</option>
-                                        <option value="31">31</option>
+                                        <?php
+                                            $day = date("j", strtotime($k_year)); //出生日
+                                            for( $i = 1; $i <= 31; $i++){
+                                                if($k_year != "" && $i == $day){
+                                                    echo "<option value='" .$i. "' selected>" .$i. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$i. "'>" .$i. "</option>";
+                                                }
+                                            }                                        
+                                        ?>
                                     </select> 日
 
                                     </select>
                                 </td>
                             </tr>
                             <tr>
-                                <td>星座：<select name="k_star" id="k_star">
-                                        <option value="">請選擇</option>
-                                        <option value="水瓶座">水瓶座</option>
-                                        <option value="雙魚座">雙魚座</option>
-                                        <option value="牡羊座">牡羊座</option>
-                                        <option value="金牛座">金牛座</option>
-                                        <option value="雙子座">雙子座</option>
-                                        <option value="巨蟹座">巨蟹座</option>
-                                        <option value="獅子座">獅子座</option>
-                                        <option value="處女座">處女座</option>
-                                        <option value="天秤座">天秤座</option>
-                                        <option value="天蠍座">天蠍座</option>
-                                        <option value="射手座">射手座</option>
-                                        <option value="魔羯座">魔羯座</option>
+                                <td>星座：
+                                    <select name="k_star" id="k_star">
+                                        <option value=''>請選擇</option>
+                                        <?php
+                                            $star = array("水瓶座", "雙魚座", "牡羊座", "金牛座", "雙子座", "巨蟹座", "獅子座", "處女座", "天秤座", "天蠍座", "射手座", "魔羯座");
+                                            foreach( $star as $st){
+                                                if($st == $k_star){
+                                                    echo "<option value='" .$st. "' selected>" .$st. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$st. "'>" .$st. "</option>";
+                                                }
+                                            }
+                                        ?>
                                     </select> </td>
                                 <td>工作縣市：
                                     <select name="mem_workcity" id="mem_workcity">
                                         <option value="">請選擇</option>
-                                        <option value="基隆市">基隆市</option>
-                                        <option value="台北市">台北市</option>
-                                        <option value="新北市">新北市</option>
-                                        <option value="宜蘭縣">宜蘭縣</option>
-                                        <option value="桃園市">桃園市</option>
-                                        <option value="新竹縣">新竹縣</option>
-                                        <option value="新竹市">新竹市</option>
-                                        <option value="苗栗縣">苗栗縣</option>
-                                        <option value="苗栗市">苗栗市</option>
-                                        <option value="台中市">台中市</option>
-                                        <option value="彰化縣">彰化縣</option>
-                                        <option value="彰化市">彰化市</option>
-                                        <option value="南投縣">南投縣</option>
-                                        <option value="嘉義縣">嘉義縣</option>
-                                        <option value="嘉義市">嘉義市</option>
-                                        <option value="雲林縣">雲林縣</option>
-                                        <option value="台南市">台南市</option>
-                                        <option value="高雄市">高雄市</option>
-                                        <option value="屏東縣">屏東縣</option>
-                                        <option value="花蓮縣">花蓮縣</option>
-                                        <option value="台東縣">台東縣</option>
-                                        <option value="澎湖縣">澎湖縣</option>
-                                        <option value="金門縣">金門縣</option>
-                                        <option value="馬祖">馬祖</option>
-                                        <option value="綠島">綠島</option>
-                                        <option value="蘭嶼">蘭嶼</option>
-                                        <option value="其他">其他</option>
+                                        <?php
+                                            $workcity = array("新北市", "台北市", "基隆市", "宜蘭縣", "桃園市", "新竹縣", "新竹市", "苗栗縣", "苗栗市", "台中市", "彰化縣", "彰化市", "南投縣", "嘉義縣", 
+                                                    "嘉義市", "雲林縣", "台南市", "高雄市", "屏東縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "馬祖", "綠島", "蘭嶼", "其他");
+                                            foreach( $workcity as $work){
+                                                if($work == $k_workcity){
+                                                    echo "<option value='" .$work. "' selected>" .$work. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$work. "'>" .$work. "</option>";
+                                                }
+                                            }
+                                        ?>
                                     </select>
                                 </td>
                             </tr>
                             <tr>
                                 <td>飲食習慣：<select name="k_eat" id="k_eat">
                                         <option value="">請選擇</option>
-                                        <option value="葷食">葷食</option>
-                                        <option value="素食">素食</option>
+                                        <?php
+                                           
+                                            $food = array("葷食","素食");
+                                            foreach($food as $fo){
+                                                if($k_eat == $fo){
+                                                    echo "<option value='".$fo."' selected>".$fo."</option>";                                                    
+                                                }else{
+                                                    echo "<option value='".$fo."'>".$fo."</option>";
+                                                }                                                
+                                            }                                         
+                                        ?>
                                     </select></td>
-                                <td>電話(公)：<input type="text" name="k_phone1" value="" class="form-control">　(家)：<input type="text" name="k_phone2" class="form-control" value="">　手機：<input type="text" name="k_mobile" id="k_mobile" class="form-control" value=""></td>
+                                <td>電話(公)：<input type="text" name="k_phone1" value="<?php echo $k_phone1; ?>" class="form-control">　(家)：<input type="text" name="k_phone2" class="form-control" value="<?php echo $k_phone2; ?>">　手機：<input type="text" name="k_mobile" id="k_mobile" class="form-control" value="<?php echo $k_mobile; ?>"></td>
                             </tr>
                             <tr>
-                                <td>服務機關：<input type="text" name="k_company" class="form-control" value=""></td>
-                                <td>現任職稱：<input type="text" name="k_company2" class="form-control" value=""></td>
+                                <td>服務機關：<input type="text" name="k_company" class="form-control" value="<?php echo $k_company; ?>"></td>
+                                <td>現任職稱：<input type="text" name="k_company2" class="form-control" value="<?php echo $k_company2; ?>"></td>
                             </tr>
                             <tr>
                                 <td colspan=2>地址：
                                     <select name="k_area" id="k_area">
-                                        <option value="" SELECTED>請選擇</option>
-                                        <option value="基隆市">基隆市</option>
-                                        <option value="台北市">台北市</option>
-                                        <option value="新北市">新北市</option>
-                                        <option value="宜蘭縣">宜蘭縣</option>
-                                        <option value="桃園市">桃園市</option>
-                                        <option value="新竹縣">新竹縣</option>
-                                        <option value="新竹市">新竹市</option>
-                                        <option value="苗栗縣">苗栗縣</option>
-                                        <option value="苗栗市">苗栗市</option>
-                                        <option value="台中縣">台中縣</option>
-                                        <option value="台中市">台中市</option>
-                                        <option value="彰化縣">彰化縣</option>
-                                        <option value="彰化市">彰化市</option>
-                                        <option value="南投縣">南投縣</option>
-                                        <option value="嘉義縣">嘉義縣</option>
-                                        <option value="嘉義市">嘉義市</option>
-                                        <option value="雲林縣">雲林縣</option>
-                                        <option value="台南縣">台南縣</option>
-                                        <option value="台南市">台南市</option>
-                                        <option value="高雄市">高雄市</option>
-                                        <option value="屏東縣">屏東縣</option>
-                                        <option value="花蓮縣">花蓮縣</option>
-                                        <option value="台東縣">台東縣</option>
-                                        <option value="澎湖縣">澎湖縣</option>
-                                        <option value="金門縣">金門縣</option>
-                                        <option value="馬祖">馬祖</option>
-                                        <option value="綠島">綠島</option>
-                                        <option value="蘭嶼">蘭嶼</option>
-                                        <option value="其他">其他</option>
+                                        <option value="">請選擇</option>
+                                        <?php
+                                            $area = array("新北市", "台北市", "基隆市", "宜蘭縣", "桃園市", "新竹縣", "新竹市", "苗栗縣", "苗栗市", "台中市", "彰化縣", "彰化市", "南投縣", "嘉義縣", 
+                                                    "嘉義市", "雲林縣", "台南市", "高雄市", "屏東縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "馬祖", "綠島", "蘭嶼", "其他");
+                                            foreach( $area as $ar){
+                                                if($ar == $k_area){
+                                                    echo "<option value='" .$ar. "' selected>" .$ar. "</option>";
+                                                }else{
+                                                    echo "<option value='" .$ar. "'>" .$ar. "</option>";
+                                                }
+                                            }
+                                        ?>
                                     </select>
-                                    　<input name="k_address" type="text" id="k_address" class="form-control" value="" style="width:60%;">
+                                    　<input name="k_address" type="text" id="k_address" class="form-control" value="<?php echo $k_address; ?>" style="width:60%;">
                                 </td>
                             </tr>
                             <tr>
-                                <td>E-mail：<input name="k_yn" id="k_yn" type="text" class="form-control" value=""></td>
-                                <td>facebook帳號：<input name="ac_3" type="text" class="form-control" value=""> ＬＩＮＥ：<input name="lineid" id="lineid" type="text" class="form-control" value=""></td>
+                                <td>E-mail：<input name="k_yn" id="k_yn" type="text" class="form-control" value="<?php echo $k_yn; ?>"></td>
+                                <td>facebook帳號：<input name="ac_3" type="text" class="form-control" value="<?php echo $ac_3; ?>"> ＬＩＮＥ：<input name="lineid" id="lineid" type="text" class="form-control" value="<?php echo $lineid; ?>"></td>
                             </tr>
                             <tr>
-                                <td>身高：<input name="ac_1" id="ac_1" type="text" class="form-control" value="0"></td>
-                                <td>體重：<input name="ac_2" id="ac_2" type="text" class="form-control" value="0"></td>
+                                <td>身高：<input name="ac_1" id="ac_1" type="text" class="form-control" value="<?php echo $ac_1; ?>"></td>
+                                <td>體重：<input name="ac_2" id="ac_2" type="text" class="form-control" value="<?php echo $ac_2; ?>"></td>
                             </tr>
                             <tr>
                                 <td>學歷：<select name="k_school" id="k_school">
                                         <option value="">請選擇</option>
-                                        <option value="高中">高中</option>
-                                        <option value="專科">專科</option>
-                                        <option value="大學">大學</option>
-                                        <option value="碩士">碩士</option>
-                                        <option value="博士">博士</option>
+                                        <?php
+                                            $school = array("高中","專科","大學","碩士","博士");
+                                            foreach($school as $sc){
+                                                if( $k_school == $sc ){
+                                                    echo "<option value='" .$sc. "' selected>" .$sc. "</option>";
+                                                }else{
+                                                  echo "<option value='" .$sc. "'>" .$sc. "</option>";
+                                                }
+                                            }                                            
+                                        ?>
                                     </select></td>
                                 <td>訊息來源：<select name="k_come" id="k_come">
                                         <option value="">請選擇</option>
-                                        <option value="2014國際旅展">2014國際旅展</option>
-                                        <option value="好好玩旅行社官方粉絲團">好好玩旅行社官方粉絲團</option>
-                                        <option value="網路新聞">網路新聞</option>
-                                        <option value="媒體報導">媒體報導</option>
-                                        <option value="1111人力銀行">1111人力銀行</option>
-                                        <option value="春天會館客服">春天會館客服</option>
-                                        <option value="活動宣傳">活動宣傳</option>
-                                        <option value="ＤＭ訊息">ＤＭ訊息</option>
-                                        <option value="企業福委">企業福委</option>
-                                        <option value="CHEERS雜誌">CHEERS雜誌</option>
+                                        <?php 
+                                            $come = array("2014國際旅展","好好玩旅行社官方粉絲團","網路新聞","媒體報導","1111人力銀行","春天會館客服","活動宣傳","ＤＭ訊息","企業福委","CHEERS雜誌");
+                                            foreach($come as $co){
+                                                if( $k_come == $co ){
+                                                    echo "<option value='" .$co. "' selected>" .$co. "</option>";
+                                                }else{
+                                                  echo "<option value='" .$co. "'>" .$co. "</option>";
+                                                }
+                                            }
+                                        ?>                                        
                                     </select></td>
                             </tr>
                             <tr>
-                                <td>餐點：<select name="k_eat1">
-                                        <option value="" disabled>無餐點</option>
-                                    </select></td>
-                                <td>飲品：<select name="k_eat2">
-                                        <option value="" disabled>無飲品</option>
-                                    </select></td>
+                                <td>餐點：
+                                    <select name="k_eat1">
+                                        <?php 
+                                            if($ac_eat1 != "" && count(explode(",",$ac_eat1)) > 0){
+                                                echo "<option value=''>請選擇</option>"; 
+                                                foreach(explode(",",$ac_eat1) as $eat1){
+                                                    if($k_eat1 != "" && $k_eat1 == $eat1){
+                                                        echo "<option value='".$eat1."' selected>".$eat1."</option>";
+                                                    }else{
+                                                        echo "<option value='".$eat1."'>".$eat1."</option>";
+                                                    }                                                    
+                                                }
+                                            }else{
+                                                echo "<option value='' disabled>無餐點</option>";
+                                            }
+                                        ?>                                        
+                                    </select>
+                                </td>
+                                <td>飲品：
+                                    <select name="k_eat2">
+                                    <?php 
+                                            if($ac_eat2 != "" && count(explode(",",$ac_eat2)) > 0){
+                                                echo "<option value=''>請選擇</option>"; 
+                                                foreach(explode(",",$ac_eat2) as $eat2){
+                                                    if($k_eat2 != "" && $k_eat2 == $eat2){
+                                                        echo "<option value='".$eat2."' selected>".$eat2."</option>";
+                                                    }else{
+                                                        echo "<option value='".$eat2."'>".$eat2."</option>";
+                                                    }                                                    
+                                                }
+                                            }else{
+                                                echo "<option value='' disabled>無飲品</option>";
+                                            }
+                                        ?>                                         
+                                    </select>
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan=2>公開資料：
@@ -323,15 +591,24 @@ require_once("./include/_sidebar.php");
                                     不願意公開資料
                                 </td>
                             </tr>
-
+                            <?php 
+                                if($_REQUEST["a"] == "b"){
+                                    if($k_money == "" || !is_numeric($k_money)){
+                                        $k_money = 0;
+                                    } ?>
+                                    <tr><td>參團價格：<input type="text" name="k_money" id="k_money" class="form-control" value="<?php echo $k_money; ?>"></td><td>出發日期：<?php echo SqlFilter($_REQUEST["da"],"tab"); ?><input type="hidden" name="da" value="<?php echo SqlFilter($_REQUEST["da"],"tab"); ?>"></td></tr>
+                                    <tr><td>英文姓名：<input type="text" name="ename" id="ename" class="form-control" value="<?php echo $ename; ?>"></td><td>護照號碼：<input type="text" name="passport" id="passport" class="form-control" value="<?php echo $passport; ?>"></td></tr>
+                                    <tr><td colspan=2>護照效期：發照 <input type="text" name="passport_t1" id="passport_t1" value="<?php echo $passport_t1; ?>" class="datepicker" autocomplete="off"> 截止 <input type="text" name="passport_t2" id="passport_t2" value="<?php echo $passport_t2; ?>" class="datepicker" autocomplete="off"></td></tr>
+                                <?php }
+                            ?>
                             <tr>
-                                <td colspan=2>備註：<textarea name="remark" id="remark" class="form-control" style="width:70%;height:80px;"></textarea></td>
+                                <td colspan=2>備註：<textarea name="remark" id="remark" class="form-control" style="width:70%;height:80px;"><?php echo $remark; ?></textarea></td>
                             </tr>
                             <tr>
-                                <td colspan=2>報名時間：2021/9/24 下午 03:11:18<input type="hidden" name="ac" value="3059"></td>
+                                <td colspan=2>報名時間：<?php echo changeDate($k_time); ?><input type="hidden" name="ac" value="<?php echo $ac; ?>"></td>
                             </tr>
                             <tr>
-                                <td colspan=2 align="center"><input type="submit" name="Submit" value="確定新增" class="btn btn-info" style="width:50%;"></td>
+                                <td colspan=2 align="center"><input type="submit" name="Submit" value="確定<?php echo $ww; ?>" class="btn btn-info" style="width:50%;"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -344,8 +621,6 @@ require_once("./include/_sidebar.php");
     <!--/row-->
     <hr>
 
-    <footer>
-    </footer>
     </div>
     </div>
 
@@ -359,23 +634,15 @@ require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $mtu = "ad_fun_action_list1.";
-
-    $(function() {});
-
     function chk_form() {
         var $rr = 0;
-
-        var $clist = {
-            "k_name": "姓名",
-            "k_sex": "性別",
-            "k_user": "身分證字號",
-            "k_year1": "生日-年",
-            "k_year2": "生日-月",
-            "k_year3": "生日-日",
-            "k_mobile": "手機",
-            "k_come": "訊息來源"
-        };
+        <?php 
+            if($_REQUEST["a"] == "b"){ ?>
+                var $clist = {"k_name":"姓名","k_sex":"性別","k_user":"身分證字號","k_year1":"生日-年","k_year2":"生日-月","k_year3":"生日-日","k_mobile":"手機","k_area":"地址","k_come":"訊息來源","k_money":"參團價格"};
+            <?php }else{ ?>
+                var $clist = {"k_name":"姓名","k_sex":"性別","k_user":"身分證字號","k_year1":"生日-年","k_year2":"生日-月","k_year3":"生日-日","k_mobile":"手機","k_come":"訊息來源"};  
+            <?php }
+        ?>
 
         $.each($clist, function(n, v) {
             if (!$("#" + n).val()) {
@@ -387,12 +654,13 @@ require_once("./include/_bottom.php");
         });
 
         if ($rr == 0) {
-
-            var $cnlist = {
-                "ac_1": "身高",
-                "ac_2": "體重"
-            };
-
+            <?php 
+                if($_REQUEST["a"] == "b"){ ?>
+                    var $cnlist = {"ac_1":"身高","ac_2":"體重","k_money":"參團價格"};
+                <?php }else{ ?>
+                    var $cnlist = {"ac_1":"身高","ac_2":"體重"};
+                <?php }
+            ?>
             var reg = /^\d+$/;
             $.each($cnlist, function(n, v) {
                 if (!reg.test($("#" + n).val())) {
@@ -404,8 +672,10 @@ require_once("./include/_bottom.php");
             });
         }
 
-        if ($rr) return false;
-        else return true;
-
+        if ($rr){
+            return false;
+        }else{
+            return true;
+        }
     }
 </script>

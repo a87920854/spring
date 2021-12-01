@@ -728,4 +728,18 @@
 		}
 		return $requestStr;
 	}
+
+	// 好好玩處理情形下拉選單
+	function fun_report_option(){
+		$alloptions = Array("請選擇","有意願","無意願","下次聯絡","未接","停話","PASS春天","勿再聯絡");
+		foreach($alloptions as $opt){
+			if($opt == "請選擇"){
+				$opt1 = "";
+			}else{
+				$opt1 = $opt;
+			}
+			echo "<option value='".$opt1."'>".$opt."</option>";
+		}
+	}
+
 ?>

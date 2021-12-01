@@ -1,8 +1,8 @@
 <?php 
   /*****************************************/
-  //檔案名稱：ad_fun_send_branch.php
-  //後台對應位置：好好玩管理系統/會員管理系統/操作(發送)
-  //改版日期：2021.11.5
+  //檔案名稱：ad_fun_send_gbranch.php
+  //後台對應位置：好好玩管理系統/金卡俱樂部(舊)->操作(發送)
+  //改版日期：2021.12.1
   //改版設計人員：Jack
   //改版程式人員：Jack
   /*****************************************/
@@ -12,7 +12,7 @@
 
   if($_REQUEST["state"] == "add"){
       $mem_auto = SqlFilter($_REQUEST["mem_auto"],"int");      
-      $SQL = "UPDATE member_data SET mem_branch ='" . SqlFilter($_REQUEST["branch"],"tab") . "', mem_single ='" . SqlFilter($_REQUEST["single"],"tab") . "', all_type ='已發送' WHERE mem_auto ='" . $mem_auto ."'";
+      $SQL = "UPDATE goldcard_data SET mem_branch ='" . SqlFilter($_REQUEST["branch"],"tab") . "', mem_single ='" . SqlFilter($_REQUEST["single"],"tab") . "', all_type ='已發送' WHERE mem_auto in (" . $mem_auto .")";
       $rs = $FunConn->prepare($SQL);
       $rs->execute();
       if($rs){
@@ -60,7 +60,7 @@
 <script type="text/javascript" src="js/ajax.js"></script>
 
 <body leftmargin="0" topmargin="0">
-    <form action="ad_fun_send_branch.php?state=add" method="post" name="form1">
+    <form action="ad_fun_send_gbranch.php?state=add" method="post" name="form1">
         <table width="350" border="0" align="center">
             <tr>
                 <td>

@@ -148,7 +148,7 @@
         $sqlss = $sqlss . " and ac_auto like '%" .SqlFilter($_REQUEST["ac"],"int")."%'";
     }
 
-    // 以??搜尋
+    // 以自訂來源搜尋
     if($_REQUEST["s97"] != "" ){
         $sqlss = $sqlss . " and k_cc ='" .SqlFilter($_REQUEST["s97"],"tab")."'";
     }
@@ -258,7 +258,7 @@
                 <div class="btn-group pull-left margin-right-10">
 							<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
 							<ul class="dropdown-menu">
-                            <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>
+                                <li><a href="ad_fun_action3.php" target="_self"><i class="icon-resize-full"></i> 切換資料版</a></li>
                                 <?php 
                                     if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_Username"] == "13085797" ){
                                         if($all_type == "未處理"){
@@ -315,7 +315,7 @@
                                         <tr>
                                             <td><input data-no-uniform="true" type="checkbox" name="nums" value="<?php echo $re["k_id"]; ?>"></td>
                                             <td class="center"><a href="javascript:Mars_popup('ad_fun_detail.php?k_id=<?php echo $re["k_id"]; ?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re["k_name"]; ?></a> 
-                                                <a href="ad_no_mem_s.php?mem_mobile=<?php echo $re["k_mobile"]; ?>" target="_blank">[查]</a>
+                                                <a href="ad_no_mem_s.php?mem_mobile=<?php echo $re["k_mobile"]; ?>" target="_blank">[查]</a>　
                                                 <a href="ad_mem_detail.php?mem_mobile=<?php echo $re["k_mobile"]; ?>" target="_blank">[查春天]</a>
                                             </td>										
                                             <td class="center"><?php echo $re["k_sex"]; ?></td>
@@ -330,7 +330,7 @@
                                                         echo $re["action_title"];
                                                     }
                                                     if($_SESSION["MM_UserAuthorization"] == "admin" && $all_type != "未處理"){
-                                                        echo "<a href='javascript:Mars_popup('ad_fun_send_love_all_branch.php?ac_auto=".$re["ac_auto"]."&ac_title=".$re["action_title"]."','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');'>總發</a>";
+                                                        echo "<a href=\"javascript:Mars_popup('ad_fun_send_love_all_branch.php?ac_auto=".$re["ac_auto"]."&ac_title=".$re["action_title"]."','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=400,height=250,top=200,left=200');\">總發</a>";
                                                     }
                                                 ?>                                            
                                             </td>
@@ -392,13 +392,13 @@
                                                         $k_cc = $re["k_cc"];
                                                         if(explode("-",$k_cc)[0] == "sale"){
                                                             echo "推廣：" .SingleName(explode("-",$k_cc)[1],"auto")."　";
-                                                        }
-                                                        if($re["all_single"] != ""){
-                                                           $single = SingleName($re["all_single"],"normal");
-                                                        }
+                                                        }                                                        
                                                         echo "廣告來源：".$k_cc."　"; 
                                                     }else{
                                                         $k_cc = "";
+                                                    }
+                                                    if($re["all_single"] != ""){
+                                                        $single = SingleName($re["all_single"],"normal");
                                                     }
                                                     echo changeDate($re["k_time"])."(<a href=\"javascript:Mars_popup('ad_fun_report.php?k_id=" .$re["k_id"]. "&ty=lovekeyin&rc=國內活動','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');\">回報(".$report.")</a>，
                                                          處理情形：<font color='#FF0000' size='2'>" .$re["all_type"]. $re["all_type2"]. "　 ".$re["all_branch"] .$single."</font>) 內容：" .$re["all_note"];
@@ -426,7 +426,7 @@
 <!-- /MIDDLE -->
 
 <?php
-require("./include/_bottom.php");
+    require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">

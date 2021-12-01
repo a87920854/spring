@@ -43,9 +43,7 @@
                 Where mem_auto = '" .$mem_auto. "'";
         $rs2 = $FunConn->prepare($sql2);
         $rs2->execute();
-        // $sql3 = "INSERT INTO member_data (mem_name) VALUES('楊琰琛')";
-        // $rs3 = $FunConn->prepare($sql3);
-        // $rs3->execute();
+
         if($rs2){
             reURL("win_close.php");
             exit; 
@@ -176,8 +174,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>手機：<?php echo $result["mem_mobile"]; ?>                            
-                                電話： <font color="#999999"><input name="mem_phone" type="text" id="mem_phone" style="font-size: 9pt" value="<?php echo $result["mem_phone"]; ?>" size="15"></font>
+                            <td>手機：<?php echo $result["mem_mobile"]; ?>
+                               電話： <font color="#999999"><input name="mem_phone" type="text" id="mem_phone" style="font-size: 9pt" value="<?php echo $result["mem_phone"]; ?>" size="15"></font>
                             </td>
                         </tr>
                         <tr>
