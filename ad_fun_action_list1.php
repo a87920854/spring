@@ -131,8 +131,8 @@
 
             <div class="panel-body">
                 <div class="col-md-12">
-                    <a href="ad_fun_action_list1_add.php" class="btn btn-info"><i class="icon-plus-sign"></i> 新增國內活動</a>
-                    <a href="ad_fun_action_list1_print.php?acre_sign1=&acre_sign2=" class="btn btn-info"><i class="icon-plus-sign"></i> 列印本頁</a>
+                    <a href="ad_fun_action_list1_add.php" class="btn btn-info margin-bottom-10"><i class="icon-plus-sign"></i> 新增國內活動</a>
+                    <a href="ad_fun_action_list1_print.php?acre_sign1=&acre_sign2=" class="btn btn-info margin-bottom-10"><i class="icon-plus-sign"></i> 列印本頁</a>
 
 
                     <form id="searchform" action="ad_fun_action_list1.php?vst=full" method="post" target="_self" class="form-inline" onsubmit="return check_send_submit()">
@@ -149,7 +149,15 @@
                                     <select name="s5">
                                         <option value="">開發者</option>
                                         <?php 
-                                            
+                                            $SQL = "select distinct ac_open2 from action_data where ac_open2 <> ''";
+                                            $rs = $FunConn->prepare($SQL);
+                                            $rs->execute();
+                                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                            if($result){
+                                                foreach($result as $re){
+                                                    echo "<option value='".$re["ac_open2"]."'>".SingleName($re["ac_open2"],"normal")."</option>";
+                                                }                                                
+                                            }
                                         ?>
                                     </select>
                                 </td>
@@ -176,8 +184,97 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
-
+                        <?php 
+                            $rs = $FunConn->prepare($sqls);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=8 height=200>目前沒有資料</td></tr>";
+                            }else{
+                                foreach($result as $re){
+                                    $sql = "select count(ac_photo_auto) as tt from action_photo where ac_auto = ".$re["ac_auto"];
+                                    $rs2 = $FunConn->query($sql);
+                                    $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                    if($result2){
+                                        $ac_photo_size = $result2["tt"];
+                                    }
+                                    if($re["ac_pic"] != ""){
+                                        $ac_pic =  "<a href='webfile/funtour/upload_image/".$re["ac_pic"]."' class='fancybox'><img src='webfile/funtour/upload_image/".$re["ac_pic"]."' border=0 width=90 height=60></a>";
+                                    }
+                                ?>
+                                    <tr>
+                                        <td class="center"><?php echo $re["ac_auto"]; ?></td>
+                                        <td class="center"><?php echo $ac_pic ?></td>
+                                        <td class="center"><?php echo changeDate($re["ac_time"]); ?></td>
+                                        <td class="center"><?php echo $re["ac_kind"]; ?></td>
+                                        <td class="center"><?php echo $re["ac_area"]; ?></td>
+                                        <td class="center"><?php echo $re["ac_title"]; ?></td>
+                                        <td class="center">
+                                            <font color="blue">
+                                                來源：<?php echo $re["ac_come"]; ?>　開發者：<?php echo $re["ac_open1"]; ?><?php echo SingleName($re["ac_open2"],"normal"); ?>　執行者：<?php echo $re["ac_run1"]; ?><?php echo SingleName($re["ac_run2"],"normal"); ?>
+                                            </font>                                            
+                                            <?php 
+                                                $bsize  = 0;
+                                                $bsize2 = 0;
+                                                $gsize  = 0;
+                                                $gsize2 = 0;
+                                                $tsize  = 0;
+                                                $sql = "SELECT k_sex, k_be FROM love_keyin WHERE all_kind <> '國外旅遊' and ac_auto = ".$re["ac_auto"];
+                                                $rs2 = $FunConn->query($sql);
+                                                $result2 = $rs2->fetchAll(PDO::FETCH_ASSOC);
+                                                if($result2){
+                                                    foreach($result2 as $re2){                                                    
+                                                        if($re2["k_sex"] == "男"){
+                                                            if($re2["k_sex"] == 1){
+                                                                $bsize2 = $bsize2 + 1;
+                                                            }else{
+                                                                $bsize = $bsize + 1;
+                                                            }
+                                                        }else{
+                                                            if($re2["k_be"] == 1){
+                                                                $gsize2 = $gsize2 + 1;
+                                                            }else{
+                                                                $gsize = $gsize + 1;
+                                                            }
+                                                        }
+                                                    }
+                                                    $tsize = $gsize + $gsize2 + $bsize + $bsize2;
+                                                }
+                                            ?>
+                                            <br><br>
+                                            <a href="ad_fun_action_list_singup1.php?ac=<?php echo $re["ac_auto"]; ?>">男：正取 <?php echo $bsize; ?>/備取 <?php echo $bsize2; ?> 人、女：正取 <?php echo $gsize; ?>/備取 <?php echo $gsize2; ?> 人、共：<?php echo $tsize; ?> 人</a>
+                                        </td>
+                                        <td class="center">
+                                            <?php 
+                                                if($ac_photo_size > 0){
+                                                    echo "<a href='ad_fun_action_pic.asp?ac_auto=".$re["ac_auto"]."' target='_blank'>有</a>";
+                                                }else{
+                                                    echo "無";
+                                                }
+                                            ?>
+                                        </td>
+                                        <td class="center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                                <ul class="dropdown-menu pull-right">
+                                                    <li><a href="http://funtour.com.tw/eventdetail.asp?id=<?php echo $re["ac_auto"]; ?>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                                    <li><a href="ad_fun_action_list_singup1.php?ac=<?php echo $re["ac_auto"]; ?>"><i class="icon-file"></i> 報名資料</a></li>
+                                                    <?php 
+                                                        if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["funtourall1"] == "1" || strtoupper($_SESSION["MM_Username"]) == "V221540975"){ ?>
+                                                            <li><a href="ad_fun_action_pic.php?ac_auto=<?php echo $re["ac_auto"]; ?>" target="_blank"><i class="icon-file"></i> 上傳花絮</a></li>
+                                                            <li><a href="ad_fun_action_list1_add.php?ac=<?php echo $re["ac_auto"]; ?>"><i class="icon-edit"></i> 修改</a></li>
+                                                        <?php }
+                                                        if($_SESSION["MM_UserAuthorization"] == "admin"){ ?>
+                                                            <li><a href="#" onClick="Mars_popup2('ad_fun_action_list1.php?st=del&ac=<?php echo $re["ac_auto"]; ?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                                        <?php }
+                                                    ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php }
+                            }
+                        ?>
                     </tbody>
                 </table>
             </div>
@@ -190,45 +287,9 @@
     <!--/row-->
 
 
-    <hr>
     </div>
     <!--/.fluid-container-->
 
-    <!-- page title -->
-    <header id="page-header">
-        <ol class="breadcrumb">
-            <li>好好玩管理系統</li>
-            <li class="active">好好玩證件審核</li>
-        </ol>
-    </header>
-    <!-- /page title -->
-
-    <div id="content" class="padding-20">
-        <!-- content starts -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="title elipsis">
-                    <strong>好好玩證件審核</strong> <!-- panel title -->
-                </span>
-            </div>
-
-            <div class="panel-body">
-                <table class="table table-striped table-bordered bootstrap-datatable input_small" style="font-size:12px;">
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <!--/span-->
-    </div>
-    <!--/row-->
-
-    </div>
-    </div>
-
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 
