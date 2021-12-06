@@ -742,4 +742,19 @@
 		}
 	}
 
+	//茶券名稱
+	function teacoupon_types($t){
+    	switch ($t){
+    		case "free":
+    	  		$teacoupon_types = "免費茶卷";
+				break;
+    		case "normal":
+    	  		$teacoupon_types = "付費茶卷";
+				break;
+      		default:
+      			$teacoupon_types = "不明";
+				break;
+		}
+	}
+
 ?>

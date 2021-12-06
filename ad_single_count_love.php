@@ -1,10 +1,18 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+	error_reporting(0); 
+	/*****************************************/
+	//檔案名稱：ad_single_count_love.php
+	//後台對應位置：名單/發送記錄>排約人次統計
+	//改版日期：2021.12.3
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -22,18 +30,42 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>排約人次統計</strong> <!-- panel title -->
+                    <strong>排約人次統計<?php if ( $_SESSION["lovebranch"] != "" ){ echo " - ".$_SESSION["lovebranch"];}?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
+                <?php
+                $date1 = SqlFilter($_REQUEST["date1"],"tab");
+				$date2 = SqlFilter($_REQUEST["date2"],"tab");
+                $showbranch = "";
+                if ( $_SESSION["MM_UserAuthorization"] != "admin" ){
+                    if ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+                        $showbranch = $_SESSION["lovebranch"];
+                    }else{
+                        $showbranch = $_SESSION["branch"];
+                    }
+                } ?>
                 <form action="?st=search" method="post" target="_self">
                     <p><a href="ad_single_count_love2.php" class="btn btn-info">查看年度總表</a> </p>
-                    <p>日期：<input type="text" name="date1" id="date1" class="datepicker" autocomplete="off" value="2021/08/01"> ~ <input type="text" name="date2" id="date2" class="datepicker" autocomplete="off" value="2021/09/28">
+                    <p>日期：<input type="text" name="date1" id="date1" class="datepicker" autocomplete="off" value="<?php echo $date1;?>"> ~ <input type="text" name="date2" id="date2" class="datepicker" autocomplete="off" value="<?php echo $date2;?>">
                     <p>
-                        <label><input type="checkbox" name="branch" value="台北" checked> 台北</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="桃園"> 桃園</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="新竹"> 新竹</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台中"> 台中</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台南"> 台南</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="高雄"> 高雄</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="八德"> 八德</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="約專"> 約專</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="迷你約"> 迷你約</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="總管理處"> 總管理處</label>&nbsp;&nbsp;
-                        <label><input type="checkbox" name="shown" value="1"> 顯示離職</label>
+                        <?php
+                        $shown = SqlFilter($_REQUEST["shown"],"tab");
+                        $rbranch = $_POST["branch"];
+                        $rbranch_array = implode (",", $rbranch);
+                        if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                            $SQL = "Select * From branch_data Where auto_no<>12 and auto_no<>10 Order By admin_sort";
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            foreach($result as $re){?>
+                                <input type="checkbox" name="branch[]" value="<?php echo $re["admin_name"]?>"
+                                <?php if ( in_array($re["admin_name"],$rbranch) ){ echo "checked";}?>> <?php echo $re["admin_name"]?></label>
+                            <?php }?>
+                        <?php }else{?>
+                            <input type="checkbox" name="branch[]" value="<?php echo $showbranch;?>"> <?php echo $showbranch;?></label>
+                        <?php }?>
+                        <label><input type="checkbox" name="shown" value="1"<?php if ( $shown == 1 ){ echo " checked";}?>> 顯示離職</label>
                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="送出" class="btn btn-default" style="margin-top:-8px">
                     </p>
                 </form>
@@ -49,176 +81,82 @@ require_once("./include/_sidebar.php")
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>台北</td>
-                            <td>林馨彤</td>
-                            <td>排約秘書</td>
-                            <td>104</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>台北</td>
-                            <td>李至喬</td>
-                            <td>愛情顧問</td>
-                            <td>89</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>台北</td>
-                            <td>余宗嶼</td>
-                            <td>服務部督導</td>
-                            <td>85</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>台北</td>
-                            <td>高銀寶</td>
-                            <td>排約助理</td>
-                            <td>5</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>台北</td>
-                            <td>崔慶三</td>
-                            <td>客戶經理</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>台北</td>
-                            <td>張棟崴</td>
-                            <td>活動企劃</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>台北</td>
-                            <td>排約測試</td>
-                            <td>test</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>8</td>
-                            <td>台北</td>
-                            <td>許凱甯</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>台北</td>
-                            <td>陳玉涵</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>台北</td>
-                            <td>陳稚翔</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>11</td>
-                            <td>台北</td>
-                            <td>黃明儀</td>
-                            <td>客戶經理</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>12</td>
-                            <td>台北</td>
-                            <td>詹善宇</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>13</td>
-                            <td>台北</td>
-                            <td>暫存名單</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>14</td>
-                            <td>台北</td>
-                            <td>上傳</td>
-                            <td>活動企劃</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>15</td>
-                            <td>台北</td>
-                            <td>王英華</td>
-                            <td>排約秘書</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>16</td>
-                            <td>台北</td>
-                            <td>台北Key</td>
-                            <td>會計</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>17</td>
-                            <td>台北</td>
-                            <td>台北KEYIN</td>
-                            <td>KEYIN</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>18</td>
-                            <td>台北</td>
-                            <td>台北主任</td>
-                            <td>會計</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>19</td>
-                            <td>台北</td>
-                            <td>台北督導</td>
-                            <td>督導</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>20</td>
-                            <td>台北</td>
-                            <td>目前交往中</td>
-                            <td>諮詢顧問</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>21</td>
-                            <td>台北</td>
-                            <td>年紀小名單</td>
-                            <td>系統工作</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>22</td>
-                            <td>台北</td>
-                            <td>高語鍹</td>
-                            <td>客戶經理</td>
-                            <td>0</td>
-                        </tr>
+                        <?php
+                        if ( $rbranch == "" ){
+                            echo "<tr><td colspan='15'>請選擇會館</td></tr>";
+                        }else{                            
+                            if ( $date1 == "" || $date2 == "" ){
+                                echo "<tr><td colspan='15'>請選擇日期區間</td></tr>";
+                                }else{
+                                if ( $date1 > $date2 ){ call_alert("起始日期不可大過結束日期。", 0, 0); }						  		
+                                if ( SqlFilter($_REQUEST["shown"],"tab") == "1" ){
+                                    $subSQL = "";
+                                }else{
+                                    $subSQL = " and p_work=1";
+                                }
 
+                                if ( $rbranch != "" ){
+                                    $rbranch_array = str_replace(",", "','",$rbranch_array);
+                                }
+
+                                if ( $_SESSION["MM_UserAuthorization"] == "admin" ){                                       
+                                    $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,";
+                                    $SQL .= "personnel_data.p_job2, SUM(love_data_re.score) AS lovecount FROM personnel_data LEFT OUTER JOIN ";
+                                    $SQL .= "love_data_re ON (love_data_re.all_single = personnel_data.p_user OR love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$date1."' AND '".$date2."') ";
+                                    $SQL .= "WHERE (personnel_data.p_branch in ('".$rbranch_array."')) and p_user <> '' ".$subSQL." ";
+                                    $SQL .= "GROUP BY personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user, ";
+                                    $SQL .= "personnel_data.p_job2 order by lovecount desc";
+                                }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "pay" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+                                    $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,";
+                                    $SQL .= "personnel_data.p_job2, SUM(love_data_re.score) AS lovecount FROM personnel_data LEFT OUTER JOIN ";
+                                    $SQL .= "love_data_re ON (love_data_re.all_single = personnel_data.p_user OR love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$date1."' AND '".$date2."') ";
+                                    $SQL .= "WHERE (personnel_data.p_branch in ('".$rbranch_array."')) and p_user <> '' ".$subSQL." ";
+                                    $SQL .= "GROUP BY personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user, ";
+                                    $SQL .= "personnel_data.p_job2 order by lovecount desc";
+                                }else{
+                                    $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,";
+                                    $SQL .= "personnel_data.p_job2, SUM(love_data_re.score) AS lovecount FROM personnel_data LEFT OUTER JOIN ";
+                                    $SQL .= "love_data_re ON (love_data_re.all_single = personnel_data.p_user OR love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$date1."' AND '".$date2."') ";
+                                    $SQL .= "WHERE (personnel_data.p_user in ('".$rbranch_array."')) and p_user <> '' ".$subSQL." ";
+                                    $SQL .= "GROUP BY personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user, ";
+                                    $SQL .= "personnel_data.p_job2 order by lovecount desc";
+                                }
+
+                                //工程師帳號顯示SQL語法
+                                if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){ echo $SQL;}
+
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                if ( count($result) == 0 ){
+                                    echo "<tr><td colspan='15'>未有符合條件的資料</td></tr>";
+                                }else{
+                                    $ii = 0;
+                                    foreach($result as $re){
+                                        $ii++;
+                                        $lovecount = $re["lovecount"];
+                                        if ( $lovecount == "" || is_null($lovecount) ){
+                                            $lovecount = 0;
+                                        }
+                                        echo "<tr>";
+                                        echo "<td>".$ii."</td>";
+                                        echo "<td>".$re["p_branch"]."</td>";
+                                        echo "<td>".$re["p_name"]."</td>";
+                                        echo "<td>".$re["p_job2"]."</td>";
+                                        echo "<td>".floor($lovecount)."</td>";
+                                        echo "</tr>";
+                                    }
+                                }
+                            }
+                        }
+                        ?>
                     </tbody>
                 </table>
-
             </div>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
-
-<?php
-require_once("./include/_bottom.php");
-?>
+<?php require_once("./include/_bottom.php");?>

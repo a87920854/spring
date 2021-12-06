@@ -1,10 +1,130 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+	error_reporting(0); 
+	/*****************************************/
+	//檔案名稱：ad_single_count_love2.php
+	//後台對應位置：名單/發送記錄>排約人次統計(年度總表)
+	//改版日期：2021.12.6
+	//改版設計人員：Jack
+	//改版程式人員：Queena
+	/*****************************************/
 
+	require_once("_inc.php");
+	require_once("./include/_function.php");
+	require_once("./include/_top.php");
+	require_once("./include/_sidebar.php");
+
+    $st = SqlFilter($_REQUEST["st"],"tab");
+    if ( $st == "send"){
+        $yy = SqlFilter($_REQUEST["yy"],"tab");
+        $branch = SqlFilter($_REQUEST["branch"],"tab");
+        $shown = SqlFilter($_REQUEST["shown"],"tab");
+        $ii = cint($_REQUEST["ii"]);
+        if ( $topage == 1 ){
+            $ii = 1;
+            echo "<table id='outtable' width='100%' height='80' align='center' class='table table-striped table-bordered bootstrap-datatable'>";
+            echo "<tr>";
+            echo "<th width='40'>NO</th>";
+            echo "<th>會館</th>";
+            echo "<th>姓名</th>";
+            echo "<th>職稱</th>";
+            echo "<th>".$yy."年一月</th>";
+            for ( $i=2;$i<=12;$i++ ){
+                echo "<th>".monthname($i)."</th>";
+            }
+            echo "<th>排約次數</th>";
+            echo "</tr>";
+        }
+
+        if ( $shown == "1" ){
+            //qsql = ""
+            $subSQL = "";
+        }else{
+            //qsql = " and p_work=1";
+            $subSQL = " And p_work = 1";
+        }
+        
+        $oldbranch = $branch;
+        if ( $branch != "" ){
+            $branch = str_replace(",", "','", $branch);
+            $subSQL = $subSQL." And (personnel_data.p_branch in ('".$branch."'))";
+        }else{
+            echo "<tr><td colspan='8'>請選擇會館</td></tr>";
+            exit;
+        }
+
+        if ( $_SESSION["MM_UserAuthorization"] == "admin" ){        
+            $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,personnel_data.p_job2, lovecount FROM personnel_data ";
+            $SQL .= "outer APPLY (select sum(score) as lovecount from love_data_re where (love_data_re.all_single = personnel_data.p_user OR ";
+            $SQL .= "love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$yy."/1/1  00:00' AND '".$yy."/12/31 23:59')) love_data_re ";
+            $SQL .= "WHERE p_user <> '' and lovecount > 0 and p_work=1".$subSQL."  order by lovecount desc";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "love" ){
+            $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,personnel_data.p_job2, lovecount FROM personnel_data ";
+            $SQL .= "outer APPLY (select sum(score) as lovecount from love_data_re where (love_data_re.all_single = personnel_data.p_user OR ";
+            $SQL .= "love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$yy."/1/1  00:00' AND '".$yy."/12/31 23:59')) love_data_re ";
+            $SQL .= "WHERE p_user <> '' and lovecount > 0 and  p_work=1".$subSQL."  order by lovecount desc";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ||  $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+            $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,personnel_data.p_job2, lovecount FROM personnel_data ";
+            $SQL .= "outer APPLY (select sum(score) as lovecount from love_data_re where (love_data_re.all_single = personnel_data.p_user OR ";
+            $SQL .= "love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$yy."/1/1  00:00' AND '".$yy."/12/31 23:59')) love_data_re ";
+            $SQL .= "WHERE (personnel_data.p_branch = '".$_SESSION["branch"]."') and p_user <> '' and lovecount > 0 and  p_work=1  order by lovecount desc";
+        }else{
+            $SQL  = "Select personnel_data.p_branch, personnel_data.p_name, personnel_data.p_other_name, personnel_data.p_user,personnel_data.p_job2, lovecount FROM personnel_data ";
+            $SQL .= "outer APPLY (select sum(score) as lovecount from love_data_re where (love_data_re.all_single = personnel_data.p_user OR ";
+            $SQL .= "love_data_re.all_single2 = personnel_data.p_user) AND (love_data_re.love_time2 BETWEEN '".$yy."/1/1  00:00' AND '".$yy."/12/31 23:59')) love_data_re WHERE ";
+            $SQL .= "(personnel_data.p_user = '".$_SESSION["MM_username"]."') and p_user <> '' and lovecount > 0 and  p_work=1  order by lovecount desc";
+        }
+
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+        if ( count($result) > 0 ){
+            $ii = 0;
+            foreach($result as $re){
+                $ii++;
+                echo "<tr>";
+                echo "<td>".ii&"</td>";
+                echo "<td>".$re["p_branch"]."</td>";
+                echo "<td>".$re["p_name"]."</td>";	
+                echo "<td>".$re["p_job2"]."</td>";
+                for ( $i=1;$i<=12;$i++){
+                    $fday = $yy."/".$i."/1 00:00";
+                    $lday = dateadd("m", 1, $fday ) - 1 ." 23:59"
+
+                    date("m",strtotime("-1 day"));
+                           qrs.open "select sum(score) as ls from love_data_re where love_data_re.love_time2 BETWEEN '"&fday&"' AND '"&lday&"' and (love_data_re.all_single = '"&rs("p_user")&"' OR love_data_re.all_single2 = '"&rs("p_user")&"')", SPCon, 1, 1
+                           if not qrs.eof then
+                               ls = qrs("ls")
+                           else
+                               ls = 0
+                           end if
+                           qrs.close
+                           response.write "<td>"&ls&"</td>"
+                           next
+                                    lovecount = rs("lovecount")
+                                    if lovecount = "" or isnull(lovecount) then
+                                        lovecount = 0
+                                    end if
+                      response.write "<td>"&lovecount&"</td>"
+                       response.write "</tr>"
+                       ii = ii+1
+                       rs.MoveNext
+                      Loop
+                      End IF
+                      rs.close
+                      
+          set rs=nothing
+          if topage = TotalPage then
+              response.write "<script type=""text/javascript"">button_set(1);outmsg_show(""已讀取 "&TotalPage&" 資料完畢。"");</script>"
+          else          
+            response.write "<script type=""text/javascript"">outmsg_show(""目前讀取 "&topage&" / "&TotalPage&" 資料..請稍候..<img src='img/wait_loading.gif' align='middle'>"");conutice_ajax('"&yy&"','"&oldbranch&"','"&shown&"','"&ii&"', '"&topage&"')</script>"
+          end if
+  
+  response.end
+  end if
+
+
+
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
