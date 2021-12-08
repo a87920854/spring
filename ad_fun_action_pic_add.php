@@ -19,22 +19,20 @@
     if($_REQUEST["st"] == "upload"){
         // $urlpath = "webfile\\funtour\\upload_image\\"; //儲存路徑
         $urlpath = "Upload/"; //儲存路徑
-        if ($_FILES["file"]["error"] > 0){
-            echo "Error: " . $_FILES["file"]["error"];
-        }else{
-            $ext = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION); //附檔名         
-            $fileName = date("Y").date("n").date("j").date("H").date("i").date("s")."_".$ac_auto."_".rand(1,999).$ext; //檔名
-            
-            // echo "檔案名稱: " . $_FILES["file"]["name"]."<br/>";
-            // echo "檔案類型: " . $_FILES["file"]["type"]."<br/>";
-            // echo "檔案大小: " . ($_FILES["file"]["size"] / 1024)." Kb<br />";
-            // echo "暫存名稱: " . $_FILES["file"]["tmp_name"];
-            move_uploaded_file($_FILES["file"]["tmp_name"],($urlpath.$fileName)); //儲存檔案
-            $SQL = "Insert into action_photo (ac_photo_time, ac_auto, ac_photo_name) values (getdate(), ".$ac_auto.", '".$fileName."')";
-            $rs = $FunConn->prepare($SQL);
-            $rs->execute();
-            var_dump($rs);
-        }
+        $fileCount = count($_FILES['file']['name']);
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES["file"]["error"][$i] !== UPLOAD_ERR_OK){
+                echo "Error: " . $_FILES["file"]["error"];
+            }else{
+                $ext = pathinfo($_FILES["file"]["name"][$i], PATHINFO_EXTENSION); //附檔名      
+                $fileName = date("Y").date("n").date("j").date("H").date("i").date("s")."_".$ac_auto."_".rand(1,999).".".$ext; //檔名
+                move_uploaded_file($_FILES["file"]["tmp_name"][$i],($urlpath.$fileName)); //儲存檔案
+                $SQL = "Insert into action_photo (ac_photo_time, ac_auto, ac_photo_name) values (getdate(), ".$ac_auto.", '".$fileName."')";
+                $rs = $FunConn->prepare($SQL);
+                $rs->execute();
+            }
+        }        
     }
 
 ?>
@@ -87,6 +85,16 @@
                                 </div>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <form action="ad_fun_action_pic_add.php?st=upload&ac_auto=<?php echo $ac_auto; ?>" method="post" enctype="multipart/form-data">
+                                    Send these files:<br />
+                                    <input name="file[]" type="file" /><br />
+                                    <input name="file[]" type="file" /><br />
+                                    <input type="submit" value="Send files" />
+                                </form>
+                            </td>
+                        </tr>
                     </table>
                 </fieldset>
             </td>
@@ -98,7 +106,7 @@
 
 <script type="text/javascript" src="js/jquery-1.8.3.js"></script>
 <script src="js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
+<!-- <script type="text/javascript" src="js/util.js"></script> -->
 <script src="js/jquery.fileupload.js"></script>
 <script language="JavaScript">
     $(function() {
@@ -114,15 +122,15 @@
                 url: "ad_fun_action_pic_add.php?st=upload&ac_auto=<?php echo $ac_auto; ?>",
                 type: "POST",
                 dropZone: $this,
-                dataType: 'html',
-                singleFileUploads: true,
-                autoUpload: false,
+                dataType: 'json',
+                singleFileUploads: false,
+                autoUpload: true,
                 stop: function(e, data) {
                     window.opener.location.reload();
                     setTimeout("window.close()", 1000);
                 },
                 fail: function(e, data) {
-
+                    console.log(data);
                 },
                 progressall: function(e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10);

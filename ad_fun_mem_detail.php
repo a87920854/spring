@@ -71,13 +71,13 @@
         $rs->execute();
         $result = $rs->fetch(PDO::FETCH_ASSOC);
         if($result){
-            $urlpath = dirname(__FILE__) . "\\images\\goldcardf\\";
+            $urlpath = dirname(__FILE__) . "images\\goldcardf\\";
             switch($_REQUEST["t"]){
                 case "pic":
                     $mem_photo = null;
                     $mem_photoe = null;
                     $pic = $result["mem_photo"];
-                    $urlpath = dirname(__FILE__) . "\\images\\photo\\";
+                    $urlpath = dirname(__FILE__) . "images\\photo\\";
                     $SQL =  "UPDATE member_data SET mem_photo = '" .$mem_photo. "', mem_photoe = '" .$mem_photoe. "' where mem_num = '" .$mem_num. "'";
                     break;
                 case "p1":

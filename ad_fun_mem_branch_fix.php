@@ -79,7 +79,7 @@
                                                     }elseif ( $_SESSION["action_level"] == 1 ){
                                                         $subSQL = " And admin_name Not In ('台北','桃園','新竹','台中','八德','約專','總管理處')";
                                                     }
-                                                    $SQL = "Select * From branch_data Where admin_sOrt<>99 ".$subSQL."Order By admin_SOrt";
+                                                    $SQL = "Select * From branch_data Where admin_name<>'線上諮詢' ".$subSQL."Order By admin_SOrt";
                                                     $rs = $SPConn->prepare($SQL);
                                                     $rs->execute();
                                                     $result=$rs->fetchAll(PDO::FETCH_ASSOC);
