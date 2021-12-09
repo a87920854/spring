@@ -1,8 +1,121 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+    /*****************************************/
+    //檔案名稱：ad_fun_action_fast.php
+    //後台對應位置：好好玩管理系統/好好玩國外團控>出團情報
+    //改版日期：2021.12.9
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+
+    // 更新
+    if($_REQUEST["st"] == "save_edit"){
+        $dd = $_REQUEST["dd"];
+	    $vv = $_REQUEST["v"];
+        if($dd != ""){
+            switch($_REQUEST["t"]){
+                case "sp":
+                    $SQL = "update travel_fast set sp='".$vv."' where auton=".$dd;
+                    break;
+                case "people":
+                    $SQL = "update travel_fast set people='".$vv."' where auton=".$dd;
+                    break;
+                case "notes":
+                    $SQL = "update travel_fast set notes='".$vv."' where auton=".$dd;
+                    break;
+            }
+        }
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        echo $vv;
+    }
+
+    if($_REQUEST["st"] == "get_travel"){
+        $SQL = "select dates from travel_date where ac_auto = ".SqlFilter($_REQUEST["ac_auto"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+        if($result){
+            foreach($result as $re){
+                $dd = $dd . $result["dates"] . ",";
+            }            
+        }else{
+            echo "error";
+        }
+        if(substr($dd,-1) == ","){
+            $dd = substr($dd,0,-1);
+        }
+        echo $dd;
+    }
+
+    if($_REQUEST["st"] == "get_travel_note"){
+        $SQL = "select notes from travel_date where ac_auto = ".SqlFilter($_REQUEST["ac_auto"],"int"). " and datediff(d, dates, '".SqlFilter($_REQUEST["dates"],"tab")."') = 0";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+        if($result){
+            echo $result["notes"];
+        }
+    }
+
+    // 刪除
+    if($_REQUEST["st"] == "del"){
+        $SQL = "delete from travel_fast where auton=".SqlFilter($_REQUEST["a"],"tab");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("win_close.php?m=刪除中...");
+            exit();
+        }
+    }
+
+    // 新增
+    if($_REQUEST["st"] == "add"){
+        $SQL = "select stype, skingdom, ac_title from actionf_data where ac_auto=".SqlFilter($_REQUEST["ac_auto"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $stype = $result["stype"];
+            $skingdom = $result["skingdom"];
+            $ac_title = $result["ac_title"];
+        }
+        $people = SqlFilter($_REQUEST["people"],"tab");
+        if(is_numeric($people)){
+            if($people == "0"){
+                $people = "即將額滿";
+            }else{
+                $people = "滿 ".$people." 人出團";
+            }
+        }else{
+            $people = SqlFilter($_REQUEST["people"],"tab");
+        }
+        $SQL =  "INSERT INTO travel_fast (dates, stype, skingdom, sp, title, people, notes, ac_auto) VALUES ("
+                .date("Y/m/d",strtotime($_REQUEST["dates"])).", "
+                .$stype.", "
+                .$skingdom.", "
+                .SqlFilter($_REQUEST["sp"],"tab").", "
+                .$ac_title.", "
+                .$people.", "
+                .SqlFilter($_REQUEST["notes"],"tab").", "
+                .SqlFilter($_REQUEST["ac_auto"],"int").")";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("ad_fun_action_fast.php");
+            exit();
+        }
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -11,7 +124,7 @@ require_once("./include/_sidebar.php")
     <header id="page-header">
         <ol class="breadcrumb">
             <li>好好玩管理系統</li>
-            <li><a href="ad_fun_action_list2.asp">好好玩國外團控</a></li>
+            <li><a href="ad_fun_action_list2.php">好好玩國外團控</a></li>
             <li class="active">出團情報</li>
         </ol>
     </header>
@@ -40,62 +153,28 @@ require_once("./include/_sidebar.php")
                             <td>備 註</td>
                             <td></td>
                         </tr>
-                        <tr>
-                            <td ROWSPANS_8_1>八月</td>
-                            <td>2020/8/12</td>
-                            <td>FUN旅遊</td>
-                            <td>韓國首爾</td>
-                            <td id="sp_155">情人視角之旅讓愛慢慢展開 <a href="#p" onclick="edit_set('sp', '155');"><i class="icon-pencil"></i></a></td>
-                            <td>愛韓風情人視角之旅5日</td>
-                            <td id="people_155">滿 16 人出團 <a href="#p" onclick="edit_set('people', '155');"><i class="icon-pencil"></i></a></td>
-                            <td id="notes_155">1.採預報制.
-                                2.預報人數超過10人開始報價. <a href="#p" onclick="edit_set('notes', '155');"><i class="icon-pencil"></i></a></td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:Mars_popup2('ad_fun_action_fast.asp?st=del&a=155','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 刪除</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td ROWSPANS_10_1>十月</td>
-                            <td>2020/10/7</td>
-                            <td>FUN旅遊</td>
-                            <td>日本</td>
-                            <td id="sp_156">用玩走出愛的大軌跡 <a href="#p" onclick="edit_set('sp', '156');"><i class="icon-pencil"></i></a></td>
-                            <td>小日本愛玩大軌跡5日</td>
-                            <td id="people_156">滿 25 人出團 <a href="#p" onclick="edit_set('people', '156');"><i class="icon-pencil"></i></a></td>
-                            <td id="notes_156">1.採預報制.2.預報人數超過20人開始報價. <a href="#p" onclick="edit_set('notes', '156');"><i class="icon-pencil"></i></a></td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:Mars_popup2('ad_fun_action_fast.asp?st=del&a=156','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 刪除</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td ROWSPANS_12_1>十二月</td>
-                            <td>2020/12/16</td>
-                            <td>FUN旅遊</td>
-                            <td>韓國釜山</td>
-                            <td id="sp_157">用滑的愛情才爽快 <a href="#p" onclick="edit_set('sp', '157');"><i class="icon-pencil"></i></a></td>
-                            <td>釜山滑出萌萌的愛5日</td>
-                            <td id="people_157">滿 16 人出團 <a href="#p" onclick="edit_set('people', '157');"><i class="icon-pencil"></i></a></td>
-                            <td id="notes_157">1.採預報制.
-                                2.預報人數超過10人開始報價. <a href="#p" onclick="edit_set('notes', '157');"><i class="icon-pencil"></i></a></td>
-                            <td>
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">功能 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:Mars_popup2('ad_fun_action_fast.asp?st=del&a=157','','width=300,height=200,top=100,left=100')"><i class="icon-remove-sign"></i> 刪除</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
+                        <?php                             
+                            $SQL = "select * from travel_fast order by dates asc";
+                            $rs = $FunConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=8>無資料</td></tr>";
+                            }else{
+                                $cc = 1;
+                                $msgs = "";
+                                $f = $rs->RecordCount();
+                                foreach($result as $re){
+                                    $dates = $re["dates"];
+                                    $nowmm = date("m",strtotime($dates));
+                                    if($nowmm == $lastmm){
+                                        $cc = $cc+1;
+                                    }        
+                                }
+                                
+                            }
+
+                        ?>
 
                     </tbody>
                 </table>

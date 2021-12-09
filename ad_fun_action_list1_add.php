@@ -18,34 +18,190 @@
 
     $ac = SqlFilter($_REQUEST["ac"],"int");
 
-    // 上傳圖片
+    // 上傳圖片(未完成)
     if($_REQUEST["st"] == "upload"){
         $types = SqlFilter($_REQUEST["type"],"tab");
         $old_pic = SqlFilter($_REQUEST["old_pic"],"tab");
     }
 
-    // 刪除圖片
+    // 刪除圖片(待測試)
     if($_REQUEST["st"] == "delp"){
         $pic = SqlFilter($_REQUEST["v"],"tab");
         $SQL = "SELECT * FROM action_data where ac_auto='" .$ac. "'";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
         $result = $rs->fetch(PDO::FETCH_ASSOC); 
-        if($result){
-            DelFile("webfile\\funtour\\upload_image\\".$result[$pic]); //刪除實體檔案
+        if($result){            
             $pic = SqlFilter($_REQUEST["v"],"tab");
             $SQL = "UPDATE action_data SET ".$pic." = NULL where ac_auto='" .$ac. "'";
             $rs2 = $FunConn->prepare($SQL);
             $rs2->execute();
-            if($rs2){                
+            if($rs2){
+                DelFile("webfile\\funtour\\upload_image\\".$result[$pic]); //刪除實體檔案           
                 reURL("ad_fun_action_list1_add.php?ac=".$ac);
+                exit();
             }            
         }
     }
 
-    // 新增國內活動
+    // 新增國內活動(有同步約會專家及上傳圖片功能，待測試)
     if($_REQUEST["st"] == "add"){
+        $ac_time = SqlFilter($_REQUEST["ac_time1"],"tab"). " " .SqlFilter($_REQUEST["ac_time2"],"tab"). ":" .SqlFilter($_REQUEST["ac_time3"],"tab");
+        if($_REQUEST["ac_show"] == "1"){
+            $ac_show = 1;
+        }else{  
+            $ac_show = 0;
+        }
+        $SQL = "INSERT INTO action_data (
+                ac_auto_time, ac_branch, ac_kind, ac_kind3, ac_time, ac_title, ac_index_title, ac_note1, ac_note2, ac_note3, ac_note4, ac_ck1, 
+                ac_pic, ac_pic2, ac_pic3, ac_pic4, ac_area, sub5_auto, ac_1, ac_2, ac_3, ac_4, ac_5, ac_money1, ac_money2, ac_money3, ac_money4, 
+                ac_money5, ac_money6, ac_money7, deadline, signup, ac_car1, ac_car2, ac_car3, ac_car4, ac_come, ac_open1, ac_open2, ac_run1, 
+                ac_run2, ac_eat1, ac_eat2, ac_msg4, ac_show) VALUES (
+                '".date("Y-m-d H:i:s")."', 
+                '".SqlFilter($_REQUEST["ac_branch"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_kind"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_kind3"],"tab")."', 
+                '".$ac_time."', 
+                '".SqlFilter($_REQUEST["ac_title"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_index_title"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_note1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_note2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_note3"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_note4"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_ck1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_pic1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_pic2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_pic3"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_pic4"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_area"],"tab")."', 
+                '".SqlFilter($_REQUEST["sub5_auto"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_3"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_4"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_5"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money3"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money4"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money5"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money6"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_money7"],"tab")."', 
+                '".SqlFilter($_REQUEST["deadline"],"tab")."', 
+                '".SqlFilter($_REQUEST["signup"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_car1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_car2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_car3"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_car4"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_come"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_open1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_open2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_run1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_run2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_eat1"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_eat2"],"tab")."', 
+                '".SqlFilter($_REQUEST["ac_msg4"],"tab")."', 
+                '".$ac_show."')";                          
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            $ac_auto = $FunConn->lastInsertId();          
+        }
 
+        // 同步至約會專家(待測試)
+        if($_REQUEST["sync"] == "1"){
+            if($_REQUEST["ac_note1"] != ""){
+                $ac_note = nl2br(SqlFilter($_REQUEST["ac_note1"],"tab"));
+            }
+            if($_REQUEST["ac_note2"] != ""){
+                $ac_content = nl2br(SqlFilter($_REQUEST["ac_note2"],"tab"));
+            }
+            if($_REQUEST["ac_note3"] != ""){
+                $ac_note2 = nl2br(SqlFilter($_REQUEST["ac_note3"],"tab"));
+            }
+            if($_REQUEST["ac_note4"] != ""){
+                $ac_note3 = nl2br(SqlFilter($_REQUEST["ac_note4"],"tab"));
+            }
+            if($_REQUEST["ac_pic1"] != ""){
+                $p1f = "";
+            }
+            if($_REQUEST["ac_pic2"] != ""){
+                $p2f = "";
+            }
+            if($_REQUEST["ac_pic3"] != ""){
+                $p3f = "";
+            }
+            if($_REQUEST["ac_pic4"] != ""){
+                $p4f = "";
+            }
+            $SQL2 = "INSERT INTO action_data (ac_come, ac_open1, ac_open2, ac_run1, ac_run2, ac_show, ac_1, ac_2, ac_3, ac_4,
+                    ac_support, ac_car1, ac_car2, ac_car3, ac_car4, ac_branch, ac_kind, ac_kind2, ac_kind3, ac_title, ac_time,
+                    deadline, ac_money2, ac_money3, ac_money4, ac_money5, ac_money6, ac_money7, ac_money8, ac_money9, ac_money10, 
+                    ac_money11, ac_area, ac_msg2, ac_eat1, ac_eat2, ac_note, ac_note2, ac_note3, ac_content, ac_msg3, ac_msg4,
+                    ac_pic2, ac_pic3, ac_pic4, ac_pic5, sync) VALUES (
+                    '".SqlFilter($_REQUEST["ac_come"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_open1"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_open2"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_run1"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_run2"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_show"],"tab")."', 
+                    '".SqlFilter($_REQUEST["sub5_auto"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_2"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_3"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_4"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_5"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_car1"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_car2"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_car3"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_car4"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_branch"],"tab")."', 
+                    '好好玩類型', 
+                    '".SqlFilter($_REQUEST["ac_kind"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_kind3"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_title"],"tab")."', 
+                    '".$ac_time."', 
+                    '".SqlFilter($_REQUEST["deadline"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money2"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money3"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money4"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money5"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money6"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money7"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money8"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money9"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money10"],"tab")."', 
+                    '".SqlFilter($_REQUEST["si_ac_money11"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_area"],"tab")."', 
+                    '".SqlFilter($_REQUEST["signup"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_eat1"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_eat2"],"tab")."', 
+                    '".$ac_note."', 
+                    '".$ac_note2."', 
+                    '".$ac_note3."', 
+                    '".$ac_content."', 
+                    '".SqlFilter($_REQUEST["ac_msg3"],"tab")."', 
+                    '".SqlFilter($_REQUEST["ac_msg4"],"tab")."', 
+                    '".$p1f."', 
+                    '".$p2f."', 
+                    '".$p3f."', 
+                    '".$p4f."', 
+                    '".$ac_auto."')";
+
+            $rs2 = $SPConn->prepare($SQL2);
+            $rs2->execute();
+            if(!$rs2){
+                call_alert("同步失敗。",0,0);         
+            }else{
+                $syncid = $SPConn->lastInsertId(); 
+                $SQL3 = "update action_data set sync = '".$syncid."' where ac_auto='".$ac_auto."'";  
+                $rs3 = $FunConn->prepare($SQL3);
+                $rs3->execute();
+            }
+        }
+        
+        if($rs){
+            reURL("ad_fun_action_list1.php");  
+        }  
     }
 
     // 修改國內活動
@@ -53,9 +209,66 @@
         if($_REQUEST["ac"] == ""){
             call_alert("無法讀取資料。",0,0);
         }
+        $ac_time = SqlFilter($_REQUEST["ac_time1"],"tab"). " " .SqlFilter($_REQUEST["ac_time2"],"tab"). ":" .SqlFilter($_REQUEST["ac_time3"],"tab");
+        if($_REQUEST["ac_show"] == "1"){
+            $ac_show = 1;
+        }else{  
+            $ac_show = 0;
+        }
+        $SQL =  "UPDATE action_data SET 
+                ac_branch       = '".SqlFilter($_REQUEST["ac_branch"],"tab")."', 
+                ac_kind         = '".SqlFilter($_REQUEST["ac_kind"],"tab")."', 
+                ac_kind3        = '".SqlFilter($_REQUEST["ac_kind3"],"tab")."', 
+                ac_time         = '".$ac_time."', 
+                ac_title        = '".SqlFilter($_REQUEST["ac_title"],"tab")."', 
+                ac_index_title  = '".SqlFilter($_REQUEST["ac_index_title"],"tab")."', 
+                ac_note1        = '".SqlFilter($_REQUEST["ac_note1"],"tab")."', 
+                ac_note2        = '".SqlFilter($_REQUEST["ac_note2"],"tab")."', 
+                ac_note3        = '".SqlFilter($_REQUEST["ac_note3"],"tab")."', 
+                ac_note4        = '".SqlFilter($_REQUEST["ac_note4"],"tab")."', 
+                ac_ck1          = '".SqlFilter($_REQUEST["ac_ck1"],"tab")."', 
+                ac_pic          = '".SqlFilter($_REQUEST["ac_pic1"],"tab")."', 
+                ac_pic2         = '".SqlFilter($_REQUEST["ac_pic2"],"tab")."', 
+                ac_pic3         = '".SqlFilter($_REQUEST["ac_pic3"],"tab")."', 
+                ac_pic4         = '".SqlFilter($_REQUEST["ac_pic4"],"tab")."', 
+                sub5_auto       = '".SqlFilter($_REQUEST["sub5_auto"],"tab")."', 
+                ac_1            = '".SqlFilter($_REQUEST["ac_1"],"tab")."', 
+                ac_2            = '".SqlFilter($_REQUEST["ac_2"],"tab")."', 
+                ac_3            = '".SqlFilter($_REQUEST["ac_3"],"tab")."', 
+                ac_4            = '".SqlFilter($_REQUEST["ac_4"],"tab")."', 
+                ac_5            = '".SqlFilter($_REQUEST["ac_5"],"tab")."', 
+                ac_area         = '".SqlFilter($_REQUEST["ac_area"],"tab")."', 
+                ac_money1       = '".SqlFilter($_REQUEST["ac_money1"],"tab")."', 
+                ac_money2       = '".SqlFilter($_REQUEST["ac_money2"],"tab")."', 
+                ac_money3       = '".SqlFilter($_REQUEST["ac_money3"],"tab")."', 
+                ac_money4       = '".SqlFilter($_REQUEST["ac_money4"],"tab")."', 
+                ac_money5       = '".SqlFilter($_REQUEST["ac_money5"],"tab")."', 
+                ac_money6       = '".SqlFilter($_REQUEST["ac_money6"],"tab")."', 
+                ac_money7       = '".SqlFilter($_REQUEST["ac_money7"],"tab")."', 
+                deadline        = '".SqlFilter($_REQUEST["deadline"],"tab")."', 
+                signup          = '".SqlFilter($_REQUEST["signup"],"tab")."', 
+                ac_car1         = '".SqlFilter($_REQUEST["ac_car1"],"tab")."', 
+                ac_car2         = '".SqlFilter($_REQUEST["ac_car2"],"tab")."', 
+                ac_car3         = '".SqlFilter($_REQUEST["ac_car3"],"tab")."', 
+                ac_car4         = '".SqlFilter($_REQUEST["ac_car4"],"tab")."', 
+                ac_come         = '".SqlFilter($_REQUEST["ac_come"],"tab")."', 
+                ac_open1        = '".SqlFilter($_REQUEST["ac_open1"],"tab")."', 
+                ac_open2        = '".SqlFilter($_REQUEST["ac_open2"],"tab")."', 
+                ac_run1         = '".SqlFilter($_REQUEST["ac_run1"],"tab")."', 
+                ac_run2         = '".SqlFilter($_REQUEST["ac_run2"],"tab")."', 
+                ac_eat1         = '".SqlFilter($_REQUEST["ac_eat1"],"tab")."', 
+                ac_eat2         = '".SqlFilter($_REQUEST["ac_eat2"],"tab")."', 
+                ac_msg4         = '".SqlFilter($_REQUEST["ac_msg4"],"tab")."', 
+                ac_show         = '".$ac_show."'
+                WHERE ac_auto   = " .SqlFilter($_REQUEST["ac"],"int");     
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("ad_fun_action_list1_add.php?ac=".$ac);
+            exit();            
+        }
     }
 
-   
     if($_REQUEST["ac"] != ""){
         $ww = "修改";
         $ww2 = "edit&ac=".$ac;
@@ -73,7 +286,7 @@
             $ac_4 = $result["ac_4"];
             $ac_5 = $result["ac_5"];
             $ac_1 = $result["ac_1"];
-            $$ac_car1 = $result["ac_car1"];
+            $ac_car1 = $result["ac_car1"];
             $ac_car2 = $result["ac_car2"];
             $ac_car3 = $result["ac_car3"];
             $ac_car4 = $result["ac_car4"];
@@ -124,8 +337,6 @@
         $ac_money7 = "0";
         $signup = "0";
     }
-   
-
 
 ?>
 
@@ -495,7 +706,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan=2 align="center"><input type="submit" name="Submit" value="確定新增" class="btn btn-info" style="width:50%;"></td>
+                                <td colspan=2 align="center"><input type="submit" name="Submit" value="確定<?php echo $ww ?>" class="btn btn-info" style="width:50%;"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -568,7 +779,7 @@
     function chk_form() {
         var $clist = {
                 "ac_come": "來源",
-                "ac_open2": "開發者",
+                "single": "開發者",
                 "ac_money1": "原價",
                 "ac_area": "活動地點",
                 "ac_time1": "活動時間",
@@ -619,13 +830,7 @@
         return true;
 
     }
-    $(function() {
-        $("#ac_open1").on("change", function() {
-            personnel_get("ac_open1", "ac_open2");
-        });
-        $("#ac_run1").on("change", function() {
-            personnel_get("ac_run1", "ac_run2");
-        });
+    $(function() {        
         $(".file_upload_d").each(function() {
 
             var $this = $(this),

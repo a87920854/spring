@@ -105,7 +105,6 @@
                                                                 if ( $re_er["p_name"] != "" ){ $p_name = $re_er["p_name"]; }
                                                                 if ( $re_er["p_other_name"] != "" ){ $p_name = $re_er["p_other_name"]; }
                                                                 echo "<option value='".$re_er["p_user"]."'";
-                                                                if ( $single == $re_er["p_user"] ){ echo " selected";}
                                                                 echo ">".$p_name."</option>";
                                                             }
                                                         }?>

@@ -17,7 +17,7 @@
     $ac_auto = SqlFilter($_REQUEST["ac_auto"],"int");
     
     if($_REQUEST["st"] == "upload"){
-        // $urlpath = "webfile\\funtour\\upload_image\\"; //儲存路徑
+        // $urlpath = "webfile/funtour/upload_image/"; //儲存路徑
         $urlpath = "Upload/"; //儲存路徑
         $fileCount = count($_FILES['file']['name']);
 

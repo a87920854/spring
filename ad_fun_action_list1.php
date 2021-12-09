@@ -17,6 +17,35 @@
         call_alert("請重新登入。", "login.php", 0);
     }
 
+    // 刪除國內活動並刪除圖檔(待測試刪除圖檔)
+    if($_REQUEST["st"] == "del"){
+        $SQL = "SELECT * FROM action_data WHERE ac_auto = ".SqlFilter($_REQUEST["ac"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $SQL2 = "DELETE FROM action_data WHERE ac_auto = ".SqlFilter($_REQUEST["ac"],"int");
+            $rs2 = $FunConn->prepare($SQL2);
+            $rs2->execute();
+            if($rs2){
+                if($result["ac_pic"] != ""){
+                    DelFile("webfile/funtour/upload_image/".$result["ac_pic"]);
+                }
+                if($result["ac_pic2"] != ""){
+                    DelFile("webfile/funtour/upload_image/".$result["ac_pic2"]);
+                }
+                if($result["ac_pic3"] != ""){
+                    DelFile("webfile/funtour/upload_image/".$result["ac_pic3"]);
+                }
+                if($result["ac_pic4"] != ""){
+                    DelFile("webfile/funtour/upload_image/".$result["ac_pic4"]);
+                }
+                reURL("win_close.php?m=刪除中...");
+                exit();       
+            }
+        }
+    }
+
     $default_sql_num = 500; // 初始查詢數字    
     if( $_REQUEST["vst"] == "full" ){
         $sqlv = "*";
@@ -132,7 +161,7 @@
             <div class="panel-body">
                 <div class="col-md-12">
                     <a href="ad_fun_action_list1_add.php" class="btn btn-info margin-bottom-10"><i class="icon-plus-sign"></i> 新增國內活動</a>
-                    <a href="ad_fun_action_list1_print.php?acre_sign1=&acre_sign2=" class="btn btn-info margin-bottom-10"><i class="icon-plus-sign"></i> 列印本頁</a>
+                    <a href="ad_fun_action_list1_print.php?acre_sign1=<?php echo $kt1; ?>&acre_sign2=<?php echo $kt2; ?>" class="btn btn-info margin-bottom-10"><i class="icon-plus-sign"></i> 列印本頁</a>
 
 
                     <form id="searchform" action="ad_fun_action_list1.php?vst=full" method="post" target="_self" class="form-inline" onsubmit="return check_send_submit()">
