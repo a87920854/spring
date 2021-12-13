@@ -17,56 +17,6 @@
         call_alert("請重新登入。", "login.php", 0);
     }
 
-    // 更新
-    if($_REQUEST["st"] == "save_edit"){
-        $dd = $_REQUEST["dd"];
-	    $vv = $_REQUEST["v"];
-        if($dd != ""){
-            switch($_REQUEST["t"]){
-                case "sp":
-                    $SQL = "update travel_fast set sp='".$vv."' where auton=".$dd;
-                    break;
-                case "people":
-                    $SQL = "update travel_fast set people='".$vv."' where auton=".$dd;
-                    break;
-                case "notes":
-                    $SQL = "update travel_fast set notes='".$vv."' where auton=".$dd;
-                    break;
-            }
-        }
-        $rs = $FunConn->prepare($SQL);
-        $rs->execute();
-        echo $vv;
-    }
-
-    if($_REQUEST["st"] == "get_travel"){
-        $SQL = "select dates from travel_date where ac_auto = ".SqlFilter($_REQUEST["ac_auto"],"int");
-        $rs = $FunConn->prepare($SQL);
-        $rs->execute();
-        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
-        if($result){
-            foreach($result as $re){
-                $dd = $dd . $result["dates"] . ",";
-            }            
-        }else{
-            echo "error";
-        }
-        if(substr($dd,-1) == ","){
-            $dd = substr($dd,0,-1);
-        }
-        echo $dd;
-    }
-
-    if($_REQUEST["st"] == "get_travel_note"){
-        $SQL = "select notes from travel_date where ac_auto = ".SqlFilter($_REQUEST["ac_auto"],"int"). " and datediff(d, dates, '".SqlFilter($_REQUEST["dates"],"tab")."') = 0";
-        $rs = $FunConn->prepare($SQL);
-        $rs->execute();
-        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
-        if($result){
-            echo $result["notes"];
-        }
-    }
-
     // 刪除
     if($_REQUEST["st"] == "del"){
         $SQL = "delete from travel_fast where auton=".SqlFilter($_REQUEST["a"],"tab");
@@ -99,15 +49,15 @@
         }else{
             $people = SqlFilter($_REQUEST["people"],"tab");
         }
-        $SQL =  "INSERT INTO travel_fast (dates, stype, skingdom, sp, title, people, notes, ac_auto) VALUES ("
-                .date("Y/m/d",strtotime($_REQUEST["dates"])).", "
-                .$stype.", "
-                .$skingdom.", "
-                .SqlFilter($_REQUEST["sp"],"tab").", "
-                .$ac_title.", "
-                .$people.", "
-                .SqlFilter($_REQUEST["notes"],"tab").", "
-                .SqlFilter($_REQUEST["ac_auto"],"int").")";
+        $SQL =  "INSERT INTO travel_fast (dates, stype, skingdom, sp, title, people, notes, ac_auto) VALUES ('"
+                .SqlFilter($_REQUEST["dates"],"tab")."', '"
+                .$stype."', '"
+                .$skingdom."', '"
+                .SqlFilter($_REQUEST["sp"],"tab")."', '"
+                .$ac_title."', '"
+                .$people."', '"
+                .SqlFilter($_REQUEST["notes"],"tab")."', '"
+                .SqlFilter($_REQUEST["ac_auto"],"int")."')";
         $rs = $FunConn->prepare($SQL);
         $rs->execute();
         if($rs){
@@ -157,23 +107,47 @@
                             $SQL = "select * from travel_fast order by dates asc";
                             $rs = $FunConn->prepare($SQL);
                             $rs->execute();
+                            $rs->execute();
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                             if(!$result){
                                 echo "<tr><td colspan=8>無資料</td></tr>";
                             }else{
                                 $cc = 1;
                                 $msgs = "";
-                                $f = $rs->RecordCount();
+                                $f = $rs->rowCount();
+                                $full_date = [null,null,null,null,null,null,null,null,null,null,null,null,null];
                                 foreach($result as $re){
-                                    $dates = $re["dates"];
-                                    $nowmm = date("m",strtotime($dates));
+                                    $dates = Date_EN($re["dates"],1);
+                                    $nowmm = date("n",strtotime($dates));
                                     if($nowmm == $lastmm){
                                         $cc = $cc+1;
-                                    }        
+                                        $full_date[$nowmm] = $cc;
+                                    }else{
+                                        $lastmm = $nowmm;       	
+                  	                    $cc = 1;
+                                    }
+                                    $msgs = $msgs . "<tr><td ROWSPANS_".$nowmm."_".$cc.">".monthname($nowmm)."</td><td>".$dates."</td><td>".$re["stype"]."</td><td>".$re["skingdom"]."</td><td id='sp_".$re["auton"]."'>".$re["sp"]." <a href='#p' onclick=\"edit_set('sp', '".$re["auton"]."');\"><i class='icon-pencil'></i></a></td><td>".$re["title"]."</td><td id='people_".$re["auton"]."'>".$re["people"]." <a href='#p' onclick=\"edit_set('people', '".$re["auton"]."');\"><i class='icon-pencil'></i></a></td><td id='notes_".$re["auton"]."'>".$re["notes"]." <a href='#p' onclick=\"edit_set('notes', '".$re["auton"]."');\"><i class='icon-pencil'></i></a></td>" . PHP_EOL;
+                                    $msgs = $msgs . "<td>" . PHP_EOL;
+                                    $msgs = $msgs . "<div class='btn-group'>" . PHP_EOL;
+                                    $msgs = $msgs . "<button class='btn btn-default dropdown-toggle' data-toggle='dropdown'>功能 <span class='caret'></span></button>" . PHP_EOL;
+                                    $msgs = $msgs . "<ul class='dropdown-menu pull-right'>" . PHP_EOL;                                    
+                                    $msgs = $msgs . "<li><a href=\"javascript:Mars_popup2('ad_fun_action_fast.php?st=del&a=".$re["auton"]."','','width=300,height=200,top=100,left=100')\"><i class='icon-remove-sign'></i> 刪除</a></li>" . PHP_EOL;                                    
+                                    $msgs = $msgs . "</ul></div>" . PHP_EOL;
+                                    $msgs = $msgs . "</td></tr>" . PHP_EOL;
                                 }
-                                
+                                for($i=0; $i<= count($full_date); $i++){
+                                    $fvs = $full_date[$i];
+                                    if($fvs > 1){
+                                        $vv = "ROWSPANS_".$i."_1";           		
+                                        $msgs = str_replace($vv, "class='travel_table_month' rowspan=".$fvs, $msgs);
+                                        for($j=1;$j<=$fvs;$j++){
+                                            $vv = "ROWSPANS_".$i."_".$j;
+                                            $msgs = str_replace($vv, "style='display:none'",$msgs);
+                                        }
+                                    }                                    
+                                }
+                                echo $msgs;
                             }
-
                         ?>
 
                     </tbody>
@@ -186,114 +160,20 @@
                             <td>
                                 <form id="addform" action="?st=add" method="post" target="_self" class="form-inline" onsubmit="return chk_form()">
                                     <select name="ac_auto" id="ac_auto" class="width-150">
-                                        <option value="">請選擇</option>
-                                        <option value="1980">LOVE旅遊-菲律賓-小島渡假-巴拉望愛純淨物語5日</option>
-                                        <option value="1977">LOVE旅遊-韓國-時尚城市-小資女孩~哈韓好好玩</option>
-                                        <option value="1976">LOVE旅遊-泰國-高檔精緻-94玩翻天，不去泰可惜</option>
-                                        <option value="1974">LOVE旅遊-越南-時尚城市-驚芽無限~東方馬爾地夫</option>
-                                        <option value="1973">LOVE旅遊-日本-時尚城市-韓日雙國-釜山關西8日</option>
-                                        <option value="1971">LOVE旅遊-越南-小島渡假-富國島+東方小巴黎</option>
-                                        <option value="1969">LOVE旅遊-菲律賓-小島渡假-戀上巴拉望與海共舞５日</option>
-                                        <option value="1968">LOVE旅遊-中國-小島渡假-絕美絲路10日</option>
-                                        <option value="1967">LOVE旅遊-土耳其-高檔精緻-迷戀土耳其奇幻之旅</option>
-                                        <option value="1966">LOVE旅遊-韓國-時尚城市-特愛釜山吃到飽美食5日</option>
-                                        <option value="1965">LOVE旅遊-日本-高檔精緻-相遇北陸秘境5日</option>
-                                        <option value="1964">LOVE旅遊-中國-時尚城市-情繫重慶山城風情5日</option>
-                                        <option value="1963">LOVE旅遊-中國-時尚城市-情繫重慶山城風情4日</option>
-                                        <option value="1960">LOVE旅遊-印尼-小島渡假-巴里遇到愛一次玩雙島</option>
-                                        <option value="1959">LOVE旅遊-韓國-高檔精緻-相遇韓國樂翻天5日</option>
-                                        <option value="1958">LOVE旅遊-韓國-時尚城市-愛戀韓國華川鱒魚冰雪節</option>
-                                        <option value="1957">LOVE旅遊-菲律賓-小島渡假-擁抱鯨鯊雙島情緣</option>
-                                        <option value="1956">LOVE旅遊-日本-高檔精緻-日本之最山陽四國大蒐秘</option>
-                                        <option value="1955">LOVE旅遊-歐洲-高檔精緻-童話城堡三大遊船荷比法</option>
-                                        <option value="1954">LOVE旅遊-中國-情定兩岸-華人廈門約會趣情定兩岸</option>
-                                        <option value="1953">LOVE旅遊-泰國-小島渡假-揪愛泰國～絕色沙美島</option>
-                                        <option value="1952">LOVE旅遊-馬來西亞-小島渡假-潔淨與美的海角樂園─古晉市區躲貓貓！</option>
-                                        <option value="1951">LOVE旅遊-泰國-高檔精緻-泰愛你～泰國甜心號、開心趴趴GO、5+1日</option>
-                                        <option value="1950">LOVE旅遊-韓國-高檔精緻-雙城雙戀LOVE遊5日</option>
-                                        <option value="1946">LOVE旅遊-菲律賓-小島渡假-超級新玩家~巴拉望一島一飯店渡假村</option>
-                                        <option value="1944">LOVE旅遊-中國-時尚城市-澳港饗宴～精選四日【無購物】</option>
-                                        <option value="1942">LOVE旅遊-菲律賓-小島渡假-菲要你好玩-看見心宿霧</option>
-                                        <option value="1941">LOVE旅遊-越南-高檔精緻-北越~山水雙龍灣-海上公主號、萍水小舟、纜車摩天輪、五星飯店下午茶</option>
-                                        <option value="1939">LOVE旅遊-韓國-高檔精緻-慢活濟州2大主題生態探索</option>
-                                        <option value="1938">LOVE旅遊-宿霧-小島渡假-「宿霧」浪漫海底精靈遊</option>
-                                        <option value="1937">LOVE旅遊-伊豆箱根-時尚城市- </option>
-                                        <option value="1921">LOVE旅遊-馬來西亞-時尚城市-美食探索大馬尋情記 </option>
-                                        <option value="1920">LOVE旅遊-首爾-時尚城市-孤單又燦爛的鬼怪之旅 </option>
-                                        <option value="1919">LOVE旅遊-泰國-高檔精緻- 泰瘋癲之食尚贏家</option>
-                                        <option value="1918">LOVE旅遊-首爾+釜山-時尚城市-首爾釜山雙城記之屍速列車</option>
-                                        <option value="1917">LOVE旅遊-韓國首爾-時尚城市-Running love 奔跑吧愛情！</option>
-                                        <option value="1915">LOVE旅遊-南韓-時尚城市-好好玩韓國聖誕奇蹟系列~遇見暖男劉大尉之旅</option>
-                                        <option value="1914">LOVE旅遊-歐洲-高檔精緻-「魅力歐洲」沉醉在愛的世界中</option>
-                                        <option value="1913">LOVE旅遊-菲律賓-時尚城市- 「宿霧」浪漫海底精靈遊</option>
-                                        <option value="1911">LOVE旅遊-馬來西亞-時尚城市-浪漫七夕-與您愛在馬來西亞</option>
-                                        <option value="1910">LOVE旅遊-海南島-小島渡假-非誠勿擾-浪漫電影場景在海南</option>
-                                        <option value="1908">LOVE旅遊-日本-時尚城市-【淡季撿便宜】來去大阪初體驗</option>
-                                        <option value="1905">LOVE旅遊-日本-高檔精緻-【戀愛黃金周】夢幻郵輪 熱戀沖繩</option>
-                                        <option value="1902">LOVE旅遊-南韓-高檔精緻-【玩雪趣】劃破星空~雪花紛飛的南怡島~首爾奇遇篇</option>
-                                        <option value="1901">LOVE旅遊-泰國-小島渡假-【世界最美愛之島】單身豔遇沙美島</option>
-                                        <option value="1897">LOVE旅遊-香港-小島渡假-徜徉在愛情的郵輪情懷</option>
-                                        <option value="1895">LOVE旅遊-中國-小島渡假-醞釀愛情的幸福國度～青島</option>
-                                        <option value="1893">LOVE旅遊-南韓-高檔精緻-秋遊韓國愛楓了</option>
-                                        <option value="1892">LOVE旅遊-希臘-高檔精緻-遺落在希臘的浪漫情懷</option>
-                                        <option value="1890">LOVE旅遊-美國-小島渡假-【樂做海島人】戀戀關島咨意遊</option>
-                                        <option value="1889">LOVE旅遊-菲律賓-小島渡假-【海島主人篇】玩樂步履寫下~長灘~物語</option>
-                                        <option value="1887">LOVE旅遊-南韓-小島渡假-真愛濟州浪漫遊</option>
-                                        <option value="1879">LOVE旅遊-新加坡、印尼-小島渡假-情定新加坡、愛在民丹島</option>
-                                        <option value="1873">LOVE旅遊-美國-小島渡假-單身貴族夏威夷浪漫遊</option>
-                                        <option value="1871">LOVE旅遊-馬來西亞-小島渡假-浪花一朵朵之 愛在樂浪島</option>
-                                        <option value="1864">LOVE旅遊-泰國-高檔精緻-【單身愛玩樂】雲海之都~泰國華欣魅力遊</option>
-                                        <option value="1859">LOVE旅遊-南韓-時尚城市-1/23讓愛自由 - 韓國華川冰雪祭</option>
-                                        <option value="1983">FUN旅遊-韓國釜山-時尚城市-釜山滑出萌萌的愛5日</option>
-                                        <option value="1982">FUN旅遊-日本-時尚城市-小日本愛玩大軌跡5日</option>
-                                        <option value="1981">FUN旅遊-韓國首爾-時尚城市-愛韓風情人視角之旅5日</option>
-                                        <option value="1979">FUN旅遊-馬來西亞+新加坡-小島渡假-馬新派對紅花奇緣5日</option>
-                                        <option value="1978">FUN旅遊-泰國-時尚城市-泰愛潑水在暹羅6+1日</option>
-                                        <option value="1975">FUN旅遊-澳洲-時尚城市-小資女孩~愛的抱抱</option>
-                                        <option value="1972">FUN旅遊-中國-小島渡假-江西篁嶺古村16天</option>
-                                        <option value="1970">FUN旅遊-中國-高檔精緻-江蘇鎮江戀愛都市15天</option>
-                                        <option value="1962">FUN旅遊-中國-時尚城市-相遇在白櫻飛雪的季節</option>
-                                        <option value="1961">FUN旅遊-中國-高檔精緻-雪鄉戀歌俄羅斯風情５天</option>
-                                        <option value="1949">FUN旅遊-日本-時尚城市-FUN鬆九州鐵道輕旅行4日</option>
-                                        <option value="1948">FUN旅遊-日本-時尚城市-FUN鬆九州鐵道輕旅行4日</option>
-                                        <option value="1947">FUN旅遊-日本-小島渡假-FUN鬆遊沖繩~浪漫小希臘~瀨長島.海水與愛情神話傳說~古宇利島</option>
-                                        <option value="1945">FUN旅遊-新加坡-時尚城市-新印雙國跳島遊４天</option>
-                                        <option value="1943">FUN旅遊-日本-小島渡假-太陽公主號～石垣、沖繩、宮古島自主遊５日(內艙)</option>
-                                        <option value="1940">FUN旅遊-新加坡-時尚城市-《玩雙國》FUN新玩時尚新加坡＋悠閒印尼巴淡島</option>
-                                        <option value="1912">FUN旅遊-澳門-時尚城市-探訪愛情中迷人的【澳秘】</option>
-                                        <option value="1909">FUN旅遊-日本-時尚城市-雪國。北海道浪漫風情畫</option>
-                                        <option value="1907">FUN旅遊-泰國-時尚城市-潑水遇幸福 泰好玩浪漫遊</option>
-                                        <option value="1906">FUN旅遊-日本-高檔精緻-春&#12398;遊 日本關東浪漫賞櫻行</option>
-                                        <option value="1900">FUN旅遊-日本-高檔精緻-【朝聖趣】札幌雪祭團</option>
-                                        <option value="1899">FUN旅遊-日本-高檔精緻-【賞楓團】秋天是楓的顏色~~幸福漫步輕井澤</option>
-                                        <option value="1898">FUN旅遊-帛琉-小島渡假-【玩水趣】碧海藍天就是愛帛琉</option>
-                                        <option value="1891">FUN旅遊-日本-小島渡假-嗨翻天-愛上沖繩的碧海藍天</option>
-                                        <option value="1888">FUN旅遊-越南-小島渡假-下龍灣風情話</option>
-                                        <option value="1886">FUN旅遊-日本-高檔精緻-幸福漫步輕井澤-森林浪漫小鎮</option>
-                                        <option value="1883">FUN旅遊-南韓-時尚城市-來自星星的奇妙戀曲~首爾愛戀篇</option>
-                                        <option value="1880">FUN旅遊-印尼-小島渡假-【享樂主義】熱情如火的峇里饗宴</option>
-                                        <option value="1878">--小島渡假-情定新加坡、愛在民丹島參訪團</option>
-                                        <option value="1877">--小島渡假-單身貴族綠中海浪漫遊</option>
-                                        <option value="1876">--小島渡假-單身貴族美夢成真浪漫遊</option>
-                                        <option value="1875">--小島渡假-單身貴族綠中海豪華遊</option>
-                                        <option value="1874">--小島渡假-單身貴族雲海戀豪華浪漫遊</option>
-                                        <option value="1872">--小島渡假-沙巴~美夢成真浪漫遊</option>
-                                        <option value="1870">--小島渡假-冬季戀歌豪華浪漫遊</option>
-                                        <option value="1868">--小島渡假-濃情澳洲浪漫遊</option>
-                                        <option value="1866">--情定兩岸-"華人約會去"~去廈門約會</option>
-                                        <option value="1865">--情定兩岸-"華人約會去"~去廈門約會</option>
-                                        <option value="1863">--時尚城市-前往戀愛航道 ~ 東京仙履情緣 New Tokyo Love Story
-
-                                            超鳥專案:凡是2/7前報名並繳交訂金1萬元，即享超鳥價3000扣抵。</option>
-                                        <option value="1858">--時尚城市-幸福99水晶聖誕香港三日遊</option>
-                                        <option value="1805">--小島渡假-單身愛情探險物語~長灘島4日</option>
-                                        <option value="1803">--小島渡假-單身愛情探險物語~泰國6日(台北出發)</option>
-                                        <option value="1802">--小島渡假-單身愛情探險物語~泰國6日(高雄出發)</option>
-                                        <option value="1801">--時尚城市-單身愛情探險物語~韓國</option>
-                                        <option value="1800">--小島渡假-單身愛情探險物語~蘇梅島5日</option>
-                                        <option value="1723">--時尚城市-香港美食心靈團~半自由行3天</option>
-                                        <option value="1693">--時尚城市-香港美食心靈團~半自由行(已出發)</option>
-                                    </select><span id="ac_auto_div"></span>
+                                        <option value="">請選擇</option>       
+                                        <?php 
+                                            $SQL = "select ac_auto, ac_kind, stype, skingdom, ac_title from actionf_data order by stype desc, ac_auto desc";
+                                            $rs = $FunConn->prepare($SQL);
+                                            $rs->execute();
+                                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                            if($result){
+                                                foreach($result as $re){
+                                                    echo "<option value='".$re["ac_auto"]."'>".$re["stype"]."-".$re["skingdom"]."-".$re["ac_kind"]."-".$re["ac_title"]."</option>";
+                                                }                                                
+                                            }
+                                        ?>
+                                    </select>
+                                    <span id="ac_auto_div"></span>
                                 </form>
                             </td>
                         </tr>
@@ -331,7 +211,7 @@ require_once("./include/_bottom.php");
             $s1.append($("<option></option>").attr("value", "").text("請選擇"));
             $.ajax({
                 type: "POST",
-                url: "ad_fun_action_fast.asp",
+                url: "ad_fun_action_fast_ajax.php",
                 data: {
                     st: "get_travel",
                     ac_auto: $tval
@@ -364,7 +244,7 @@ require_once("./include/_bottom.php");
                 if (!$(this).val()) return false;
                 $.ajax({
                     type: "POST",
-                    url: "ad_fun_action_fast.asp",
+                    url: "ad_fun_action_fast_ajax.php",
                     data: {
                         st: "get_travel_note",
                         ac_auto: $tval,
@@ -417,7 +297,7 @@ require_once("./include/_bottom.php");
             $ediv.append($savemsg);
             $.ajax({
                 type: "POST",
-                url: "ad_fun_action_fast.asp",
+                url: "ad_fun_action_fast_ajax.php",
                 data: {
                     st: "save_edit",
                     t: tt,
