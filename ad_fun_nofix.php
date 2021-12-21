@@ -20,25 +20,120 @@
         call_alert("您沒有查看此頁的權限。","login.php",0);
     }
     
-    // 轉入春天未入會
+    // 轉入春天未入會(未測試)
     if($_REQUEST["st"] == "trans"){
         $SQL = "Select * FROM mobile_reply where auton=" .SqlFilter($_REQUEST["auton"],"int");
         $rs = $FunConn->query($SQL);
-        $result = $rs->fetch();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
         if($result){
             $SQL2 = "Select * from member_data where mem_mobile='".$result["mobile"]."'";
             $rs2 = $SPConn->query($SQL2);
             $result2 = $rs2->fetch();
             // 如果春天沒有會員資料則匯入春天
             if(!$result2){
-                
+                // msg_num資料表的m_num+1
+                $rs2 = $SPConn->query("SELECT * FROM msg_num Where m_auto=1");
+                $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                $mem_num = $result2["m_num"]+1;
+                $rs2 = $SPConn->prepare("Update msg_num set m_num = ". $mem_num ." where m_auto = 1");
+                $rs2->execute();
+                // 開始匯入春天
+                if($rs2){
+                    $SQL3 = "INSERT INTO member_data (all_type, mem_level, mem_num, mem_come, mem_time,  
+                            mem_name, mem_mail, mem_blood, mem_marry, mem_mobile, mem_school) VALUES (
+                            '未處理', 
+                            'guest', '"
+                            .$mem_num."',
+                            '好好玩手機未完成', '"
+                            .date("Y-m-d H:i:s")."', '"
+                            .$result["name"]."', '"
+                            .$result["email"]."',
+                            'A', 
+                            '未婚', '"
+                            .$result["mobile"]."',
+                            '')";
+                    $rs3 = $SPConn->prepare($SQL3);
+                    $rs3->execute();
+                    if($rs3){
+                        if($result["ch"] == 1 && $result["ch2"] == 1){
+                            $SQL4 = "delete mobile_reply where auton=" .SqlFilter($_REQUEST["auton"],"int");
+                            $rs4 = $FunConn->prepare($SQL4);
+                            $rs4->execute();
+                        }else{
+                            $SQL4 = "update mobile_reply set ch=1 where auton=" .SqlFilter($_REQUEST["auton"],"int");
+                            $rs4 = $FunConn->prepare($SQL4);
+                            $rs4->execute();
+                        }
+                        if($rs4){
+                            reURL("ad_fun_nofix.php");
+                        }else{
+                            call_alert("設定失敗。",0,0);
+                        }                       
+                    }else{                        
+                        call_alert("資料轉入失敗。",0,0);
+                        exit();
+                    }
+                }
             }
         }
     }
 
-    // 轉入好好玩金卡
+    // 轉入好好玩金卡(未測試)
     if($_REQUEST["st"] == "trans2"){
-        $SQL = "";
+        $SQL = "Select * FROM mobile_reply where auton=" .SqlFilter($_REQUEST["auton"],"int");
+        $rs = $FunConn->query($SQL);
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            // 查金卡有無紀錄
+            $SQL2 = "Select * from goldcard_data where mem_mobile='" .$result["mobile"]. "'";
+            $rs2 = $FunConn->query($SQL2);
+            $result2 = $rs->fetch();
+            if(!$result2){
+                // number_list的nums +1 
+                $SQL2 = "select nums from number_list where types='goldcard'";
+                $rs2 = $FunConn->query($SQL2);
+                $result2 = $rs->fetch();
+                $mem_num = $result2["nums"]+1;
+                $rs2 = $SPConn->prepare("Update number_list set m_num = ". $mem_num ." where types='goldcard'");
+                $rs2->execute();
+                // 開始匯入金卡
+                if($rs2){
+                    $SQL3 = "INSERT INTO number_list (all_type, mem_level, mem_num, mem_come, mem_time,  
+                            mem_name, mem_mail, mem_marry, mem_mobile, mem_school) VALUES (
+                            '未處理', 
+                            'guest', '"
+                            .$mem_num."',
+                            '好好玩手機未完成', '"
+                            .date("Y-m-d H:i:s")."', '"
+                            .$result["name"]."', '"
+                            .$result["email"]."',
+                            '未婚', '"
+                            .$result["mobile"]."',
+                            '')";
+                    $rs3 = $SPConn->prepare($SQL3);
+                    $rs3->execute();
+                    if($rs3){
+                        if($result["ch"] == 1 && $result["ch2"] == 1){
+                            $SQL4 = "delete mobile_reply where auton=" .SqlFilter($_REQUEST["auton"],"int");
+                            $rs4 = $FunConn->prepare($SQL4);
+                            $rs4->execute();
+                        }else{
+                            $SQL4 = "update mobile_reply set ch2=1 where auton=" .SqlFilter($_REQUEST["auton"],"int");
+                            $rs4 = $FunConn->prepare($SQL4);
+                            $rs4->execute();
+                        }
+                        if($rs4){
+                            reURL("ad_fun_nofix.php");
+                        }else{
+                            call_alert("設定失敗。",0,0);
+                        }                       
+                    }else{                        
+                        call_alert("資料轉入失敗。",0,0);
+                        exit();
+                    }
+                }
+            }
+        }
     }
 
     // 刪除
@@ -79,6 +174,28 @@
         }
     }
 
+    // 查詢總筆數
+    $sqls2 = "select count(auton) as total_size from mobile_reply";    
+    $rs = $FunConn->prepare($sqls2);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if (!$result){
+        $total_size = 0;
+    }else{
+        $total_size = $result["total_size"]; //總筆數
+    }
+
+    $tPage = 1; //目前頁數
+    $tPageSize = 20; //每頁幾筆
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 20;
+	}else{
+		$page2 = (20-(($tPageSize*$tPage)-$total_size));
+	}
+
+    // 測試用
     if($_REQUEST["st"] == "add"){
         $SQL = "INSERT INTO mobile_reply (times, name, mobile, email, types) VALUES ('2021/12/13', 'jack', '0926275129', 'a87920854@gmail.com', '55')";
         $rs = $FunConn->prepare($SQL);
@@ -122,7 +239,7 @@
                     <tbody>
                         <?php         
                             // 查詢好好玩手機未完成名單
-                            $SQL = "select * from mobile_reply order by times desc";
+                            $SQL = "select * from (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * from mobile_reply order by times desc ) t1 order by times) t2 order by times desc";
                             $rs = $FunConn->query($SQL);
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                             if(!$result){
@@ -168,6 +285,8 @@
                     </tbody>
                 </table>
             </div>
+            <!-- 頁碼 -->
+            <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
 

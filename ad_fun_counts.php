@@ -1,10 +1,52 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+    /*****************************************/
+    //檔案名稱：ad_fun_counts.php
+    //後台對應位置：好好玩管理系統/企業委辦>發送
+    //改版日期：2021.12.15
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
 
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+
+    $total = 0;
+    $totalb = 0;
+    $totalg = 0;
+
+    $SQL = "select count(mem_auto) as tt from member_data where (not mem_photo is null or mem_photo <> '')";
+    $rs = $FunConn->query($SQL);
+    $result = $rs->fetch();
+    if($result){
+        $total = $result["tt"];
+    }
+
+    $SQL = "select count(mem_auto) as tt from member_data where mem_sex='女' and (not mem_photo is null or mem_photo <> '')";
+    $rs = $FunConn->query($SQL);
+    $result = $rs->fetch();
+    if($result){
+        $totalg = $result["tt"];
+    }
+
+    $SQL = "select count(mem_auto) as tt from member_data where mem_sex='男' and (not mem_photo is null or mem_photo <> '')";
+    $rs = $FunConn->query($SQL);
+    $result = $rs->fetch();
+    if($result){
+        $totalb = $result["tt"];
+    }
+?>
+<style>
+    .datepicker {
+        z-index: 10001 !important;
+    }
+</style>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -29,7 +71,7 @@ require_once("./include/_sidebar.php")
 
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <tr>
-                        <Td colspan=3>有照片：526 男 244 女 770 全</Td>
+                        <Td colspan=3>有照片：<?php echo $totalb; ?> 男 <?php echo $totalg; ?> 女 <?php echo $total; ?> 全</Td>
                     </tr>
                     <form action="#send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
                         <tr>
@@ -81,7 +123,11 @@ require_once("./include/_sidebar.php")
 <?php
 require_once("./include/_bottom.php");
 ?>
-
+<link href="jscal/css/jscal2.css" rel="stylesheet" type="text/css" />
+<link href="jscal/css/border-radius.css" rel="stylesheet" type="text/css" />
+<link href="jscal/css/steel/steel.css" rel="stylesheet" type="text/css" />
+<script src="jscal/js/jscal2.js" type="text/javascript"></script>
+<script src="jscal/js/lang/tw.js" type="text/javascript"></script>
 <script type="text/javascript">
     $("#outmsg").hide();
     Date.prototype.DateAdd = function(strInterval, Number) {
@@ -109,7 +155,7 @@ require_once("./include/_bottom.php");
     function conutice_ajax(n1, n2, n3, n4) {
         setTimeout(function() {
             $.ajax({
-                url: 'ad_fun_counts.asp?st=send',
+                url: 'ad_fun_counts_ajax.php?st=send',
                 data: {
                     start_time: n1,
                     ostart_time: n2,
@@ -126,6 +172,7 @@ require_once("./include/_bottom.php");
                 }
             })
         }, 3000);
+        
     }
 
     function check_form() {
@@ -156,7 +203,7 @@ require_once("./include/_bottom.php");
         $("#outmsg").html("讀取資料中...");
         $("#outmsg").show();
         $.ajax({
-            url: 'ad_fun_counts.asp?st=send',
+            url: 'ad_fun_counts_ajax.php?st=send',
             data: {
                 start_time: $("#start_time").val(),
                 ostart_time: $("#start_time").val(),

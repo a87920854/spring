@@ -1,8 +1,99 @@
 <?php
-require_once("./include/_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
+    /*****************************************/
+    //檔案名稱：ad_b2b_apply_list.php
+    //後台對應位置：好好玩管理系統/同業報名單管理
+    //改版日期：2021.12.21
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+
+    // 刪除
+    if($_REQUEST["st"] == "del"){
+        $SQL = "delete from love_keyin2 where k_id=".SqlFilter($_REQUEST["kid"],"int")."'";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("win_close.php?m=刪除中...");
+        }
+    }
+
+    $default_sql_num = 500;
+
+    if($_REQUEST["vst"] == "full"){
+        $sqlv = "*";
+        $sqlv2 = "count(k_id)";
+    }else{
+        $sqlv = "top ".$default_sql_num." *";
+        $sqlv2 = "count(k_id)";
+    }    
+
+    if($_REQUEST["s1"] != ""){
+        $sqlss = $sqlss . " and (mem_name2 like '%".SqlFilter($_REQUEST["s1"],"tab")."%' or mem_name3 like '%".SqlFilter($_REQUEST["s1"],"tab")."%')";
+    }
+
+    if($_REQUEST["s2"] != ""){
+        $cs2 = reset_number(SqlFilter($_REQUEST["s2"],"tab"));
+        $sqlss = $sqlss . " and (mem_phone like '%".$cs2."%' or mem_mobile like '%".$cs2."%')";
+    }
+
+    if($_REQUEST["s3"] != ""){
+        $sqlss = $sqlss . " and mem_name like N'%".SqlFilter($_REQUEST["s3"],"tab")."%'";
+    }
+
+    // 總筆數
+    $sqls2 = "SELECT ".$sqlv2." as total_size FROM love_keyin2 WHERE b2b=1";
+    $sqls2 = $sqls2 . $sqlss;
+
+    $rs = $FunConn->prepare($sqls2);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if (!$result){
+        $total_size = 0;
+    }else{
+        if( $_REQUEST["vst"] == "full" ){
+            $total_size = $result["total_size"]; //總筆數
+        }else{
+            if($result["total_size"] > 500 ) {
+                $total_size =  500; //限制到500筆
+            }else{
+                $total_size =  $result["total_size"];
+            }   
+        }
+    }	
+    $tPage = 1; //目前頁數
+    $tPageSize = 50; //每頁幾筆
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 50;
+	}else{
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));	}
+
+    // sql
+    $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM love_keyin2 WHERE b2b=1";
+    $sqls = $sqls . $sqlss ." order by k_time desc ) t1 order by k_time) t2 order by k_time desc";
+
+    if($_SESSION["MM_UserAuthorization"] == "pay"){
+        $total_size = 10;
+    }
+    
+    if( $_REQUEST["vst"] == "full" ){
+        $total_size = $total_size . "　<a href='?vst=n'>[查看前五百筆]</a>";
+    }else{
+        if( $total_size > 500 ) $total_size = 500;
+        $total_size = $total_size . "　<a href='?vst=full'>[查看完整清單]</a>";
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -22,7 +113,7 @@ require_once("./include/_sidebar.php")
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>同業報名單管理 - 數量：1　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>同業報名單管理 - 數量：<?php echo $total_size; ?></strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -65,39 +156,57 @@ require_once("./include/_sidebar.php")
                         </tr>
                     </thead>
                     <tbody>
-
-                        <tr>
-                            <td class="center">2015/3/13</td>
-                            <td><a href="ad_fun_action_list_singup2.php?ac=1902&da=2015/3/13" target="_blank">【玩雪趣】首爾奇遇篇</a></td>
-                            <td class="center">RQ:1</td>
-                            <td class="center">25800</td>
-                            <td class="center">32414</td>
-                            <td class="center">2014/9/22 上午 11:28:00</td>
-                            <td class="center">2</td>
-                            <td class="center">1</td>
-                            <td class="center">3</td>
-                            <td class="center">好好玩旅行社-彭尹萱</td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="ad_fun_action_list_singup2.php?ac=1902&da=2015/3/13" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-
-                                        <li><a href="javascript:Mars_popup('ad_b2b_appy_list_fix.php?kid=32414','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');"><i class="icon-file"></i> 修改</a></li>
-
-                                        <li><a href="javascript:Mars_popup2('ad_b2b_apply_list.php?st=del&kid=32414','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
-
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-
+                        <?php 
+                            $rs = $FunConn->prepare($sqls);                            
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=11 height=200>目前沒有資料</td></tr>";
+                            }else{ 
+                                foreach($result as $re){ ?>
+                                    <tr>
+                                        <td class="center"><?php echo Date_EN($re["action_time"],1); ?></td>
+                                        <td><a href="ad_fun_action_list_singup2.php?ac=<?php echo $re["ac_auto"]; ?>&da=<?php echo $re["action_time"]; ?>" target="_blank"><?php echo $re["action_title"]; ?></a></td>
+                                        <td class="center"><?php echo $re["b2bkind"]; ?>:<?php echo $re["sizes"]; ?></td>
+                                        <td class="center"><?php echo $re["k_money"]; ?></td>
+                                        <td class="center"><?php echo $re["k_id"]; ?></td>
+                                        <td class="center"><?php echo changeDate($re["k_time"]); ?></td>
+                                        <td class="center"><?php echo $re["t11"]; ?></td>
+                                        <td class="center"><?php echo $re["t12"]; ?></td>
+                                        <td class="center"><?php echo $re["t13"]; ?></td>
+                                        <td class="center">
+                                            <?php 
+                                                if($re["all_single"] != ""){
+                                                    echo $re["all_branch"]."-".SingleName($re["all_single"],"normal");
+                                                }
+                                            ?>
+                                        </td>
+                                        <td class="center">
+                                            <div class="btn-group">
+                                                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                                <ul class="dropdown-menu pull-right">
+                                                    <li><a href="ad_fun_action_list_singup2.php?ac=<?php echo $re["ac_auto"]; ?>&da=<?php echo $re["action_time"]; ?>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                                    <?php 
+                                                        if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch"){
+                                                            echo "<li><a href=\"javascript:Mars_popup('ad_b2b_appy_list_fix.php?kid=".$re["k_id"]."','','status=yes,menubar=yes,scrollbars=yes,resizable=yes,width=680,height=600,top=10,left=10');\"><i class='icon-file'></i> 修改</a></li>";
+                                                        }
+                                                        if($_SESSION["MM_UserAuthorization"] == "admin"){
+                                                            echo "<li><a href=\"javascript:Mars_popup2('ad_b2b_apply_list.php?st=del&kid=".$re["k_id"]."','','width=300,height=200,top=100,left=100')\"><i class='icon-trash'></i> 刪除</a></li>";
+                                                        }
+                                                    ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php }
+                            }
+                        ?>
                     </tbody>
                 </table>
             </div>
+            <?php require_once("./include/_page.php"); ?>
         </div>
-        <!--/span-->
-
+        <!--/span-->        
     </div>
     <!--/row-->
 
@@ -107,16 +216,10 @@ require_once("./include/_sidebar.php")
 <!-- /MIDDLE -->
 
 <?php
-require_once("./include/_bottom.php");
+    require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
-    $(function() {
-
-
-
-    });
-
     function chk_search_form() {
         if (!$("#keyword_type").val()) {
             alert("請選擇要搜尋的類型。");
@@ -128,7 +231,7 @@ require_once("./include/_bottom.php");
             $("#keyword").focus();
             return false;
         }
-        location.href = "ad_b2b_mem.php?sear=1&vst=&s99=&" + $("#keyword_type").val() + "=" + $("#keyword").val();
+        location.href = "ad_b2b_mem.php?sear=1&vst=<?php echo SqlFilter($_REQUEST["vst"],"tab"); ?>&s99=<?php echo SqlFilter($_REQUEST["s99"],"tab"); ?>&" + $("#keyword_type").val() + "=" + $("#keyword").val();
         return false;
     }
 </script>
