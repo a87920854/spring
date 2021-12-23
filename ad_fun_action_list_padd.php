@@ -23,7 +23,7 @@
     // 新增資料
     if($_REQUEST["st"] == "add"){
         $ttime = SqlFilter($_REQUEST["k_year1"],"int") . "/" . SqlFilter($_REQUEST["k_year2"],"int") . "/" . SqlFilter($_REQUEST["k_year3"],"int");
-        if(chkDate($ttime)){
+        if(!chkDate($ttime)){
             call_alert("請選擇生日。",0,0);
         }
         if($_REQUEST["a"] == "b"){

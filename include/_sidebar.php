@@ -72,6 +72,8 @@
 						  
 	//lconstr = "Provider=SQLOLEDB;Persist Security Info=False;UID=lab;PWD=lab22225988;Initial Catalog=springclub;Data Source=127.0.0.1;"
 ?>
+<!-- header -->
+<?php require_once("_topmenu.php");?>
 <!-- aside -->
 <aside id="aside" class="no-print">
     <nav id="sideNav">
@@ -992,4 +994,3 @@
     </nav>
     <span id="asidebg"></span>
 </aside>
-<?php require_once("_topmenu.php");?>

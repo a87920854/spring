@@ -87,7 +87,8 @@
 	if ( $tPageSize*$tPage < $total_size ){
 		$page2 = 50;
 	}else{
-		$page2 = (50-(($tPageSize*$tPage)-$total_size));	}
+		$page2 = (50-(($tPageSize*$tPage)-$total_size));
+    }
 
     // sql
     $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM b2b_member WHERE 1 = 1";
