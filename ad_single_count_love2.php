@@ -18,7 +18,7 @@
         $yy = SqlFilter($_REQUEST["yy"],"tab");
         $branch = SqlFilter($_REQUEST["branch"],"tab");
         $shown = SqlFilter($_REQUEST["shown"],"tab");
-        $ii = cint($_REQUEST["ii"]);
+        $ii = intval($_REQUEST["ii"]);
         if ( $topage == 1 ){
             $ii = 1;
             echo "<table id='outtable' width='100%' height='80' align='center' class='table table-striped table-bordered bootstrap-datatable'>";
@@ -42,7 +42,7 @@
             //qsql = " and p_work=1";
             $subSQL = " And p_work = 1";
         }
-        
+
         $oldbranch = $branch;
         if ( $branch != "" ){
             $branch = str_replace(",", "','", $branch);
@@ -82,48 +82,44 @@
             foreach($result as $re){
                 $ii++;
                 echo "<tr>";
-                echo "<td>".ii&"</td>";
+                echo "<td>".$ii."</td>";
                 echo "<td>".$re["p_branch"]."</td>";
                 echo "<td>".$re["p_name"]."</td>";	
                 echo "<td>".$re["p_job2"]."</td>";
                 for ( $i=1;$i<=12;$i++){
                     $fday = $yy."/".$i."/1 00:00";
-                    $lday = dateadd("m", 1, $fday ) - 1 ." 23:59"
-
-                    date("m",strtotime("-1 day"));
-                           qrs.open "select sum(score) as ls from love_data_re where love_data_re.love_time2 BETWEEN '"&fday&"' AND '"&lday&"' and (love_data_re.all_single = '"&rs("p_user")&"' OR love_data_re.all_single2 = '"&rs("p_user")&"')", SPCon, 1, 1
-                           if not qrs.eof then
-                               ls = qrs("ls")
-                           else
-                               ls = 0
-                           end if
-                           qrs.close
-                           response.write "<td>"&ls&"</td>"
-                           next
-                                    lovecount = rs("lovecount")
-                                    if lovecount = "" or isnull(lovecount) then
-                                        lovecount = 0
-                                    end if
-                      response.write "<td>"&lovecount&"</td>"
-                       response.write "</tr>"
-                       ii = ii+1
-                       rs.MoveNext
-                      Loop
-                      End IF
-                      rs.close
-                      
-          set rs=nothing
-          if topage = TotalPage then
-              response.write "<script type=""text/javascript"">button_set(1);outmsg_show(""已讀取 "&TotalPage&" 資料完畢。"");</script>"
-          else          
-            response.write "<script type=""text/javascript"">outmsg_show(""目前讀取 "&topage&" / "&TotalPage&" 資料..請稍候..<img src='img/wait_loading.gif' align='middle'>"");conutice_ajax('"&yy&"','"&oldbranch&"','"&shown&"','"&ii&"', '"&topage&"')</script>"
-          end if
-  
-  response.end
-  end if
-
-
-
+                    //echo  $fday;
+                    //$lday = date("m", 1, $fday ) - 1 ." 23:59";
+                    $lday = date("m",date($fday,strtotime('+1 mouth')))." 23:59";
+                    $SQL_s  = "Select Sum(score) As ls From love_data_re Where love_data_re.love_time2 Between '".$fday."' And '".$lday."' ";
+                    $SQL_s .= "And (love_data_re.all_single = '".$re["p_user"]."' Or love_data_re.all_single2 = '".$re["p_user"]."')";
+                    $rs_s = $SPConn->prepare($SQL_s);
+                    $rs_s->execute();
+                    $result_s=$rs_s->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($result_s as $re_s);
+                    if ( count($result_s) > 0 ) {
+                        $ls = $re_s["ls"];
+                    }else{
+                        $ls = 0;
+                    }
+                    echo "<td>".$ls."</td>";
+                }
+                $lovecount = $re_s["lovecount"];
+                if ( $lovecount == "" || is_null($lovecount) ){
+                    $lovecount = 0;
+                }
+                echo "<td>".$lovecount."</td>";
+                echo "</tr>";
+            }
+            
+        }
+        if ( $topage == $TotalPage ){
+            echo "<script type='text/javascript'>button_set(1);outmsg_show('已讀取 ".$TotalPage." 資料完畢。');</script>";
+        }else{
+            echo "<script type='text/javascript'>outmsg_show('目前讀取 ".$topage." / ".$TotalPage." 資料..請稍候..<img src='img/wait_loading.gif' align='middle'>');conutice_ajax('".$yy."','".$oldbranch."','".$shown."','".$ii."', '".$topage."')</script>";
+        }
+        exit;
+    }
 ?>
 <!-- MIDDLE -->
 <section id="middle">
@@ -142,168 +138,62 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>排約人次統計 - 總表</strong> <!-- panel title -->
+                    <strong>排約人次統計 - 總表<?php if ( $_SESSION["lovebranch"] != "" ){ echo " - ".$_SESSION["lovebranch"]; }?></strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
+                <?php
+                $date1 = date("Y")."/1/1";
+                $date2 = date("Y")."/12/31";
+                $showbranch = "";
+
+                if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                    $showbranch = get_branch("好好玩旅行社,線上諮詢");
+                }elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+                    $showbranch = $_SESSION["lovebranch"];
+                }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" || $_SESSION["MM_UserAuthorization"] == "manager" ){
+                    $showbranch = $_SESSION["branch"];
+                }
+
+                if ( $showbranch == "" ){ $showbranch = $_SESSION["branch"];}
+                $showbranch = clear_left_par($showbranch, ",");
+                ?>
 
                 <form id="sform" action="?st=search" method="post" target="_self" onsubmit="return sends()">
                     <p>
                         <select name="yy" id="yy">
-                            <option value="2014">2014 年</option>
-                            <option value="2015">2015 年</option>
-                            <option value="2016">2016 年</option>
-                            <option value="2017">2017 年</option>
-                            <option value="2018">2018 年</option>
-                            <option value="2019">2019 年</option>
-                            <option value="2020">2020 年</option>
-                            <option value="2021" selected>2021 年</option>
-
+                            <?php
+							for ( $i=2014;$i<=date("Y");$i++){
+                                echo "<option value='".$i."'";
+                                if ( $i == date("Y") ){ echo " selected";}
+                                echo ">".$i." 年</option>";
+                            }
+                            ?>	
                         </select>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label><input type="checkbox" name="branch" value="台北"> 台北</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="桃園"> 桃園</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="新竹"> 新竹</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台中"> 台中</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台南"> 台南</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="高雄"> 高雄</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="八德"> 八德</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="約專"> 約專</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="迷你約"> 迷你約</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="總管理處"> 總管理處</label>&nbsp;&nbsp;
+                        <?php
+							$rbranch = $_REQUEST["branchs"];
+							if ( $rbranch != "" ){
+							    $rbranch = trim(str_replace($rbranch, " ", ""));
+                            }
+                            $showbranch_array = explode(",", substr($showbranch, 0, -1));
+                        
+                            for ( $a=1;$a<count($showbranch_array);$a++ ){
+                                echo "<label><input type='checkbox' name='branchs' id='branchs' value='".$showbranch_array[$a-1]."'>&nbsp;".$showbranch_array[$a-1]." </label>&nbsp;&nbsp;";
+                            }
+						?>
                         <label><input type="checkbox" name="shown" value="1"> 顯示離職</label>
                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="送出" class="btn btn-default" style="margin-top:-8px">
                     </p>
                 </form>
 
-                <div id="outdiv">
-                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
-                        <tbody>
-                            <tr>
-                                <th width="40">NO</th>
-                                <th>會館</th>
-                                <th>姓名</th>
-                                <th>職稱</th>
-                                <th>2020年一月</th>
-                                <th>二月</th>
-                                <th>三月</th>
-                                <th>四月</th>
-                                <th>五月</th>
-                                <th>六月</th>
-                                <th>七月</th>
-                                <th>八月</th>
-                                <th>九月</th>
-                                <th>十月</th>
-                                <th>十一月</th>
-                                <th>十二月</th>
-                                <th>排約次數</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>台北</td>
-                                <td>余宗嶼</td>
-                                <td>服務部督導</td>
-                                <td>145</td>
-                                <td>212</td>
-                                <td>201</td>
-                                <td>276</td>
-                                <td>236</td>
-                                <td>175</td>
-                                <td>263</td>
-                                <td>226</td>
-                                <td>186</td>
-                                <td>214</td>
-                                <td>203</td>
-                                <td>194</td>
-                                <td>2531</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>台北</td>
-                                <td>林馨彤</td>
-                                <td>排約秘書</td>
-                                <td>92</td>
-                                <td>144</td>
-                                <td>97</td>
-                                <td>141</td>
-                                <td>159</td>
-                                <td>108</td>
-                                <td>141</td>
-                                <td>172</td>
-                                <td>156</td>
-                                <td>142</td>
-                                <td>140</td>
-                                <td>165</td>
-                                <td>1657</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>台北</td>
-                                <td>李至喬</td>
-                                <td>愛情顧問</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>24</td>
-                                <td>53</td>
-                                <td>65</td>
-                                <td>66</td>
-                                <td>208</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>台北</td>
-                                <td>高語鍹</td>
-                                <td>客戶經理</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>5</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>台北</td>
-                                <td>台北督導</td>
-                                <td>督導</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>1</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>1</td>
-                            </tr>
-                            <script type="text/javascript">
-                                button_set(1);
-                                outmsg_show("已讀取 1 資料完畢。");
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="outmsg" height=20 style="font-size:12px;display:none">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
-
+                <div id="outdiv"></div>
+                <div id="outmsg" height=20 style="font-size:12px;display:none">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>			
             </div>
-        </div>
-        <!--/span-->
-
-    </div>
-    <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
-</section>
-<!-- /MIDDLE -->
+        </div><!--/span--> 
+    </div><!--/row-->
+		
+</section><!--/.fluid-container-->
 
 <?php
 require_once("./include/_bottom.php");
@@ -316,16 +206,15 @@ require_once("./include/_bottom.php");
     });
 
     function sends() {
-        $cbx_group = $("input:checkbox[name='branch']");
+        $cbx_group = $("input:checkbox[name='branchs']");
         if (!$cbx_group.is(":checked")) {
             alert("請選擇會館。");
             return false;
         }
 
-        $bv = $("input:checkbox[name='branch']:checked").map(function(_, el) {
+        $bv = $("input:checkbox[name='branchs']:checked").map(function(_, el) {
             return $(el).val();
         }).get().join(",");
-
         button_set(0);
         if ($("#outtable")) $("#outtable").html("");
         $("#outmsg").html("讀取資料中...<img src='img/wait_loading.gif' align='middle'>");
@@ -338,10 +227,12 @@ require_once("./include/_bottom.php");
                 shown: $("#shown").val()
             },
             error: function(xhr) {
+                console.log(xhr);
                 alert('Ajax request 發生錯誤');
                 button_set(1);
             },
             success: function(response) {
+                alert(response)
                 $("#outdiv").html(response);
             }
         });
