@@ -19,7 +19,7 @@
             <h3> --- 好好玩國內網站系統 ---</h3>
             <li><a href="funweb_fun7.php"><i class="main-icon fa fa-folder-open"></i><span> 首頁最新消息</span></a></li>						
             <li><a href="funweb_fun8.php"><i class="main-icon fa fa-folder-open"></i><span> 媒體報導</span></a></li>						
-            <h3> --- 好好玩網站系統(2002新) ---</h3>
+            <h3> --- 好好玩網站系統(2020新) ---</h3>
             <li><a href="funweb_fun10.php"><i class="main-icon fa fa-list-alt"></i><span> 首頁上方大圖</span></a></li>						
 
             <li><a href="funweb_fun12.php"><i class="main-icon fa fa-list-alt"></i><span> 活動列表上方大圖</span></a></li>						

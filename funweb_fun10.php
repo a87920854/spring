@@ -1,8 +1,72 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：funweb_index.php
+    //後台對應位置：好好玩網站管理系統/首頁上方大圖
+    //改版日期：2021.12.27
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar_fun.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["funtourpm"] != "1"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    // 圖片上移
+    if($_REQUEST["st"] == "mup"){
+        $nowline = round(SqlFilter($_REQUEST["i1"],"int"));
+        $upline = $nowline+1;
+        $SQL = "update web_data set i1=".$nowline." where types='".SqlFilter($_REQUEST["t"],"tab")."' and i1=".$upline;
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $SQL = "update web_data set i1=".$upline." where types='".SqlFilter($_REQUEST["t"],"tab")."' and auton=".SqlFilter($_REQUEST["an"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("funweb_fun10.php");
+        }
+    }
+
+    // 圖片下移
+    if($_REQUEST["st"] == "mdo"){
+        $nowline = round(SqlFilter($_REQUEST["i1"],"int"));
+        $upline = $nowline-1;
+        $SQL = "update web_data set i1=".$nowline." where types='".SqlFilter($_REQUEST["t"],"tab")."' and i1=".$upline;
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $SQL = "update web_data set i1=".$upline." where types='".SqlFilter($_REQUEST["t"],"tab")."' and auton=".SqlFilter($_REQUEST["an"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("funweb_fun10.php");
+        }
+    }
+
+    // 刪除圖片(待測試)
+    if($_REQUEST["st"] == "del"){
+        $SQL = "select n1 from web_data where auton=".SqlFilter($_REQUEST["an"],"int")." and types='".SqlFilter($_REQUEST["t"],"tab")."'";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            DelFile(("../funtour/images/upload/".$result["n1"]));
+            $SQL = "delete from web_data where auton=".SqlFilter($_REQUEST["an"],"int")." and types='".SqlFilter($_REQUEST["t"],"tab")."'";
+            $rs = $FunConn->prepare($SQL);
+            $rs->execute();
+            if($rs){
+                reURL("funweb_fun10.php");
+            }
+        }        
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -38,29 +102,43 @@ require_once("./include/_sidebar.php");
                             <th width="160">資料時間</th>
                             <th>操作</th>
                         </tr>
-
-                        <tr>
-                            <td><a href="#nu" onclick="alert('無法向上');"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="?st=mdo&t=new_index_banner&an=241&i1=2"><span class="fa fa-arrow-down"></span></a></td>
-                            <td><a href="https://www.funtour.com.tw/images/upload/ib241.jpg?t=578" class="fancybox"><img src="https://www.funtour.com.tw/images/upload/ib241.jpg?t=578" border=0 height=40></a></td>
-                            <td>2</td>
-                            <td>2020-02-10 14:48</td>
-                            <td>
-                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=241','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
-                                <a title="刪除" href="funweb_fun10.php?st=del&t=new_index_banner&an=241">刪除</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><a href="?st=mup&t=new_index_banner&an=240&i1=1"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="#nu" onclick="alert('無法向下');"><span class="fa fa-arrow-down"></span></a></td>
-                            <td><a href="https://www.funtour.com.tw/images/upload/ib240.jpg?t=6953" class="fancybox"><img src="https://www.funtour.com.tw/images/upload/ib240.jpg?t=6953" border=0 height=40></a></td>
-                            <td>1</td>
-                            <td>2020-02-10 14:47</td>
-                            <td>
-                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=240','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
-                                <a title="刪除" href="funweb_fun10.php?st=del&t=new_index_banner&an=240">刪除</a>
-                            </td>
-                        </tr>
-
+                        <?php
+                            $SQL = "SELECT * FROM web_data where types='new_index_banner' order by i1 desc";
+                            $rs = $FunConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=5>目前無資料</td></tr>";
+                            }else{
+                                $ii = 0;
+                                foreach($result as $re){
+                                    if($ii == 0){
+                                        $uahref = "#nu\" onclick=\"alert('無法向上');\"";
+                                    }else{
+                                        $uahref = "?st=mup&t=new_index_banner&an=".$re["auton"]."&i1=".$re["i1"];
+                                    }
+                                    $imgurl = "https://www.funtour.com.tw/images/upload/".$re["n1"]."?t=".rand(1,9999);
+                                    if($ii == count($result)-1){
+                                        $dahref = "#nu\" onclick=\"alert('無法向下');\"";
+                                    }else{
+                                        $dahref = "?st=mdo&t=new_index_banner&an=".$re["auton"]."&i1=".$re["i1"];
+                                    }
+                                    ?>
+                                        <tr>
+                                            <td><a href="<?php echo $uahref; ?>"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="<?php echo $dahref; ?>"><span class="fa fa-arrow-down"></span></a></td>
+                                            <td><a href="<?php echo $imgurl; ?>" class="fancybox"><img src="<?php echo $imgurl; ?>" border=0 height=40></a></td>
+                                            <td><?php echo $re["n2"]; ?></td>
+                                            <td><?php echo Date_EN($re["t1"],9); ?></td>
+                                            <td>
+                                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=<?php echo $re["auton"]; ?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
+                                                <a title="刪除" href="funweb_fun10.php?st=del&t=new_index_banner&an=<?php echo $re["auton"]; ?>">刪除</a>						
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    $ii = $ii+1;
+                                }
+                            }
+                        ?>
 
                     </tbody>
                 </table>
@@ -74,29 +152,43 @@ require_once("./include/_sidebar.php");
                             <th width="160">資料時間</th>
                             <th>操作</th>
                         </tr>
-
-                        <tr>
-                            <td><a href="#nu" onclick="alert('無法向上');"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="?st=mdo&t=new_index_banner_m&an=243&i1=2"><span class="fa fa-arrow-down"></span></a></td>
-                            <td><a href="https://www.funtour.com.tw/images/upload/ib243.jpg?t=4373" class="fancybox"><img src="https://www.funtour.com.tw/images/upload/ib243.jpg?t=4373" border=0 height=40></a></td>
-                            <td>2</td>
-                            <td>2020-02-10 14:49</td>
-                            <td>
-                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=243','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
-                                <a title="刪除" href="funweb_fun10.php?st=del&t=new_index_banner_m&an=243">刪除</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><a href="?st=mup&t=new_index_banner_m&an=242&i1=1"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="#nu" onclick="alert('無法向下');"><span class="fa fa-arrow-down"></span></a></td>
-                            <td><a href="https://www.funtour.com.tw/images/upload/ib242.jpg?t=6846" class="fancybox"><img src="https://www.funtour.com.tw/images/upload/ib242.jpg?t=6846" border=0 height=40></a></td>
-                            <td>1</td>
-                            <td>2020-02-10 14:48</td>
-                            <td>
-                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=242','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
-                                <a title="刪除" href="funweb_fun10.php?st=del&t=new_index_banner_m&an=242">刪除</a>
-                            </td>
-                        </tr>
-
+                        <?php
+                            $SQL = "SELECT * FROM web_data where types='new_index_banner_m' order by i1 desc";
+                            $rs = $FunConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=5>目前無資料</td></tr>";
+                            }else{
+                                $ii = 0;
+                                foreach($result as $re){
+                                    if($ii == 0){
+                                        $uahref = "#nu\" onclick=\"alert('無法向上');\"";
+                                    }else{
+                                        $uahref = "?st=mup&t=new_index_banner_m&an=".$re["auton"]."&i1=".$re["i1"];
+                                    }                                    
+                                    if($ii == count($result)-1){
+                                        $dahref = "#nu\" onclick=\"alert('無法向下');\"";
+                                    }else{
+                                        $dahref = "?st=mdo&t=new_index_banner_m&an=".$re["auton"]."&i1=".$re["i1"];
+                                    }
+                                    $imgurl = "https://www.funtour.com.tw/images/upload/".$re["n1"]."?t=".rand(1,9999);
+                                    ?>
+                                        <tr>
+                                            <td><a href="<?php echo $uahref; ?>"><span class="fa fa-arrow-up margin-left-10 margin-right-10"></span></a><a href="<?php echo $dahref; ?>"><span class="fa fa-arrow-down"></span></a></td>
+                                            <td><a href="<?php echo $imgurl; ?>" class="fancybox"><img src="<?php echo $imgurl; ?>" border=0 height=40></a></td>
+                                            <td><?php echo $re["n2"]; ?></td>
+                                            <td><?php echo Date_EN($re["t1"],9); ?></td>
+                                            <td>
+                                                <a href="javascript:Mars_popup('funweb_fun10_add.php?an=<?php echo $re["auton"]; ?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=10,left=10');">編輯</a>
+                                                <a title="刪除" href="funweb_fun10.asp?st=del&t=new_index_banner_m&an=<?php echo $re["auton"]; ?>">刪除</a>						
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    $ii = $ii+1;
+                                }
+                            }
+                        ?>
 
                     </tbody>
                 </table>

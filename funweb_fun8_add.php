@@ -1,9 +1,126 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：funweb_fun8_add.php
+    //後台對應位置：好好玩網站管理系統/媒體報導->新增/修改媒體報導
+    //改版日期：2021.12.27
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["funtourpm"] != "1"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    // 上移
+    if($_REQUEST["st"] == "up_line"){
+        $nowline = round(SqlFilter($_REQUEST["ad"],"int"));
+        $upline = $nowline+1;
+        $SQL = "update tv_data set t_desc=".$nowline." where t_desc=".$upline;
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $SQL = "update tv_data set t_desc=".$upline." where t_auto=".SqlFilter($_REQUEST["t_auto"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+    }
+
+    // 下移
+    if($_REQUEST["st"] == "down_line"){
+        $nowline = round(SqlFilter($_REQUEST["ad"],"int"));
+        $upline = $nowline-1;
+        $SQL = "update tv_data set t_desc=".$nowline." where t_desc=".$upline;
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $SQL = "update tv_data set t_desc=".$upline." where t_auto=".SqlFilter($_REQUEST["t_auto"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+    }
+
+    // 新增
+    if($_REQUEST["acts"] == "ad"){
+        $SQL = "select top 1 t_desc from tv_data order by t_desc desc";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $ltd = $result["t_desc"] + 1;
+        }
+
+        if($_REQUEST["t_note"] != ""){
+            $t_note = SqlFilter($_REQUEST["t_note"],"tab");
+            $t_note = str_replace(PHP_EOL,"<br>",$t_note);
+        }
+        if($_REQUEST["t_type"] == "1"){
+            $t_type = 1;
+        }else{
+            $t_type = 0;
+        }
+        $SQL =  "INSERT INTO tv_data (t_time, t_title, t_note, t_pic, t_url, t_type, t_name, t_where, t_come, t_desc) VALUES ('"
+                .date("Y/m/d H:i:s")."', '"
+                .SqlFilter($_REQUEST["t_title"],"tab")."', '"
+                .$t_note."', '"
+                .SqlFilter($_REQUEST["t_pic"],"tab")."', '"
+                .SqlFilter($_REQUEST["t_url"],"tab")."', '"
+                .$t_type."', '"
+                .SqlFilter($_REQUEST["t_name"],"tab")."', '"
+                .SqlFilter($_REQUEST["t_where"],"tab")."', '"
+                .SqlFilter($_REQUEST["t_come"],"tab")."', '"
+                .$ltd."')";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("funweb_fun8.php");
+            exit();
+        }
+    }
+
+    //上傳
+    if($_REQUEST["acts"] == "up"){
+        if($_REQUEST["t_note"] != ""){
+            $t_note = SqlFilter($_REQUEST["t_note"],"tab");
+            $t_note = str_replace(PHP_EOL,"<br>",$t_note);
+        }
+        if($_REQUEST["t_note2"] != ""){
+            $t_note = SqlFilter($_REQUEST["t_note2"],"tab");
+        }
+        if($_REQUEST["t_type"] == "1"){
+            $t_type = 1;
+        }else{
+            $t_type = 0;
+        }
+        $SQL =  "UPDATE tv_data SET 
+                t_title = '".SqlFilter($_REQUEST["t_title"],"tab")."', 
+                t_note  = '".$t_note."', 
+                t_pic   = '".SqlFilter($_REQUEST["t_pic"],"tab")."', 
+                t_url   = '".SqlFilter($_REQUEST["t_url"],"tab")."', 
+                t_type  = '".$t_type."', 
+                t_name  = '".SqlFilter($_REQUEST["t_name"],"tab")."', 
+                t_where = '".SqlFilter($_REQUEST["t_where"],"tab")."', 
+                t_come  = '".SqlFilter($_REQUEST["t_come"],"tab")."', 
+                t_descs = '".SqlFilter($_REQUEST["t_descs"],"tab")."'  
+                where t_auto='".SqlFilter($_REQUEST["pid"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("funweb_fun8.php");
+        }
+    }
+
+
 ?>
+
+<link rel="stylesheet" href="css/jquery.fileupload.css">
+<link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-noscript.css"></noscript>
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
 
 <!-- MIDDLE -->
 <section id="middle">
@@ -80,7 +197,7 @@ require_once("./include/_sidebar.php");
                                 <br>
                                 取得 youtube 縮圖：http://img.youtube.com/vi/連結位置/1.jpg<br>
                                 　　　　　　　　　 http://img.youtube.com/vi/連結位置/2.jpg<br>
-                                　　　　　　　　　 http://img.youtube.com/vi/連結位置/3.jpg <br>
+                                　　　　　　　　　 http://img.youtube.com/vi/連結位置/3.jpg<br>
                             </td>
                         </tr>
                         <tr>
@@ -135,7 +252,6 @@ require_once("./include/_bottom.php")
 <script type="text/javascript" src="assets/plugins/jquery/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.fileupload.js"></script>
 <script language="JavaScript">
-    $mtu = "funweb_fun8.";
     var $fsend = 0;
     var $ff;
 
