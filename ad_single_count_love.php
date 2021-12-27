@@ -52,7 +52,11 @@
                         <?php
                         $shown = SqlFilter($_REQUEST["shown"],"tab");
                         $rbranch = $_POST["branch"];
-                        $rbranch_array = implode (",", $rbranch);
+                        $rbranch_array = array();
+                        if ( $rbranch <> "" ){
+                            $rbranch_array = implode (",", $rbranch);
+                        }
+                        
                         if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
                             $SQL = "Select * From branch_data Where auto_no<>12 and auto_no<>10 Order By admin_sort";
                             $rs = $SPConn->prepare($SQL);
@@ -60,7 +64,11 @@
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                             foreach($result as $re){?>
                                 <input type="checkbox" name="branch[]" value="<?php echo $re["admin_name"]?>"
-                                <?php if ( in_array($re["admin_name"],$rbranch) ){ echo "checked";}?>> <?php echo $re["admin_name"]?></label>
+                                <?php
+                                if ( $rbranch != "" ){
+                                    if ( in_array($re["admin_name"],$rbranch) ){ echo "checked";}
+                                }?>
+                                > <?php echo $re["admin_name"];?>
                             <?php }?>
                         <?php }else{?>
                             <input type="checkbox" name="branch[]" value="<?php echo $showbranch;?>"> <?php echo $showbranch;?></label>
@@ -70,7 +78,6 @@
                     </p>
                 </form>
                 <table class="table table-striped table-bordered bootstrap-datatable">
-
                     <thead>
                         <tr>
                             <th width=40>NO</th>
@@ -123,7 +130,7 @@
                                 }
 
                                 //工程師帳號顯示SQL語法
-                                if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){ echo $SQL;}
+                                //if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){ echo $SQL;}
 
                                 $rs = $SPConn->prepare($SQL);
                                 $rs->execute();

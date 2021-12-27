@@ -757,4 +757,19 @@
 		}
 	}
 
+	//取得各會館名稱陣列
+	function get_branch($not){
+		$notIn = str_replace(",", "','", $not);
+		$SQL = "Select * From branch_data Where admin_name Not In ('".$notIn."') Order By admin_sort Desc";
+		$SPConn2 = SPConOpen();
+		$rs = $SPConn2->prepare($SQL);
+		$rs->execute();
+		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+		$branch_name = "";
+		foreach($result as $re){
+			$branch_name = $re["admin_name"].",".$branch_name;
+		}
+
+		return $branch_name;
+	}
 ?>
