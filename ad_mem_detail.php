@@ -1247,7 +1247,7 @@
                             <td colspan=4>
                                 <font color=green>受理</font>：<?php echo $mem_branch;?>-<?php echo SingleName($mem_single,"normal");?>
 								<?php if ( $mem_branch2 != "" ){?>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">跨區</font>：<?php echo $mem_branch2?>-<?php echo SingleName($mem_single2);?>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">跨區</font>：<?php echo $mem_branch2?>-<?php echo SingleName($mem_single2,"normal");?>
 								<?php }?>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>排約</font>：
                                 <?php
@@ -1613,7 +1613,7 @@
 										$rs_q->execute();
 										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
 										foreach($result_q as $re_q);
-										if ( count($result_q) > 0 ){
+										if ( $re_q["pp"] > 0 ){
 											$p1 = $rs_q["pp"];
 										}
 										$SQL_q = "Select Count(love_user) As pp FROM love_data_re Where love_user2='".$mem_username."'";

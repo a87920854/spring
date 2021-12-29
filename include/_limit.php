@@ -52,7 +52,7 @@
         }
 	}
 
-	//**您沒有權限 for ad_nofix.php
+	//**您沒有權限
 	if ( $auth_limit == "7" ){
         if ( $_SESSION["MM_UserAuthorization"] == "action" ){
             call_alert("您沒有權限", 1,0);
