@@ -1,8 +1,54 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_market1.php
+    //後台對應位置：管理系統/行銷活動管理
+    //改版日期：2021.12.29
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["funtourpm"] != "1"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    // 新增
+    if($_REQUEST["st"] == "add"){
+        if($_REQUEST["end_time"] != ""){
+            $end_time = SqlFilter($_REQUEST["end_time"],"tab");
+        }else{
+            $end_time = "";
+        }
+        $name = SqlFilter($_REQUEST["name"],"tab");
+        $SQL =  "INSERT INTO marketing_list (name, online_time, end_time, url, web, times) VALUES ('"
+                .$name."', '"
+                .SqlFilter($_REQUEST["online_time"],"tab")."', '"
+                .$end_time."', '"
+                .SqlFilter($_REQUEST["url"],"tab")."', '"
+                .SqlFilter($_REQUEST["web"],"tab")."', '"
+                .date("Y/m/d H:i:s")."')";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $SQL = "SELECT LAST_INSERT_ID()";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch();
+        $SQL = "UPDATE marketing_list SET name = '".($name."-手機版")."' WHERE auton =".$result["auton"];
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("ad_market1.php");
+        }        
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -28,434 +74,68 @@ require_once("./include/_sidebar.php");
             <div class="panel-body">
 
                 <table id="rtable" class="table table-bordered bootstrap-datatable">
-                    <tbody>
+                    <thead>
                         <td>活動名稱</td>
                         <td>上線時間</td>
                         <td>結束時間</td>
                         <td>活動位置</td>
                         <td width="120">類別</td>
                         <td width="60"></td>
-                        <tr>
-                            <td><span>振興5倍券幸福更加倍</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/7</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210927/" target="_blank">https://www.datemenow.com.tw/210927/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>振興5倍券幸福更加倍-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/7</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210927/" target="_blank">https://www.datemenow.com.tw/210927/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>春天會館5倍券</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/5</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210927/" target="_blank">https://www.springclub.com.tw/20210927/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>春天會館5倍券-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/5</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210927/" target="_blank">https://www.springclub.com.tw/20210927/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>幸福五倍券</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/5</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210927/" target="_blank">https://www.singleparty.com.tw/210927/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>幸福五倍券-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/10/5</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210927/" target="_blank">https://www.singleparty.com.tw/210927/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>Online聯誼交友趣</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/7/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.funtour.com.tw/210725" target="_blank">https://www.funtour.com.tw/210725</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>Online聯誼交友趣-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/7/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.funtour.com.tw/210725" target="_blank">https://www.funtour.com.tw/210725</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>窩在家也能開啟浪漫約會</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/7/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210710/" target="_blank">https://www.springclub.com.tw/20210710/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>窩在家也能開啟浪漫約會-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/7/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210710/" target="_blank">https://www.springclub.com.tw/20210710/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>迷你塔羅愛情占卜</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210625" target="_blank">https://www.singleparty.com.tw/210625</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>迷你塔羅愛情占卜-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210625" target="_blank">https://www.singleparty.com.tw/210625</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>單身交友約會聯誼活動</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/25</td>
-                            <td>無</td>
-                            <td><a href="	https://www.springclub.com.tw/20210625" target="_blank"> https://www.springclub.com.tw/20210625</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>單身交友約會聯誼活動-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/25</td>
-                            <td>無</td>
-                            <td><a href="	https://www.springclub.com.tw/20210625" target="_blank"> https://www.springclub.com.tw/20210625</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>讓美好的你遇見美好的他</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210610" target="_blank">https://www.datemenow.com.tw/210610</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>讓美好的你遇見美好的他-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210610" target="_blank">https://www.datemenow.com.tw/210610</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>結合實體與線上的交友新體驗</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/1</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210601" target="_blank">https://www.singleparty.com.tw/210601</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>結合實體與線上的交友新體驗-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/6/1</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210601" target="_blank">https://www.singleparty.com.tw/210601</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>來一場認真安全交友</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/28</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210528/" target="_blank">https://www.springclub.com.tw/20210528/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>來一場認真安全交友-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/28</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210528/" target="_blank">https://www.springclub.com.tw/20210528/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>防疫一起來視訊排約</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/26</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210526" target="_blank">https://www.singleparty.com.tw/210526</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>防疫一起來視訊排約-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/26</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210526" target="_blank">https://www.singleparty.com.tw/210526</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>不出門也要好好談戀愛</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210525" target="_blank">https://www.singleparty.com.tw/210525</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>不出門也要好好談戀愛-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210525" target="_blank">https://www.singleparty.com.tw/210525</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>DMN不出門也要好好談戀愛</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210525/" target="_blank">https://www.datemenow.com.tw/210525/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>DMN不出門也要好好談戀愛-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/210525/" target="_blank">https://www.datemenow.com.tw/210525/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>現代月老陪你戀愛交友</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210525" target="_blank">https://www.springclub.com.tw/20210525</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>現代月老陪你戀愛交友-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210525" target="_blank">https://www.springclub.com.tw/20210525</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>約專簡訊專頁</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210515" target="_blank">https://www.singleparty.com.tw/210515</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>約專簡訊專頁-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/5/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210515" target="_blank">https://www.singleparty.com.tw/210515</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>202104名單</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/4/8</td>
-                            <td>無</td>
-                            <td>無</td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>七分鐘找出你的理想情人</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/3/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210315" target="_blank">https://www.springclub.com.tw/20210315</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>七分鐘找出你的理想情人-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/3/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20210315" target="_blank">https://www.springclub.com.tw/20210315</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>戀愛決勝盤</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/3/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210310/" target="_blank">https://www.singleparty.com.tw/210310/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>戀愛決勝盤-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2021/3/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/210310/" target="_blank">https://www.singleparty.com.tw/210310/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>單身剋星_LINEPOINT</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201225/" target="_blank">https://www.singleparty.com.tw/201225/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>單身剋星_LINEPOINT-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201225/" target="_blank">https://www.singleparty.com.tw/201225/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>女子時光</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/20</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201220/" target="_blank">https://www.singleparty.com.tw/201220/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>女子時光-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/20</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201220/" target="_blank">https://www.singleparty.com.tw/201220/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>天菜底家啦</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201215/" target="_blank">https://www.singleparty.com.tw/201215/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>天菜底家啦-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/201215/" target="_blank">https://www.singleparty.com.tw/201215/</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>線上祈福戀愛御守</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/1</td>
-                            <td>無</td>
-                            <td><a href="	http://www.springclub.com.tw/20201201" target="_blank"> http://www.springclub.com.tw/20201201</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>線上祈福戀愛御守-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/12/1</td>
-                            <td>無</td>
-                            <td><a href="	http://www.springclub.com.tw/20201201" target="_blank"> http://www.springclub.com.tw/20201201</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>2021年12星座愛情指數測驗</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/11/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/201115/" target="_blank">https://www.datemenow.com.tw/201115/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>2021年12星座愛情指數測驗-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/11/15</td>
-                            <td>無</td>
-                            <td><a href="https://www.datemenow.com.tw/201115/" target="_blank">https://www.datemenow.com.tw/201115/</a></td>
-                            <td>DateMeNow</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>小資想婚成家專案</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/9/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/200925" target="_blank">https://www.singleparty.com.tw/200925</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>小資想婚成家專案-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/9/25</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/200925" target="_blank">https://www.singleparty.com.tw/200925</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>你在愛情中是哪一種情人</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/9/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20200910/" target="_blank">https://www.springclub.com.tw/20200910/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>你在愛情中是哪一種情人-手機版</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/9/10</td>
-                            <td>無</td>
-                            <td><a href="https://www.springclub.com.tw/20200910/" target="_blank">https://www.springclub.com.tw/20200910/</a></td>
-                            <td>春天會館</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td><span>七夕振興券活動</span>&nbsp;&nbsp;<span class="label label-success">網頁版</span></td>
-                            <td>2020/8/1</td>
-                            <td>無</td>
-                            <td><a href="https://www.singleparty.com.tw/200801" target="_blank">https://www.singleparty.com.tw/200801</a></td>
-                            <td>約會專家</td>
-                            <td></td>
-                        </tr>
+                    </thead>
+                    <tbody>                        
+                        <?php
+                            $SQL = "select count(auton) as total_size from marketing_list";
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch();
+                            if (!$result){
+                                $total_size = 0;
+                            }else{
+                                $total_size = $result["total_size"]; //總筆數
+                            }
+                            $tPage = 1; //目前頁數
+                            $tPageSize = 50; //每頁幾筆
+                            if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+                            $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+                            if ( $tPageSize*$tPage < $total_size ){
+                                $page2 = 50;
+                            }else{
+                                $page2 = (50-(($tPageSize*$tPage)-$total_size));
+                            }
+
+                            $SQL = "SELECT * FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM marketing_list order by online_time desc ) t1 order by online_time) t2 order by online_time desc";  
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if(!$result){
+                                echo "<tr><td colspan=6 height=200>目前沒有資料</td></tr>";
+                            }else{
+                                foreach($result as $re){
+                                    if($re["end_time"] != ""){
+                                        $end_time = Date_EN($re["end_time"],1);
+                                    }else{
+                                        $end_time = "無";
+                                    }
+                                    if($re["url"] != ""){
+                                        $url = "<a href=".$re["url"]." target='_blank'>".$re["url"]."</a>";
+                                    }else{
+                                        $url = "無";
+                                    }
+                                    echo "<tr>";
+                                    echo "<td><span>".$re["name"]."</span>&nbsp;&nbsp;<span class='label label-success'>網頁版</span></td>";
+                                    echo "<td>".Date_EN($re["online_time"],1)."</td>";
+                                    echo "<td>".$end_time."</td>";
+                                    echo "<td>".$url."</td>";
+					                echo "<td>".$re["web"]."</td>";
+                                    echo "</tr>";
+                                }
+                            }
+                        ?>
                     </tbody>
                 </table>
-                <div>
-                    <div class="text-center">共 181 筆、第 1 頁／共 4 頁&nbsp;&nbsp;
-                        <ul class='pagination pagination-md'>
-                            <li><a href=/ad_market1.php?topage=1>第一頁</a></li>
-                            <li class='active'><a href="#">1</a></li>
-                            <li><a href=/ad_market1.php?topage=2 class='text'>2</a></li>
-                            <li><a href=/ad_market1.php?topage=3 class='text'>3</a></li>
-                            <li><a href=/ad_market1.php?topage=4 class='text'>4</a></li>
-                            <li><a href=/ad_market1.php?topage=2 class='text' title='Next'>下一頁</a></li>
-                            <li><a href=/ad_market1.php?topage=4 class='text'>最後一頁</a></li>
-                            <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                                    <option value="/ad_market1.php?topage=1" selected>1</option>
-                                    <option value="/ad_market1.php?topage=2">2</option>
-                                    <option value="/ad_market1.php?topage=3">3</option>
-                                    <option value="/ad_market1.php?topage=4">4</option>
-                                </select></li>
-                        </ul>
-                    </div>
-                </div>
+
+                <!-- 頁碼 -->
+                <?php require_once("./include/_page.php"); ?>
 
                 <form action="?st=add" method="post" target="_self" onsubmit="return chk_search_form()">
                     <table class="table table-bordered bootstrap-datatable">

@@ -1,52 +1,161 @@
-<meta charset="utf-8" />
+<?php 
+    /*****************************************/ 
+    //檔案名稱：funweb_fun12_add.php
+    //後台對應位置：好好玩網站管理系統/活動列表上方大圖>新增 banner
+    //改版日期：2021.12.28
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
 
-<script src="js/jquery-1.8.3.js"></script>
-<script src="js/jquery-ui.min.js"></script>
-<script src="js/jquery.fileupload.js"></script>
-<link href="css/jquery-ui-1.8.21.custom.css" rel="stylesheet">
-<link id="bs-css" href="css/bootstrap-cerulean.css" rel="stylesheet">
+    require_once("_inc.php");
+    require_once("./include/_function.php");
 
-<link rel="stylesheet" href="css/jquery.fileupload.css">
-<link rel="stylesheet" href="css/jquery.fileupload-ui.css">
-<noscript>
-    <link rel="stylesheet" href="css/jquery.fileupload-noscript.css">
-</noscript>
-<noscript>
-    <link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css">
-</noscript>
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
 
+    // 連結位置更新
+    if($_REQUEST["st"] == "ups"){
+        $an = SqlFilter($_REQUEST["an"],"int");
+        $d1 = SqlFilter($_REQUEST["d1"],"tab");
+        if($an == "" || $d1 == ""){
+            exit();
+        }
+        $SQL = "update web_data set n2='".$d1."' where auton=".$an;
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+    }
+
+    // 上傳圖片
+    if($_REQUEST["st"] == "upload"){
+        $an = SqlFilter($_REQUEST["an"],"int");
+        $d1 = SqlFilter($_REQUEST["d1"],"tab");
+        $types = SqlFilter($_REQUEST["types"],"tab");
+        if($an == ""){
+            $an = 0;
+        }
+        $SQL = "SELECT top 1 i1 FROM web_data where types='".$types."' order by i1 desc";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $i1 = $result["i1"] + 1;
+        }else{
+            $i1 = 1;
+        }
+        $SQL = "SELECT * FROM web_data where auton=".$an." and types='".$types."'";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if(!$result){            
+            $SQL = "INSERT INTO web_data (t1, types, i1) VALUES ('".date("Y/m/d H:i:s")."','".$types."','".$i1."')";
+            $rs = $FunConn->prepare($SQL);
+            $rs->execute();
+            $rs = $FunConn->prepare("LAST_INSERT_ID() AS id");
+            $rs->execute();            
+            $result2 = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result2){
+                $an = $result2["id"];
+            }
+        }else{
+            $old_photo_name = $result["n1"];
+            if($old_photo_name != ""){
+                DelFile(("../funtour/images/upload/".$old_photo_name));
+            }
+        }         
+        if ($_FILES['fileupload']['error'] === UPLOAD_ERR_OK){
+            $ext = pathinfo($_FILES["fileupload"]["name"], PATHINFO_EXTENSION); //附檔名      
+            $fileName = "ib".$an.".".$ext; //檔名
+            $urlpath = "../funtour/images/upload";  //路徑
+            move_uploaded_file($_FILES["fileupload"]["tmp_name"],($urlpath.$fileName)); //儲存檔案
+            $SQL = "update web_data set n2='".$d1."', n1='".$fileName."' where auton=".$an;
+            $rs = $FunConn->prepare($SQL);
+            $rs->execute();
+        }else{                
+            echo "Error: " . $_FILES["fileupload"]["error"];
+        }
+    }
+
+    if($_REQUEST["an"] != ""){
+        $SQL = "SELECT * FROM web_data where auton=".SqlFilter($_REQUEST["an"],"int");
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $d1 = $result["n2"];
+            $img = $result["n1"];
+            $types = $result["types"];
+            if($types == "new_event_banner_m"){
+                $ver = "手機版";
+            }else{
+                $ver = "電腦版";
+            }
+        }
+    }
+
+?>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="js/jquery-1.8.3.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.fileupload.js"></script>
+    <link href="css/jquery-ui-1.8.21.custom.css" rel="stylesheet">
+    <link id="bs-css" href="css/bootstrap-cerulean.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel="stylesheet" href="css/jquery.fileupload-ui.css">
+    <noscript>
+        <link rel="stylesheet" href="css/jquery.fileupload-noscript.css">
+    </noscript>
+    <noscript>
+        <link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css">
+    </noscript>
+</head>
+<body>
 <div style="padding:20px;">
-    <form method="post" action="funweb_fun12.php?st=edit">
+    <form method="post" action="funweb_fun10.php?st=edit">
         <p>
             <label>版面：</label>
-
-            <select name="types" id="types">
-                <option value="">請選擇</option>
-                <option value="new_event_banner">電腦版</option>
-                <option value="new_event_banner_m">手機版</option>
-            </select>
-
-
+            <?php 
+                if($_REQUEST["an"] != ""){
+                    echo $ver;
+                    echo "<input type='hidden' id='types' value='".$types."'>";
+                }else{ ?>
+                    <select name="types" id="types">
+                        <option value="">請選擇</option>                
+                        <option value="new_index_banner">電腦版</option>
+                        <option value="new_index_banner_m">手機版</option>
+                    </select>
+                <?php }            
+            ?>            
         </p>
 
         <p>
             <label>指向連結位置：</label>
-            <input type="text" id="d1" name="d1" value="" size=60 style="height:30px;">
+            <input type="text" id="d1" name="d1" value="<?php echo $d1; ?>" size=60 style="height:30px;">
+            <?php 
+                if($_REQUEST["an"] != ""){ ?>
+                    <button id="edit_link_button" type="button" class="button">修改連結</button><input type="hidden" id="bd1" value="<?php echo $d1; ?>"/>
+                <?php }
+            ?>
         </p>
 
         <p>
             <label>展示圖檔(990x570)：</label>
-
-        <div>
-            <span class="btn btn-info fileinput-button"><span>選擇檔案</span><input data-no-uniform="true" id="fileupload" type="file" class="fileupload" name="fileupload"></span>
-            <div id="progress" class="progress progress-striped" style="display:none">
-                <div class="bar progress-bar progress-bar-lovepy"></div>
+            <div>
+                <span class="btn btn-info fileinput-button"><span>選擇檔案</span><input data-no-uniform="true" id="fileupload" type="file" class="fileupload" name="fileupload"></span>
+                <div id="progress" class="progress progress-striped" style="display:none">
+                    <div class="bar progress-bar progress-bar-lovepy"></div>
+                </div>
             </div>
-        </div>
-
         </p>
-
-
+        <?php 
+            if($img != ""){ ?>
+                <p><?php echo $img; ?><br><img height=80 src="http://www.funtour.com.tw/images/upload/<?php echo $img; ?>?t=<?php echo rand(1,9999); ?>" id="showimg"></p>
+            <?php }
+        ?>
         <button type="submit" class="btn btn-danger" onclick="window.close()" style="width:40%;height:32px;">關閉視窗</button>
     </form>
 </div>
@@ -61,7 +170,7 @@
                 $d1v = $("#d1").val();
 
             $this.fileupload({
-                    url: "funweb_fun12_add.php?st=upload&an=",
+                    url: "funweb_fun12_add.php?st=upload&an=<?php echo SqlFilter($_REQUEST["an"],"int"); ?>",
                     type: "POST",
                     dropZone: $this,
                     dataType: 'html',
@@ -69,7 +178,7 @@
                     done: function(e, data) {
 
                         if (data.result) {
-                            location.href = 'win_close.php?m=上傳完成';
+                            location.href = 'win_close.php?m=上傳完成';                            
                         }
                     },
                     fail: function(e, data) {
@@ -102,7 +211,7 @@
                                 alert("請選擇版面。");
                                 return false;
                             } else {
-                                data.url = "funweb_fun12_add.php?st=upload&types=" + $("#types").val() + "&d1=" + $("#d1").val() + "&an=";
+                                data.url = "funweb_fun12_add.php?st=upload&types=" + $("#types").val() + "&d1=" + $("#d1").val() + "&an=<?php echo SqlFilter($_REQUEST["an"],"int"); ?>";
                                 data.submit();
                             }
                         }
@@ -125,7 +234,7 @@
                 data: {
                     st: "ups",
                     d1: $d1,
-                    an: ""
+                    an: "<?php echo SqlFilter($_REQUEST["an"],"int"); ?>"
                 }
             }).done(function() {
                 location.reload();
@@ -133,3 +242,5 @@
         });
     });
 </script>
+</body>
+</html>

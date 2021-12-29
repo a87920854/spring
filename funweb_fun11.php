@@ -1,8 +1,42 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/
+    //檔案名稱：funweb_fun12.php
+    //後台對應位置：好好玩網站管理系統/活動配對信
+    //改版日期：2021.12.28
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+
+    // ajax
+    if ($_REQUEST["st"] == "read") {
+        $SQL = "select ac_pic, ac_note1 from action_data where ac_auto='" . SqlFilter($_REQUEST["num"], "int") . "'";
+        $rs = $FunConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            echo "err";
+            exit();
+        } else {
+            echo $result["ac_pic"] . "||" . $result["ac_note1"];
+            exit();
+        }
+    }
+
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar_fun.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+    if ($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["funtourpm"] != "1") {
+        call_alert("您沒有查看此頁的權限。", "login.php", 0);
+    }
+
+
 ?>
 
 <!-- MIDDLE -->
@@ -28,7 +62,7 @@ require_once("./include/_sidebar.php");
 
             <div class="panel-body">
 
-                <form action="?st=make" method="post">
+                <form action="funweb_fun11_make.php?st=make" method="post">
 
                     <table cellspacing="0" cellpadding="0" border="0" width="800" align="center" style="background-color: #f5f5f5;">
                         <tr>

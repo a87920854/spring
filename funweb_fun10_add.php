@@ -1,6 +1,6 @@
 <?php 
     /*****************************************/ 
-    //檔案名稱：funweb_index_add.php
+    //檔案名稱：funweb_fun10_add.php
     //後台對應位置：好好玩網站管理系統/首頁上方大圖>新增 banner
     //改版日期：2021.12.27
     //改版設計人員：Jack
@@ -64,7 +64,7 @@
                 DelFile(("../funtour/images/upload/".$old_photo_name));
             }
         }         
-        if ($_FILES['my_file']['error'] === UPLOAD_ERR_OK){
+        if ($_FILES['fileupload']['error'] === UPLOAD_ERR_OK){
             $ext = pathinfo($_FILES["fileupload"]["name"], PATHINFO_EXTENSION); //附檔名      
             $fileName = "ib".$an.".".$ext; //檔名
             $urlpath = "../funtour/images/upload";  //路徑
