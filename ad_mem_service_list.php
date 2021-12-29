@@ -1,10 +1,287 @@
 <?php
-require_once("./include/_inc.php");
+error_reporting(0); 
+/*****************************************/
+//檔案名稱：ad_mem_service_list.php
+//後台對應位置：名單/發送記錄>會員排約次數查詢
+//改版日期：2021.12.29
+//改版設計人員：Jack
+//改版程式人員：Queena
+/*****************************************/
+
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+require_once("./include/_sidebar.php");
 
+$auth_limit = 7;
+require_once("./include/_limit.php");
+
+$default_sql_num = 200;
+
+if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
+  $subSQL1 = "*";
+  //sqlv2 = "count(mem_auto)"
+}else{
+  $subSQL1 = "Top ".$default_sql_num." * ";
+  //sqlv2 = "count(mem_auto)"
+}
+
+$branch = $_REQUEST["branch"];
+echo $branch;
+if ( $branch != "" ){
+    $rbranch = str_replace(",", "','", $branch);
+}
+
+if ( $branch != "" ){
+    if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "love" ){
+        //$subSQL2 = " And (mem_branch in ('".$rbranch."') Or mem_branch2 in ('".$rbranch."'))";
+        $subSQL = " (mem_branch in ('".$rbranch."') Or mem_branch2 in ('".$rbranch."'))";
+    }else{
+      	//$subSQL2 = " And (mem_branch = '".$_SESSION["branch"]."' Or mem_branch2 = '".$_SESSION["branch"]."')";
+        $subSQL = " (mem_branch = '".$_SESSION["branch"]."' Or mem_branch2 = '".$_SESSION["branch"]."')";
+    }
+}else{
+    //$subSQL2 = "And 1 = 0";
+    $subSQL = " 1 = 0";
+}
+
+if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager"){
+    //sqls = "SELECT "&sqlv&"                 FROM member_data WHERE mem_level = 'mem'"&b2sql
+    //sqls2 = "SELECT "&sqlv2&" as total_size FROM member_data WHERE mem_level = 'mem'"&b2sql
+    //$subSQL3 = "mem_level = 'mem'";
+    $subSQL = $subSQL . " And mem_level = 'mem'";
+}elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "manager" ) {
+    //sqls = "SELECT "&sqlv&" FROM member_data Where mem_level = 'mem' and (UPPER(mem_single) = '"&Ucase(Session("MM_username"))&"' or UPPER(mem_single2) = '"&Ucase(Session("MM_username"))&"')"
+    //sqls2 = "SELECT "&sqlv2&" as total_size FROM member_data Where mem_level = 'mem' and (UPPER(mem_single) = '"&Ucase(Session("MM_username"))&"' or UPPER(mem_single2) = '"&Ucase(Session("MM_username"))&"')"
+    //$subSQL3 = "mem_level = 'mem' And ( UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."' Or UPPER(mem_single2) = '".strtoupper($_SESSION["MM_username"])."')";
+    $subSQL = $subSQL . " And mem_level = 'mem' And ( UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."' Or UPPER(mem_single2) = '".strtoupper($_SESSION["MM_username"])."')";
+}elseif ( $_SESSION["MM_UserAuthorization"] == "pay" ){
+    //sqls = "SELECT top 10 * FROM member_data Where mem_level = 'mem'"&b2sql
+    //sqls2 = "SELECT count(mem_auto) as total_size FROM member_data Where mem_level = 'mem'"&b2sql
+    $default_sql_num = "10";
+}
+
+//篩選條件[排約次數-起]
+$lovesize1 = SqlFilter($_REQUEST["lovesize1"],"tab");
+if ( $lovesize1 == "" && ! is_numeric($lovesize1) ){
+	$lovesize1 = 0;
+}
+//篩選條件[排約次數-迄]
+$lovesize2 = SqlFilter($_REQUEST["lovesize2"],"tab");
+if ( $lovesize2 == "" && is_numeric($lovesize2) == false ){
+	$lovesize2 = 5;
+}
+//篩選條件[排約時間-起]
+$lovedate1 = SqlFilter($_REQUEST["lovedate1"],"tab");
+if ( $lovedate1 == "" && ! chkDate($lovedate1) ){
+	$lovedate1 = "";
+}
+//篩選條件[排約時間-迄]
+$lovedate2 = SqlFilter($_REQUEST["lovedate2"],"tab");
+if ( $lovedate2 == "" && ! chkDate($lovedate2) ){
+	$lovedate2 = "";
+}
+//篩選條件[加入時間-起]
+$joindate1 = SqlFilter($_REQUEST["joindate1"],"tab");
+if ( $joindate1 == "" && ! chkDate($joindate1) ){
+	$joindate1 = "";
+}
+//篩選條件[加入時間-迄]
+$joindate2 = SqlFilter($_REQUEST["joindate2"],"tab");
+if ( $joindate2 == "" && ! chkDate($joindate2) ){
+	$joindate2 = "";
+}
+
+//篩選條件語法[排約次數-起]
+if ( $lovesize1 != "" && $lovesize1 >= 0 ){
+    $subSQL = $subSQL . " And love_size2 >='".$lovesize1."'";
+}
+//篩選條件語法[排約次數-迄]
+if ( $lovesize2 != "" && $lovesize2 >= 1 ){
+    $subSQL = $subSQL . " And love_size2 <='".$lovesize2."'";
+}
+//篩選條件語法[排約時間-起]
+if ( $lovedate1 != "" ){
+    $subSQL = $subSQL . " And love_time2 >='".$lovedate1." 00:00'";
+}
+//篩選條件語法[排約時間-迄]
+if ( $lovedate1 != "" ){
+    $subSQL = $subSQL . " And love_time2 <='".$lovedate2." 23:59'";
+}
+//篩選條件語法[加入時間-起]
+if ( $joindate1 != "" ){
+    $subSQL = $subSQL . " And mem_jointime >='".$joindate1." 00:00'";
+}
+//篩選條件語法[加入時間-迄]
+if ( $joindate2 != "" ){
+    $subSQL = $subSQL . " And mem_jointime <='".$joindate2." 23:59'";
+}
+//篩選條件語法[性別]
+$sex = SqlFilter($_REQUEST["sex"],"tab");
+if ( $sex != "" ){
+    $subSQL = $subSQL . " And mem_sex ='".$sex."'";
+}
+
+/*非本頁欄位，可能有其他頁面會submit至此頁，先保留。
+
+If request("s3") <> "" Then
+ sqlss = sqlss & " and mem_name like N'%" + Replace(request("s3"), "'", "''") + "%'"
+End If
+
+If request("s4") <> "" Then
+ sqlss = sqlss & " and mem_num like '%" + Replace(request("s4"), "'", "''") + "%'"
+End If
+
+If request("s5") <> "" Then
+ sqlss = sqlss & " and si_account like '%" + Replace(request("s5"), "'", "''") + "%'"
+End If
+
+If request("s7") <> "" Then
+ sqlss = sqlss & " and (UPPER(mem_single) like '%"&Ucase(request("s7"))&"%' or UPPER(mem_single2) like '%"&Ucase(request("s7"))&"%')"
+End If
+
+If request("s8") <> "" Then
+ sqlss = sqlss & " and mem_come like '%" + Replace(request("s8"), "'", "''") + "%'"
+ 
+If request("s8_1") <> "" Then
+ sqlss = sqlss & " and mem_come2 = '" + Replace(request("s8_1"), "'", "''") + "'"
+End if
+End if
+
+If request("s10") <> "" Then
+ sqlss = sqlss & " and mem_school like '%" + Replace(request("s10"), "'", "''") + "%'"
+End If
+
+If request("s11") <> "" Then
+ sqlss = sqlss & " and mem_branch like '%" + Replace(request("s11"), "'", "''") + "%'"
+End If
+
+If request("m1") <> "" Then
+ sqlss = sqlss & " and mem_bm like '%" + Replace(request("m1"), "'", "''") + "%'"
+End If
+
+If request("d1") <> "" Then
+ sqlss = sqlss & " and mem_bd like '%" + Replace(request("d1"), "'", "''") + "%'"
+End If
+
+If request("s21") <> "" Then
+ sqlss = sqlss & " and mem_sex like '%" + Replace(request("s21"), "'", "''") + "%'"
+End If
+
+If request("s22") <> "" And  request("s22") <> "" Then
+ sqlss = sqlss & " and mem_jy between '"&request("s22")&"' and '"&request("s24")&"'"
+End If
+
+If request("s23") <> "" And  request("s25") <> "" Then
+ sqlss = sqlss & " and mem_jm between '"&request("s23")&"' and '"&request("s25")&"'"
+End If
+
+If request("s26") <> "" Then
+ sqlss = sqlss & " and mem_s1 like '%" + Replace(request("s26"), "'", "''") + "%'"
+End if
+
+If request("s27") <> "" Then
+ sqlss = sqlss & " and mem_by between '"&request("s27")&"' and '"&request("s28")&"'"
+End If
+
+If request("s29") <> "" Then
+ sqlss = sqlss & " and mem_join = '"&request("s29")&"'"
+End If
+
+If request("a1") <> "" Then
+ sqlss = sqlss & " and all_type like '%" + Replace(request("a1"), "'", "''") + "%'"
+End If
+
+If request("s97") <> "" Then
+ sqlss = sqlss & " and mem_cc = '" + Replace(request("s97"), "'", "''") + "'"
+End If
+
+If request("s13") <> "" Then
+ sqlss = sqlss & " and web_level = "&request("s13")&""
+ select case request("s13")
+ Case "2"
+ tshow = "真人認證會員"
+ Case "3","5"
+ tshow = "璀璨會員"
+ Case "4","6"
+ tshow = "璀璨VIP會員"
+ end select
+End If
+
+if tshow = "" then
+	tshow = "所有會員"
+end if
+*/
+
+//排序條件語法
+$od = SqlFilter($_REQUEST["od"],"tab");
+switch ( $od ){
+    case "1":
+        $subSQL7 = " Order By love_size2 Desc";
+        $subSQL71 = " Order By love_size2";
+        break;
+    case "2":
+        $subSQL7 = " Order By love_time2 Desc";
+        $subSQL71 = " Order By love_time2";
+        break;
+    case "3":
+        $subSQL7 = " Order By love_time2 Asc";
+        $subSQL71 = " Order By love_time2";
+        break;
+    case "4":
+        $subSQL7 = " Order By mem_jointime Desc";
+        $subSQL71 = " Order By mem_jointime";
+        break;
+    case "5":
+        $subSQL7 = " Order By mem_jointime Asc";
+        $subSQL71 = " Order By mem_jointime";
+        break;
+    default:
+        $subSQL7 = " Order By love_size2 Asc";
+        $subSQL71 = " Order By love_size2";
+        break;
+}
+
+//取得總筆數
+$SQL = "Select count(mem_auto) As total_size From member_data Where ".$subSQL;
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+if ( count($result) == 0 || $re["total_size"] == 0 ) {
+    $total_size = 0;
+}else{
+    $total_size = $re["total_size"];
+}
+
+//查看清單連結文字
+if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
+    $count_href = "　<a href='?vst=n'>[查看前二百筆]</a>";
+}else{
+    if ( $total_size > 200 ){ $total_size = 200;}
+    $count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
+}
+
+//取得分頁資料
+$tPageSize = 50; //每頁幾筆
+$tPage = 1; //目前頁數
+if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+if ( $tPageSize*$tPage < $total_size ){
+    $page2 = 50;
+}else{
+    $page2 = (50-(($tPageSize*$tPage)-$total_size));
+}
+
+//分頁語法
+$SQL_list  = "Select ".$subSQL1." From (";
+$SQL_list .= "Select TOP ".$page2." * From (";
+$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From member_data Where ".$subSQL." ".$subSQL7.") t1 Where".$subSQL." ".$subSQL71." Asc ) t2 Where".$subSQL." ".$subSQL7." ";
+$rs_list = $SPConn->prepare($SQL_list);
+$rs_list->execute();
+$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
+?>
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -18,874 +295,278 @@ require_once("./include/_sidebar.php")
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
-
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>會員排約次數查詢 - 數量：17　<a href="?vst=full&branch=%E5%8F%B0%E5%8C%97&joindate2=&joindate1=&lovedate2=2021%2F09%2F28&lovedate1=2021%2F09%2F01&lovesize2=5&lovesize1=0&sex=%E7%94%B7">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>會員排約次數查詢 - 數量：<?php echo $total_size;?>　<?php echo $count_href;?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
                 <p style="clear:both">
-                <form id="searchform" action="ad_mem_service_list.php" method="post" target="_self" onsubmit="return chk_search_form()" class="pull-left form-inline">
-                    性別：<select name="sex" style="width:80px;">
-                        <option value="">不拘</option>
-                        <option value="男" selected>男</option>
-                        <option value="女">女</option>
-                    </select>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    排約次數：<input type="number" id="lovesize1" name="lovesize1" style="width:40px;" value="0"> 次以上 <input type="number" id="lovesize2" name="lovesize2" style="width:40px;" value="5"> 次以下</p>
-                    <p>排約時間：<input type="text" id="lovedate1" name="lovedate1" class="datepicker" autocomplete="off" style="width:100px;" value="2021/09/01"> 到 <input type="text" id="lovedate2" name="lovedate2" class="datepicker" autocomplete="off" style="width:100px;" value="2021/09/28">
-                        &nbsp;&nbsp;&nbsp;&nbsp;加入時間：<input type="text" id="joindate1" name="joindate1" class="datepicker" autocomplete="off" style="width:100px;" value=""> 到 <input type="text" id="joindate2" name="joindate2" class="datepicker" autocomplete="off" style="width:100px;" value=""></p>
-                    <p>
-                        <label><input type="checkbox" name="branch" value="台北" checked> 台北</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="桃園"> 桃園</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="新竹"> 新竹</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台中"> 台中</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="台南"> 台南</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="高雄"> 高雄</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="八德"> 八德</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="約專"> 約專</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="迷你約"> 迷你約</label>&nbsp;&nbsp;<label><input type="checkbox" name="branch" value="總管理處"> 總管理處</label>&nbsp;&nbsp;
+                    <form id="searchform" action="ad_mem_service_list.php" method="post" target="_self" onsubmit="return chk_search_form()" class="pull-left form-inline">
+                        性別：<select name="sex" style="width:80px;">
+                            <option value="">不拘</option>
+                            <option value="男"<?php if ( $sex == "男" ){ echo " selected";}?>>男</option>
+                            <option value="女"<?php if ( $sex == "女" ){ echo " selected";}?>>女</option>
+                        </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                    
+                        排約次數：
+                        <input type="number" id="lovesize1" name="lovesize1" style="width:40px;" value="<?php echo $lovesize1;?>"> 次以上 
+                        <input type="number" id="lovesize2" name="lovesize2" style="width:40px;" value="<?php echo $lovesize2;?>"> 次以下
+                        <p>
+                            排約時間：
+                            <input type="text" id="lovedate1" name="lovedate1" class="datepicker" autocomplete="off" style="width:100px;" value="<?php echo $lovedate1;?>"> 到 
+                            <input type="text" id="lovedate2" name="lovedate2" class="datepicker" autocomplete="off" style="width:100px;" value="<?php echo $lovedate2;?>">
+                            　　加入時間：
+                            <input type="text" id="joindate1" name="joindate1" class="datepicker" autocomplete="off" style="width:100px;" value="<?php echo $joindate1;?>"> 到 
+                            <input type="text" id="joindate2" name="joindate2" class="datepicker" autocomplete="off" style="width:100px;" value="<?php echo $joindate2;?>">
+                        </p>
+                        <?php
+                        $showbranch = "";
+						if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                            $showbranch = get_branch('好好玩旅行社');		
+                        }else{
+                            $showbranch = $_SESSION["branch"];
+                        }
+                        $showbranch = clear_left_par($showbranch, ",");
+                        if ( $branch != "" ){
+                            $branch = str_replace(" ", "", $branch);
+                        }
+                        $showbranch = substr($showbranch, 0, -1);
+                        $showbranch = explode(",", $showbranch);
+
+                        for ( $b=0;$b<count($showbranch);$b++ ){
+                            echo "<label><input type='checkbox' name='branch' value='".$showbranch[$b]."'";
+                            if ( in_array( $branch,$showbranch )) { echo " checked";}
+                            echo ">&nbsp;".$showbranch[$b]."</label>&nbsp;&nbsp;";
+                        }
+                        ?>
                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="search_send" class="btn btn-default" value="送出查詢">
-                    </p>
-                </form>
+                    </form>
+                </p>
                 <select name="od" id="od" class="pull-right form-control2" onchange="location.href='ad_mem_service_list.php'+$(this).val()+'&branch=%E5%8F%B0%E5%8C%97&joindate2=&joindate1=&lovedate2=2021%2F09%2F28&lovedate1=2021%2F09%2F01&lovesize2=5&lovesize1=0&sex=%E7%94%B7'">
-                    <option value="?od=0">排約次數從低至高</option>
-                    <option value="?od=1">排約次數從高至低</option>
-                    <option value="?od=2">排約時間從近至遠</option>
-                    <option value="?od=3">排約時間從遠至近</option>
-                    <option value="?od=4">加入時間從近至遠</option>
-                    <option value="?od=5">加入時間從遠至近</option>
+                    <option value="?od=0"<?php if ( $od = "0" ){ echo " selected";}?>>排約次數從低至高</option>
+                    <option value="?od=1"<?php if ( $od = "1" ){ echo " selected";}?>>排約次數從高至低</option>
+                    <option value="?od=2"<?php if ( $od = "2" ){ echo " selected";}?>>排約時間從近至遠</option>
+                    <option value="?od=3"<?php if ( $od = "3" ){ echo " selected";}?>>排約時間從遠至近</option>
+                    <option value="?od=4"<?php if ( $od = "4" ){ echo " selected";}?>>加入時間從近至遠</option>
+                    <option value="?od=5"<?php if ( $od = "5" ){ echo " selected";}?>>加入時間從遠至近</option>
                 </select>
-
-                <table class="table table-striped table-bordered bootstrap-datatable">
-
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>
-                            <th width=180>資料來源</th>
-                            <th width=50>編號</th>
+                            <th width="15%">資料來源</th>
+                            <th width="8%">編號</th>
                             <th>姓名</th>
-                            <th width=50>性別</th>
-                            <th width=120>生日</th>
-                            <th width=60>學歷</th>
-                            <th width=80>排約次數</th>
-                            <th width=160>最後排約</th>
-                            <th width=180>秘書</th>
-                            <th width=60>照片</th>
-                            <th width=80></th>
+                            <th width="4%">性別</th>
+                            <th width="10%">生日</th>
+                            <th width="6%">學歷</th>
+                            <th width="6%">排約次數</th>
+                            <th width="6%">最後排約</th>
+                            <th width="12%">秘書</th>
+                            <th width="6%">照片</th>
+                            <th width="8%"></th>
                         </tr>
                     </thead>
                     <tbody>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2079897</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2079897" target="_blank">林進華</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0933869960" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1967/10/5&nbsp;&nbsp;54 歲</td>
-                            <td class="center">專科</td>
-                            <td class="center">1</td>
-
-                            <td class="center">2021/9/5 下午 03:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 李喬<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>高雄 - 沈海妮
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2079897" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1980935&lu=L121602675&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(14)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/8/28~2022/8/28)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1980935&lu=L121602675&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(14)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 陳紅/陳紅 處理 林進華(主) 與 黃心怡(被) 於 2021/9/5 下午 03:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">行銷活動-九型戀愛人格分析</td>
-                            <td>2081933</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2081933" target="_blank">陳建達</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0921166000" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1986/5/5&nbsp;&nbsp;35 歲</td>
-                            <td class="center">高職</td>
-                            <td class="center">1</td>
-
-                            <td class="center">2021/9/7 下午 08:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 高語鍹<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>台北 - 高語鍹
-                            </td>
-                            <td class="center">
-                                <a href="../photo/20219619658_2081933_262295.jpg?t=4900" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2081933" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1983964&lu=F126722329&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(15)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/9/5~2022/3/5)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1983964&lu=F126722329&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(15)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 李喬/李喬 處理 陳建達(主) 與 羅翊瑄(被) 於 2021/9/7 下午 08:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2078326</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2078326" target="_blank">周偉棚</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0922736375" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1975/9/27&nbsp;&nbsp;46 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/4 下午 03:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 詹明錡<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>高雄 - 王心祈
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2078326" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1978390&lu=F123285810&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(21)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/8/22~2022/8/22)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1978390&lu=F123285810&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(21)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 寶兒FIONA/寶兒FIONA 處理 周偉棚(主) 與 盧宜冠(被) 於 2021/9/4 下午 03:30:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">樂得流水call</td>
-                            <td>2079850</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2079850" target="_blank">陳協和</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0917159141" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1962/9/29&nbsp;&nbsp;59 歲</td>
-                            <td class="center">碩士</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/1 下午 07:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 陳紅<br>
-                                <font color=green>排約：</font>林馨彤<br>
-                                <font color=green>邀約：</font>高雄 - 王心祈
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2079850" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1980888&lu=T120455900&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(23)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/8/28~2022/8/28)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1980888&lu=T120455900&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(23)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 林馨彤/林馨彤 處理 陳協和(主) 與 鄭姵萱(被) 於 2021/9/1 下午 07:30:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">萊優流水call</td>
-                            <td>2079889</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2079889" target="_blank">蔡瀚強</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0968770644" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1991/12/6&nbsp;&nbsp;30 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/4 下午 02:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 高語鍹<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>新竹 - 陳淑惠
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2079889" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1980927&lu=F128400568&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(19)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/8/28~2022/8/28)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1980927&lu=F128400568&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(19)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 李喬/李喬 處理 蔡瀚強(主) 與 馮宛羚(被) 於 2021/9/4 下午 02:30:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">約會專家-網站首頁 [sale-322]</td>
-                            <td>2071239</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2071239" target="_blank">李啟堯</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0978960147" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1991/1/26&nbsp;&nbsp;30 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/2 下午 08:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 易珊<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>桃園 - 江琳
-                            </td>
-                            <td class="center">
-                                <a href="../photo/2021821235149_2071239_407070.jpg?t=236" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2071239" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1969324&lu=F128315546&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(35)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-二年期(2021/8/7~2023/8/7)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1969324&lu=F128315546&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(35)</a>，處理情形：<font color="#FF0000" size="2">約後關懷</font>)
-
-                                內容：9/5 愛之語分析及建議。　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2079077</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2079077" target="_blank">羅聖傑</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0978049790" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1987/2/15&nbsp;&nbsp;34 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/4 下午 04:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 洪儀<br>
-                                <font color=green>排約：</font>陳紅<br>
-                                <font color=green>邀約：</font>高雄 - 蕭雪麗
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2079077" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1980115&lu=F126761835&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(18)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-二年期(2021/8/25~2023/8/25)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1980115&lu=F126761835&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(18)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 陳紅/陳紅 處理 羅聖傑(主) 與 黃鈺淳(被) 於 2021/9/4 下午 04:30:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2080834</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2080834" target="_blank">陳俊龍</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0989847147" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1985/7/18&nbsp;&nbsp;36 歲</td>
-                            <td class="center">碩士</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/4 下午 08:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 易珊<br>
-                                <font color=green>排約：</font>林馨彤<br>
-                                <font color=green>邀約：</font>台南 - 蒙芳敏
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2080834" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1982866&lu=V121174522&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(14)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-二年期(2021/9/1~2023/9/1)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1982866&lu=V121174522&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(14)</a>，處理情形：<font color="#FF0000" size="2">約後關懷</font>)
-
-                                內容：9/5 提約專app及排約禮儀教學　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">行銷活動-九型戀愛人格分析 [SC_Google_GDN]</td>
-                            <td>1907254</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=1907254" target="_blank">張智銘</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0933804705" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1983/5/26&nbsp;&nbsp;38 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">2</td>
-
-                            <td class="center">2021/9/6 下午 08:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 高語鍹<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>台北 - 陳玉涵
-                            </td>
-                            <td class="center">
-                                <a href="../photo/20219291040_1907254_728298.jpg?t=5775" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=1907254" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1712690&lu=N124264053&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(29)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/8/28~2022/2/28)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1712690&lu=N124264053&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(29)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 李喬/李喬 處理 張智銘(主) 與 黃莉鈞(被) 於 2021/9/6 下午 08:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2049392</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2049392" target="_blank">黎台銘</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0982696020" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1972/9/6&nbsp;&nbsp;49 歲</td>
-                            <td class="center">高中</td>
-                            <td class="center">3</td>
-
-                            <td class="center">2021/9/4 下午 02:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 詹明錡<br>
-                                <font color=green>排約：</font>陳紅<br>
-                                <font color=green>邀約：</font>高雄 - 謝璧如
-                            </td>
-                            <td class="center">
-                                <a href="../photo/2021515212118_2049392_502789.jpeg?t=8888" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2049392" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1933618&lu=U120439667&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(20)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/5/8~2022/7/7)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1933618&lu=U120439667&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(20)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 寶兒FIONA/寶兒FIONA 處理 黎台銘(主) 與 盧宜冠(被) 於 2021/9/4 下午 02:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2057246</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2057246" target="_blank">葉凌昇</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0935056602" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1983/8/29&nbsp;&nbsp;38 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">3</td>
-
-                            <td class="center">2021/9/5 下午 04:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 陳紅<br>
-                                <font color=green>排約：</font>陳紅<br>
-                                <font color=green>邀約：</font>台中 - 童芷琳
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2057246" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1946404&lu=K121968329&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(18)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/6/5~2022/6/5)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1946404&lu=K121968329&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(18)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 陳紅/陳紅 處理 葉凌昇(主) 與 黃雅琳(被) 於 2021/9/5 下午 04:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">客人自來電</td>
-                            <td>2062478</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2062478" target="_blank">呂偉達</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0926251051" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1977/5/25&nbsp;&nbsp;44 歲</td>
-                            <td class="center">碩士</td>
-                            <td class="center">3</td>
-
-                            <td class="center">2021/9/4 下午 04:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 易珊<br>
-                                <font color=green>排約：</font>林馨彤<br>
-                                <font color=green>邀約：</font>台北 - 易珊
-                            </td>
-                            <td class="center">
-                                <a href="../photo/202178102024_2062478_174878.jpg?t=7226" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2062478" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1954622&lu=A124336562&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(19)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/6/27~2022/6/27)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1954622&lu=A124336562&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(19)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 林馨彤/林馨彤 處理 呂偉達(主) 與 李筱雯(被) 於 2021/9/4 下午 04:00:00 預訂排約，結果：成功　　<font color=blue>舊：</font>[2021-07-03 16:13]愛情實驗室-合格
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">樂得流水call</td>
-                            <td>2060000</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2060000" target="_blank">周祐生</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0970015325" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1994/2/19&nbsp;&nbsp;27 歲</td>
-                            <td class="center">碩士</td>
-                            <td class="center">4</td>
-
-                            <td class="center">2021/9/6 下午 08:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 高語鍹<br>
-                                <font color=green>排約：</font>李喬<br>
-                                <font color=green>邀約：</font>台南 - 杜佳倩
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2060000" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1951150&lu=F128951793&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(26)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/6/16~2022/6/16)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1951150&lu=F128951793&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(26)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 李喬/李喬 處理 周祐生(主) 與 葉冠伶(被) 於 2021/9/6 下午 08:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">春天網站</td>
-                            <td>1474072</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=1474072" target="_blank">黃柏儒</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0988220167" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1990/12/12&nbsp;&nbsp;31 歲</td>
-                            <td class="center">專科</td>
-                            <td class="center">4</td>
-
-                            <td class="center">2021/9/1 下午 02:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 詹明錡<br>
-                                <font color=green>邀約：</font>高雄 - 不明
-                            </td>
-                            <td class="center">
-                                <a href="../photo/201893235130_1474072_466931.jpeg?t=8561" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=1474072" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1168771&lu=G121812678&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(25)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2018/6/25~2019/6/25)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1168771&lu=G121812678&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(25)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 林馨彤/林馨彤 處理 黃柏儒(主) 與 蔡繼賢(被) 於 2021/9/1 下午 02:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">約會專家-網站首頁 [singleparty_keywords_pay_iProspect]</td>
-                            <td>1823144</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=1823144" target="_blank">陳凱勝</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0917073863" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1991/11/12&nbsp;&nbsp;30 歲</td>
-                            <td class="center">高職</td>
-                            <td class="center">4</td>
-
-                            <td class="center">2021/9/7 下午 08:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 詹明錡<br>
-                                <font color=green>排約：</font>陳紅<br>
-                                <font color=green>邀約：</font>台北 - 詹明錡
-                            </td>
-                            <td class="center">
-                                <a href="../photo/20216519168_1823144_15011.jpg?t=7381" class="fancybox">有</a>
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=1823144" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1581147&lu=H124196323&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(26)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/6/5~2022/6/5)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1581147&lu=H124196323&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(26)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 李喬/李喬 處理 陳凱勝(主) 與 李倚禎(被) 於 2021/9/7 下午 08:00:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">流水陌call</td>
-                            <td>2049122</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2049122" target="_blank">徐仰泉</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0985744871" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1991/6/30&nbsp;&nbsp;30 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">5</td>
-
-                            <td class="center">2021/9/4 下午 07:00:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 凱琳<br>
-                                <font color=green>排約：</font>林馨彤<br>
-                                <font color=green>邀約：</font>新竹 - 王敏之
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2049122" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1933348&lu=F128337757&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(26)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-一年期(2021/5/7~2022/7/6)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1933348&lu=F128337757&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(26)</a>，處理情形：<font color="#FF0000" size="2">約後關懷</font>)
-
-                                內容：9/6 言：我暫時沒辦法約 昨天跑步腳翻船🥲(已知休養後主動告知可排約)　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="center">樂得流水call</td>
-                            <td>2047416</td>
-                            <td class="center"><a href="ad_mem_detail.php?mem_num=2047416" target="_blank">謝以雄</a>
-                                <div style="float:right">
-                                    &nbsp;<span class="label" style="background:#c22c7d"><a href="#" style="color:white;" data-toggle="tooltip" data-original-title="約會專家主帳號">專</a></span><a href="ad_no_mem_s.php?mem_mobile=0932704273" target="_blank"> <span class="label label-info">查詢</span></a></div>
-                            </td>
-                            <td class="center">男</td>
-                            <td class="center">1983/2/8&nbsp;&nbsp;38 歲</td>
-                            <td class="center">大學</td>
-                            <td class="center">5</td>
-
-                            <td class="center">2021/9/5 下午 12:30:00</td>
-
-                            <td class="center">
-                                <font color=green>受理：</font>台北 - 洪儀<br>
-                                <font color=green>排約：</font>陳紅<br>
-                                <font color=green>邀約：</font>台南 - 王秀玲
-                            </td>
-                            <td class="center">
-                                無
-                            </td>
-                            <td class="center">
-                                <div class="btn-group">
-                                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="ad_mem_detail.php?mem_num=2047416" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-                                        <li><a href="javascript:Mars_popup('ad_report.php?k_id=1930651&lu=A124318537&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(19)</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨會員-二年期(2021/5/1~2023/6/30)</span>
-                            </td>
-                            <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=1930651&lu=A124318537&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(19)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>)
-
-                                內容：由 陳紅/陳紅 處理 謝以雄(主) 與 涂芷溦(被) 於 2021/9/5 下午 12:30:00 預訂排約，結果：成功　　
-                            </td>
-                            <td colspan=3>
-                                &nbsp;
-                            </td>
-                        </tr>
-
+                        <?php
+                        if ( count($result_list) == 0 ){
+                            if ( $branch == "" ){
+                                echo "<tr><td colspan='10' height='200'>請先選擇會館</td></tr>";
+                            }else{
+                                echo "<tr><td colspan='10' height='200'>目前沒有資料</td></tr>";
+                            }
+                        }else{
+                            foreach($result_list as $re_list){
+                                $xv = "<a href=cad_no_mem_s.php?mem_mobile=".$re_list["mem_mobile"]."' target='_blank'> <span class='label label-info'>查詢</span></a>";
+                                if ( $re_list["mem_cc"] != "" ){
+                                    $mem_cc = " [".$re_list["mem_cc"]."]";
+                                }else{
+                                    $mem_cc = "";
+                                }
+
+                                if ( $re_list["mem_lc"] != "" ){
+                                    $mem_cc = $mem_cc." [lc:".$re_list["mem_lc"]."]";
+                                }
+                        ?>
+                                <tr>
+                                    <td class="center">
+                                        <?php
+                                        echo $re_list["mem_come"];
+                                        if ( $re_list["mem_come2"] != "" ){ echo "-".$re_list["mem_come2"];} 
+                                        echo $mem_cc;
+                                        ?>
+                                    </td>
+                                    <td><?php echo $re_list["mem_num"];?></td>
+                                    <td class="center">
+                                        <a href="ad_mem_detail.php?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><?php echo $re_list["mem_name"];?></a>
+                                        <div style="float:right">
+                                            <?php
+                                            if ( $re_list["si_account"] != "" && $re_list["si_account"] != "0" ){
+                                                echo "&nbsp;<span class='label' style='background:#c22c7d'><span style='color:white;' data-toggle='tooltip' data-original-title='約會專家主帳號'>專</span></span>";
+                                            }
+                                            if ( $re_list["si_enterprise"] == 1 ){
+                                                echo "&nbsp;<span class='label' style='background:blue'><a href='#' style='color:white;' data-toggle='tooltip' data-original-title='企業會員-".$re_list["company"]."'>企</a></span>";
+                                            }
+                                            echo $xv;
+                                            ?>
+                                        </div>
+                                    </td>
+                                    <td class="center"><?php echo $re_list["mem_sex"];?></td>
+                                    <td class="center">
+                                        <?php
+                                        echo $re_list["mem_by"]."/".$re_list["mem_bm"]."/".$re_list["mem_bd"];
+                                        if ( $re_list["mem_by"] != "" ){ echo "&nbsp;&nbsp;".(date("Y")-$re_list["mem_by"])." 歲";}
+                                        ?>
+                                    </td>
+                                    <td class="center"><?php echo $re_list["mem_school"];?></td>
+                                    <td class="center"><?php echo $re_list["love_size2"];?></td>
+                                    <?php
+                                    if ( chkDate($re_list["love_time2"] )){
+                                        $love_time2 = $re_list["love_time2"];
+                                    }else{
+                                        $love_time2 = "無紀錄";
+                                    }
+                                    ?>
+                                    <td class="center"><?php echo $love_time2;?></td>
+                                    <?
+                                    if ( $re_list["mem_branch"] != "" ){
+                                        $mem_single = "<font color='green'>受理：</font>".$re_list["mem_branch"]." - ".SingleName($re_list["mem_single"],"normal");
+                                    }else{
+                                        $mem_single = "";
+                                    }
+                                    
+                                    if ( $re_list["love_single"] != "" ){
+                                        $love_single = "<br><font color='green'>排約：</font>".SingleName($re_list["love_single"],"normal");
+                                    }else{
+                                        $love_single = "";
+                                    }
+
+                                    if ( $re_list["call_branch"] != "" ){
+                                        $call_single = "<br><font color='green'>邀約：</font>".$re_list["call_branch"]." - ".SingleName($re_list["call_single"],"normal");
+                                    }else{
+                                        $call_single = "";
+                                    }
+                                    ?>
+                                    <td class="center"><?php echo $mem_single.$love_single.$call_single;?></td>
+                                    <td class="center">
+                                    <?php
+                                        $mem_photo = $re_list["mem_photo"];
+                                        
+                                        if ( ( $re_list["mem_sex"] == "男" && $mem_photo != "boy.jpg" ) || ( $re_list["mem_sex"] == "女" && $mem_photo != "girl.jpg" ) ){
+                                            if ( substr_count($mem_photo, "photo/") > 0 ){
+                                                if ( $_REQUEST["s30"] != "" ){
+                                                    echo "<a href='dphoto/".$mem_photo."?t=".(int)(rand()*9999)&"' class='fancybox'><img src='dphoto/".$mem_photo."?t=".(int)(rand()*9999)."' width='100'></a>";
+                                                }else{
+                                                    echo "<a href='dphoto/".$mem_photo."?t=".(int)(rand()*9999)."' class='fancybox'>有</a>";
+                                                }
+                                            }else{
+                                                if ( $_REQUEST["s30"] != "" ){
+                                                    echo "<a href='../photo/".$mem_photo."?t=".(int)(rand()*9999)."' class='fancybox'><img src='../photo/".$mem_photo."?t=".(int)(rand()*9999)."' width='100'></a>";
+                                                }else{
+                                                    echo "<a href='../photo/".$mem_photo."?t=".(int)(rand()*9999)."' class='fancybox'>有</a>";
+                                                }
+                                            }
+                                        }else{
+                                            echo "無";
+                                        }
+                                    ?>
+                                    </td>
+                                    <td class="center">
+                                        <div class="btn-group">							
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <?php
+                                                $reports = get_report_num($re_list["mem_mobile"]);
+                                                if ( substr_count($reports, "|+|") > 0 ){
+                                                    $report_array = explode("|+|", $reports);
+                                                    $report = $report_array[0];
+                                                    $report_text = $report_array[1];
+                                                }else{
+                                                    $report = 0;
+                                                    $report_text = "無";
+                                                }
+                                                ?>
+                                                <li><a href="ad_mem_detail.php?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                                <li><a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re_list["mem_auto"]?>&lu=<?php echo $re_list["mem_username"];?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report;?>)</a></li>
+                                            </ul>
+                                        </div>								
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        $wbl = "";
+                                        $wbl_date = date("Y/m/d",strtotime($re_list["web_startime"]))."~".date("Y/m/d",strtotime($re_list["web_endtime"]));
+                                        switch ( $re_list["web_level"] ){
+                                            case 1:
+                                                $wbl = "資料認證會員(".$wbl_date.")";
+                                                break;
+                                            case 2:
+                                                $wbl = "真人認證會員(".$wbl_date.")";
+                                                break;
+                                            case 3:
+                                                $wbl = "璀璨會員-一年期(".$wbl_date.")";
+                                                break;
+                                            case 4:
+                                                $wbl = "璀璨VIP會員-一年期(".$wbl_date.")";
+                                                break;
+                                            case 5:
+                                                $wbl = "璀璨會員-二年期(".$wbl_date.")";
+                                                break;
+                                            case 6:
+                                                $wbl = "璀璨VIP會員-二年期(".$wbl_date.")";
+                                                break;
+                                        }
+                                        if ( $wbl != "" ){ echo "<span style='color:blue'>".$wbl."</span>";}
+                                        ?>
+                                    </td>
+                                    <td colspan="9" style="BORDER-bottom: #666666 1px dotted">
+                                        (<a href="#re" onclick="Mars_popup('ad_report.php?k_id=<?php echo $re_list["mem_auto"];?>&lu=<?php echo $re_list["mem_username"];?>&ty=member','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>，處理情形：<font color="#FF0000" size="2"><?php echo $re_list["all_type"];?></font>)
+                                        <?php
+                                            if ( SqlFilter($_REQUEST["s14"],"tab") != "" ){
+                                                echo "最後排約時間：".$re_list["love_time2"];
+                                            }else{
+                                                echo "內容：".$report_text;
+                                                if ( $re_list["all_note"] != "" ){
+                                                    echo "<font color='blue'>舊：</font>";
+                                                    echo $re_list["all_note"];
+                                                }
+                                            }
+                                        ?>
+                                    </td>
+                                    <td colspan="3">
+                                        <?php
+                                        if ( $re_list["mem_branch2"] != "" ){
+                                            echo "跨區：".$re_list["mem_branch2"]."-".SingleName($re_list["mem_single2"],"normal");
+                                        }else{
+                                            echo "&nbsp;";
+                                        }
+
+                                        if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                            echo $re_list["mem_tag"];
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php }?>
+                        <?php }?>
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 17 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_mem_service_list.php?topage=1&branch=%E5%8F%B0%E5%8C%97&joindate2=&joindate1=&lovedate2=2021%2F09%2F28&lovedate1=2021%2F09%2F01&lovesize2=5&lovesize1=0&sex=%E7%94%B7>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_mem_service_list.php?topage=1&branch=%E5%8F%B0%E5%8C%97&joindate2=&joindate1=&lovedate2=2021%2F09%2F28&lovedate1=2021%2F09%2F01&lovesize2=5&lovesize1=0&sex=%E7%94%B7 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_mem_service_list.php?topage=1&branch=%E5%8F%B0%E5%8C%97&joindate2=&joindate1=&lovedate2=2021%2F09%2F28&lovedate1=2021%2F09%2F01&lovesize2=5&lovesize1=0&sex=%E7%94%B7" selected>1</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <!--include頁碼-->
+	        <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 
-<?php
-require_once("./include/_bottom.php");
-?>
+<?php require_once("./include/_bottom.php");?>
 
 <script type="text/javascript">
     function chk_search_form() {
-
         return true;
     }
 </script>

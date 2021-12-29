@@ -772,4 +772,42 @@
 
 		return $branch_name;
 	}
+
+	//日期區間文字顏色 for 會員排約時間 / 排約部系統
+	function daycolor($n){
+  		if ( $n > 1 && $n < 8 ){
+			$daycolor = "<font color='#5CC6F5'>".$n." day</font>";
+		}
+
+		if ( $n > 9 && $n < 30 ){
+			$daycolor = "<font color='#7F00DB'>".$n." day</font>";
+		}
+
+		if ( $n >= 30 ){
+			$daycolor = "<font color='#009900'>".$n." day</font>";
+		}
+
+		if ( $n >= 60 ){
+			$daycolor = "<font color='#ffcc33'>".$n." day</font>";
+		}
+
+		if ( $n >= 180 ){
+			$daycolor = "<font color='#990000'>".$n." day</font>";
+		}
+
+		return $daycolor;
+	}
+
+		//取得卡別
+		function get_card($ano){
+			$SQL = "Select * From card_type Where card_no = '".$ano."'";
+			$SPConn2 = SPConOpen();
+			$rs = $SPConn2->prepare($SQL);
+			$rs->execute();
+			$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+			foreach($result as $re);
+			$card_name = $re["card_name"];
+
+			return $card_name;
+		}
 ?>

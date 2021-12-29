@@ -34,6 +34,17 @@
 <?php }?>
 <form name="frmpage" id="frmpage" method="post">
 	<input type="hidden" name="tPage" id="tPage" value="<?php echo $tPage;?>">
-	<input type="hidden" name="keyword" id="keyword" value=<?php echo $keyword;?>>
-	<input type="hidden" name="tr" id="tr" value=<?php echo $tr;?>>
+	<input type="hidden" name="keyword" id="keyword" value="<?php echo $keyword;?>">
+	<input type="hidden" name="branch" id="branch" value="<?php echo $branch;?>">
+	<input type="hidden" name="timeend" id="timeend" value="<?php echo $timeend;?>">
+	<input type="hidden" name="daysel" id="daysel" value="<?php echo $daysel;?>">
+	<input type="hidden" name="	oby" id="oby" value="<?php echo $oby;?>">
+	<input type="hidden" name="tr" id="tr" value="<?php echo $tr;?>">
+	<input type="hidden" name="lovesize1" id="lovesize1" value="<?php echo $lovesize1;?>">
+	<input type="hidden" name="lovesize2" id="lovesize2" value="<?php echo $lovesize2;?>">
+	<input type="hidden" name="lovedate1" id="lovedate1" value="<?php echo $lovedate1;?>">
+	<input type="hidden" name="lovedate2" id="lovedate2" value="<?php echo $lovedate2;?>">
+	<input type="hidden" name="joindate1" id="joindate1" value="<?php echo $joindate1;?>">
+	<input type="hidden" name="joindate2" id="joindate2" value="<?php echo $joindate2;?>">
+	<input type="hidden" name="sex" id="sex" value="<?php echo $sex;?>">
 </form>
