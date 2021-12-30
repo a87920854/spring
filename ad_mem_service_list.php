@@ -27,15 +27,20 @@ if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
 }
 
 $branch = $_REQUEST["branch"];
-echo $branch;
 if ( $branch != "" ){
-    $rbranch = str_replace(",", "','", $branch);
+    //$rbranch = str_replace(",", "','", $branch);
+    for ( $r=0;$r<count($branch);$r++ ){
+        $rbranch = $rbranch."'".$branch[$r]."',";
+    }
 }
 
-if ( $branch != "" ){
+$rbranch = substr($rbranch, 0, -1);
+
+
+if ( $rbranch != "" ){
     if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "love" ){
         //$subSQL2 = " And (mem_branch in ('".$rbranch."') Or mem_branch2 in ('".$rbranch."'))";
-        $subSQL = " (mem_branch in ('".$rbranch."') Or mem_branch2 in ('".$rbranch."'))";
+        $subSQL = " (mem_branch in (".$rbranch.") Or mem_branch2 in (".$rbranch."))";
     }else{
       	//$subSQL2 = " And (mem_branch = '".$_SESSION["branch"]."' Or mem_branch2 = '".$_SESSION["branch"]."')";
         $subSQL = " (mem_branch = '".$_SESSION["branch"]."' Or mem_branch2 = '".$_SESSION["branch"]."')";
@@ -329,15 +334,15 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                             $showbranch = $_SESSION["branch"];
                         }
                         $showbranch = clear_left_par($showbranch, ",");
-                        if ( $branch != "" ){
+                        /*if ( $branch != "" ){
                             $branch = str_replace(" ", "", $branch);
-                        }
+                        }*/
                         $showbranch = substr($showbranch, 0, -1);
                         $showbranch = explode(",", $showbranch);
 
                         for ( $b=0;$b<count($showbranch);$b++ ){
-                            echo "<label><input type='checkbox' name='branch' value='".$showbranch[$b]."'";
-                            if ( in_array( $branch,$showbranch )) { echo " checked";}
+                            echo "<label><input type='checkbox' id='branch[]' name='branch[]' value='".$showbranch[$b]."'";
+                            if ( $showbranch[$b] == $branch[$b] ) { echo " checked";}
                             echo ">&nbsp;".$showbranch[$b]."</label>&nbsp;&nbsp;";
                         }
                         ?>
@@ -372,9 +377,9 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         <?php
                         if ( count($result_list) == 0 ){
                             if ( $branch == "" ){
-                                echo "<tr><td colspan='10' height='200'>請先選擇會館</td></tr>";
+                                echo "<tr><td colspan='11' height='200'>請先選擇會館</td></tr>";
                             }else{
-                                echo "<tr><td colspan='10' height='200'>目前沒有資料</td></tr>";
+                                echo "<tr><td colspan='11' height='200'>目前沒有資料</td></tr>";
                             }
                         }else{
                             foreach($result_list as $re_list){
