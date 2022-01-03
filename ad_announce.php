@@ -1,5 +1,13 @@
 <?php
-	require_once("./include/_inc.php");
+    /*****************************************/
+    //檔案名稱：ad_action_service.php
+    //後台對應位置：公告訊息
+    //改版日期：2021.10.08
+    //改版設計人員：Jack
+    //改版程式人員：Queena
+    /*****************************************/
+
+	require_once("_inc.php");
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
@@ -18,7 +26,7 @@
 	if ( SqlFilter($_REQUEST["st"],"tab") == "report" ){
 		if ( SqlFilter($_REQUEST["fixstat"],"tab") == "" ){ call_alert("請選擇處理結果。", 0, 0);}
 		$fixstat = SqlFilter($_REQUEST["fixstat"],"tab");
-		$SQL = "Select * From system_report Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+		$SQL = "Select * From system_report Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
 		$rs = $SPConn->prepare($SQL);
 		$rs->execute();
 		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -26,9 +34,9 @@
 		if ( count($result) > 0 ){
 			$SQL_u  = "Update system_report Set ";
 			$SQL_u .= "stat='".$fixstat."',";
-			$SQL_u .= "fixnote='".$re["fixnote"]."<br>[".chtime(now)."]:".str_replace("\r\n","<br>",$_REQUEST["fixnote"])."&nbsp;by ".$_SESSION["pname"]."',";
+			$SQL_u .= "fixnote='".$re["fixnote"]."<br>[".chtime(date("Y-m-d"))."]:".str_replace("\r\n","<br>",$_REQUEST["fixnote"])."&nbsp;by ".$_SESSION["pname"]."',";
 			$SQL_u .= "fixtimes='".date("Y-m-d H:s:i")."' ";
-			$SQL_u .= "Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+			$SQL_u .= "Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
 			$rs_u = $SPConn->prepare($SQL);
 			$rs_u->execute();
 		}
@@ -36,7 +44,7 @@
 	}
 
 	if ( SqlFilter($_REQUEST["st"],"tab") == "nofix" ){
-		$SQL = "Select * From system_report Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+		$SQL = "Select * From system_report Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
 		$rs = $SPConn->prepare($SQL);
 		$rs->execute();
 		$result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -45,7 +53,7 @@
 			$SQL_u  = "Update system_report Set ";
 			$SQL_u .= "stat='2',";
 			$SQL_u .= "fixtimes='".date("Y-m-d H:s:i")."' ";
-			$SQL_u .= "Where auton='".SqlFilter(_REQUEST["an"],"int")."'";
+			$SQL_u .= "Where auton='".SqlFilter($_REQUEST["an"],"int")."'";
 			$rs_u = $SPConn->prepare($SQL);
 			$rs_u->execute();
 		}

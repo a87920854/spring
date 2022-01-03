@@ -95,11 +95,10 @@ if ( $tPageSize*$tPage < $total_size ){
 //分頁語法
 $SQL_list  = "Select * From (";
 $SQL_list .= "Select TOP ".$page2." * From (";
-$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From member_data Where mem_level = 'mem'".$subSQL." Order By times Desc) t1 Where mem_level = 'mem'".$subSQL." Order By times Asc) t2 Where mem_level = 'mem'".$subSQL1." Order By times Desc ";
+$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From member_data Where mem_level = 'mem'".$subSQL." Order By mem_auto Desc) t1 Where mem_level = 'mem'".$subSQL." Order By mem_auto Asc) t2 Where mem_level = 'mem'".$subSQL1." Order By mem_auto Desc ";
 $rs_list = $SPConn->prepare($SQL_list);
 $rs_list->execute();
 $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
-echo $SQL_list;
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
@@ -127,15 +126,18 @@ echo $SQL_list;
                 <p style="clear:both">
                 <form id="searchform" action="ad_action_service.php" method="post" target="_self" onsubmit="return chk_search_form()" class="form-inline pull-left">
                     <select name="keyword_type" id="keyword_type" class="form-control">
-                        <option value="s2">手機</option>
-                        <option value="s17">電話</option>
-                        <option value="s3">姓名</option>
-                        <option value="s4">編號</option>
-                        <option value="s5">約會專家帳號</option>
-                        <option value="s6">身分證字號</option>
-                        <option value="s22">電子信箱</option>
+                        <option value="s2"<?php if ( $keyword_type == "s2" ){ echo " selected";}?>>手機</option>
+                        <option value="s17"<?php if ( $keyword_type == "s17" ){ echo " selected";}?>>電話</option>
+                        <option value="s3"<?php if ( $keyword_type == "s3" ){ echo " selected";}?>>姓名</option>
+                        <option value="s4"<?php if ( $keyword_type == "s4" ){ echo " selected";}?>>編號</option>
+                        <option value="s5"<?php if ( $keyword_type == "s5" ){ echo " selected";}?>>約會專家帳號</option>
+                        <option value="s6"<?php if ( $keyword_type == "s6" ){ echo " selected";}?>>身分證字號</option>
+                        <option value="s22"<?php if ( $keyword_type == "s22" ){ echo " selected";}?>>電子信箱</option>
                     </select>
                     <input id="keyword" name="keyword" id="keyword" class="form-control" type="text">
+                    <?php if ( $keyword_type != "" && $keyword != "" ){?>
+                        <p><span class="text-status">搜尋關鍵字 </span>&nbsp;▶&nbsp;<a class="btn btn-info"><?php echo $keyword;?></a></p>
+                    <?php }?>
                     <input type="submit" id="search_send" class="btn btn-default" value="查詢">
                 </form>
 

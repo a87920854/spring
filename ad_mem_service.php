@@ -1,8 +1,196 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
-?>
+/*****************************************/
+//檔案名稱：ad_mem_service.php
+//後台對應位置：名單/發送記錄>會員服務紀錄明細
+//改版日期：2022.01.03
+//改版設計人員：Jack
+//改版程式人員：Queena
+/*****************************************/
 
+require_once("_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
+
+function ch_star($sc){
+    $star_icon = "<i class='fa fa-star text-danger'></i>";
+    if ( $sc != "" ){
+  	    $sc = (int)($sc);
+  	    for ( $i=1;$i<=$sc;$i++ ){
+  	        $ch_star = $ch_star.$star_icon;
+        }
+    }
+    $ch_star = $ch_star." ".$sc;
+}
+
+$st = SqlFilter($_REQUEST["sc"],"tab");
+$a = SqlFilter($_REQUEST["a"],"tab");
+$mnum = SqlFilter($_REQUEST["mnum"],"tab");
+
+if ( $st == "readsi" ){
+    $SQL = "Select * From si_invite_eval Where invite_auton='".$a."' And mnum='".$mnum."' Oorder By auton Desc";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+	if ( $result > 0 ){
+        echo "<div class='lightbox-ajax'><div class='lightbox-ajax-body'>";
+		echo "<table width='300'>";
+		$allsc = 0;
+		$allval = 1;
+		foreach($result as $re){
+		    if ( $re["opt"] == "note" ){
+			    $eval_note =$re["eval_note"];
+            }else{		
+			    echo "<tr><td>".$re["opt"]."：".ch_star($re["val"])." 顆星</td></tr>";
+			    $allsc = $allsc+$re["val"];
+			    $allval = $allval+1;
+            }
+        }
+		
+		if ( $allsc > 0 && $allval > 1 ){
+		    $allsc = $allsc / $allval;
+		    echo "<tr><td>平均分數：".ch_star($allsc)."</td></tr>";
+        }
+	  
+	    if ( $eval_note != "" ){
+	  	    echo "<tr><td>意見回饋：".$eval_note."</td></tr>";
+        }
+		echo "</table>";
+		echo "</div></div>";
+    }
+    exit;
+}
+
+if ( $st == "readreply" ){
+    $SQL = "Select love_user, love_user2 From love_data_re Where love_auto='".$a."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) > 0 ){
+		$love_user = $re["love_user"];
+		$love_user2 = $re["love_user2"];
+	}
+    echo "<div class='lightbox-ajax'><div class='lightbox-ajax-body'>";
+	$leftcont = "無";
+	$rightcont = "無";
+	
+    if ( $love_user != "" || $love_user2 != "" ){
+        $SQL = "Select * From love_data_re_reply Where love_auto='".$a."' And me='".$love_user."'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+        foreach($result as $re);
+        if ( count($result) > 0 ){
+		    $leftcont  = "<font color='blue'>".$re["me_name"]."</font><br>外在容貌：".$re["q1"]."<br>特質：".$re["q2"]."<br>好感：".$re["q3"]."<br>繼續連繫：".$re["q4"];
+            $leftcont .= $re["q6"]."<br>其它：<br>".$re["q5"];
+        }
+		
+        $SQL = "Select * From love_data_re_reply Where love_auto='".$a."' And me='".$love_user2."'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+        foreach($result as $re);
+	    if ( count($result) > 0 ){
+		    $rightcont  = "<font color='red'>".$re["me_name"]."</font><br>外在容貌：".$re["q1"]."<br>特質：".$re["q2"]."<br>好感：".$re["q3"]."<br>繼續連繫：".$re["q4"];
+            $rightcont .= $re["q6"]."<br>其它：<br>".$re["q5"];
+        }
+    }
+	
+	echo "<table>";
+    echo "<tr><td valign='top' style='border-right:1px #eee solid;padding-right:10px;'>".$leftcont."</td>";
+	echo "<td valign='top' style='padding-left:10px;'>".$rightcont."</td></tr>";
+	echo "</table>";
+	echo "</div></div>";
+    exit;
+}
+
+$mem_num = SqlFilter($_REQUEST["mem_num"],"tab");
+$mem_au = SqlFilter($_REQUEST["mem_au"],"tab");
+$mem_mobile = SqlFilter($_REQUEST["mem_mobile"],"tab");
+
+if ( $mem_num == "" && $mem_au == "" && $mem_mobile == "" ){ call_alert('會員編號讀取有誤。', 'ClOsE',0); }
+if ( $_SESSION["MM_Username"] == "" ){ call_alert('請重新登入。','ClOsE',0); }
+
+if ( $mem_num != "" ){
+    $SQL = "Select * From member_data Where mem_num = '".$mem_num."'";
+}elseif ( $mem_mobile != "" ){
+    $SQL = "Select * From member_data Where mem_mobile = '".$mem_mobile."'";
+}else{
+    $SQL = "Select * From member_data Where mem_auto = ".$mem_au;
+}
+
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+if ( count($result) == 0 ){ call_alert('會員資料讀取有誤或無此會員。', 0,0); }
+foreach($result as $re);
+
+$this_single = strtoupper($_SESSION["MM_Username"]);
+$this_branch = $_SESSION["branch"];
+$lovebranch = $_SESSION["lovebranch"];
+$mem_num = $re["mem_num"];
+$dmn_num = $re["dmn_num"];
+$mem_branch = $re["mem_branch"];
+$mem_branch2 = $re["mem_branch2"];
+$mem_single = strtoupper($re["mem_single"]);
+$mem_single2 = strtoupper($re["mem_single2"]);
+$love_single = strtoupper($re["love_single"]);
+$call_branch = $re["call_branch"];
+$call_single = strtoupper($re["call_single"]);
+$cansee = 0;
+$allcansee = 0;
+$block_msg = "<font color='red'>不可見</font>";
+
+if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+    $cansee = 1;
+    $allcansee = 1;
+}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+    $cmem_branch = ",".$mem_branch.",";
+    $cmem_branch2 = ",".$mem_branch2.",";
+    $ccall_branch = ",".$call_branch.",";
+    $lovebranch = ",".$lovebranch.",";    
+    if ( instr($lovebranch, $cmem_branch) > 0 || instr($lovebranch, $cmem_branch2) > 0 || instr($lovebranch, $ccall_branch) > 0 ){
+        $cansee = 1;
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){
+    if ( $this_branch == $mem_branch || $this_branch == $mem_branch2 || $this_branch == $call_branch ){
+        $cansee = 1;
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "keyin" || $_SESSION["MM_UserAuthorization"] == "manager" ){
+    if ( $this_single == $mem_single || $this_single == $mem_single2 || $this_single == $love_single || $this_single == $call_single ){
+        $cansee = 1;
+    }
+}else{
+    $cansee = 0;
+}
+
+if ( $re["mem_level"] == "mem" ){
+	$mem_lv = "會員";
+}else{
+	$mem_lv = "未入會";
+}
+
+if ( $mem_branch == "八德" ){
+	$bfont = "<font color='green'>DateMeNow</font>";
+}else{
+	$bfont = "<font color='red'>春天會館</font>";
+}
+
+if ( $mem_branch == "" || is_null($mem_branch) ){
+	$bfont = "";
+}
+
+if ( $re["si_account"] != "0" ){
+	$bfont = "<font color='#c22c7d'>約會專家主帳號</font>";
+}
+
+$mem_username = $re["mem_username"];
+
+if ( ( $mem_username == "" || is_null($mem_username) ) && ( $re["mem_username_last"] != "" ) ){
+	$mem_username = $re["mem_username_last"];
+}
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -10,38 +198,21 @@ require("./include/_sidebar.php");
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="ad_mem.php">會員管理系統</a></li>
-            <li class="active">會員服務紀錄 - 編號 173134 - 鄭小姐</li>
+            <li class="active"><?php $mem_lv;?>服務紀錄 - 編號 <?php echo $mem_num;?> - <?php echo $re["mem_name"];?></li>
         </ol>
     </header>
     <!-- /page title -->
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>會員服務紀錄 - 編號 173134 - 鄭小姐 - <font color=#c22c7d>約會專家主帳號</font></strong> <!-- panel title -->
+                    <strong><?php echo $mem_lv;?>服務紀錄 - 編號 <?php echo $mem_num;?> - <?php echo $re["mem_name"];?> - <?php echo $bfont;?></strong> <!-- panel title -->
                 </span>
-
             </div>
-
             <div class="panel-body">
-
-
-                <p>
-
-
-
-                    <a class="btn btn-primary" href="ad_mem_detail.php?mem_num=173134">基本資料</a>
-
-                    <a class="btn btn-info" href="ad_mem_service.php?mem_num=173134"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>服務紀錄</a>
-                    <a class="btn btn-danger" href="ad_mem_ptest.php?mem_num=173134">心理測驗</a>
-                    <a class="btn btn-warning" href="ad_mem_login_log.php?mem_num=173134">登入紀錄</a>
-                    <a class="btn btn-dirtygreen" href="ad_important_paper.php?mem_num=173134">紙本資料</a>
-
-                </p>
-
+                <?php $n = "1"; require("./include/_mem_menu.php");?>
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <tbody>
 
