@@ -21,55 +21,69 @@ if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthoriza
 }
 
 echo "<p>";
-       
+     
 if ( $showfull == 1 ){
-	echo "<a class='btn btn-primary' href='ad_mem_detail.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n = 0 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "基本資料</a>&nbsp;";
+	//基本資料按鈕
+    echo "<a class='btn btn-info";
+    if ( $n == 0 ){ echo " btn-active"; }
+    echo "' href='ad_mem_detail.asp?mem_num=".$mem_num.$islovepages."'>基本資料</a>&nbsp;";
+    //排約頁面按鈕
     if ( $islovepages != "" ){
-        echo "&nbsp;<a class='btn btn-success' href='ad_mem_rowv.asp?mem_num=".$mem_num.$islovepages."'>";
-        if ( $n == 4 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-        echo "排約頁面</a>&nbsp;";
+        echo "&nbsp;<a class='btn btn-info";
+        if ( $n == 4 ){ echo " btn-active"; }
+        echo "' href='ad_mem_rowv.asp?mem_num=".$mem_num.$islovepages."'>排約頁面</a>&nbsp;";
 	}
+    //修改資料按鈕
     if ( $ad_mem_fix_url != "" ){
-        echo "&nbsp;<a class='btn btn-blue' href='".$ad_mem_fix_url."'>";
-        if ( $n == 6 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-        echo "修改資料</a>&nbsp;";
+        echo "&nbsp;<a class='btn btn-info";
+        if ( $n == 6 ){ echo " btn-active"; }
+        echo "' href='".$ad_mem_fix_url."'>修改資料</a>&nbsp;";
     }
-    echo "&nbsp;<a class='btn btn-info' href='ad_mem_service.asp?mem_num=".$mem_num.$islovepages."'>";
-    //if ( $n == 1 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    if ( $n == 1 ){ echo "ddddddd"; }
-    echo "服務紀錄</a>&nbsp;";
-    echo "&nbsp;<a class='btn btn-danger' href='ad_mem_ptest.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == 2 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "心理測驗</a>&nbsp;";
-    echo "&nbsp;<a class='btn btn-warning' href='ad_mem_login_log.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == 3 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "登入紀錄</a>&nbsp;";
-    echo "&nbsp;<a class='btn btn-dirtygreen' href='ad_important_paper.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == 5 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "紙本資料</a>&nbsp;";
+    //服務紀錄按鈕
+    if ( $n == 1 ){
+        echo "&nbsp;<a class='btn btn-info btn-active' href='javascript:void(0);' style='background-color: gray; cursor:no-drop'>服務紀錄</a>&nbsp;";
+    }else{
+        echo "&nbsp;<a class='btn btn-info' href='ad_mem_service.asp?mem_num=".$mem_num.$islovepages."'>服務紀錄</a>&nbsp;";
+    }
+    //心理測驗按鈕
+    echo "&nbsp;<a class='btn btn-info";
+    if ( $n == 2 ){ echo " btn-active"; }
+    echo "' href='ad_mem_ptest.asp?mem_num=".$mem_num.$islovepages."'>心理測驗</a>&nbsp;";
+    //登入記錄按鈕
+    echo "&nbsp;<a class='btn btn-info";
+    if ( $n == 3 ){ echo " btn-active"; }
+    echo "' href='ad_mem_login_log.asp?mem_num=".$mem_num.$islovepages."'>登入紀錄</a>&nbsp;";
+    //紙本資料按鈕
+    echo "&nbsp;<a class='btn btn-info";
+    if ( $n == 5 ){ echo " btn-active"; }
+    echo "' href='ad_important_paper.asp?mem_num=".$mem_num.$islovepages."'>紙本資料</a>&nbsp;";
 }else{
+    //排約頁面按鈕
 	if ( $islovepages != "" ){
-		echo "&nbsp;<a class='btn btn-success' href='ad_mem_rowv.asp?mem_num=".$mem_num.$islovepages."'>";
-        if ( $n == 4 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-        echo "排約頁面</a>&nbsp;";
+		echo "&nbsp;<a class='btn btn-info";
+        if ( $n == 4 ){ echo " btn-active"; }
+        echo "' href='ad_mem_rowv.asp?mem_num=".$mem_num.$islovepages."'>排約頁面</a>&nbsp;";
     }
-	
+    //修改資料按鈕  
     if ( $ad_mem_fix_url != "" && $showfull == 1 ){
-        echo "&nbsp;<a class='btn btn-blue' href='".$ad_mem_fix_url."'>";
-        if ( $n == 6 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-        echo "修改資料</a>&nbsp;";
+        echo "&nbsp;<a class='btn btn-info";
+        if ( $n == 6 ){ echo " btn-active"; }
+        echo "' href='".$ad_mem_fix_url."'>修改資料</a>&nbsp;";
     }
-    echo "&nbsp;<a class='btn btn-info' href='ad_mem_service.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == "1" ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "服務紀錄B</a>&nbsp;";
-    echo "<a class='btn btn-danger' href='ad_mem_ptest.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == 2 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "心理測驗</a>&nbsp;";
-    echo "&nbsp;<a class='btn btn-warning' href='ad_mem_login_log.asp?mem_num=".$mem_num.$islovepages."'>";
-    if ( $n == 3 ){ echo "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>"; }
-    echo "登入紀錄</a>&nbsp;";
+    //服務紀錄按鈕
+    if ( $n == 1 ){
+        echo "&nbsp;<a class='btn btn-info btn-active' href='javascript:void(0);' style='background-color: gray; cursor:no-drop'>服務紀錄</a>&nbsp;";
+    }else{
+        echo "&nbsp;<a class='btn btn-info' href='ad_mem_service.asp?mem_num=".$mem_num.$islovepages."'>服務紀錄</a>&nbsp;";
+    }
+    //心理測驗按鈕
+    echo "<a class='btn btn-info";
+    if ( $n == 2 ){ echo " btn-active"; }
+    echo "' href='ad_mem_ptest.asp?mem_num=".$mem_num.$islovepages."'>心理測驗</a>&nbsp;";
+    //登入記錄按鈕
+    echo "&nbsp;<a class='btn btn-info";
+    if ( $n == 3 ){ echo " btn-active"; }
+    echo "' href='ad_mem_login_log.asp?mem_num=".$mem_num.$islovepages."'>登入紀錄</a>&nbsp;";
 }
 echo "</p>";
 ?>
