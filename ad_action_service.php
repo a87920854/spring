@@ -135,12 +135,11 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         <option value="s22"<?php if ( $keyword_type == "s22" ){ echo " selected";}?>>電子信箱</option>
                     </select>
                     <input id="keyword" name="keyword" id="keyword" class="form-control" type="text">
+                    <input type="submit" id="search_send" class="btn btn-default" value="查詢">
                     <?php if ( $keyword_type != "" && $keyword != "" ){?>
                         <p><span class="text-status">搜尋關鍵字 </span>&nbsp;▶&nbsp;<a class="btn btn-info"><?php echo $keyword;?></a></p>
                     <?php }?>
-                    <input type="submit" id="search_send" class="btn btn-default" value="查詢">
                 </form>
-
                 <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>

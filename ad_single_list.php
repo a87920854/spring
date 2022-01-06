@@ -122,12 +122,12 @@
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <tbody>
 						<?php
-						if ( $branch == "" && SqlFilter($_REQUEST["sear"],"tab") == "1" ){
+						if ( $branch == "" && SqlFilter($_REQUEST["sear"],"tab") != "1" ){
 							echo "<tr><td>請最少選擇會館。</td></tr>";
 						}else{
-							/*$rs = $SPConn->prepare($SQL);
+							$rs = $SPConn->prepare($SQL);
 							$rs->execute();
-							$result=$rs->fetchAll(PDO::FETCH_ASSOC); */?>
+							$result=$rs->fetchAll(PDO::FETCH_ASSOC); ?>
 							<tr>
 								<th>會館</th>
 								<th>姓名</th>
@@ -139,13 +139,13 @@
 							</tr>
 							<?php foreach($result as $re){ ?>
 								<tr>
-									<td><?//php echo $re["p_branch"];?></td>
-									<td><?//php echo $re["p_name"];?></td>
-									<td><?//php echo $re["p_other_name"];?></td>
-									<td><?//php echo $re["p_job2"];?></td>
-									<td><?//php echo $re["p_auto"];?></td>
-									<td><a href="ad_no_mem.asp?s=nokaifa&u=<?//php echo $re["p_user"];?>"><?php echo $re["nob"];?></a></td>
-									<td><a href="ad_single_view.asp?an=<?//php echo $re["p_auto"];?>">履歷</a></td>
+									<td><?php echo $re["p_branch"];?></td>
+									<td><?php echo $re["p_name"];?></td>
+									<td><?php echo $re["p_other_name"];?></td>
+									<td><?php echo $re["p_job2"];?></td>
+									<td><?php echo $re["p_auto"];?></td>
+									<td><a href="ad_no_mem.php?s=nokaifa&u=<?php echo $re["p_user"];?>"><?php echo $re["nob"];?></a></td>
+									<td><a href="ad_single_view.php?an=<?php echo $re["p_auto"];?>">履歷</a></td>
 								</tr>
 							<?php }?>
 						<?php }?>

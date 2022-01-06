@@ -1,10 +1,785 @@
 <?php
-require_once("./include/_inc.php");
+/**********************************************/
+//檔案名稱：ad_no_mem.php
+//後台對應位置：名單/發送記錄>祕書履歷(未入會明細)
+//改版日期：2022.1.05
+//改版設計人員：Jack
+//改版程式人員：Queena
+/**********************************************/
+
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+require_once("./include/_sidebar.php");
 
+check_page_power("ad_no_mem");
+
+$st = SqlFilter($_REQUEST["st"],"tab");
+//$d = SqlFilter($_REQUEST["d"],"tab");
+//$a = SqlFilter($_REQUEST["a"],"tab");
+$n = SqlFilter($_REQUEST[""],"tab");
+$mem_num = SqlFilter($_REQUEST["mem_num"],"tab");
+
+//原有一段2020年底跑的LINEPOINTS行銷程式，先移除。
+
+//修正…什麼的
+if ( $st == "mem_cc_fix" ){
+    $SQL = "Select mem_cc From member_data Where mem_num='".$mem_num."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) > 0 ){
+        $mem_cc = $re["mem_cc"];
+        $new_cc = "";
+        if ( $mem_cc != "" ){
+            if ( substr_count($mem_cc, "sale-") > 0 ){
+                $mem_cc_array = explode("sale-", $mem_cc);
+                $mem_cc = $mem_cc_arr[1];
+                for ( $i=1;$i<strlen($mem_cc);$i++ ){
+                    $scc = mb_substr($mem_cc, $i, 1);
+                    if ( ! is_numeric($scc) ){
+                        break;
+                    }
+                    $new_cc = $new_cc.$scc;
+                }
+                $new_cc = "sale-".$new_cc;
+            }
+        }
+
+        if ( $new_cc != "" ){
+            $SQL_u = "Update member_data Set mem_cc = '".$new_cc."'";
+            $rs_d = $SPConn->prepare($SQL_u);
+            $rs_d->execute();
+        }
+    }
+    header("location:win_close.php?m=修正中...");
+    exit;
+}
+
+//新增…什麼的
+if ( $str == "addfav" && $n != "" ){
+	//Set rs = Server.CreateObject("ADODB.Recordset")
+    //Set qrs = Server.CreateObject("ADODB.Recordset")
+
+    $SQL = "Select * From member_data Where mem_num='".$n."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+
+    if ( count($result) > 0 ){
+        //新增log_data
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".$re["mem_auto"]."',";
+        $SQL_i .= "'".$re["mem_username"]."',";
+        $SQL_i .= "'".$re["mem_name"]."',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+        $SQL_i .= "'".$_SESSION["branch"]."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".$re["mem_mobile"]."',";
+        $SQL_i .= "'系統紀錄',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."於".chtime(strftime("%Y/%m/%d %H:%M:%S"))."將本筆資料加入關注名單',";
+        $SQL_i .= "'member')";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();
+    }
+	//更新 member_data [mem_fav]
+    $SQL_u = "Update member_data Set mem_fav=1 Where mem_num='".$n."'";
+    $rs_u = $SPConn->prepare($SQL_u);
+    $rs_u->execute();
+    header("location:win_close.php?m=加入關注名單完成..");
+    exit;
+}
+
+//未知
+if ( $st == "refav" && $n != "" ){
+    $SQL = "Select * From member_data Where mem_num='".$n."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+
+    if ( count($result) > 0 ){
+	    $mobile = $re["mem_mobile"];
+        //新增log_data
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".$re["mem_auto"]."',";
+        $SQL_i .= "'".$re["mem_username"]."',";
+        $SQL_i .= "'".$re["mem_name"]."',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+        $SQL_i .= "'".$_SESSION["branch"]."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".$mobile."',";
+        $SQL_i .= "'系統紀錄',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."於".chtime(strftime("%Y/%m/%d %H:%M:%S"))."將本筆資料自關注名單移除',";
+        $SQL_i .= "'member')";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();
+    }
+    //更新 member_data [mem_fav]
+    $SQL_u = "Update member_data Set mem_fav=0 Where mem_num='".$n."'";
+    $rs_u = $SPConn->prepare($SQL_u);
+    $rs_u->execute();
+    exit;
+}
+
+//
+if ( $st == "send_branch" ){
+    $i1 = SqlFilter($_REQUEST["i1"],"tab");
+    $i2 = SqlFilter($_REQUEST["i2"],"tab");
+    $SQL = "Select * From member_data Where mem_num in (".$mem_num.")";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+
+    if ( count($result) > 0 ){
+        foreach($result as $re){
+			if ( $re["mem_branch"] != "" ){
+				$old_branch = $re["mem_branch"];
+            }
+			$re["mem_branch"] = $i1;
+			if ( $re["mem_single"] != "" ){
+				$old_single = $re["mem_single"];
+            }
+            if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+				$subSQL = ",send_time2 = '".strftime("%Y/%m/%d %H:%M:%S")."'";
+			}
+
+			//更新member_data
+            $SQL_u = "Update member_data Set mem_single='".$i2."',all_type='已發送'".$subSQL.",send_time-'".strftime("%Y/%m/%d %H:%M:%S")."' Where mem_num=".$re["mem_num"];
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+
+			$old_mobile = $re["mem_mobile"];
+			$new_branch = $re["mem_branch"];
+			$new_single = $re["mem_single"];
+			$new_single_name = SingleName($new_single,"normal");
+			
+            //新增log_data
+            $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+            $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+            $SQL_i .= "'".$re["mem_auto"]."',";
+            $SQL_i .= "'".$re["mem_username"]."',";
+            $SQL_i .= "'".$re["mem_name"]."',";
+            $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+            $SQL_i .= "'".$_SESSION["branch"]."',";
+            $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+            $SQL_i .= "'".$re["mem_mobile"]."',";
+            $SQL_i .= "'系統紀錄',";
+            if ( $old_branch != "" || $old_single != "" ){
+                $SQL_i .= "'".$_SESSION["p_other_name"]."於".strftime("%Y/%m/%d %H:%M:%S")."將本筆資料[未入會]自 ".$old_branch." - ".SingleName($old_single,"normal")." 轉送給 ".$new_branch&"-".$new_single_name."',";
+            }else{
+                $SQL_i .= "'".$_SESSION["p_other_name"]."於".strftime("%Y/%m/%d %H:%M:%S")."將本筆資料[未入會]發送給 ".$new_branch."-".$new_single_name."',";
+            }
+            $SQL_i .= "'member')";
+            $rs_i = $SPConn->prepare($SQL_i);
+            $rs_i->execute();
+
+			//新增log_data(年紀小名單)
+			if ( $new_single_name == "年紀小名單" ){
+                //新增log_data
+                $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["mem_auto"]."',";
+                $SQL_i .= "'".$re["mem_username"]."',";
+                $SQL_i .= "'".$re["mem_name"]."',";
+                $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+                $SQL_i .= "'".$_SESSION["branch"]."',";
+                $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+                $SQL_i .= "'".$re["mem_mobile"]."',";
+                $SQL_i .= "'年紀太小',";
+                $SQL_i .= "'因轉送 ".$new_branch."-".$new_single_name." 而自動更新狀態為年紀太小',";
+                $SQL_i .= "'member')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+
+                //更新member_data
+                $SQL_u = "Update member_data Set all_type='年紀太小' Where mem_num=".$re["mem_num"];
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+
+            //新增log_data(未接4次以上)
+			if ( $new_single_name == "未接4次以上" ){
+                //新增log_data
+                $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["mem_auto"]."',";
+                $SQL_i .= "'".$re["mem_username"]."',";
+                $SQL_i .= "'".$re["mem_name"]."',";
+                $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+                $SQL_i .= "'".$_SESSION["branch"]."',";
+                $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+                $SQL_i .= "'".$re["mem_mobile"]."',";
+                $SQL_i .= "'未接4次以上',";
+                $SQL_i .= "'因轉送 ".$new_branch."-".$new_single_name." 而自動更新狀態為未接4次以上',";
+                $SQL_i .= "'member')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+
+                //更新member_data
+                $SQL_u = "Update member_data Set all_type='未接4次以上' Where mem_num=".$re["mem_num"];
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+
+            //新增log_data(暫時拒絕)
+			if ( $new_single_name == "暫時拒絕" ){
+                //新增log_data
+                $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["mem_auto"]."',";
+                $SQL_i .= "'".$re["mem_username"]."',";
+                $SQL_i .= "'".$re["mem_name"]."',";
+                $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+                $SQL_i .= "'".$_SESSION["branch"]."',";
+                $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+                $SQL_i .= "'".$re["mem_mobile"]."',";
+                $SQL_i .= "'暫時拒絕',";
+                $SQL_i .= "'因轉送 ".$new_branch."-".$new_single_name." 而自動更新狀態為暫時拒絕',";
+                $SQL_i .= "'member')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+
+                //更新member_data
+                $SQL_u = "Update member_data Set all_type='暫時拒絕' Where mem_num=".$re["mem_num"];
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+
+            //新增log_data(重覆名單)
+			if ( $_SESSION["branch"] == "八德" && ( $new_single_name == "重覆名單" || $new_single_name == "23" ) ){
+                //新增log_data
+                $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["mem_auto"]."',";
+                $SQL_i .= "'".$re["mem_username"]."',";
+                $SQL_i .= "'".$re["mem_name"]."',";
+                $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+                $SQL_i .= "'".$_SESSION["branch"]."',";
+                $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+                $SQL_i .= "'".$re["mem_mobile"]."',";
+                $SQL_i .= "'重覆名單',";
+                $SQL_i .= "'因轉送 ".$new_branch."-".$new_single_name." 而自動更新狀態為重覆名單',";
+                $SQL_i .= "'member')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+
+                //更新member_data
+                $SQL_u = "Update member_data Set all_type='重覆名單' Where mem_num=".$re["mem_num"];
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+
+            //新增log_data(黑名單)
+            if ( $new_single_name == "黑名單" ){
+                //新增log_data
+                $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5) Values ( ";
+                $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                $SQL_i .= "'".$re["mem_auto"]."',";
+                $SQL_i .= "'".$re["mem_username"]."',";
+                $SQL_i .= "'".$re["mem_name"]."',";
+                $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+                $SQL_i .= "'".$_SESSION["branch"]."',";
+                $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+                $SQL_i .= "'".$re["mem_mobile"]."',";
+                $SQL_i .= "'黑名單',";
+                $SQL_i .= "'因轉送 ".$new_branch."-".$new_single_name." 而自動更新狀態為黑名單',";
+                $SQL_i .= "'member')";
+                $rs_i = $SPConn->prepare($SQL_i);
+                $rs_i->execute();
+
+                //更新member_data
+                $SQL_u = "Update member_data Set all_type='黑名單' Where mem_num=".$re["mem_num"];
+                $rs_u = $SPConn->prepare($SQL_u);
+                $rs_u->execute();
+            }
+        }
+    }
+
+    $changelog = SqlFilter($_REQUEST["changelog"],"tab");
+	if ( $changelog == "1" ){
+		if ( $new_single != $old_single ){
+            $SQL_u = "Update log_data Set log_branch='".$new_branch."', log_single='".$new_single."' Where log_1='".$old_mobile."' And log_single='".$old_single."'";
+            $rs_u = $SPConn->prepare($SQL_u);
+            $rs_u->execute();
+        }
+	}
+	exit;
+}
+
+if ( ( $_REQUEST["a1"] != "" && $_REQUEST["b1"] == "" ) || ( $_REQUEST["a1"] == "" && $_REQUEST["b1"] != "" ) ){ call_alert("資料日期選擇起始和結束時間。",0,0);}
+if ( ( $_REQUEST["l1"] != "" && $_REQUEST["l2"] == "" ) || ( $_REQUEST["l2"] == "" && $_REQUEST["l1"] != "" ) ){ call_alert("最後回報日期選擇起始和結束時間。",0,0);}
+if ( ( $_REQUEST["s27"] != "" && $_REQUEST["s28"] == "" ) || ( $_REQUEST["s27"] == "" && $_REQUEST["s28"] != "" )){ call_alert("年次選擇起始和結束。",0,0);}
+
+$a1 = SqlFilter($_Request["a1"],"tab");
+$b1 = SqlFilter($_Request["b1"],"tab");
+if ( $a1 != "" && $b1 != "" ){
+    if ( $a1 > $b1 ){ call_alert("日期請由小到大選擇",0,0); }
+    $a1 = $a1 . " 00:00";
+    $b1 = $b1 . " 23:59";
+}
+
+$a1 = SqlFilter($_Request["l1"],"tab");
+$b1 = SqlFilter($_Request["l2"],"tab");
+if ( $l1 != "" && $l1 != "" ){
+    if ( $l1 > $l2 ){ call_alert("日期請由小到大選擇",0,0); }
+    $l1 = $l1 . " 00:00";
+    $l2 = $l2 . " 23:59";
+}
+
+$default_sql_num = 1000;
+
+if ( $_SESSION["MM_UserAuthorization"] == "pay" ){
+	$default_sql_num = 10;
+}
+
+if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
+    $sqlv = "*";
+    $sqlv2 = "count(mem_auto)";
+}else{
+    $sqlv = "top ".$default_sql_num&" *";
+    $sqlv2 = "count(mem_auto)";
+}
+
+$oasql = "";
+$havemenu = 0;
+
+if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+    if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+        $oasql = "outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile) as logsize FROM log_data WHERE log_1 = dba.mem_mobile order by log_auto desc) log_data";
+    }
+    $sqls = "Select ".$sqlv." FROM member_data as dba outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile) as logsize FROM log_data WHERE log_1 = dba.mem_mobile order by log_auto desc) log_data WHERE mem_level = 'guest'";
+	$sqls2 = "Select ".$sqlv2." as total_size FROM member_data as dba ".$oasql." WHERE mem_level = 'guest'";
+    if ( SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+        if ( SqlFilter($_REQUEST["s99"],"tab") != "" ){
+      		$sqlss = $sqlss . " and all_type <> '未處理'";
+            $all_type = "已處理";
+        }else{
+      		$sqlss = $sqlss . " and all_type = '未處理'";
+            $all_type = "未處理";
+            $havemenu = 1;
+            switch ( SqlFilter($_REQUEST["c"],"tab") ){
+                case "1":
+                    $sqlss = $sqlss & " and (mem_come <> '行銷活動' and mem_come5 = 'DateMeNow')";
+	    			$c1h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "2":
+                    $sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = '春天會館')";
+                    $c2h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "6":
+					$sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = '約會專家' and (mem_come2 <> '體驗排約' and mem_come2 <> '體驗課程' and mem_come2 <> '體驗諮詢' and mem_come2 <> '體驗排約-手機版' and mem_come2 <> '體驗課程-手機版' and mem_come2 <> '體驗諮詢-手機版'))";
+                    $c6h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "7":
+                    $sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = '約會專家' and (mem_come2 = '體驗排約' or mem_come2 = '體驗課程' or mem_come2 = '體驗諮詢' or mem_come2 = '體驗排約-手機版' or mem_come2 = '體驗課程-手機版' or mem_come2 = '體驗諮詢-手機版'))";
+					$c7h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "8":
+					$sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = '約會專家' and (mem_come2 = '體驗排約' or mem_come2 = '體驗課程' or mem_come2 = '體驗諮詢' or mem_come2 = '體驗排約-手機版' or mem_come2 = '體驗課程-手機版' or mem_come2 = '體驗諮詢-手機版'))";
+					$c8h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "5":
+					$sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = 'DateMeNow')";
+					$c5h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "3":
+					$sqlss = $sqlss . " and (mem_come5 is null or (mem_come5 <> '春天會館' and mem_come5 <> 'DateMeNow' and mem_come5 <> '約會專家'))";
+					$c3h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "4":
+					$sqlss = $sqlss . " and (mem_come <> '行銷活動' and mem_come5 = '約會專家' and mem_come2 <> '好好玩活動')";
+					$c4h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "9":
+					$sqlss = $sqlss . " and (mem_come <> '行銷活動' and mem_come5 = '約會專家' and mem_come2 = '好好玩活動')";
+					$c9h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "10":
+                    $sqlss = $sqlss . " and (mem_come <> '行銷活動' and mem_come5 = 'MiniDate')";
+					$c10h = "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                case "11":
+                    $sqlss = $sqlss . " and (mem_come = '行銷活動' and mem_come5 = 'MiniDate')";
+					$c11h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+                default:
+                    $sqlss = $sqlss & " and (mem_come <> '行銷活動' and mem_come5 = '春天會館')";
+					$c0h =  "<i class='fa fa-arrow-right' style='margin-top:3px;'></i>";
+                    break;
+            }
+		}
+    }else{
+	    if ( $st == "checkdellist" ){
+            $all_type = "資源回收區-資料搜尋";
+        }else{
+	    	$all_type = "資料搜尋";
+        }
+	}
+
+	if ( SqlFilter($_REQUEST["s7"],"tab") != "" ){
+        $sqlss = $sqlss . " and mem_single = '" + str_Replace("'", "''", $_REQUEST["s7"]) + "'";
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" ){	
+    if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+        $oasql = "outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and log_branch= '".$_SESSION["branch"]."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and log_branch= '".$_SESSION["branch"]."' order by log_time desc) log_data";
+    }
+    $sqls = "Select ".$sqlv." FROM member_data as dba outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and log_branch= '".$_SESSION["branch"]."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and log_branch= '".$_SESSION["branch"]."' order by log_time desc) log_data WHERE mem_level = 'guest' and mem_branch= '".$_SESSION["branch"]."'";
+	$sqls2 = "Select ".$sqlv2." as total_size FROM member_data as dba ".$oasql." WHERE mem_level = 'guest' and mem_branch= '".$_SESSION["branch"]."'";	    
+    $all_type = "";
+    if ( SqlFilter($_REQUEST["br"],"tab") != "" ){
+        $sqlss = $sqlss . " and mem_single = '".$_SESSION["MM_Username"]."'";
+        $all_type = "已處理";
+    }else{
+	    $all_type = "未處理";
+	}
+	  
+    if ( SqlFilter($_REQUEST["s7"],"tab") != "" ){
+        $sqlss = $sqlss & " and mem_single like '%" + str_Replace("'", "''", $_REQUEST["s7"]) + "%'";
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "manager" ){
+    if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+        $oasql = "outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."' order by log_time desc) log_data";
+    }
+    $sqls = "Select ".$sqlv." FROM member_data as dba outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."' order by log_time desc) log_data Where mem_level = 'guest' and UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."'";
+    $sqls2 = "Select ".$sqlv2." as total_size FROM member_data as dba ".$oasql." Where mem_level = 'guest' and UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."'";
+
+    if ( SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+        if ( SqlFilter($_REQUEST["tr"],"tab") == "1" ){
+            $sqlss = $sqlss . " and all_type <> '已發送'";
+            $all_type = "已處理";
+        }else{
+            $sqlss = $sqlss . " and all_type = '已發送'";
+            $all_type = "未處理";
+        }
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+    if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+        $oasql = "outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."' order by log_time desc) log_data";
+	}
+    $sqls = "Select ".$sqlv." FROM member_data as dba outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])&"') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and UPPER(log_single) = '".strtoupper($_SESSION["MM_username"])."' order by log_time desc) log_data Where mem_level = 'guest' and UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."'";
+	$sqls2 = "Select ".$sqlv2." as total_size FROM member_data as dba ".$oasql." Where mem_level = 'guest' and UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."'";
+    if ( SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+        if ( SqlFilter($_REQUEST["tr"],"tab") == "1" ){
+            $sqlss = $sqlss . " and all_type <> '已發送'";
+            $all_type = "已處理";
+        }else{
+			$sqlss = $sqlss . " and all_type = '已發送'";
+            $all_type = "未處理";
+        }
+    }
+}elseif ( $_SESSION["MM_UserAuthorization"] == "pay" ){  	
+    if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+        $oasql = "outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and log_branch= '".$_SESSION["branch"]."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and log_branch= '".$_SESSION["branch"]."' order by log_time desc) log_data";
+    }
+    $sqls = "Select ".$sqlv." FROM member_data as dba outer APPLY (SELECT TOP 1 log_time, log_branch, log_1, log_2, log_4, (select count(log_auto) from log_data where log_1=dba.mem_mobile and log_branch= '".$_SESSION["branch"]."') as logsize FROM log_data WHERE log_1 = dba.mem_mobile and log_branch= '".$_SESSION["branch"]."' order by log_time desc) log_data WHERE mem_level = 'guest' and mem_branch= '".$_SESSION["branch"]."'";
+    $sqls2 = "Select ".$sqlv2." as total_size FROM member_data as dba ".$oasql." WHERE mem_level = 'guest' and mem_branch= '".$_SESSION["branch"]."'";
+}
+
+if ( $a1 != "" && $b1 != "" ){
+    $sqlss = $sqlss . " and mem_time between '".$a1."' and '".$b1."'";
+}
+
+if ( $l1 != "" && $l2 != "" ){
+    $sqlss = $sqlss . " and log_time between '".$l1."' and '".$l2."'";
+}
+
+if ( SqlFilter($_REQUEST["s21"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_sex = '" + str_Replace("'", "''", $_REQUEST["s21"]) + "'";
+}
+
+if ( SqlFilter($_REQUEST["qhe1"],"tab") != "" && SqlFilter($_REQUEST["qhe2"],"tab") != "" ){
+	$sqls = $sqls . " And mem_he between '".SqlFilter($_REQUEST["qhe1"],"tab")."' and '".SqlFilter($_REQUEST["qhe2"],"tab")."'";
+}
+
+if ( SqlFilter($_REQUEST["s11"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_branch = '" + str_Replace("'", "''", $_REQUEST["s11"]) + "'";
+}
+
+if ( SqlFilter($_REQUEST["s12"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_area = '" + str_Replace("'", "''", $_REQUEST["s12"]) + "'";
+}
+
+if ( SqlFilter($_REQUEST["fullm"],"tab") != "" ){
+    $fullm = SqlFilter($_REQUEST["fullm"],"tab");
+    $fullm = str_replace(",", "','", $fullm);
+    $sqlss = $sqlss . " and mem_num in ('".$fullm."')";
+}
+
+if ( SqlFilter($_REQUEST["s4"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_num like '%" . str_Replace("'", "''", $_REQUEST["s4"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s2"],"tab") != "" ){
+    $cs2 = reset_number(SqlFilter($_REQUEST["s2"],"tab"));
+    $sqlss = $sqlss . " and mem_mobile like '%".$cs2."%'";
+}
+
+if ( SqlFilter($_REQUEST["s17"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_phone like '" . str_Replace("'", "''", $_REQUEST["s17"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s8"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_come like '%" . str_Replace("'", "''", $_REQUEST["s8"]) . "%'";
+ 
+    if ( SqlFilter($_REQUEST["s8_1"],"tab") != "" ){
+        $sqlss = $sqlss . " and mem_come2 = '" . str_Replace("'", "''", $_REQUEST["s8_1"]) . "'";
+    }
+
+    if ( SqlFilter($_REQUEST["s8_6"],"tab") != "" ){
+        $sqlss = $sqlss . " and mem_come6 = '" . str_Replace("'", "''", $_REQUEST["s8_6"]) . "'";
+    }
+}
+
+if ( SqlFilter($_REQUEST["s5"],"tab") != "" ){
+    $sqlss = $sqlss . " and si_account like '%" . str_Replace("'", "''", $_REQUEST["s5"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s10"],"tab") != "" ){
+	$mem_school = str_replace(" ", "", $_REQUEST["s10"]);
+	$mem_school = str_replace(",", "','", $mem_school);
+	$sqlss = $sqlss . " and mem_school in ('".$mem_school."')";
+}
+
+if ( SqlFilter($_REQUEST["s19"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_come3 = '" .str_Replace("'", "''", $_REQUEST["s19"])."'";
+}
+
+if ( SqlFilter($_REQUEST["s20"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_come4 = '" . str_Replace("'", "''", $_REQUEST["s20"]) . "'";
+}
+
+if ( SqlFilter($_REQUEST["s22"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_mail like '%" . str_Replace("'", "''", $_REQUEST["s22"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s23"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_regip like '%" . str_Replace("'", "''", $_REQUEST["s23"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s32"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_marry = '".$_REQUEST["s32"]."'";
+}
+
+if ( SqlFilter($_REQUEST["s3"],"tab") != "" ){
+    $sqlss = $sqlss . " and (mem_name like N'%" . str_Replace("'", "''", $_REQUEST["s3"]) . "%' or mem_nick like '%" . str_Replace("'", "''", $_REQUEST["s3"]) . "%')";
+}
+
+if ( SqlFilter($_REQUEST["s6"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_username like '%" . str_Replace("'", "''", $_REQUEST["s6"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s18"],"tab") != "" ){
+    $sqlss = $sqlss . " and dmn_num like '%" . str_Replace("'", "''", $_REQUEST["s18"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["serc"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_serc like '%" . str_Replace("'", "''", $_REQUEST["serc"]) . "%'";
+}
+
+if ( SqlFilter($_REQUEST["s31"],"tab") != "" ){
+    $sqlss = $sqlss . " and keyin_single = '" . str_Replace("'", "''", $_REQUEST["s31"]) . "'";
+}
+
+if ( SqlFilter($_REQUEST["mem_job1"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_job1 = '" . str_Replace("'", "''", $_REQUEST["mem_job1"]) . "'";
+}
+
+if ( SqlFilter($_REQUEST["a4"],"tab") != "" ){
+	$mem_money = str_replace(" ", "", $_REQUEST["a4"]);
+	$mem_money = str_replace(",", "','", $mem_money);
+	$sqlss = $sqlss . " and mem_money in ('".$mem_money."')";
+}
+
+if ( SqlFilter($_REQUEST["onlyshowphoto"],"tab") == "1" ){
+	$sqlss = $sqlss . " and mem_photo <> '' and not mem_photo = 'girl.jpg' and not mem_photo = 'boy.jpg'";
+}
+
+if ( SqlFilter($_REQUEST["s13"],"tab") == "1" ){
+    $sqlss = $sqlss . " and mem_time between '" . str_Replace("'", "''", $_REQUEST["s13"]) . "' and '" . str_Replace("'", "''", $_REQUEST["s14"]) . "'";
+}
+$tshow = "未入會";
+if ( SqlFilter($_REQUEST["s15"],"tab") == "1" ){
+    $sqlss = $sqlss . " and web_level = ".SqlFilter($_REQUEST["s15"],"tab");
+    $tshow = "資料認證";
+}
+
+if ( SqlFilter($_REQUEST["s27"],"tab") != "" ){
+    $sqlss = $sqlss . " and mem_by between '".SqlFilter($_REQUEST["s27"],"tab") . "' and '".SqlFilter($_REQUEST["s28"],"tab")."'";
+}
+
+if ( SqlFilter($_REQUEST["enterprise"],"tab") == "1" ){
+    $sqlss = $sqlss . " and si_enterprise=1";
+}
+
+if ( SqlFilter($_REQUEST["s98"],"tab") == "1" ){
+	$s98 = SqlFilter($_REQUEST["s98"],"tab");
+	$s98 = str_replace(" ", "", trim($s98));
+	$c98 = 0;
+	if ( $s98 == "未處理" ){
+		$c98 = 1;
+		if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+			$sqlss = $sqlss . " and all_type = '未處理'";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+			$sqlss = $sqlss . " and all_type = '已發送'";
+		}else{
+			$sqlss = $sqlss . " and all_type = '已發送'";
+        }
+	}
+
+	if ( $s98 == "已處理" ){
+		$c98 = 1;
+		if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+			$sqlss = $sqlss . " and all_type <> '未處理'";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+			$sqlss = $sqlss . " and all_type <> '已發送'";
+        }else{
+			$sqlss = $sqlss . " and all_type <> '已發送'";
+		}
+	}
+	
+    if ( $c98 == 0 ){
+  	    $s98 = str_replace(",", "','", trim($s98));
+  	    $sqlss = $sqlss . " and all_type in ('" .$s98."')";
+    }
+}
+
+if ( SqlFilter($_REQUEST["s97"],"tab") == "1" ){
+    $sqlss = $sqlss . " and mem_cc = '" .str_Replace("'", "''", SqlFilter($_REQUEST["s97"],"tab")) . "'";
+}
+
+if ( SqlFilter($_REQUEST["s97_2"],"tab") == "1" ){
+    $sqlss = $sqlss . " and mem_cc = '" .str_Replace("'", "''", SqlFilter($_REQUEST["s97_2"],"tab")) . "'";
+}
+
+if ( SqlFilter($_REQUEST["nodouble"],"tab") == "1" ){
+    switch ($_SESSION["MM_UserAuthorization"]){
+		case "admin":
+		    $sqlss = $sqlss . " and (SELECT count(mem_auto) FROM member_data as dbb Where (mem_level = 'guest') AND (mem_mobile = dba.mem_mobile)) <= 1";
+            break;
+		case "branch":
+		    $sqlss = $sqlss . " and (SELECT count(mem_auto) FROM member_data as dbb Where (mem_level = 'guest') AND (mem_mobile = dba.mem_mobile) and (mem_branch = '".$_SESSION["branch"]."')) <= 1";
+            break;
+	    default:
+	        $sqlss = $sqlss . " and (SELECT count(mem_auto) FROM member_data as dbb Where (mem_level = 'guest') AND (mem_mobile = dba.mem_mobile) and (mem_branch = '".$_SESSION["branch"]."') and (mem_single = '".$_SESSION["MM_username"]."')) <= 1";
+    }
+}
+
+if ( SqlFilter($_REQUEST["s"],"tab") == "nokaifa" ){
+	if ( SqlFilter($_REQUEST["u"],"tab") != "" ){
+	    if ( substr_count($sqls, "mem_single") < 1 ){
+		    $sqls = $sqls . " and mem_single='".SqlFilter($_REQUEST["u"],"tab")."'";
+        }
+	    if ( substr_count($sqls2, "mem_single") < 1 ){
+		    $sqls2 = $sqls2 . " and mem_single='".SqlFilter($_REQUEST["u"],"tab")."'";
+        }
+	    $sqlss = " and (select count(log_auto) from log_data where log_1 = dba.mem_mobile and log_single=dba.mem_single) < 1 and mem_time >= '2015/01/01'";
+	    $all_type = $all_type." - 尚未開發";
+    }else{
+	    echo "查無未開發資料 - 秘書帳號錯誤";
+        exit;
+    }
+}
+
+if ( $st = "checkdellist" ){
+	if ( $_SESSION["MM_UserAuthorization"] != "admin" ){
+        call_alert("權限不足。",0,0);
+    }
+	$sqlss = $sqlss ." and not del_mask is null";
+}else{
+	$sqlss = $sqlss . " and del_mask is null";
+}
+
+if ( $st == "fav" || SqlFilter($_REQUEST["onlyfav"],"tab") == "1" ){
+	$sqlss = $sqlss . " and mem_fav = 1";
+}
+
+if ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+    switch (SqlFilter($_REQUEST["old"],"tab")){
+        case "1":
+            $sqlss = $sqlss . " and (datediff(d, mem_time, '2017/12/31 23:59:59') > 0)  and (datediff(d, log_time, getdate()) > 15) and (mem_sex='男') and (mem_by between 1990 and 1995)";
+			$sqls2 = $sqls2 . " and (datediff(d, mem_time, '2017/12/31 23:59:59') > 0)  and (datediff(d, log_time, getdate()) > 15) and (mem_sex='男') and (mem_by between 1990 and 1995)";
+			$sqlss = str_replace("and all_type = '未處理'", "", $sqlss);
+	        $sqls2 = str_replace("and all_type = '未處理'", "", $sqls2);
+			$oldrulesmsg = "舊資顯示條件：資料時間 2017/12/31 前/男生/年次 1990-1995/超過 15 天無回報記錄/預設排序最後回報時間近到遠";
+            break;
+        case "2":
+            $sqlss = $sqlss & " and (datediff(d, mem_time, '2017/12/31 23:59:59') > 0)  and (datediff(d, log_time, getdate()) > 15) and (mem_sex='女') and (mem_by between 1990 and 1997)";
+			$sqls2 = $sqls2 & " and (datediff(d, mem_time, '2017/12/31 23:59:59') > 0)  and (datediff(d, log_time, getdate()) > 15) and (mem_sex='女') and (mem_by between 1990 and 1997)";
+			$sqlss = str_replace("and all_type = '未處理'", "", $sqlss);
+	        $sqls2 = str_replace("and all_type = '未處理'", "", $sqls2);
+			$oldrulesmsg = "舊資顯示條件：資料時間 2017/12/31 前/女生/年次 1990-1997/超過 15 天無回報記錄/預設排序最後回報時間近到遠";
+            break;
+        case "3":
+			$sqlss = $sqlss . " and (datediff(d, mem_time, '2018/12/31 23:59:59') > 0)";
+			$sqls2 = $sqls2 . " and (datediff(d, mem_time, '2018/12/31 23:59:59') > 0)";
+			$sqlss = str_replace("and all_type = '未處理'", "", $sqlss);
+	        $sqls2 = str_replace("and all_type = '未處理'", "", $sqls2);
+            $oldrulesmsg = "舊資顯示條件：資料時間 2018/12/31 前";
+            break;
+    }
+}
+
+switch ( SqlFilter($_REQUEST["orderby"],"tab") ){
+    case "1": //依資料時間排序
+        $sqls = $sqls . $sqlss . " order by mem_time desc";
+        break;
+    case "2": //依資料時間排序
+        $sqls = $sqls . $sqlss . " order by mem_time asc";
+        break;
+    case "3": //依督導發送排序
+        $sqls = $sqls . $sqlss . " order by send_time desc";
+        break;
+    case "4": //依督導發送排序
+        $sqls = $sqls . $sqlss . " order by send_time asc";
+        break;
+    case "5": //依回報時間排序
+        $sqls = $sqls . $sqlss . " order by log_time desc";
+        break;
+    case "6": //依回報時間排序
+        $sqls = $sqls . $sqlss . " order by log_time asc";
+        break;
+    default:
+        if ( $l1 != "" && $l2 != "" ){
+            $sqls = $sqls . $sqlss . " order by log_time desc";
+            $sqls2 = "";
+        }elseif ( SqlFilter($_REQUEST["old"],"tab") != "" ){
+	        if ( SqlFilter($_REQUEST["old"],"tab") == "3" ){
+	            $sqls = $sqls . $sqlss . " order by send_time desc";
+            }else{
+                $sqls = $sqls . $sqlss . " order by log_time asc";
+            }
+        }elseif ( SqlFilter($_REQUEST["c"],"tab") == "8" ){
+            $sqls = $sqls . $sqlss . " order by send_time desc";
+        }elseif ( SqlFilter($_REQUEST["st"],"tab") == "checkdellist" ){
+            $sqls = $sqls . $sqlss . " order by del_mask_time desc";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "admin" &&  SqlFilter($_REQUEST["s99"],"tab") != "1" && SqlFilter($_REQUEST["vst"],"tab") != "full" && SqlFilter($_REQUEST["sear"],"tab") != "1" ){
+            $sqls = $sqls . $sqlss . " order by mem_mobile, mem_auto desc";
+        }elseif ( SqlFilter($_REQUEST["s7"],"tab") == "DMNDMN" ){
+            $sqls = $sqls . $sqlss . " order by mem_auto asc";
+        }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" ){
+            $sqls = $sqls . $sqlss . " order by send_time2 desc, send_time desc";
+        }else{
+            $sqls = $sqls . $sqlss . " order by send_time desc";
+        }
+}
+
+$sqls2 = $sqls2 . $sqlss;
+
+if ( SqlFilter($_REQUEST["c"],"tab") == "8" ){
+	$sqls = str_replace("and all_type = '未處理'", "", $sqls);
+	$sqls2 = str_replace("and all_type = '未處理'", "", $sqls2);
+}
+
+if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){
+    echo $sqls."<br>";
+    echo $sqls2."<br>";
+}
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
