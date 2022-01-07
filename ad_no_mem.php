@@ -777,9 +777,25 @@ if ( SqlFilter($_REQUEST["c"],"tab") == "8" ){
 
 if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){
     echo $sqls."<br>";
-    echo $sqls2."<br>";
+    //echo $sqls2."<br>";
 }
+
+//取得總筆數
+$SQL = "Select count(mem_auto) As total_size From member_data Where".$subSQL1.$subSQL2;
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+if ( count($result) == 0 || $re["total_size"] == 0 ) {
+    $total_size = 0;
+}else{
+    $total_size = $re["total_size"];
+}
+
+
 ?>
+<script type="text/JavaScript" src="./include/script.js"></script>
+
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
