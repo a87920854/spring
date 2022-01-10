@@ -11,20 +11,28 @@
 	require_once("./include/_function.php");
 	require_once("./include/_top.php");
 	require_once("./include/_sidebar.php");
-	
+	set_time_limit(0); 
 	check_page_power("ad_single_list");
 
 	if ( $_SESSION["MM_UserAuthorization"] == "admin"){
-		$SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
-		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0";
 		$branch = SqlFilter($_REQUEST["branch"],"tab");
 		if ( $branch != "" ){
-			$subSQL .= " And p_branch='".$branch."'";
+			$subSQL = "And p_branch ='".$branch."'";
+			if ( $branch == "迷你約"){ //2022.01.10 因迷你約業績掛在八德，若以迷你約的帳號登入則需看到原迷你約的資料
+				$branch = "八德";
+				$subSQL = $subSQL. " and team_name='迷你約' ";
+			}            
 		}
+		$SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
+		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0 ".$subSQL;
 	}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
 		$branch = $_SESSION["branch"];
+		if ( $branch == "迷你約" ){ //2022.01.10 因迷你約業績掛在八德，若以迷你約的帳號登入則需看到原迷你約的資料
+            $branch = "八德";
+            $subSQL = " and team_name='迷你約' ";
+		}
 	    $SQL  = "Select * From personnel_data_aparty Outer Apply (Select Count(mem_auto) As nob From member_data As dba Where mem_single=personnel_data_aparty.p_user And mem_level='guest' And mem_time >= '2015/01/01' And (";
-		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0 And p_branch ='".$branch."'";
+		$SQL .= "Select Count(log_auto) From log_data Where log_1 = dba.mem_mobile And log_single=dba.mem_single) < 1) mm Where q_year = 0 And p_branch ='".$branch."'".$subSQL;
 	}elseif ( $_SESSION["MM_UserAuthorization"] == "manager" ){
 		$SQL1 = "Select p_user From personnel_data_aparty Where team_name='".$_SESSION["team_name"]."'";
 		$rs1 = $SPConn->prepare($SQL1);
@@ -127,7 +135,7 @@
 						}else{
 							$rs = $SPConn->prepare($SQL);
 							$rs->execute();
-							$result=$rs->fetchAll(PDO::FETCH_ASSOC); ?>
+							$result = $rs->fetchAll(PDO::FETCH_ASSOC); ?>
 							<tr>
 								<th>會館</th>
 								<th>姓名</th>
