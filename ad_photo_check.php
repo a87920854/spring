@@ -1,6 +1,181 @@
 <?php
-require("./include/_top.php");
-require("./include/_sidebar.php");
+/***************************************/
+//檔案名稱：ad_photo_check.php
+//後台對應位置：春天網站功能 > 網站照片審核
+//改版日期：2022.1.11
+//改版設計人員：Jack
+//改版程式人員：Queena
+/***************************************/
+
+require_once("_inc.php");
+require_once("./include/_function.php");
+require_once("./include/_top.php");
+require_once("./include/_sidebar.php");
+
+//頁面權限
+check_page_power("ad_photo_check");
+
+//?
+$st = SqlFilter($_REQUEST["st"],"tab");
+$a = SqlFilter($_REQUEST["a"],"tab");
+$p = SqlFilter($_REQUEST["p"],"tab");
+$t = SqlFilter($_REQUEST["t"],"tab");
+$v = SqlFilter($_REQUEST["v"],"tab");
+$errmsg = SqlFilter($_REQUEST["errmsg"],"tab");
+if ( $st == "delpic" ){
+    $SQL = "Select * From photo_data Where photo_auto=".$a;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    //foreach($result as $re);
+  	if ( count($result) > 0 ){
+        if ( $re["types"] == "dmn" ){
+            //刪除實體檔案
+            $path = dirname(__FILE__)."\dphoto\photo\\".$re["photo_name"];
+			DelFile($path);
+			//刪除資料庫資料
+  		    //rmfile(server.mappath("dphoto/photo/"&rs("photo_name")))
+        }else{
+            //刪除實體檔案
+            $path = dirname(__FILE__)."\photo\\".$re["photo_name"];
+            DelFile($path);
+            //刪除資料庫資料
+            //rmfile(server.mappath("photo/"&rs("photo_name")))
+  	    }
+  		$SQL_d = "Delete From photo_data Where photo_auto=".$a;
+        $rs_d = $SPConn->prepare($SQL_d);
+        $rs_d->execute();
+    }
+  	header("location:ad_photo_check.asp?topage=".$p."&t=".$t);
+}
+
+//?
+if ( $st == "accept" && $v != "" ){
+    $sendmail = 0;
+  	//set rs = Server.CreateObject("ADODB.Recordset")
+    $SQL = "Select * From photo_data Where photo_auto=".$a;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+   	if ( count($result) > 0 ){   	
+   	    $mem_num = $re["mem_num"];
+   	    if ( $errmsg != "" ){
+   		    $subSQL = ",acceptm = '".$errmsg."'";
+        }
+   	    if ( $v == "1" ){
+   		    $sendmail = 1;
+   		    if ( $re["types"] == "dmn" ){
+   			    //set qrs = Server.CreateObject("ADODB.Recordset")
+                $SQL1 = "Select mem_photo, mem_mail From member_data Where mem_num='".$mem_num;
+                $rs1 = $SPConn->prepare($SQL1);
+                $rs1->execute();
+                $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+                foreach($result1 as $re1);
+   		        if ( count($result1) > 0 ){
+   			        $mem_photo = $re1["mem_photo"];
+   			        $mem_mail = $re1["mem_mail"];
+                    //刪除資料庫資料
+                    $path = dirname(__FILE__)."\dphoto\photo\\".$mem_photo;
+                    DelFile($path);
+                    
+   			        $SQL_u = "Update member_data Set mem_photo='photo/".$re["photo_name"]."' Where mem_num=".$mem_num;
+                    $rs_u = $SPConn->prepare($SQL_u);
+                    $rs_u->execute();       
+                }
+
+                $SQL1 = "Select HeadPhotoURL From UserData Where UserID='".$mem_num."'";
+                $rs1 = $SPConn->prepare($SQL1);
+                $rs1->execute();
+                $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+                foreach($result1 as $re1);
+           		if ( count($result1) > 0 ){
+                    $SQL_u = "Update UserData Set HeadPhotoURL='photo/".$re["photo_name"]."' Where UserID=".$mem_num;
+                    $rs_u = $SPConn->prepare($SQL_u);
+                    $rs_u->execute();
+                }
+            }else{
+                $SQL1 = "Select mem_photo, mem_mail, si_no_mail1 From member_data Where mem_num='".$mem_num."'";
+                $rs1 = $SPConn->prepare($SQL1);
+                $rs1->execute();
+                $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+                foreach($result1 as $re1);
+                if ( count($result1) > 0 ){
+                    $mem_photo = $re1["mem_photo"];
+                    $mem_mail = $re1["mem_mail"];
+                    $mnomail = $re1["si_no_mail1"];
+                    if ( $mem_photo == "" || is_Null($mem_photo) || substr_count($mem_photo, "boy") > 0 || substr_count($mem_photo, "girl") > 0 ){
+                        $SQL_u = "Update member_data Set mem_photo='".$re["photo_name"]."' Where mem_num=".$mem_num;
+                        $rs_u = $SPConn->prepare($SQL_u);
+                        $rs_u->execute();
+                    }
+                }
+            }
+        }
+
+        $SQL_u = "Update photo_data Set accept=".$v.",accept_single='".$_SESSION["MM_Username"]."'".$subSQL." Where photo_auto=".$a;
+        $rs_u = $SPConn->prepare($SQL_u);
+        $rs_u->execute();    
+    }
+   	
+    if ( $sendmail == 1 ){
+        sysmsg($mem_num, "您的照片已公開！", "");
+        if ( $mem_mail != "" ){
+            //寄信
+            //notice_edm("您的照片已公開！", mem_mail, "您的照片已公開！", "您設定的照片已審核通過，並已公開於前台了！<br><br><a href=""http://www.singleparty.com.tw/mypage.asp"">▼ 確認照片請往這裡</a><br><a href=""http://www.singleparty.com.tw/member_list.asp?t=2"">▼ 馬上去尋找欣賞的對象</a><br>由衷盼望您能在約會專家裡找到理想中的對象。<br><br>今後也請多多指教。", "", mnomail)
+        }
+    }
+    header("location:ad_photo_check.php?topage=".$t);
+}
+
+$times1 = SqlFilter($_REQUEST["times1"],"tab");
+$times2 = SqlFilter($_REQUEST["times2"],"tab");
+if ( $times1 != "" ){
+    $acre_sign1 = $times1 ." 00:00";
+    $vacre_sign1 = $times1;
+    if ( is_Date($acre_sign1) == false ){
+        call_alert("起始時間有誤。", 0, 0);
+    }
+}
+if ( $times2 != "" ){
+    $acre_sign2 = $times2 . " 23:59";
+    $vacre_sign2 = $times2;
+    if ( is_Date($acre_sign2) == false ){
+        call_alert("結束時間有誤。", 0, 0);
+    }
+}
+
+$default_sql_num = 500;
+$vst = SqlFilter($_REQUEST["vst"],"tab");
+if ( $vst == "full" ){
+    $sqlv = "*";
+    $sqlv2 = "count(photo_auto)";
+}else{
+    $sqlv = "top ".$default_sql_num." *";
+    $sqlv2 = "count(photo_auto)";
+}
+//"Select ".sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE 1=1"&b2sql
+if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "count" ){
+    $subSQL2 = "1=1".$b2sql;
+    //$sqls = "Select "&sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' or member_data.mem_branch2='"&session("branch")&"')"&b2sql
+    //sqls2 = "Select "&sqlv2&" as total_size FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE  1=1"&b2sql
+}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" || $_SESSION["MM_UserAuthorization"] == "keyin" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+    $subSQL2 = "(member_data.mem_branch='".$_SESSION["branch"]."' or member_data.mem_branch2='".$_SESSION["branch"]."')".$b2sql;
+    //sqls = "Select "&sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' or member_data.mem_branch2='"&session("branch")&"')"&b2sql
+    //sqls2 = "Select "&sqlv2&" as total_size FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' or member_data.mem_branch2='"&session("branch")&"')"&b2sql
+}elseif ( $_SESSION["MM_UserAuthorization"] == "single" ){
+    $subSQL2 = "(member_data.mem_branch='".$_SESSION["branch"]."' and mem_single='".$_SESSION["MM_Username"]."')".$b2sql;
+    //sqls = "Select "&sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' and mem_single='"&session("MM_Username")&"')"&b2sql
+    //sqls2 = "Select "&sqlv2&" as total_size FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' and mem_single='"&session("MM_Username")&"')"&b2sql
+}
+
+if ( chkDate($acre_sign1) && chkDate($acre_sign2) ){
+    $days = (strtotime($acre_sign1)-strtotime($acre_sign2))/86400;
+    if ( $days < 0 ){
+        call_alert("結束時間不能大於起始時間。", 0, 0);
+    }
+    $subSQL3 = $subSQL3 . " and photo_data.photo_time between '".$acre_sign1."' and '".$acre_sign2."'";
+}
 ?>
 
 <!-- MIDDLE -->

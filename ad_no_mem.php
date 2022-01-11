@@ -671,7 +671,6 @@ if ( SqlFilter($_REQUEST["nodouble"],"tab") == "1" ){
 
 $subSQL = "Select ".$subSQL1." FROM member_data as dba ".$subSQL2;
 
-
 if ( SqlFilter($_REQUEST["s"],"tab") == "nokaifa" ){
 	if ( SqlFilter($_REQUEST["u"],"tab") != "" ){
 	    if ( substr_count($subSQL, "mem_single") < 1 ){
@@ -773,7 +772,7 @@ switch ( SqlFilter($_REQUEST["orderby"],"tab") ){
         }
 }
 
-$sqls2 = $sqls2 . $sqlss;
+$sqls2 = $sqls2 . $subSQL3;
 
 if ( SqlFilter($_REQUEST["c"],"tab") == "8" ){
 	$subSQL = str_replace("and all_type = '未處理'", "", $subSQL);
@@ -782,7 +781,7 @@ if ( SqlFilter($_REQUEST["c"],"tab") == "8" ){
 
 if ( $_SESSION["MM_Username"] == "TSAIWEN216" ){
     //echo $sqls."<br>";
-    echo $sqls2."<br>";
+    //echo $sqls2."<br>";
 }
 
 //取得總筆數
@@ -797,17 +796,12 @@ if ( count($result) == 0 || $re["total_size"] == 0 ) {
     $total_size = $re["total_size"];
 }
 
-//分頁語法
-$SQL_list  = "Select ".$subSQL1." From member_data as dba ".$subSQL2."(";
-$SQL_list .= "Select TOP ".$page2." * From member_data as dba ".$subSQL2."(";
-$SQL_list .= "Select TOP ".($tPageSize*$tPage)." * From member_data as dba ".$subSQL2.$subSQL3." Asc) t1 Where".$subSQL3." Desc ) t2 Where".$subSQL3." Desc ";
-echo $subSQL1;
+
+
+echo $total_size;
 exit;
-echo $SQL_list;
-exit;
-$rs_list = $SPConn->prepare($SQL_list);
-$rs_list->execute();
-$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
+
+
 
 
 

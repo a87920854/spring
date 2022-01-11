@@ -798,16 +798,28 @@
 		return $daycolor;
 	}
 
-		//取得卡別
-		function get_card($ano){
-			$SQL = "Select * From card_type Where card_no = '".$ano."'";
-			$SPConn2 = SPConOpen();
-			$rs = $SPConn2->prepare($SQL);
-			$rs->execute();
-			$result = $rs->fetchAll(PDO::FETCH_ASSOC);
-			foreach($result as $re);
-			$card_name = $re["card_name"];
+	//取得卡別
+	function get_card($ano){
+		$SQL = "Select * From card_type Where card_no = '".$ano."'";
+		$SPConn2 = SPConOpen();
+		$rs = $SPConn2->prepare($SQL);
+		$rs->execute();
+		$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		$card_name = $re["card_name"];
 
-			return $card_name;
-		}
+		return $card_name;
+	}
+
+
+	function sysmsg($mnum, $msg, $url){
+		//新增
+		$SPConn2 = SPConOpen();
+		$SQL_i  = "Insert Into si_sysmsg(mnum, msg, url) Values ( '";
+		$SQL_i .= SqlFilter($mnum,"tab")."',";
+		$SQL_i .= "'".SqlFilter($msg,"tab")."',";
+		$SQL_i .= "'".SqlFilter($url,"tab")."')";
+		$rs_i = $SPConn2->prepare($SQL_i);
+		$rs_i->execute();
+	}
 ?>
