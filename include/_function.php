@@ -176,7 +176,7 @@
 			default:
 				echo "<script language=\"javascript\">" ;
 				echo "alert('" . $msg ."');";
-				if ( $url != "" && !is_numeric($url)){
+				if ( $url != "" && is_string($url)){
 					echo "window.setTimeout(location.href='" . $url . "'," . $outtime .");";
 				}else {
 					echo "window.setTimeout(location.href='history.back(1)'," . $outtime .");";
@@ -798,16 +798,45 @@
 		return $daycolor;
 	}
 
-		//取得卡別
-		function get_card($ano){
-			$SQL = "Select * From card_type Where card_no = '".$ano."'";
-			$SPConn2 = SPConOpen();
-			$rs = $SPConn2->prepare($SQL);
-			$rs->execute();
-			$result = $rs->fetchAll(PDO::FETCH_ASSOC);
-			foreach($result as $re);
-			$card_name = $re["card_name"];
+	//取得卡別
+	function get_card($ano){
+		$SQL = "Select * From card_type Where card_no = '".$ano."'";
+		$SPConn2 = SPConOpen();
+		$rs = $SPConn2->prepare($SQL);
+		$rs->execute();
+		$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+		foreach($result as $re);
+		$card_name = $re["card_name"];
 
-			return $card_name;
-		}
+		return $card_name;
+	}
+	
+	//取得星期幾
+	function weekchinesename($n){
+        switch($n){
+            case 1:
+                return "一";
+                break;
+            case 2:
+                return "二";
+                break;
+            case 3:
+                return "三";
+                break;
+            case 4:
+                return "四";
+                break;
+            case 5:
+                return "五";
+                break;
+            case 6:
+                return "六";
+                break;
+            case 0:
+                return "日";
+                break;
+            default:
+                return "不明";
+        }
+    }
 ?>

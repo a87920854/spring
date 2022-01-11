@@ -1,8 +1,16 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_singleparty_counts.php
+    //後台對應位置：管理系統/約會專家-未入會統計
+    //改版日期：2022.1.10
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+    
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
 ?>
 
 <!-- MIDDLE -->

@@ -1,8 +1,23 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_counts_new.php
+    //後台對應位置：管理系統/未入會統計-新
+    //改版日期：2022.1.6
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+
+    $marking_list = SqlFilter($_REQUEST["marking_list"],"tab"); 
 ?>
 
 <!-- MIDDLE -->
@@ -41,281 +56,146 @@ require_once("./include/_sidebar.php");
                             <option value="8">去年</option>
                         </select>&nbsp;&nbsp;<input id="send_submit" type="submit" class="btn btn-default" value="送出"></p>
                 </form>
+                <?php 
+                    if($_REQUEST["st"] == "send"){
+                        $stime = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
+                        $etime = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";
+                        $marking_listv = str_replace( ",", "','",$marking_list);
+          	            $marking_listv = "'".$marking_listv."'";
+                        echo "<table class='table table-striped table-bordered bootstrap-datatable'>";
+                        $all_str = "網站註冊|1,春網戀愛咨詢|2,手機APP|3,網站手機版|4,手機APP-首頁|5,網站手機版-首頁|6,singleparty|7,會員登入頁|8,春網認識他|9,春網喜事見證|10,春網活動列表|11,春網戀愛講堂-首頁|12,春網戀愛講堂-內頁|13,手機APP-熱戀區|14,手機APP-寶貝聯誼|15,手機APP-橙果|16,約會專家|17";
+                        
+                        echo "<tr><td>NO</td><td>活動名稱</td><td>上線日期</td><td>統計日期</td>";
+                        echo "<td>所有(男)</td><td>新(男)</td><td>所有(女)</td><td>新(女)</td><td>總名單數</td>";
+                        echo "<td>成交(男)</td><td>成交(女)</td><td>總成交數</td><td>成交金額</td>";
+                        echo "</tr>";
 
-                <table class="table table-striped table-bordered bootstrap-datatable">
-                    <tr>
-                        <td>NO</td>
-                        <td>活動名稱</td>
-                        <td>上線日期</td>
-                        <td>統計日期</td>
-                        <td>所有(男)</td>
-                        <td>新(男)</td>
-                        <td>所有(女)</td>
-                        <td>新(女)</td>
-                        <td>總名單數</td>
-                        <td>成交(男)</td>
-                        <td>成交(女)</td>
-                        <td>總成交數</td>
-                        <td>成交金額</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>網站註冊</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>7</td>
-                        <td>0</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>8</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>春網戀愛咨詢</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>手機APP</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>網站手機版</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>手機APP-首頁</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>網站手機版-首頁</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>singleparty</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>會員登入頁</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>春網認識他</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>春網喜事見證</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>春網活動列表</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>春網戀愛講堂-首頁</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>春網戀愛講堂-內頁</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>手機APP-熱戀區</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>手機APP-寶貝聯誼</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>手機APP-橙果</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>17</td>
-                        <td>約會專家</td>
-                        <td></td>
-                        <td>2021-10-21 00:00 至 2021-10-21 23:59</td>
-                        <td>5</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>5</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </table>
-                </table>
+                        $gg = 1;
+                        foreach(explode(",",$all_str) as $pp){
+                            $pp1 = explode("|",$pp)[0];
+                            $pp2 = explode("|",$pp)[1];
+                            echo "<tr>";
+                            echo "<td>".$gg."</td>";
+                            $names = $pp1;
+                            echo "<td>".$names."</td>";
+                            echo "<td></td>";
+                            echo "<td>".$stime." 至 ".$etime."</td>";
+                            $total1 = 0;
+                            $total2 = 0;
+                            $total3 = 0;
+                            if($pp2 == 13){
+                                $vvsql = "mem_come='春天網站' and mem_come2 like '%".$pp1."%'"; 
+                            }elseif($pp2 == 17){
+                                $vvsql = "mem_come='".$pp1."'";
+                            }else{
+                                $vvsql = "mem_come='春天網站' and mem_come2='".$pp1."'";
+                            }
 
+                            // 所有男
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男'";
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            $total1 = $total1 + $vvt;
+                            echo $vvt."</td>";
+
+                            // 所有新男
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data as dba where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男'".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile".$vsql." and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile".$vsql2.") <= 0)";
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            echo $vvt."</td>";
+
+                            // 所有女
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='女'".$vsql;
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            $total1 = $total1 + $vvt;
+                            echo $vvt."</td>";
+
+                            // 所有新女
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data as dba where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='女'".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile".$vsql." and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile".$vsql2.") <= 0)";
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            echo $vvt."</td>";
+                            echo "<td>".$total1."</td>";
+
+                            // 成交男
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男' and mem_level='mem'".$vsql;
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            $total2 = $total2 + $vvt;
+                            echo $vvt."</td>";
+
+                            // 成交女
+                            echo "<td>";
+                            $SQL = "select count(mem_auto) as vvt from member_data where ".$vvsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='女' and mem_level='mem'".$vsql;
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetch(PDO::FETCH_ASSOC);
+                            if($result){
+                                $vvt = $result["vvt"];
+                            }else{
+                                $vvt = 0;
+                            }
+                            $total2 = $total2 + $vvt;
+                            echo $vvt."</td>";
+                            echo "<td>".$total2."</td>";
+
+                            $total3 = 0;
+                            $SQL = "select mem_num, vv from member_data outer apply (select SUM(pay_total2) as vv from pay_main where pay_user <> '' and pay_user=mem_username and pay_time > mem_time) pay_main where ".$vvsql." and mem_level='mem' and mem_time between '".$stime."' and '".$etime."'".$vsql;
+                            $rs = $SPConn->prepare($SQL);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if($result){
+                                foreach($result as $re){
+                                    if($re["vv"] != ""){
+                                        $total3 = $total3 + intval($re["vv"]);
+                                    }
+                                }
+                            }else{
+                                $total3 = 0;
+                            }
+                            echo "<td>".$total3."</td>";
+                            echo "</tr>";
+                            $gg = $gg + 1;
+                        }
+                        echo "</table>";                        
+                    }
+                ?>
             </div>
         </div>
         <!--/span-->

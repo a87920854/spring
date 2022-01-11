@@ -1,8 +1,178 @@
 <?php
+
+/*****************************************/
+//檔案名稱：ad_counts2.php
+//後台對應位置：管理系統/已入會會員統計
+//改版日期：2022.1.7
+//改版設計人員：Jack
+//改版程式人員：Jack
+/*****************************************/
+
 require_once("_inc.php");
 require_once("./include/_function.php");
+
+// ajax
+if ($_REQUEST["st"] == "send") {
+    if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+        echo "在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。";
+        exit();
+    }
+    $start_time = Date_EN(SqlFilter($_REQUEST["start_time"], "tab"), 1) . " 00:00";
+    $end_time = Date_EN(SqlFilter($_REQUEST["end_time"], "tab"), 1) . " 23:59";
+    $fullmaxday = ceil((strtotime($end_time) - strtotime(SqlFilter($_REQUEST["ostart_time"], "tab"))) / (60 * 60 * 24));
+    $maxday = ceil((strtotime($end_time) - strtotime($start_time)) / (60 * 60 * 24));
+
+    if ($maxday < 0) {
+        echo "在 " . $start_time . " ～ " . $end_time . " 間沒有資料或日期選擇不正確。";
+    }
+    if ($maxday == 0) {
+        $smaxday = 1;
+    } else {
+        $smaxday = $fullmaxday;
+    }
+    if ($_REQUEST["start_time"] == $_REQUEST["ostart_time"]) {
+        echo "<div>在 " . $start_time . " ～ " . $end_time . " 間統計、共 " . $smaxday . " 天：</div>";
+        echo "<table id='outtable' width='100%' height=80 align='center' class='table table-striped table-bordered bootstrap-datatable'>";
+        echo "<tr><td>註冊時間</td>";
+        echo "<td>首頁<br>會員註冊</td>";
+        echo "<td>首頁<br>免費戀愛諮詢</td>";
+        echo "<td>我想認識他</td>";
+        echo "<td>手機APP</td>";
+        echo "<td>網站手機版</td>";
+        echo "<td>Mini</td>";
+        echo "<td>會員登入頁</td>";
+        echo "<td>春網喜事見證</td>";
+        echo "<td>春網活動列表</td>";
+        echo "<td>網路註冊總數</td>";
+        echo "<td>首頁註冊</td>";
+        echo "<td>約會專家</td>";
+        echo "<td colspan=2></td>";
+        echo "</tr>";
+
+        echo "<tr><td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td></td>";
+        echo "<td>男</td><td>女</td>";
+        echo "</tr>";
+    }
+    $showdate = Date_EN($start_time, 1);
+    $all_str = "網站註冊|1,春網戀愛咨詢|2,手機APP|3,網站手機版|4,singleparty|5,會員登入頁|6,春網認識他|7,春網喜事見證|8,春網活動列表|9,約會專家|10";
+    $allnew = 0;
+    $allsize = 0;
+    ${"t" . $pp2 . "a"} = 0;
+    ${"t" . $pp2} = 0;
+
+    foreach (explode(",", $all_str) as $pp) {
+        $pp1 = explode("|", $pp)[0];
+        $pp2 = explode("|", $pp)[1];
+
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '" . $showdate . "') = 0 and mem_come='春天網站' and mem_come2='" . $pp1 . "' and mem_level='mem'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            ${"t" . $pp2 . "a"} = $result["tt"];
+        }
+
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '" . $showdate . "') = 0 and mem_come='春天網站' and mem_come2='" . $pp1 . "' and mem_level='mem'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            ${"t" . $pp2} = $result["tt"];
+        }
+        if (${"t" . $pp2 . "a"} == "") {
+            ${"t" . $pp2 . "a"} = 0;
+        }
+        if (${"t" . $pp2} == "") {
+            ${"t" . $pp2} = 0;
+        }
+        $all_str2 = $all_str2 . "'" . $pp1 . "',";
+        // $allnew = $allnew + ${"t".$pp2};
+        $allsize = $allsize + ${"t" . $pp2 . "a"};
+    }
+    $tta = 0;
+    if (substr($all_str2, -1) == ",") {
+        $all_str2 = substr($all_str2, 0, -1);
+    }
+    $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '" . $showdate . "') = 0 and mem_level='mem' and mem_come='春天網站' and mem_come2 in (" . $all_str2 . ")";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        $tta = $result["tt"];
+    }
+
+    $tb = 0;
+    $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '" . $showdate . "') = 0 and mem_level='mem' and mem_come='春天網站' and mem_come2 in (" . $all_str2 . ") and mem_sex='男'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        $tb = $result["tt"];
+    }
+    if ($tb == "") {
+        $tb = 0;
+    }
+
+    $tg = 0;
+    $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '" . $showdate . "') = 0 and mem_level='mem' and mem_come='春天網站' and mem_come2 in (" . $all_str2 . ") and mem_sex='女'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        $tg = $result["tt"];
+    }
+    if ($tg == "") {
+        $tg = 0;
+    }
+
+    // $allnew = $allnew + $tt1;
+    $allsize = $allsize + $tta1;
+
+    echo "<tr><td>" . $showdate . "(" . weekchinesename(date("w", strtotime($showdate))) . ")</td>";
+    echo "<td>" . $t1 . "</td>"; //首頁會員註冊
+    echo "<td>" . $t2 . "</td>"; //首頁免費戀愛諮詢
+    echo "<td>" . $t7 . "</td>"; //我想認識他
+    echo "<td>" . $t3 . "</td>"; //手機APP
+    echo "<td>" . $t4 . "</td>"; //網站手機版
+    echo "<td>" . $t5 . "</td>"; //Mini
+    echo "<td>" . $t6 . "</td>"; //會員登入頁
+    echo "<td>" . $t8 . "</td>"; //春網喜事見證
+    echo "<td>" . $t9 . "</td>"; //春網活動列表
+    echo "<td>" . $t10 . "</td>"; //10
+    echo "<td>" . $tta . "</td>"; //網路註冊總數
+    echo "<td>" . ($t1a + $t2a + $t3a) . "</td>"; //首頁註冊          
+    echo "<td>" . $tb . "</td><td>" . $tg . "</td>"; //新會員比例
+    echo "</tr>"; //未完成註冊數
+
+    if (Date_EN($showdate, 1) == Date_EN($end_time, 1)) {
+        echo "<script type=\"text/javascript\">button_set(1);outmsg_show(\"已讀取 " . $fullmaxday . " 筆資料完畢。\");</script>";
+    } else {
+        $nowdays = $forday + $_REQUEST["nowdays"] + 1;
+        echo "<script type=\"text/javascript\">outmsg_show(\"目前讀取 " . $nowdays . " / " . $fullmaxday . " 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>\");conutice_ajax('" . date("Y/m/d", strtotime($start_time . " +" . ($forday + 1) . " day")) . "','" . SqlFilter($_REQUEST["ostart_time"], "tab") . "','" . SqlFilter($_REQUEST["end_time"], "tab") . "','" . $nowdays . "')</script>";
+    }
+    exit();
+}
 require_once("./include/_top.php");
 require_once("./include/_sidebar.php");
+
+//程式開始 *****
+if ($_SESSION["MM_Username"] == "") {
+    call_alert("請重新登入。", "login.php", 0);
+}
+
+
 ?>
 
 <!-- MIDDLE -->
@@ -39,70 +209,9 @@ require_once("./include/_sidebar.php");
                             <option value="6">上月</option>
                             <option value="7">今年</option>
                             <option value="8">去年</option>
-                        </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
-                    </p>
+                        </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出"></p>
                 </form>
-                <div id="outdiv" class="table-responsive">
-                    <div>在 2021/10/21 00:00 ～ 2021/10/21 23:59 間統計、共 1 天：</div>
-                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
-                        <tbody>
-                            <tr>
-                                <td>註冊時間</td>
-                                <td>首頁<br>會員註冊</td>
-                                <td>首頁<br>免費戀愛諮詢</td>
-                                <td>我想認識他</td>
-                                <td>手機APP</td>
-                                <td>網站手機版</td>
-                                <td>Mini</td>
-                                <td>會員登入頁</td>
-                                <td>春網喜事見證</td>
-                                <td>春網活動列表</td>
-                                <td>網路註冊總數</td>
-                                <td>首頁註冊</td>
-                                <td>約會專家</td>
-                                <td colspan="2"></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>男</td>
-                                <td>女</td>
-                            </tr>
-                            <tr>
-                                <td>2021/10/21(四)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                button_set(1);
-                                outmsg_show("已讀取 1 筆資料完畢。");
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
+                <div id="outdiv" class="table-responsive"></div>
                 <div id="outmsg" height=20 style="font-size:12px;">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
             </div>
         </div>
@@ -110,11 +219,6 @@ require_once("./include/_sidebar.php");
 
     </div>
     <!--/row-->
-
-
-    <hr>
-    <footer>
-    </footer>
     </div>
     </div>
 

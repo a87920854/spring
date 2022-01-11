@@ -1,8 +1,24 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_market2.php
+    //後台對應位置：管理系統/行銷活動統計-特1
+    //改版日期：2022.1.5
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+
+    $marking_list = SqlFilter($_REQUEST["marking_list"],"tab");  
+
 ?>
 
 <!-- MIDDLE -->
@@ -11,7 +27,7 @@ require_once("./include/_sidebar.php");
     <header id="page-header">
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
-            <li class="active">行銷活動統計</li>
+            <li class="active">行銷活動統計-特1</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -21,13 +37,13 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>行銷活動統計</strong> <!-- panel title -->
+                    <strong>行銷活動統計-特1</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
                 <form action="?st=send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
-                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="2020-01-01">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="2020-12-31">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
+                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["start_time"],"tab"); ?>">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["end_time"],"tab"); ?>">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
                             <option value="">快速選擇</option>
                             <option value="0">今天</option>
                             <option value="1">昨天</option>
@@ -42,347 +58,536 @@ require_once("./include/_sidebar.php");
                     <p>
                         <!--<a data-toggle="collapse" href="#marking_action_list" data-parent="#menu_group" class="btn btn-info">活動選擇</a>--><input id="send_submit" type="submit" class="btn btn-default" value="送出">
                     <div class="" id="marking_action_list">
+                        <?php 
+                            if($_REQUEST["st"] == "send"){
+                                $stime = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
+                                $etime = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";
+                                echo "<p>".$stime." ~ ".$etime."</p>";
+                                echo "<table class='table table-striped table-bordered bootstrap-datatable'>";
+                                echo "<tr><td colspan=30>你的戀愛能力有多強</td></tr>";
+                                echo "<tr>";
+                                echo "<td>18-25-男</td>";
+                                echo "<td>18-25-女</td>";
+                                echo "<td>26-30-男</td>";
+                                echo "<td>26-30-女</td>";
+                                echo "<td>31-35-男</td>";
+                                echo "<td>31-35-女</td>";
+                                echo "<td>36-40-男</td>";
+                                echo "<td>36-40-女</td>";
+                                echo "<td>41-45-男</td>";
+                                echo "<td>41-45-女</td>";
+                                echo "<td>46-50-男</td>";
+                                echo "<td>46-50-女</td>";
+                                echo "<td>51up男</td>";
+                                echo "<td>51up女</td>";
+                                echo "<td>博士-男</td>";
+                                echo "<td>博士-女</td>";
+                                echo "<td>碩士-男</td>";
+                                echo "<td>碩士-女</td>";
+                                echo "<td>大學-男</td>";
+                                echo "<td>大學-女</td>";
+                                echo "<td>專科-男</td>";
+                                echo "<td>專科-女</td>";
+                                echo "<td>高職-男</td>";
+                                echo "<td>高職-女</td>";
+                                echo "<td>高中-男</td>";
+                                echo "<td>高中-女</td>";
+                                echo "<td>國中-男</td>";
+                                echo "<td>國中-女</td>";
+                                echo "<td>其他-男</td>";
+                                echo "<td>其他-女</td>";            
+                                echo "</tr>";
 
-                        <p>2020/1/1 00:00 ~ 2020/12/31 23:59</p>
-                        <table class="table table-striped table-bordered bootstrap-datatable">
-                            <tr>
-                                <td colspan=30>你的戀愛能力有多強</td>
-                            </tr>
-                            <tr>
-                                <td>18-25-男</td>
-                                <td>18-25-女</td>
-                                <td>26-30-男</td>
-                                <td>26-30-女</td>
-                                <td>31-35-男</td>
-                                <td>31-35-女</td>
-                                <td>36-40-男</td>
-                                <td>36-40-女</td>
-                                <td>41-45-男</td>
-                                <td>41-45-女</td>
-                                <td>46-50-男</td>
-                                <td>46-50-女</td>
-                                <td>51up男</td>
-                                <td>51up女</td>
-                                <td>博士-男</td>
-                                <td>博士-女</td>
-                                <td>碩士-男</td>
-                                <td>碩士-女</td>
-                                <td>大學-男</td>
-                                <td>大學-女</td>
-                                <td>專科-男</td>
-                                <td>專科-女</td>
-                                <td>高職-男</td>
-                                <td>高職-女</td>
-                                <td>高中-男</td>
-                                <td>高中-女</td>
-                                <td>國中-男</td>
-                                <td>國中-女</td>
-                                <td>其他-男</td>
-                                <td>其他-女</td>
-                            </tr>
-                            <tr>
-                                <td>523</td>
-                                <td>1003</td>
-                                <td>442</td>
-                                <td>427</td>
-                                <td>148</td>
-                                <td>195</td>
-                                <td>108</td>
-                                <td>99</td>
-                                <td>53</td>
-                                <td>40</td>
-                                <td>24</td>
-                                <td>24</td>
-                                <td>1489</td>
-                                <td>2315</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>25</td>
-                                <td>13</td>
-                                <td>177</td>
-                                <td>173</td>
-                                <td>20</td>
-                                <td>24</td>
-                                <td>130</td>
-                                <td>54</td>
-                                <td>104</td>
-                                <td>48</td>
-                                <td>20</td>
-                                <td>8</td>
-                                <td>2</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td colspan=30>愛情實驗室</td>
-                            </tr>
-                            <tr>
-                                <td>18-25-男</td>
-                                <td>18-25-女</td>
-                                <td>26-30-男</td>
-                                <td>26-30-女</td>
-                                <td>31-35-男</td>
-                                <td>31-35-女</td>
-                                <td>36-40-男</td>
-                                <td>36-40-女</td>
-                                <td>41-45-男</td>
-                                <td>41-45-女</td>
-                                <td>46-50-男</td>
-                                <td>46-50-女</td>
-                                <td>51up男</td>
-                                <td>51up女</td>
-                                <td>博士-男</td>
-                                <td>博士-女</td>
-                                <td>碩士-男</td>
-                                <td>碩士-女</td>
-                                <td>大學-男</td>
-                                <td>大學-女</td>
-                                <td>專科-男</td>
-                                <td>專科-女</td>
-                                <td>高職-男</td>
-                                <td>高職-女</td>
-                                <td>高中-男</td>
-                                <td>高中-女</td>
-                                <td>國中-男</td>
-                                <td>國中-女</td>
-                                <td>其他-男</td>
-                                <td>其他-女</td>
-                            </tr>
-                            <tr>
-                                <td>78</td>
-                                <td>153</td>
-                                <td>102</td>
-                                <td>109</td>
-                                <td>66</td>
-                                <td>50</td>
-                                <td>57</td>
-                                <td>19</td>
-                                <td>34</td>
-                                <td>13</td>
-                                <td>10</td>
-                                <td>14</td>
-                                <td>19</td>
-                                <td>7</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td>21</td>
-                                <td>18</td>
-                                <td>10</td>
-                                <td>1</td>
-                                <td>12</td>
-                                <td>7</td>
-                                <td>10</td>
-                                <td>6</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td colspan=30>2020年12星座愛情指數測驗</td>
-                            </tr>
-                            <tr>
-                                <td>18-25-男</td>
-                                <td>18-25-女</td>
-                                <td>26-30-男</td>
-                                <td>26-30-女</td>
-                                <td>31-35-男</td>
-                                <td>31-35-女</td>
-                                <td>36-40-男</td>
-                                <td>36-40-女</td>
-                                <td>41-45-男</td>
-                                <td>41-45-女</td>
-                                <td>46-50-男</td>
-                                <td>46-50-女</td>
-                                <td>51up男</td>
-                                <td>51up女</td>
-                                <td>博士-男</td>
-                                <td>博士-女</td>
-                                <td>碩士-男</td>
-                                <td>碩士-女</td>
-                                <td>大學-男</td>
-                                <td>大學-女</td>
-                                <td>專科-男</td>
-                                <td>專科-女</td>
-                                <td>高職-男</td>
-                                <td>高職-女</td>
-                                <td>高中-男</td>
-                                <td>高中-女</td>
-                                <td>國中-男</td>
-                                <td>國中-女</td>
-                                <td>其他-男</td>
-                                <td>其他-女</td>
-                            </tr>
-                            <tr>
-                                <td>167</td>
-                                <td>299</td>
-                                <td>1756</td>
-                                <td>2620</td>
-                                <td>1406</td>
-                                <td>1547</td>
-                                <td>1044</td>
-                                <td>1304</td>
-                                <td>558</td>
-                                <td>890</td>
-                                <td>265</td>
-                                <td>313</td>
-                                <td>165</td>
-                                <td>118</td>
-                                <td>6</td>
-                                <td>1</td>
-                                <td>34</td>
-                                <td>44</td>
-                                <td>414</td>
-                                <td>395</td>
-                                <td>90</td>
-                                <td>76</td>
-                                <td>270</td>
-                                <td>193</td>
-                                <td>194</td>
-                                <td>118</td>
-                                <td>75</td>
-                                <td>49</td>
-                                <td>3</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td colspan=30>穩定交往的秘訣</td>
-                            </tr>
-                            <tr>
-                                <td>18-25-男</td>
-                                <td>18-25-女</td>
-                                <td>26-30-男</td>
-                                <td>26-30-女</td>
-                                <td>31-35-男</td>
-                                <td>31-35-女</td>
-                                <td>36-40-男</td>
-                                <td>36-40-女</td>
-                                <td>41-45-男</td>
-                                <td>41-45-女</td>
-                                <td>46-50-男</td>
-                                <td>46-50-女</td>
-                                <td>51up男</td>
-                                <td>51up女</td>
-                                <td>博士-男</td>
-                                <td>博士-女</td>
-                                <td>碩士-男</td>
-                                <td>碩士-女</td>
-                                <td>大學-男</td>
-                                <td>大學-女</td>
-                                <td>專科-男</td>
-                                <td>專科-女</td>
-                                <td>高職-男</td>
-                                <td>高職-女</td>
-                                <td>高中-男</td>
-                                <td>高中-女</td>
-                                <td>國中-男</td>
-                                <td>國中-女</td>
-                                <td>其他-男</td>
-                                <td>其他-女</td>
-                            </tr>
-                            <tr>
-                                <td>12</td>
-                                <td>8</td>
-                                <td>91</td>
-                                <td>96</td>
-                                <td>91</td>
-                                <td>99</td>
-                                <td>93</td>
-                                <td>136</td>
-                                <td>82</td>
-                                <td>170</td>
-                                <td>67</td>
-                                <td>173</td>
-                                <td>104</td>
-                                <td>63</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>9</td>
-                                <td>9</td>
-                                <td>42</td>
-                                <td>54</td>
-                                <td>24</td>
-                                <td>19</td>
-                                <td>41</td>
-                                <td>52</td>
-                                <td>23</td>
-                                <td>33</td>
-                                <td>13</td>
-                                <td>5</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <tr>
-                                <td colspan=30>DMN官網名單</td>
-                            </tr>
-                            <tr>
-                                <td>18-25-男</td>
-                                <td>18-25-女</td>
-                                <td>26-30-男</td>
-                                <td>26-30-女</td>
-                                <td>31-35-男</td>
-                                <td>31-35-女</td>
-                                <td>36-40-男</td>
-                                <td>36-40-女</td>
-                                <td>41-45-男</td>
-                                <td>41-45-女</td>
-                                <td>46-50-男</td>
-                                <td>46-50-女</td>
-                                <td>51up男</td>
-                                <td>51up女</td>
-                                <td>博士-男</td>
-                                <td>博士-女</td>
-                                <td>碩士-男</td>
-                                <td>碩士-女</td>
-                                <td>大學-男</td>
-                                <td>大學-女</td>
-                                <td>專科-男</td>
-                                <td>專科-女</td>
-                                <td>高職-男</td>
-                                <td>高職-女</td>
-                                <td>高中-男</td>
-                                <td>高中-女</td>
-                                <td>國中-男</td>
-                                <td>國中-女</td>
-                                <td>其他-男</td>
-                                <td>其他-女</td>
-                            </tr>
-                            <tr>
-                                <td>129</td>
-                                <td>32</td>
-                                <td>397</td>
-                                <td>221</td>
-                                <td>350</td>
-                                <td>135</td>
-                                <td>286</td>
-                                <td>120</td>
-                                <td>214</td>
-                                <td>73</td>
-                                <td>93</td>
-                                <td>44</td>
-                                <td>300</td>
-                                <td>79</td>
-                                <td>16</td>
-                                <td>3</td>
-                                <td>130</td>
-                                <td>53</td>
-                                <td>536</td>
-                                <td>347</td>
-                                <td>139</td>
-                                <td>76</td>
-                                <td>377</td>
-                                <td>129</td>
-                                <td>248</td>
-                                <td>114</td>
-                                <td>68</td>
-                                <td>15</td>
-                                <td>32</td>
-                                <td>17</td>
-                            </tr>
-                        </table>
-                        </table>
+                                $SQL = "select ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex='男' THEN mem_auto END), 0) AS 'y18-25b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y18-25g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex='男' THEN mem_auto END), 0) AS 'y26-30b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y26-30g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex='男' THEN mem_auto END), 0) AS 'y31-35b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y31-35g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex='男' THEN mem_auto END), 0) AS 'y36-40b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y36-40g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex='男' THEN mem_auto END), 0) AS 'y41-45b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y41-45g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex='男' THEN mem_auto END), 0) AS 'y46-50b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y46-50g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex='男' THEN mem_auto END), 0) AS 'y51upb', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex<>'男' THEN mem_auto END), 0) AS 'y51upg', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex='男' THEN mem_auto END), 0) AS 's1b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's1g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex='男' THEN mem_auto END), 0) AS 's2b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's2g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex='男' THEN mem_auto END), 0) AS 's3b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex<>'男' THEN mem_auto END), 0) AS 's3g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex='男' THEN mem_auto END), 0) AS 's4b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex<>'男' THEN mem_auto END), 0) AS 's4g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex='男' THEN mem_auto END), 0) AS 's5b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex<>'男' THEN mem_auto END), 0) AS 's5g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex='男' THEN mem_auto END), 0) AS 's6b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's6g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex='男' THEN mem_auto END), 0) AS 's7b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's7g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex='男' THEN mem_auto END), 0) AS 's8b', ";
+                                $SQL .=  "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex<>'男' THEN mem_auto END), 0) AS 's8g' ";
+                                $SQL .= " from member_data where mem_come='行銷活動' and mem_come2 like '你的戀愛能力有多強%' and mem_time between '".$stime."' and '".$etime."'";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr>";
+                                    echo "<td>".$result["y18-25b"]."</td>";
+                                    echo "<td>".$result["y18-25g"]."</td>";
+                                    echo "<td>".$result["y26-30b"]."</td>";
+                                    echo "<td>".$result["y26-30g"]."</td>";
+                                    echo "<td>".$result["y31-35b"]."</td>";
+                                    echo "<td>".$result["y31-35g"]."</td>";
+                                    echo "<td>".$result["y36-40b"]."</td>";
+                                    echo "<td>".$result["y36-40g"]."</td>";
+                                    echo "<td>".$result["y41-45b"]."</td>";
+                                    echo "<td>".$result["y41-45g"]."</td>";
+                                    echo "<td>".$result["y46-50b"]."</td>";
+                                    echo "<td>".$result["y46-50g"]."</td>";
+                                    echo "<td>".$result["y51upb"]."</td>";
+                                    echo "<td>".$result["y51upg"]."</td>";
+                                    echo "<td>".$result["s1b"]."</td>";
+                                    echo "<td>".$result["s1g"]."</td>";
+                                    echo "<td>".$result["s2b"]."</td>";
+                                    echo "<td>".$result["s2g"]."</td>";
+                                    echo "<td>".$result["s3b"]."</td>";
+                                    echo "<td>".$result["s3g"]."</td>";
+                                    echo "<td>".$result["s4b"]."</td>";
+                                    echo "<td>".$result["s4g"]."</td>";
+                                    echo "<td>".$result["s5b"]."</td>";
+                                    echo "<td>".$result["s5g"]."</td>";
+                                    echo "<td>".$result["s6b"]."</td>";
+                                    echo "<td>".$result["s6g"]."</td>";
+                                    echo "<td>".$result["s7b"]."</td>";
+                                    echo "<td>".$result["s7g"]."</td>";
+                                    echo "<td>".$result["s8b"]."</td>";
+                                    echo "<td>".$result["s8g"]."</td>";
+                                    echo "</tr>";
+                                }
 
+
+                                echo "<tr><td colspan=30>愛情實驗室</td></tr>";
+                                echo "<tr>";
+                                echo "<td>18-25-男</td>";
+                                echo "<td>18-25-女</td>";
+                                echo "<td>26-30-男</td>";
+                                echo "<td>26-30-女</td>";
+                                echo "<td>31-35-男</td>";
+                                echo "<td>31-35-女</td>";
+                                echo "<td>36-40-男</td>";
+                                echo "<td>36-40-女</td>";
+                                echo "<td>41-45-男</td>";
+                                echo "<td>41-45-女</td>";
+                                echo "<td>46-50-男</td>";
+                                echo "<td>46-50-女</td>";
+                                echo "<td>51up男</td>";
+                                echo "<td>51up女</td>";
+                                echo "<td>博士-男</td>";
+                                echo "<td>博士-女</td>";
+                                echo "<td>碩士-男</td>";
+                                echo "<td>碩士-女</td>";
+                                echo "<td>大學-男</td>";
+                                echo "<td>大學-女</td>";
+                                echo "<td>專科-男</td>";
+                                echo "<td>專科-女</td>";
+                                echo "<td>高職-男</td>";
+                                echo "<td>高職-女</td>";
+                                echo "<td>高中-男</td>";
+                                echo "<td>高中-女</td>";
+                                echo "<td>國中-男</td>";
+                                echo "<td>國中-女</td>";
+                                echo "<td>其他-男</td>";
+                                echo "<td>其他-女</td>";            
+                                echo "</tr>";
+
+                                $SQL = "select ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex='男' THEN mem_auto END), 0) AS 'y18-25b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y18-25g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex='男' THEN mem_auto END), 0) AS 'y26-30b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y26-30g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex='男' THEN mem_auto END), 0) AS 'y31-35b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y31-35g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex='男' THEN mem_auto END), 0) AS 'y36-40b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y36-40g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex='男' THEN mem_auto END), 0) AS 'y41-45b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y41-45g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex='男' THEN mem_auto END), 0) AS 'y46-50b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y46-50g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex='男' THEN mem_auto END), 0) AS 'y51upb', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex<>'男' THEN mem_auto END), 0) AS 'y51upg', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex='男' THEN mem_auto END), 0) AS 's1b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's1g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex='男' THEN mem_auto END), 0) AS 's2b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's2g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex='男' THEN mem_auto END), 0) AS 's3b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex<>'男' THEN mem_auto END), 0) AS 's3g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex='男' THEN mem_auto END), 0) AS 's4b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex<>'男' THEN mem_auto END), 0) AS 's4g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex='男' THEN mem_auto END), 0) AS 's5b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex<>'男' THEN mem_auto END), 0) AS 's5g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex='男' THEN mem_auto END), 0) AS 's6b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's6g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex='男' THEN mem_auto END), 0) AS 's7b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's7g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex='男' THEN mem_auto END), 0) AS 's8b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex<>'男' THEN mem_auto END), 0) AS 's8g' ";
+                                $SQL .= " from member_data where mem_come='行銷活動' and mem_come2 like '愛情實驗室%' and mem_time between '".$stime."' and '".$etime."'";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr>";
+                                    echo "<td>".$result["y18-25b"]."</td>";
+                                    echo "<td>".$result["y18-25g"]."</td>";
+                                    echo "<td>".$result["y26-30b"]."</td>";
+                                    echo "<td>".$result["y26-30g"]."</td>";
+                                    echo "<td>".$result["y31-35b"]."</td>";
+                                    echo "<td>".$result["y31-35g"]."</td>";
+                                    echo "<td>".$result["y36-40b"]."</td>";
+                                    echo "<td>".$result["y36-40g"]."</td>";
+                                    echo "<td>".$result["y41-45b"]."</td>";
+                                    echo "<td>".$result["y41-45g"]."</td>";
+                                    echo "<td>".$result["y46-50b"]."</td>";
+                                    echo "<td>".$result["y46-50g"]."</td>";
+                                    echo "<td>".$result["y51upb"]."</td>";
+                                    echo "<td>".$result["y51upg"]."</td>";
+                                    echo "<td>".$result["s1b"]."</td>";
+                                    echo "<td>".$result["s1g"]."</td>";
+                                    echo "<td>".$result["s2b"]."</td>";
+                                    echo "<td>".$result["s2g"]."</td>";
+                                    echo "<td>".$result["s3b"]."</td>";
+                                    echo "<td>".$result["s3g"]."</td>";
+                                    echo "<td>".$result["s4b"]."</td>";
+                                    echo "<td>".$result["s4g"]."</td>";
+                                    echo "<td>".$result["s5b"]."</td>";
+                                    echo "<td>".$result["s5g"]."</td>";
+                                    echo "<td>".$result["s6b"]."</td>";
+                                    echo "<td>".$result["s6g"]."</td>";
+                                    echo "<td>".$result["s7b"]."</td>";
+                                    echo "<td>".$result["s7g"]."</td>";
+                                    echo "<td>".$result["s8b"]."</td>";
+                                    echo "<td>".$result["s8g"]."</td>";
+                                    echo "</tr>";
+                                }
+
+                                echo "<tr><td colspan=30>2020年12星座愛情指數測驗</td></tr>";
+                                echo "<tr>";
+                                echo "<td>18-25-男</td>";
+                                echo "<td>18-25-女</td>";
+                                echo "<td>26-30-男</td>";
+                                echo "<td>26-30-女</td>";
+                                echo "<td>31-35-男</td>";
+                                echo "<td>31-35-女</td>";
+                                echo "<td>36-40-男</td>";
+                                echo "<td>36-40-女</td>";
+                                echo "<td>41-45-男</td>";
+                                echo "<td>41-45-女</td>";
+                                echo "<td>46-50-男</td>";
+                                echo "<td>46-50-女</td>";
+                                echo "<td>51up男</td>";
+                                echo "<td>51up女</td>";
+                                echo "<td>博士-男</td>";
+                                echo "<td>博士-女</td>";
+                                echo "<td>碩士-男</td>";
+                                echo "<td>碩士-女</td>";
+                                echo "<td>大學-男</td>";
+                                echo "<td>大學-女</td>";
+                                echo "<td>專科-男</td>";
+                                echo "<td>專科-女</td>";
+                                echo "<td>高職-男</td>";
+                                echo "<td>高職-女</td>";
+                                echo "<td>高中-男</td>";
+                                echo "<td>高中-女</td>";
+                                echo "<td>國中-男</td>";
+                                echo "<td>國中-女</td>";
+                                echo "<td>其他-男</td>";
+                                echo "<td>其他-女</td>";            
+                                echo "</tr>";
+
+                                $SQL = "select ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex='男' THEN mem_auto END), 0) AS 'y18-25b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y18-25g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex='男' THEN mem_auto END), 0) AS 'y26-30b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y26-30g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex='男' THEN mem_auto END), 0) AS 'y31-35b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y31-35g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex='男' THEN mem_auto END), 0) AS 'y36-40b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y36-40g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex='男' THEN mem_auto END), 0) AS 'y41-45b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y41-45g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex='男' THEN mem_auto END), 0) AS 'y46-50b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y46-50g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex='男' THEN mem_auto END), 0) AS 'y51upb', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex<>'男' THEN mem_auto END), 0) AS 'y51upg', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex='男' THEN mem_auto END), 0) AS 's1b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's1g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex='男' THEN mem_auto END), 0) AS 's2b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's2g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex='男' THEN mem_auto END), 0) AS 's3b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex<>'男' THEN mem_auto END), 0) AS 's3g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex='男' THEN mem_auto END), 0) AS 's4b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex<>'男' THEN mem_auto END), 0) AS 's4g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex='男' THEN mem_auto END), 0) AS 's5b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex<>'男' THEN mem_auto END), 0) AS 's5g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex='男' THEN mem_auto END), 0) AS 's6b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's6g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex='男' THEN mem_auto END), 0) AS 's7b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's7g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex='男' THEN mem_auto END), 0) AS 's8b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex<>'男' THEN mem_auto END), 0) AS 's8g' ";
+                                $SQL .= " from member_data where mem_come='行銷活動' and mem_come2 like '2020年12星座愛情指數測驗%' and mem_time between '".$stime."' and '".$etime."'";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr>";
+                                    echo "<td>".$result["y18-25b"]."</td>";
+                                    echo "<td>".$result["y18-25g"]."</td>";
+                                    echo "<td>".$result["y26-30b"]."</td>";
+                                    echo "<td>".$result["y26-30g"]."</td>";
+                                    echo "<td>".$result["y31-35b"]."</td>";
+                                    echo "<td>".$result["y31-35g"]."</td>";
+                                    echo "<td>".$result["y36-40b"]."</td>";
+                                    echo "<td>".$result["y36-40g"]."</td>";
+                                    echo "<td>".$result["y41-45b"]."</td>";
+                                    echo "<td>".$result["y41-45g"]."</td>";
+                                    echo "<td>".$result["y46-50b"]."</td>";
+                                    echo "<td>".$result["y46-50g"]."</td>";
+                                    echo "<td>".$result["y51upb"]."</td>";
+                                    echo "<td>".$result["y51upg"]."</td>";
+                                    echo "<td>".$result["s1b"]."</td>";
+                                    echo "<td>".$result["s1g"]."</td>";
+                                    echo "<td>".$result["s2b"]."</td>";
+                                    echo "<td>".$result["s2g"]."</td>";
+                                    echo "<td>".$result["s3b"]."</td>";
+                                    echo "<td>".$result["s3g"]."</td>";
+                                    echo "<td>".$result["s4b"]."</td>";
+                                    echo "<td>".$result["s4g"]."</td>";
+                                    echo "<td>".$result["s5b"]."</td>";
+                                    echo "<td>".$result["s5g"]."</td>";
+                                    echo "<td>".$result["s6b"]."</td>";
+                                    echo "<td>".$result["s6g"]."</td>";
+                                    echo "<td>".$result["s7b"]."</td>";
+                                    echo "<td>".$result["s7g"]."</td>";
+                                    echo "<td>".$result["s8b"]."</td>";
+                                    echo "<td>".$result["s8g"]."</td>";
+                                    echo "</tr>";
+                                }
+
+                                echo "<tr><td colspan=30>穩定交往的秘訣</td></tr>";
+                                echo "<tr>";
+                                echo "<td>18-25-男</td>";
+                                echo "<td>18-25-女</td>";
+                                echo "<td>26-30-男</td>";
+                                echo "<td>26-30-女</td>";
+                                echo "<td>31-35-男</td>";
+                                echo "<td>31-35-女</td>";
+                                echo "<td>36-40-男</td>";
+                                echo "<td>36-40-女</td>";
+                                echo "<td>41-45-男</td>";
+                                echo "<td>41-45-女</td>";
+                                echo "<td>46-50-男</td>";
+                                echo "<td>46-50-女</td>";
+                                echo "<td>51up男</td>";
+                                echo "<td>51up女</td>";
+                                echo "<td>博士-男</td>";
+                                echo "<td>博士-女</td>";
+                                echo "<td>碩士-男</td>";
+                                echo "<td>碩士-女</td>";
+                                echo "<td>大學-男</td>";
+                                echo "<td>大學-女</td>";
+                                echo "<td>專科-男</td>";
+                                echo "<td>專科-女</td>";
+                                echo "<td>高職-男</td>";
+                                echo "<td>高職-女</td>";
+                                echo "<td>高中-男</td>";
+                                echo "<td>高中-女</td>";
+                                echo "<td>國中-男</td>";
+                                echo "<td>國中-女</td>";
+                                echo "<td>其他-男</td>";
+                                echo "<td>其他-女</td>" ;           
+                                echo "</tr>";
+
+                                $SQL = "select ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex='男' THEN mem_auto END), 0) AS 'y18-25b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y18-25g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex='男' THEN mem_auto END), 0) AS 'y26-30b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y26-30g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex='男' THEN mem_auto END), 0) AS 'y31-35b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y31-35g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex='男' THEN mem_auto END), 0) AS 'y36-40b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y36-40g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex='男' THEN mem_auto END), 0) AS 'y41-45b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y41-45g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex='男' THEN mem_auto END), 0) AS 'y46-50b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y46-50g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex='男' THEN mem_auto END), 0) AS 'y51upb', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex<>'男' THEN mem_auto END), 0) AS 'y51upg', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex='男' THEN mem_auto END), 0) AS 's1b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's1g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex='男' THEN mem_auto END), 0) AS 's2b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's2g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex='男' THEN mem_auto END), 0) AS 's3b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex<>'男' THEN mem_auto END), 0) AS 's3g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex='男' THEN mem_auto END), 0) AS 's4b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex<>'男' THEN mem_auto END), 0) AS 's4g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex='男' THEN mem_auto END), 0) AS 's5b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex<>'男' THEN mem_auto END), 0) AS 's5g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex='男' THEN mem_auto END), 0) AS 's6b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's6g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex='男' THEN mem_auto END), 0) AS 's7b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's7g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex='男' THEN mem_auto END), 0) AS 's8b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex<>'男' THEN mem_auto END), 0) AS 's8g' ";
+                                $SQL .= " from member_data where mem_come='行銷活動' and mem_come2 like '穩定交往的秘訣%' and mem_time between '".$stime."' and '".$etime."'";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr>";
+                                    echo "<td>".$result["y18-25b"]."</td>";
+                                    echo "<td>".$result["y18-25g"]."</td>";
+                                    echo "<td>".$result["y26-30b"]."</td>";
+                                    echo "<td>".$result["y26-30g"]."</td>";
+                                    echo "<td>".$result["y31-35b"]."</td>";
+                                    echo "<td>".$result["y31-35g"]."</td>";
+                                    echo "<td>".$result["y36-40b"]."</td>";
+                                    echo "<td>".$result["y36-40g"]."</td>";
+                                    echo "<td>".$result["y41-45b"]."</td>";
+                                    echo "<td>".$result["y41-45g"]."</td>";
+                                    echo "<td>".$result["y46-50b"]."</td>";
+                                    echo "<td>".$result["y46-50g"]."</td>";
+                                    echo "<td>".$result["y51upb"]."</td>";
+                                    echo "<td>".$result["y51upg"]."</td>";
+                                    echo "<td>".$result["s1b"]."</td>";
+                                    echo "<td>".$result["s1g"]."</td>";
+                                    echo "<td>".$result["s2b"]."</td>";
+                                    echo "<td>".$result["s2g"]."</td>";
+                                    echo "<td>".$result["s3b"]."</td>";
+                                    echo "<td>".$result["s3g"]."</td>";
+                                    echo "<td>".$result["s4b"]."</td>";
+                                    echo "<td>".$result["s4g"]."</td>";
+                                    echo "<td>".$result["s5b"]."</td>";
+                                    echo "<td>".$result["s5g"]."</td>";
+                                    echo "<td>".$result["s6b"]."</td>";
+                                    echo "<td>".$result["s6g"]."</td>";
+                                    echo "<td>".$result["s7b"]."</td>";
+                                    echo "<td>".$result["s7g"]."</td>";
+                                    echo "<td>".$result["s8b"]."</td>";
+                                    echo "<td>".$result["s8g"]."</td>";
+                                    echo "</tr>";
+                                }
+
+
+                                echo "<tr><td colspan=30>DMN官網名單</td></tr>";
+                                echo "<tr>";
+                                echo "<td>18-25-男</td>";
+                                echo "<td>18-25-女</td>";
+                                echo "<td>26-30-男</td>";
+                                echo "<td>26-30-女</td>";
+                                echo "<td>31-35-男</td>";
+                                echo "<td>31-35-女</td>";
+                                echo "<td>36-40-男</td>";
+                                echo "<td>36-40-女</td>";
+                                echo "<td>41-45-男</td>";
+                                echo "<td>41-45-女</td>";
+                                echo "<td>46-50-男</td>";
+                                echo "<td>46-50-女</td>";
+                                echo "<td>51up男</td>";
+                                echo "<td>51up女</td>";
+                                echo "<td>博士-男</td>";
+                                echo "<td>博士-女</td>";
+                                echo "<td>碩士-男</td>";
+                                echo "<td>碩士-女</td>";
+                                echo "<td>大學-男</td>";
+                                echo "<td>大學-女</td>";
+                                echo "<td>專科-男</td>";
+                                echo "<td>專科-女</td>";
+                                echo "<td>高職-男</td>";
+                                echo "<td>高職-女</td>";
+                                echo "<td>高中-男</td>";
+                                echo "<td>高中-女</td>";
+                                echo "<td>國中-男</td>";
+                                echo "<td>國中-女</td>";
+                                echo "<td>其他-男</td>";
+                                echo "<td>其他-女</td>";            
+                                echo "</tr>";
+
+                                $SQL = "select ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex='男' THEN mem_auto END), 0) AS 'y18-25b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '2000' and '2002' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y18-25g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex='男' THEN mem_auto END), 0) AS 'y26-30b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1990' and '1994' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y26-30g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex='男' THEN mem_auto END), 0) AS 'y31-35b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1985' and '1989' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y31-35g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex='男' THEN mem_auto END), 0) AS 'y36-40b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1980' and '1984' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y36-40g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex='男' THEN mem_auto END), 0) AS 'y41-45b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1975' and '1979' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y41-45g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex='男' THEN mem_auto END), 0) AS 'y46-50b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by between '1970' and '1974' and mem_sex<>'男' THEN mem_auto END), 0) AS 'y46-50g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex='男' THEN mem_auto END), 0) AS 'y51upb', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_by <= 1969 and mem_sex<>'男' THEN mem_auto END), 0) AS 'y51upg', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex='男' THEN mem_auto END), 0) AS 's1b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='博士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's1g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex='男' THEN mem_auto END), 0) AS 's2b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='碩士' and mem_sex<>'男' THEN mem_auto END), 0) AS 's2g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex='男' THEN mem_auto END), 0) AS 's3b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='大學' and mem_sex<>'男' THEN mem_auto END), 0) AS 's3g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex='男' THEN mem_auto END), 0) AS 's4b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='專科' and mem_sex<>'男' THEN mem_auto END), 0) AS 's4g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex='男' THEN mem_auto END), 0) AS 's5b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高職' and mem_sex<>'男' THEN mem_auto END), 0) AS 's5g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex='男' THEN mem_auto END), 0) AS 's6b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='高中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's6g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex='男' THEN mem_auto END), 0) AS 's7b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='國中' and mem_sex<>'男' THEN mem_auto END), 0) AS 's7g', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex='男' THEN mem_auto END), 0) AS 's8b', ";
+                                $SQL .= "ISNULL(COUNT(CASE WHEN mem_school ='其他' and mem_sex<>'男' THEN mem_auto END), 0) AS 's8g' ";
+                                $SQL .= " from member_data where mem_come = 'DMN網站' and mem_time between '".$stime."' and '".$etime."'";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr>";
+                                    echo "<td>".$result["y18-25b"]."</td>";
+                                    echo "<td>".$result["y18-25g"]."</td>";
+                                    echo "<td>".$result["y26-30b"]."</td>";
+                                    echo "<td>".$result["y26-30g"]."</td>";
+                                    echo "<td>".$result["y31-35b"]."</td>";
+                                    echo "<td>".$result["y31-35g"]."</td>";
+                                    echo "<td>".$result["y36-40b"]."</td>";
+                                    echo "<td>".$result["y36-40g"]."</td>";
+                                    echo "<td>".$result["y41-45b"]."</td>";
+                                    echo "<td>".$result["y41-45g"]."</td>";
+                                    echo "<td>".$result["y46-50b"]."</td>";
+                                    echo "<td>".$result["y46-50g"]."</td>";
+                                    echo "<td>".$result["y51upb"]."</td>";
+                                    echo "<td>".$result["y51upg"]."</td>";
+                                    echo "<td>".$result["s1b"]."</td>";
+                                    echo "<td>".$result["s1g"]."</td>";
+                                    echo "<td>".$result["s2b"]."</td>";
+                                    echo "<td>".$result["s2g"]."</td>";
+                                    echo "<td>".$result["s3b"]."</td>";
+                                    echo "<td>".$result["s3g"]."</td>";
+                                    echo "<td>".$result["s4b"]."</td>";
+                                    echo "<td>".$result["s4g"]."</td>";
+                                    echo "<td>".$result["s5b"]."</td>";
+                                    echo "<td>".$result["s5g"]."</td>";
+                                    echo "<td>".$result["s6b"]."</td>";
+                                    echo "<td>".$result["s6g"]."</td>";
+                                    echo "<td>".$result["s7b"]."</td>";
+                                    echo "<td>".$result["s7g"]."</td>";
+                                    echo "<td>".$result["s8b"]."</td>";
+                                    echo "<td>".$result["s8g"]."</td>";
+                                    echo "</tr>";
+                                }
+                                echo "</table>";
+                            }
+                        ?>
                     </div>
             </div>
             <!--/span-->

@@ -1,8 +1,223 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_counts.php
+    //後台對應位置：管理系統/未入會統計
+    //改版日期：2022.1.5
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+
+    // ajax
+    if($_REQUEST["st"] == "send"){
+        if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+            echo "在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。";
+            exit();
+        }
+        $start_time = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
+        $end_time = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";        
+        $fullmaxday = ceil((strtotime($end_time) - strtotime(SqlFilter($_REQUEST["ostart_time"],"tab")))/ (60*60*24));
+        $maxday = ceil((strtotime($end_time) - strtotime($start_time))/ (60*60*24));
+
+        if($maxday < 0){
+            echo "在 ".$start_time." ～ ".$end_time." 間沒有資料或日期選擇不正確。";
+        }
+        if($maxday == 0){
+            $smaxday = 1;
+        }else{
+            $smaxday = $fullmaxday;
+        }
+        if($_REQUEST["start_time"] == $_REQUEST["ostart_time"]){
+            echo "<div>在 ".$start_time." ～ ".$end_time." 間統計、共 ".$smaxday." 天：</div>";
+            echo "<table id='outtable' width='100%' height=80 align='center' class='table table-striped table-bordered bootstrap-datatable'>";
+            echo "<tr><td>註冊時間</td>";
+            echo "<td colspan=2>首頁<br>會員註冊</td>";
+            echo "<td colspan=2>首頁<br>戀愛諮詢</td>";
+            echo "<td colspan=2>我想認識他</td>";
+            echo "<td colspan=2>手機APP</td>";
+            echo "<td colspan=2>網站手機版</td>";
+            echo "<td colspan=2>手機APP<br>首頁</td>";
+            echo "<td colspan=2>網站手機版<br>首頁</td>";
+            echo "<td colspan=2>手機APP-熱戀</td>";
+            echo "<td colspan=2>手機APP-寶貝</td>";
+            echo "<td colspan=2>手機APP-橙果</td>";
+            echo "<td colspan=2>Mini</td>";
+            echo "<td colspan=2>會員登入頁</td>";
+            echo "<td colspan=2>春網喜事見證</td>";
+            echo "<td colspan=2>春網活動列表</td>";
+            echo "<td colspan=2>春網戀愛講堂<br>首頁</td>";
+            echo "<td colspan=2>春網戀愛講堂<br>內頁</td>";
+            echo "<td colspan=2>約會專家</td>";
+            echo "<td>網路註冊總數</td>";
+            echo "<td>首頁註冊</td>";   
+            echo "<td>首次造訪</td>";
+            echo "<td colspan=3>新會員比例</td>";
+            echo "<td>未完成註冊數</td></tr>";
+            
+            echo "<tr><td></td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td></td>";
+            echo "<td>比例</td><td>男</td><td>女</td>";
+            echo "<td></td></tr>";
+        }
+        $showdate = Date_EN($start_time,1);
+        $all_str = "網站註冊|1,春網戀愛咨詢|2,手機APP|3,網站手機版|4,手機APP-首頁|5,網站手機版-首頁|6,singleparty|7,會員登入頁|8,春網認識他|9,春網喜事見證|10,春網活動列表|11,春網戀愛講堂-首頁|12,春網戀愛講堂-內頁|13,手機APP-熱戀區|14,手機APP-寶貝聯誼|15,手機APP-橙果|16,約會專家|17";
+        $allnew = 0;
+        $allsize = 0;
+        
+        foreach(explode(",",$all_str) as $pp){
+            $pp1 = explode("|",$pp)[0];
+            $pp2 = explode("|",$pp)[1];
+            ${"t".$pp2."a"} = 0;
+            ${"t".$pp2} = 0;
+            if($pp2 == 13){
+                $vsql = " and mem_come='春天網站' and mem_come2 like '%".$pp1."%'"; 
+            }elseif($pp2 == 17){
+                $vsql = " and mem_come='".$pp1."'";
+            }else{
+                $vsql = " and mem_come='春天網站' and mem_come2='".$pp1."'";
+            }
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0".$vsql;
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2."a"} = $result["tt"];
+            }
+
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_branch <> '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch <> '八德' and k_mobile = dba.mem_mobile) <= 0)";
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2} = $result["tt"];
+            }
+            if(${"t".$pp2."a"} == ""){
+                ${"t".$pp2."a"} = 0;
+            }
+            if(${"t".$pp2} == ""){
+                ${"t".$pp2} = 0;
+            }
+            $all_str2 = $all_str2."'".$pp1."',";
+            $allnew = $allnew + ${"t".$pp2};
+            $allsize = $allsize + ${"t".$pp2."a"};
+        }
+        $tta = 0;
+        if(substr($all_str2,-1) == ","){
+            $all_str2 = substr($all_str2,0,-1);
+        }
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come='春天網站' and mem_come2 in (".$all_str2.")";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $tta = $result["tt"];
+        }
+        $tta2 = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come='春天網站' and mem_come2 in ('春網排約未成','春網註冊未成')";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $tta2 = $result["tt"];
+        }
+        if($tta2 == ""){
+            $tta2 = 0;
+        }
+
+        $tb = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come='春天網站' and mem_come2 in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_branch <> '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch <> '八德' and k_mobile = dba.mem_mobile) <= 0) and mem_sex='男'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $tb = $result["tt"];
+        }
+        if($tb == ""){
+            $tb = 0;
+        }
+
+        $tg = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_branch <> '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come='春天網站' and mem_come2 in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_branch <> '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch <> '八德' and k_mobile = dba.mem_mobile) <= 0) and mem_sex='女'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $tg = $result["tt"];
+        }        
+        if($tg == ""){
+            $tg = 0;
+        }
+
+        $allnew = $allnew + $tt1;
+        $allsize = $allsize + $tta1;
+        if($allsize > 1 && $allnew >1){
+            $allnewp = number_format(($allnew/$allsize)*100,2) ."%";
+        }else{
+            $allnewp = "N/A";
+        }
+
+        echo "<tr><td>".$showdate."(".weekchinesename(date("w",strtotime($showdate))).")</td>";
+        echo "<td>".$t1."</td><td>".$t1a."</td>"; //首頁會員註冊
+        echo "<td>".$t2."</td><td>".$t2a."</td>"; //首頁免費戀愛諮詢
+        echo "<td>".$t9."</td><td>".$t9a."</td>"; //我想認識他
+        echo "<td>".$t3."</td><td>".$t3a."</td>"; //手機APP
+        echo "<td>".$t4."</td><td>".$t4a."</td>"; //網站手機版
+        echo "<td>".$t5."</td><td>".$t5a."</td>"; //手機APP-首頁
+        echo "<td>".$t6."</td><td>".$t6a."</td>"; //網站手機版-首頁
+        echo "<td>".$t14."</td><td>".$t14a."</td>"; //手機APP-熱戀區   
+        echo "<td>".$t15."</td><td>".$t15a."</td>"; //手機APP-寶貝     
+        echo "<td>".$t16."</td><td>".$t16a."</td>"; //手機APP-寶貝       
+        echo "<td>".$t7."</td><td>".$t7a."</td>"; //Mini
+        echo "<td>".$t8."</td><td>".$t8a."</td>"; //會員登入頁
+        echo "<td>".$t10."</td><td>".$t10a."</td>"; //春網喜事見證
+        echo "<td>".$t11."</td><td>".$t11a."</td>"; //春網活動列表
+        echo "<td>".$t12."</td><td>".$t12a."</td>"; //春網戀愛講堂-首頁
+        echo "<td>".$t13."</td><td>".$t13a."</td>"; //春網戀愛講堂-內頁
+        echo "<td>".$t17."</td><td>".$t17a."</td>"; //17
+        echo "<td>".($tta+$t17a)."</td>"; //網路註冊總數
+        echo "<td>".($t1a+$t2a+$t3a)."</td>"; //首頁註冊          
+        echo "<td>".$allnew."</td>"; //首次造訪
+        echo "<td>".$allnewp."</td><td>".$tb."</td><td>".$tg."</td>"; //新會員比例
+        echo "<td>".$tta2."</td></tr>"; //未完成註冊數
+
+        if(Date_EN($showdate,1) == Date_EN($end_time,1)){
+            echo "<script type=\"text/javascript\">button_set(1);outmsg_show(\"已讀取 ".$fullmaxday." 筆資料完畢。\");</script>";
+        }else{
+            $nowdays = $forday + $_REQUEST["nowdays"] + 1;
+            echo "<script type=\"text/javascript\">outmsg_show(\"目前讀取 ".$nowdays." / ".$fullmaxday." 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>\");conutice_ajax('".date("Y/m/d",strtotime($start_time." +".($forday+1)." day"))."','".SqlFilter($_REQUEST["ostart_time"],"tab")."','".SqlFilter($_REQUEST["end_time"],"tab")."','".$nowdays."')</script>";
+        }
+        exit();
+    }
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+
+    
 ?>
 
 <!-- MIDDLE -->
@@ -42,418 +257,7 @@ require_once("./include/_sidebar.php");
                         </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出"></p>
                     <p><a href="ad_counts_new.php" class="btn btn-info">前往新版</a></p>
                 </form>
-                <div id="outdiv" class="table-responsive">
-                    <div>在 2021/10/18 00:00 ～ 2021/10/24 23:59 間統計、共 7 天：</div>
-                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
-                        <tbody>
-                            <tr>
-                                <td>註冊時間</td>
-                                <td colspan="2">首頁<br>會員註冊</td>
-                                <td colspan="2">首頁<br>戀愛諮詢</td>
-                                <td colspan="2">我想認識他</td>
-                                <td colspan="2">手機APP</td>
-                                <td colspan="2">網站手機版</td>
-                                <td colspan="2">手機APP<br>首頁</td>
-                                <td colspan="2">網站手機版<br>首頁</td>
-                                <td colspan="2">手機APP-熱戀</td>
-                                <td colspan="2">手機APP-寶貝</td>
-                                <td colspan="2">手機APP-橙果</td>
-                                <td colspan="2">Mini</td>
-                                <td colspan="2">會員登入頁</td>
-                                <td colspan="2">春網喜事見證</td>
-                                <td colspan="2">春網活動列表</td>
-                                <td colspan="2">春網戀愛講堂<br>首頁</td>
-                                <td colspan="2">春網戀愛講堂<br>內頁</td>
-                                <td colspan="2">約會專家</td>
-                                <td>網路註冊總數</td>
-                                <td>首頁註冊</td>
-                                <td>首次造訪</td>
-                                <td colspan="3">新會員比例</td>
-                                <td>未完成註冊數</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td>比例</td>
-                                <td>男</td>
-                                <td>女</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>2021/10/18(一)</td>
-                                <td>1</td>
-                                <td>8</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>2</td>
-                                <td>11</td>
-                                <td>19</td>
-                                <td>8</td>
-                                <td>3</td>
-                                <td>15.79%</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 1 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/19', '2021-10-18', '2021-10-24', '1')
-                            </script>
-                            <tr>
-                                <td>2021/10/19(二)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>2</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>2</td>
-                                <td>15</td>
-                                <td>17</td>
-                                <td>0</td>
-                                <td>3</td>
-                                <td>17.65%</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 2 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/20', '2021-10-18', '2021-10-24', '2')
-                            </script>
-                            <tr>
-                                <td>2021/10/20(三)</td>
-                                <td>3</td>
-                                <td>6</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>2</td>
-                                <td>6</td>
-                                <td>13</td>
-                                <td>6</td>
-                                <td>6</td>
-                                <td>46.15%</td>
-                                <td>4</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 3 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/21', '2021-10-18', '2021-10-24', '3')
-                            </script>
-                            <tr>
-                                <td>2021/10/21(四)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>N/A</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 4 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/22', '2021-10-18', '2021-10-24', '4')
-                            </script>
-                            <tr>
-                                <td>2021/10/22(五)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>N/A</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 5 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/23', '2021-10-18', '2021-10-24', '5')
-                            </script>
-                            <tr>
-                                <td>2021/10/23(六)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>N/A</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                outmsg_show("目前讀取 6 / 7 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>");
-                                conutice_ajax('2021/10/24', '2021-10-18', '2021-10-24', '6')
-                            </script>
-                            <tr>
-                                <td>2021/10/24(日)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>N/A</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                button_set(1);
-                                outmsg_show("已讀取 7 筆資料完畢。");
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
+                <div id="outdiv" class="table-responsive"></div>
                 <div id="outmsg" height=20 style="font-size:12px;">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
             </div>
         </div>
@@ -461,11 +265,6 @@ require_once("./include/_sidebar.php");
 
     </div>
     <!--/row-->
-
-
-    <hr>
-    <footer>
-    </footer>
     </div>
     </div>
 
