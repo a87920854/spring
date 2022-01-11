@@ -85,13 +85,13 @@ if ( $st == "accept" && $v != "" ){
                 }
 
                 $SQL1 = "Select HeadPhotoURL From UserData Where UserID='".$mem_num."'";
-                $rs1 = $SPConn->prepare($SQL1);
+                $rs1 = $DMNOpen->prepare($SQL1);
                 $rs1->execute();
                 $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
                 foreach($result1 as $re1);
            		if ( count($result1) > 0 ){
                     $SQL_u = "Update UserData Set HeadPhotoURL='photo/".$re["photo_name"]."' Where UserID=".$mem_num;
-                    $rs_u = $SPConn->prepare($SQL_u);
+                    $rs_u = $DMNOpen->prepare($SQL_u);
                     $rs_u->execute();
                 }
             }else{
@@ -133,14 +133,14 @@ $times2 = SqlFilter($_REQUEST["times2"],"tab");
 if ( $times1 != "" ){
     $acre_sign1 = $times1 ." 00:00";
     $vacre_sign1 = $times1;
-    if ( is_Date($acre_sign1) == false ){
+    if ( chkDate($acre_sign1) == false ){
         call_alert("起始時間有誤。", 0, 0);
     }
 }
 if ( $times2 != "" ){
     $acre_sign2 = $times2 . " 23:59";
     $vacre_sign2 = $times2;
-    if ( is_Date($acre_sign2) == false ){
+    if ( chkDate($acre_sign2) == false ){
         call_alert("結束時間有誤。", 0, 0);
     }
 }
@@ -148,17 +148,17 @@ if ( $times2 != "" ){
 $default_sql_num = 500;
 $vst = SqlFilter($_REQUEST["vst"],"tab");
 if ( $vst == "full" ){
-    $sqlv = "*";
+    $subSQL1 = "*";
     $sqlv2 = "count(photo_auto)";
 }else{
-    $sqlv = "top ".$default_sql_num." *";
+    $subSQL1 = "top ".$default_sql_num." *";
     $sqlv2 = "count(photo_auto)";
 }
 //"Select ".sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE 1=1"&b2sql
 if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "count" ){
-    $subSQL2 = "1=1".$b2sql;
+    $subSQL2 = " 1=1".$b2sql;
     //$sqls = "Select "&sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' or member_data.mem_branch2='"&session("branch")&"')"&b2sql
-    //sqls2 = "Select "&sqlv2&" as total_size FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE  1=1"&b2sql
+    //sqls2 = "Select "&sqlv2&" as total_size FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE 1=1"&b2sql
 }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "action" || $_SESSION["MM_UserAuthorization"] == "pay" || $_SESSION["MM_UserAuthorization"] == "keyin" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
     $subSQL2 = "(member_data.mem_branch='".$_SESSION["branch"]."' or member_data.mem_branch2='".$_SESSION["branch"]."')".$b2sql;
     //sqls = "Select "&sqlv&" FROM photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num WHERE (member_data.mem_branch='"&session("branch")&"' or member_data.mem_branch2='"&session("branch")&"')"&b2sql
@@ -176,8 +176,110 @@ if ( chkDate($acre_sign1) && chkDate($acre_sign2) ){
     }
     $subSQL3 = $subSQL3 . " and photo_data.photo_time between '".$acre_sign1."' and '".$acre_sign2."'";
 }
-?>
 
+//關鍵字
+$keyword = SqlFilter($_REQUEST["keyword"],"tab");
+$s4 = SqlFilter($_REQUEST["s4"],"tab");
+$branch = SqlFilter($_REQUEST["branch"],"tab");
+$ismem = SqlFilter($_REQUEST["ismem"],"tab");
+$issingle = SqlFilter($_REQUEST["issingle"],"tab");
+$sex = SqlFilter($_REQUEST["sex"],"tab");
+$types = SqlFilter($_REQUEST["types"],"tab");
+
+//關鍵字
+if ( $keyword != "" ){
+    $subSQL3 = $subSQL3 . " and photo_data.mem_num like '%".$keyword."%'";
+}
+
+if ( $s4 != "" ){
+    $subSQL3 = $subSQL3 . " and photo_data.mem_num like '%".$s4."%'";
+}
+
+//會館
+if ( $branch != "" ){
+    $subSQL3 = $subSQL3 . " and mem_branch = '".$branch."'";
+}
+
+//顯示會員/非會員
+if ( $ismem == "1" ){
+    $subSQL3 = $subSQL3 . " and mem_level = 'mem'";
+}
+
+//顯示所有/祕書上傳
+if ( $issingle == "1" ){
+    $subSQL3 = $subSQL3 . " and come = 'single'";
+}
+
+//性別
+if ( $sex != "" ){
+    $subSQL3 = $subSQL3 . " and mem_sex = '".$sex."'";
+}
+
+//是否審核
+if ( $types == "1" ){
+    $vv = "已審核";
+    $subSQL3 = $subSQL3 . " and accept=1";
+}else{
+	$vv = "未審核";
+    $subSQL3 = $subSQL3 . " and accept=0";
+}
+			  
+$subSQL4 = " and photo_data.mem_num <> 0";
+$subSQL5 = " order by photo_time";
+
+//sqls = sqls & sqlss &" and photo_data.mem_num <> 0 "
+//sqls2 = sqls2 & sqlss
+
+//取得總筆數
+$SQL = "Select count(photo_auto) As total_size From photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num Where ".$subSQL2.$subSQL3.$subSQL4;
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result=$rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+if ( count($result) == 0 || $re["total_size"] == 0 ) {
+    $total_size = 0;
+}else{
+    if ( $vst == "" ){
+        $total_size = 500;
+    }else{
+        $total_size = $re["total_size"];
+    }
+}
+
+//查看清單連結文字
+if ( $vst == "full" ){
+    $count_href = "　<a href='?vst=n'>[查看前五百筆]</a>";
+}else{
+    $count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
+}
+
+
+//取得分頁資料
+$tPageSize = 50; //每頁幾筆
+$tPage = 0; //目前頁數
+if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+if ( $tPageSize*$tPage < $total_size ){
+    $page2 = 50;
+}else{
+    $page2 = (50-(($tPageSize*$tPage)-$total_size));
+}
+
+//分頁語法
+$SQL_list  = "Select ".$subSQL1." ";
+$SQL_list .= "From (Select row_number() ";
+$SQL_list .= "over(".$subSQL5." Asc) As rownumber,member_data.mem_num,mem_name ";
+$SQL_list .= "From photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num Where ".$subSQL2.$subSQL3.$subSQL4." ) temp_row ";
+$SQL_list .= "Where rownumber > ".($tPageSize*$tPage);
+echo $SQL_list;
+exit;
+$rs_list = $SPConn->prepare($SQL_list);
+$rs_list->execute();
+$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
+
+
+?>
+<script type="text/JavaScript" src="./include/script.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -199,7 +301,6 @@ if ( chkDate($acre_sign1) && chkDate($acre_sign2) ){
             </div>
 
             <div class="panel-body">
-
                 <div class="col-md-12">
                     <form id="searchform" action="ad_photo_check.php?vst=full&sear=1&t=" method="post" target="_self" class="form-inline" onsubmit="return chk_search_form()" style="margin:0px;">
 
