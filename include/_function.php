@@ -810,8 +810,6 @@
 
 		return $card_name;
 	}
-<<<<<<< HEAD
-
 
 	function sysmsg($mnum, $msg, $url){
 		//新增
@@ -823,8 +821,7 @@
 		$rs_i = $SPConn2->prepare($SQL_i);
 		$rs_i->execute();
 	}
-=======
-	
+
 	//取得星期幾
 	function weekchinesename($n){
         switch($n){
@@ -853,5 +850,5 @@
                 return "不明";
         }
     }
->>>>>>> 96500dfcd58ec3fd0d0d2a947f41606ee232c14d
+
 ?>
