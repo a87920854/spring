@@ -1,8 +1,23 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_market2.php
+    //後台對應位置：管理系統/行銷活動統計
+    //改版日期：2022.1.3
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+
+    $marking_list = $_REQUEST["marking_list"];
 ?>
 
 <!-- MIDDLE -->
@@ -27,7 +42,7 @@ require_once("./include/_sidebar.php");
 
             <div class="panel-body">
                 <form action="?st=send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
-                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
+                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["start_time"],"tab"); ?>">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["end_time"],"tab"); ?>">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
                             <option value="">快速選擇</option>
                             <option value="0">今天</option>
                             <option value="1">昨天</option>
@@ -39,8 +54,8 @@ require_once("./include/_sidebar.php");
                             <option value="7">今年</option>
                             <option value="8">去年</option>
                         </select></p>
-                    <p>
-                        <!--<a data-toggle="collapse" href="#marking_action_list" data-parent="#menu_group" class="btn btn-info">活動選擇</a>--><input id="send_submit" type="submit" class="btn btn-default" value="送出">
+
+                    <!--<a data-toggle="collapse" href="#marking_action_list" data-parent="#menu_group" class="btn btn-info">活動選擇</a>--><input id="send_submit" type="submit" class="btn btn-default margin-bottom-20" value="送出">
                     <div class="" id="marking_action_list">
                         <div>
                             <!--<label><input type="checkbox" id="allcheckbox"> 全選</label>
@@ -48,212 +63,352 @@ require_once("./include/_sidebar.php");
 						  	<label><input type="checkbox" id="allcheckbox3"> DateMeNow全選</label>
 						  	<label><input type="checkbox" id="allcheckbox4"> 約會專家全選</label>-->
                         </div>
+                        <?php 
+                            if($_REQUEST["st"] == "send"){
+                                $stime = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),2) . " 00:00";
+                                $etime = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),2) . " 23:59";
+                                
+                                if(count($marking_list) > 0 && count($marking_list) < 30){
+                                    $marking_list = implode(",",$marking_list);
+                                }else{
+                                    call_alert("最多選擇 30 個活動。", 0, 0); 
+                                }                                
 
+                                $marking_listv = str_replace(",","','",$marking_list);
+                                $marking_listv = "'".$marking_listv."'";
 
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item active">
-                                <a class="nav-link" data-toggle="tab" href="#tab1">春天會館</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tab2">DateMeNow</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tab3">約會專家</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="tab1" class="tab-pane fade in active"><label><input type="checkbox" id="allcheckbox2"> 全選</label>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="186"> [春天會館] 2021/10/5 - 春天會館5倍券</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="187"> [春天會館] 2021/10/5 - 春天會館5倍券-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="178"> [春天會館] 2021/7/10 - 窩在家也能開啟浪漫約會</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="179"> [春天會館] 2021/7/10 - 窩在家也能開啟浪漫約會-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="176"> [春天會館] 2021/6/25 - 單身交友約會聯誼活動</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="177"> [春天會館] 2021/6/25 - 單身交友約會聯誼活動-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="168"> [春天會館] 2021/5/28 - 來一場認真安全交友</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="169"> [春天會館] 2021/5/28 - 來一場認真安全交友-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="164"> [春天會館] 2021/5/25 - 現代月老陪你戀愛交友</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="165"> [春天會館] 2021/5/25 - 現代月老陪你戀愛交友-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="156"> [春天會館] 2021/4/8 - 202104名單</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="154"> [春天會館] 2021/3/15 - 七分鐘找出你的理想情人</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="155"> [春天會館] 2021/3/15 - 七分鐘找出你的理想情人-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="144"> [春天會館] 2020/12/1 - 線上祈福戀愛御守</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="145"> [春天會館] 2020/12/1 - 線上祈福戀愛御守-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="138"> [春天會館] 2020/9/10 - 你在愛情中是哪一種情人</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="139"> [春天會館] 2020/9/10 - 你在愛情中是哪一種情人-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="134"> [春天會館] 2020/7/15 - 愛情電力脫單指數</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="135"> [春天會館] 2020/7/15 - 愛情電力脫單指數-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="112"> [春天會館] 2019/8/1 - 想找好對象請到這兒來</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="113"> [春天會館] 2019/8/1 - 想找好對象請到這兒來-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="111"> [春天會館] 2019/7/20 - 201907名單</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="107"> [春天會館] 2019/7/20 - 你與妳將與幸福隨行</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="108"> [春天會館] 2019/7/20 - 你與妳將與幸福隨行-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="81"> [春天會館] 2019/5/5 - 團拜月老廟</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="82"> [春天會館] 2019/5/5 - 團拜月老廟-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="69"> [春天會館] 2019/5/1 - 生命靈數測驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="70"> [春天會館] 2019/5/1 - 生命靈數測驗-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="79"> [春天會館] 2019/4/25 - 戀愛不歪腰</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="80"> [春天會館] 2019/4/25 - 戀愛不歪腰-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="67"> [春天會館] 2019/4/1 - 你最近3個月桃花指數有多高</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="68"> [春天會館] 2019/4/1 - 你最近3個月桃花指數有多高-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="61"> [春天會館] 2018/11/20 - 對的時間遇見對的人</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="62"> [春天會館] 2018/11/20 - 對的時間遇見對的人-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="49"> [春天會館] 2018/9/20 - 線上召喚女神</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="50"> [春天會館] 2018/9/20 - 線上召喚女神-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="58"> [春天會館] 2018/9/20 - 線上召喚女神-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="45"> [春天會館] 2018/8/1 - 對的時間，遇見愛情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="46"> [春天會館] 2018/8/1 - 對的時間，遇見愛情-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="47"> [春天會館] 2018/8/1 - 愛情五Go力</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="48"> [春天會館] 2018/8/1 - 愛情五Go力-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="95"> [春天會館] 2018/8/1 - 今年告別單身戀愛去</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="96"> [春天會館] 2018/8/1 - 今年告別單身戀愛去-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="40"> [春天會館] 2018/6/1 - 手機號碼看你的桃花愛情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="41"> [春天會館] 2018/6/1 - 手機號碼看你的桃花愛情-橙果</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="42"> [春天會館] 2018/6/1 - 手機號碼看你的桃花愛情-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="38"> [春天會館] 2018/5/10 - 12星座單身的原因</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="39"> [春天會館] 2018/5/10 - 12星座單身的原因-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="33"> [春天會館] 2018/4/1 - 12生肖看戀愛運</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="34"> [春天會館] 2018/4/1 - 12生肖看戀愛運-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="30"> [春天會館] 2018/3/1 - 我很棒為何還是單身</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="19"> [春天會館] 2017/9/30 - 人生不能沒有伴</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="18"> [春天會館] 2017/9/20 - 雲端月老廟-月老姻緣靈籤</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="15"> [春天會館] 2017/8/1 - 精緻約會尋找愛情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="13"> [春天會館] 2017/6/10 - 這樣說，那樣愛</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="10"> [春天會館] 2017/4/30 - 春天迎桃花</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="12"> [春天會館] 2017/4/30 - 春天迎桃花-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="1"> [春天會館] 2017/2/25 - 雲端月老廟-點亮姻緣燈</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="4"> [春天會館] 2017/2/1 - 仲夏童話七夕情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="5"> [春天會館] 2017/2/1 - 天公疼好人活動</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="93"> [春天會館] 2016/12/31 - 如何增加自己的戀愛運？</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="94"> [春天會館] 2016/12/31 - 如何增加自己的戀愛運？-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="103"> [春天會館] 2016/9/30 - 單身菁英男孩</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="104"> [春天會館] 2016/9/30 - 單身菁英男孩-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="7"> [春天會館] 2016/6/24 - 雲端月老廟-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="2"> [春天會館] 2016/6/24 - 雲端月老廟</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="101"> [春天會館] 2016/6/1 - 元氣女孩</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="102"> [春天會館] 2016/6/1 - 元氣女孩-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="97"> [春天會館] 2016/4/1 - 閃耀愛情，近乎苛求</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="98"> [春天會館] 2016/4/1 - 閃耀愛情，近乎苛求-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="89"> [春天會館] 2016/2/20 - 12星座男生遇到喜歡女生的表現</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="90"> [春天會館] 2016/2/20 - 12星座男生遇到喜歡女生的表現-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="91"> [春天會館] 2016/1/10 - 人生最好的禮物</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="92"> [春天會館] 2016/1/10 - 人生最好的禮物-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="109"> [春天會館] 2015/8/16 - 仲夏童話七夕情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="110"> [春天會館] 2015/8/16 - 仲夏童話七夕情-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="99"> [春天會館] 2015/3/1 - 戀愛志工</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="春天會館" value="100"> [春天會館] 2015/3/1 - 戀愛志工-手機版</label></p>
-                            </div>
-                            <div id="tab2" class="tab-pane fade in"><label><input type="checkbox" id="allcheckbox3"> 全選</label>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="184"> [DateMeNow] 2021/10/7 - 振興5倍券幸福更加倍</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="185"> [DateMeNow] 2021/10/7 - 振興5倍券幸福更加倍-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="172"> [DateMeNow] 2021/6/10 - 讓美好的你遇見美好的他</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="173"> [DateMeNow] 2021/6/10 - 讓美好的你遇見美好的他-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="162"> [DateMeNow] 2021/5/25 - DMN不出門也要好好談戀愛</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="163"> [DateMeNow] 2021/5/25 - DMN不出門也要好好談戀愛-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="142"> [DateMeNow] 2020/11/15 - 2021年12星座愛情指數測驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="143"> [DateMeNow] 2020/11/15 - 2021年12星座愛情指數測驗-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="130"> [DateMeNow] 2020/5/10 - 穩定交往的秘訣</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="131"> [DateMeNow] 2020/5/10 - 穩定交往的秘訣-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="116"> [DateMeNow] 2019/11/15 - 2020年12星座愛情指數測驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="117"> [DateMeNow] 2019/11/15 - 2020年12星座愛情指數測驗-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="75"> [DateMeNow] 2019/4/10 - 檢測你的戀愛觀念_行銷</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="76"> [DateMeNow] 2019/4/10 - 檢測你的戀愛觀念_訪客</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="63"> [DateMeNow] 2019/1/10 - 生日測桃花</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="64"> [DateMeNow] 2019/1/10 - 生日測桃花-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="54"> [DateMeNow] 2018/10/10 - 真愛旅程</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="55"> [DateMeNow] 2018/10/10 - 真愛旅程-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="52"> [DateMeNow] 2018/10/1 - 與愛神同行</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="53"> [DateMeNow] 2018/10/1 - 與愛神同行-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="43"> [DateMeNow] 2018/6/10 - DateMeNow戀愛分析量表</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="44"> [DateMeNow] 2018/6/10 - DateMeNow戀愛分析量表-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="35"> [DateMeNow] 2018/4/15 - 2018年12星座愛情指數測驗-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="36"> [DateMeNow] 2018/4/15 - 戀愛神社</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="37"> [DateMeNow] 2018/4/15 - 戀愛神社-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="31"> [DateMeNow] 2018/3/10 - 上班族不能不約會</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="32"> [DateMeNow] 2018/3/10 - 上班族不能不約會-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="26"> [DateMeNow] 2018/1/1 - 2018年12星座愛情指數測驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="27"> [DateMeNow] 2018/1/1 - DateMeNow介紹頁</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="28"> [DateMeNow] 2018/1/1 - DateMeNow介紹頁-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="29"> [DateMeNow] 2018/1/1 - DateMeNow介紹頁-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="21"> [DateMeNow] 2017/10/30 - 戀愛必勝十倍奉還</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="22"> [DateMeNow] 2017/10/30 - 戀愛必勝十倍奉還-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="23"> [DateMeNow] 2017/9/30 - 單身無懼-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="20"> [DateMeNow] 2017/9/30 - 單身無懼</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="16"> [DateMeNow] 2017/8/10 - 愛情學分班</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="17"> [DateMeNow] 2017/8/10 - 愛情學分班-APP</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="8"> [DateMeNow] 2017/4/27 - 邱比特測字</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="DateMeNow" value="9"> [DateMeNow] 2017/4/27 - 邱比特測字-APP</label></p>
-                            </div>
-                            <div id="tab3" class="tab-pane fade in"><label><input type="checkbox" id="allcheckbox4"> 全選</label>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="182"> [約會專家] 2021/10/5 - 幸福五倍券</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="183"> [約會專家] 2021/10/5 - 幸福五倍券-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="180"> [約會專家] 2021/7/25 - Online聯誼交友趣</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="181"> [約會專家] 2021/7/25 - Online聯誼交友趣-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="174"> [約會專家] 2021/6/25 - 迷你塔羅愛情占卜</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="175"> [約會專家] 2021/6/25 - 迷你塔羅愛情占卜-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="170"> [約會專家] 2021/6/1 - 結合實體與線上的交友新體驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="171"> [約會專家] 2021/6/1 - 結合實體與線上的交友新體驗-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="166"> [約會專家] 2021/5/26 - 防疫一起來視訊排約</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="167"> [約會專家] 2021/5/26 - 防疫一起來視訊排約-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="160"> [約會專家] 2021/5/25 - 不出門也要好好談戀愛</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="161"> [約會專家] 2021/5/25 - 不出門也要好好談戀愛-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="158"> [約會專家] 2021/5/15 - 約專簡訊專頁</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="159"> [約會專家] 2021/5/15 - 約專簡訊專頁-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="152"> [約會專家] 2021/3/10 - 戀愛決勝盤</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="153"> [約會專家] 2021/3/10 - 戀愛決勝盤-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="146"> [約會專家] 2020/12/25 - 單身剋星_LINEPOINT</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="147"> [約會專家] 2020/12/25 - 單身剋星_LINEPOINT-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="150"> [約會專家] 2020/12/20 - 女子時光</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="151"> [約會專家] 2020/12/20 - 女子時光-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="148"> [約會專家] 2020/12/15 - 天菜底家啦</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="149"> [約會專家] 2020/12/15 - 天菜底家啦-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="140"> [約會專家] 2020/9/25 - 小資想婚成家專案</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="141"> [約會專家] 2020/9/25 - 小資想婚成家專案-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="136"> [約會專家] 2020/8/1 - 七夕振興券活動</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="137"> [約會專家] 2020/8/1 - 七夕振興券活動-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="132"> [約會專家] 2020/6/10 - 一對一約會</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="133"> [約會專家] 2020/6/10 - 一對一約會-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="128"> [約會專家] 2020/4/25 - 我的約會初體驗</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="129"> [約會專家] 2020/4/25 - 我的約會初體驗-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="126"> [約會專家] 2020/4/15 - 陪你疫起過情關</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="127"> [約會專家] 2020/4/15 - 陪你疫起過情關-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="124"> [約會專家] 2020/2/10 - 不出門，也能認識對的人</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="125"> [約會專家] 2020/2/10 - 不出門，也能認識對的人-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="118"> [約會專家] 2020/1/1 - 體驗排約</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="119"> [約會專家] 2020/1/1 - 體驗課程</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="120"> [約會專家] 2020/1/1 - 體驗諮詢</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="121"> [約會專家] 2020/1/1 - 體驗排約-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="122"> [約會專家] 2020/1/1 - 體驗課程-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="123"> [約會專家] 2020/1/1 - 體驗諮詢-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="114"> [約會專家] 2019/11/25 - 你的戀愛能力有多強</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="115"> [約會專家] 2019/10/25 - 你的戀愛能力有多強-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="105"> [約會專家] 2019/7/20 - 愛情童話</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="106"> [約會專家] 2019/7/20 - 愛情童話-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="87"> [約會專家] 2019/7/10 - 夏日戀情</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="88"> [約會專家] 2019/7/10 - 夏日戀情-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="85"> [約會專家] 2019/6/20 - 愛情實驗室</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="86"> [約會專家] 2019/6/20 - 愛情實驗室-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="83"> [約會專家] 2019/5/25 - 我在約會專家戀愛惹</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="84"> [約會專家] 2019/5/25 - 我在約會專家戀愛惹-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="77"> [約會專家] 2019/4/20 - 嘿一起出去玩吧_企業</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="78"> [約會專家] 2019/4/20 - 嘿一起出去玩吧_企業-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="73"> [約會專家] 2019/4/11 - 預約吧戀愛會客室</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="74"> [約會專家] 2019/4/11 - 預約吧戀愛會客室-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="65"> [約會專家] 2019/2/25 - 邱比特幫幫我</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="66"> [約會專家] 2019/2/25 - 邱比特幫幫我-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="59"> [約會專家] 2018/11/10 - 嘿一起出去玩吧</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="60"> [約會專家] 2018/11/10 - 嘿一起出去玩吧-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="56"> [約會專家] 2018/11/1 - 十年後</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="57"> [約會專家] 2018/11/1 - 十年後-手機版</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="51"> [約會專家] 2018/10/1 - 徵心啟事</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="25"> [約會專家] 2017/12/1 - 2017約會專家真人免費認證</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="24"> [約會專家] 2017/10/30 - 九型戀愛人格分析</label></p>
-                                <p><label><input type="checkbox" name="marking_list" data-web="約會專家" value="14"> [約會專家] 2017/8/1 - 夏日璀璨之星</label></p>
-                            </div>
-                        </div>
-                    </div>
-                    </p>
-                </form>
+                                echo "<ul class='nav nav-tabs'>";
+                                echo "<li class='nav-item active'>";
+                                echo "<a class='nav-link' data-toggle='tab' href='#tab1'>結果</a>";
+                                echo "</li>";
+                                echo "<li class='nav-item'>";
+                                echo "<a class='nav-link' data-toggle='tab' href='#tab2'>活動選擇</a>";
+                                echo "</li>";
+                                echo "</ul>";
+                                echo "<div class='tab-content'>";
 
+                                echo "<div id='tab1' class='tab-pane fade in active'>";
+                                echo "<table class='table table-striped table-bordered bootstrap-datatable'>";
+                                $SQL = "select * from marketing_list where auton in (".$marking_listv.") order by online_time desc";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                if($result){
+                                    echo "<tr><td>NO</td><td>活動名稱</td><td>上線日期</td><td>統計日期</td>";
+                                    echo "<td>所有(男)</td><td>新(男)</td><td>所有(女)</td><td>新(女)</td><td>總名單數</td>";
+                                    echo "<td>成交(男)</td><td>成交(男)金額</td><td>成交(女)</td><td>成交(女)金額</td><td>總成交數</td><td>總成交金額</td><td></td>";
+                                    echo "</tr>";
+                                    $num = 1;                                    
+                                    for($i=1;$i<=11;$i++){
+                                        ${"line".$i} = 0;
+                                    }
+                                    foreach($result as $re){
+                                        $web = $re["web"];
+                                        echo "<tr>";
+                                        echo "<td>".$num."</td>";
+                                        if($re["url"] != ""){
+                                            $names = "<a href=\"".$re["url"]."\" target='_blank'>".$re["name"]."</a>";
+                                        }else{
+                                            $names = $re["name"];
+                                        }
+                                        echo "<td>".$names."</td>";
+                                        echo "<td>".Date_EN($re["online_time"],1);
+                                        if($re["end_time"] != ""){
+                                            echo " - ".Date_EN($re["end_time"],1);
+                                        }
+                                        echo "</td>";
+                                        echo "<td>".$stime." 至 ".$etime."</td>";
+                                        if($re["web"] == "春天會館"){
+                                            $vsql = " and mem_branch <> '八德'";
+            	                            $vsql2 = " and all_branch <> '八德'";
+                                            $subsql = "mem_come='行銷活動' and mem_come2='".$re["name"]."'";
+                                        }elseif($re["web"] == "約會專家"){
+                                            $vsql = "";
+            	                            $vsql2 = "";
+                                            $subsql = "mem_come='行銷活動' and mem_come2='".$re["name"]."'";
+                                        }elseif($re["web"] == "迷你約"){
+                                            $vsql = " and mem_branch = '迷你約'";
+                                            $vsql2 = " and all_branch = '迷你約'";
+                                            $subsql = "mem_come='迷你約' and mem_come2 like '%".$re["name"]."%'";
+                                        }else{
+                                            $vsql = " and mem_branch = '八德'";
+            	                            $vsql2 = " and all_branch = '八德'";
+                                            $subsql = "mem_come='行銷活動' and mem_come2='".$re["name"]."'";
+                                        }
+                                        $total1 = 0;
+                                        $total2 = 0;
+                                        $total3 = 0;
+                                        $total_boy = 0;
+                                        $total_girl = 0;
+                                        // 所有男
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data where ".$subsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男'".$vsql;
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $total1 = $total1 + $vvt;
+                                        $line1 = $line1 + $vvt;
+                                        echo $vvt."</td>";
+                                        // 所有新男
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data as dba where ".$subsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男'".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile".$vsql." and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile".$vsql2.") <= 0)";
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $line2 = $line2 + $vvt;
+                                        echo $vvt."</td>";
+                                        // 所有女
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data where ".$subsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='女'";
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $total1 = $total1 + $vvt;
+                                        $line3 = $line3 + $vvt;
+                                        echo $vvt."</td>";
+                                        // 所有新女
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data as dba where ".$subsql." and mem_time between '".$stime."' and '"
+                                                .$etime."' and mem_sex='女'".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile".$vsql." and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile".$vsql2.") <= 0)";
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $line4 = $line4 + $vvt;
+                                        echo $vvt."</td>";
+                                        echo "<td>".$total1."</td>";
+                                        
+                                        $line5 = $line5 + $total1;
+
+                                        // 成交男
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data where ".$subsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='男' and mem_level='mem'".$vsql;
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $total2 = $total2 + $vvt;
+                                        $line6 = $line6 + $vvt;
+                                        echo $vvt."</td>";
+
+                                        // 成交男金額
+                                        $total_boy = 0;
+                                        $SQL2 = "select mem_num, vv from member_data outer apply (select SUM(pay_total2) as vv from pay_main where pay_user <> '' and pay_user=mem_username and pay_time > mem_time) pay_main where mem_come='行銷活動' and mem_sex='男' and mem_come2='".$re["name"]."' and mem_level='mem' and mem_time between '".$stime."' and '".$etime."'";
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            foreach($result2 as $re2){
+                                                if($re2["vv"] != ""){
+                                                    $total_boy = $total_boy + round($re2["vv"]);
+                                                }
+                                            }
+                                        }else{
+                                            $total_boy = 0;
+                                        }
+                                        $line7 = $line7 + $total_boy;
+                                        echo "<td>".$total_boy."</td>";
+
+                                        // 成交女
+                                        echo "<td>";
+                                        $SQL2 = "select count(mem_auto) as vvt from member_data where ".$subsql." and mem_time between '".$stime."' and '".$etime."' and mem_sex='女' and mem_level='mem'".$vsql;
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            $vvt = $result2["vvt"];
+                                        }else{
+                                            $vvt = 0;
+                                        }
+                                        $total2 = $total2 + $vvt;
+                                        $line8 = $line8 + $vvt;
+                                        echo $vvt."</td>";
+
+                                        // 成交女金額
+                                        $total_girl = 0;
+                                        $SQL2 = "select mem_num, vv from member_data outer apply (select SUM(pay_total2) as vv from pay_main where pay_user <> '' and pay_user=mem_username and pay_time > mem_time) pay_main where mem_come='行銷活動' and mem_sex='女' and mem_come2='".$re["name"]."' and mem_level='mem' and mem_time between '".$stime."' and '".$etime."'".$vsql;
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            foreach($result2 as $re2){
+                                                if($re2["vv"] != ""){
+                                                    $total_girl = $total_girl + round($re2["vv"]);
+                                                }
+                                            }
+                                        }else{
+                                            $total_girl = 0;
+                                        }
+                                        $line9 = $line9 + $total_girl;
+                                        echo "<td>".$total_girl."</td>";
+                                        $line10 = $line10 + $total2;
+                                        echo "<td>".$total2."</td>";
+
+                                        $total3 = 0;
+                                        $SQL2 = "select mem_num, vv from member_data outer apply (select SUM(pay_total2) as vv from pay_main where pay_user <> '' and pay_user=mem_username and pay_time > mem_time) pay_main where ".$subsql." and mem_level='mem' and mem_time between '".$stime."' and '".$etime."'".$vsql;
+                                        $rs2 = $SPConn->prepare($SQL2);
+                                        $rs2->execute();
+                                        $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                        if($result2){
+                                            foreach($result2 as $re2){
+                                                if($re2["vv"] != ""){
+                                                    $total3 = $total3 + round($re2["vv"]);
+                                                }
+                                            }
+                                        }else{
+                                            $total3 = 0;
+                                        }
+                                        $line11 = $line11 + $total3;
+                                        echo "<td>".$total3."</td>";
+                                        echo "<td><a href=\"ad_market3.php?start_time=".$stime."&end_time=".$etime."&an=".$re["auton"]."\">開統</a></td>";
+                                        echo "</tr>";
+                                        $num = $num + 1;
+                                    }
+                                    echo "<tr><td>總計</td><td></td><td></td><td></td>";
+                                    echo "<td>".$line1."</td><td>".$line2."</td><td>".$line3."</td><td>".$line4."</td><td>".$line5."</td>";
+                                    echo "<td>".$line6."</td><td>".$line7."</td><td>".$line8."</td><td>".$line9."</td><td>".$line10."</td><td>".$line11."</td><td></td>";
+                                    echo "</tr>";
+                                    echo "</table>";
+                                    echo "</div>";
+                                    
+                                    echo "<div id='tab2' class='tab-pane fade in'>";
+                                    $SQL = "select * from marketing_list where web='".$web."' order by web asc, online_time desc";
+                                    $rs = $SPConn->prepare($SQL);
+                                    $rs->execute();
+                                    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                    if($result){
+                                        echo "<div id='tab1' class='tab-pane fade in active'>";
+						  	            echo "<label><input type='checkbox' id='allcheckbox2'> 全選</label>";
+                                        foreach($result as $re){
+                                            if(member_array($marking_list,$re["auton"]) == 1){
+                                                echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".$re["online_time"]." - ".$re["name"]."</label></p>";
+                                            }else{
+                                                echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".$re["online_time"]." - ".$re["name"]."</label></p>";
+                                            }
+                                        }
+                                        echo "</div>";
+                                    }
+                                    echo "</div>";
+                                    echo "</div>";
+                                }
+                            }else{ ?>
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item active">
+                                        <a class="nav-link" data-toggle="tab" href="#tab1">春天會館</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab2">DateMeNow</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab3">約會專家</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab4">迷你約</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" style="padding-top:20px;">
+                                    <?php 
+                                        // 春天會館
+                                        $SQL = "select * from marketing_list where web='春天會館' order by web asc, online_time desc";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                        if($result){
+                                            echo "<div id='tab1' class='tab-pane fade in active'>";
+						  	                echo "<label><input type='checkbox' id='allcheckbox2'> 全選</label>";
+                                            foreach($result as $re){
+                                                if(member_array($marking_list,$re["auton"]) == 1){
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }else{
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }
+                                            }
+                                            echo "</div>";
+                                        }
+
+                                        // DMN
+                                        $SQL = "select * from marketing_list where web='DateMeNow' order by web asc, online_time desc";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                        if($result){
+                                            echo "<div id='tab2' class='tab-pane fade in active'>";
+						  	                echo "<label><input type='checkbox' id='allcheckbox3'> 全選</label>";
+                                            foreach($result as $re){
+                                                if(member_array($marking_list,$re["auton"]) == 1){
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }else{
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }
+                                            }
+                                            echo "</div>";
+                                        }
+
+                                        // 約會專家
+                                        $SQL = "select * from marketing_list where web='約會專家' order by web asc, online_time desc";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                        if($result){
+                                            echo "<div id='tab3' class='tab-pane fade in active'>";
+						  	                echo "<label><input type='checkbox' id='allcheckbox4'> 全選</label>";
+                                            foreach($result as $re){
+                                                if(member_array($marking_list,$re["auton"]) == 1){
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }else{
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }
+                                            }
+                                            echo "</div>";
+                                        }
+
+                                        // 迷你約
+                                        $SQL = "select * from marketing_list where web='迷你約' order by web asc, online_time desc";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                        if($result){
+                                            echo "<div id='tab4' class='tab-pane fade in active'>";
+						  	                echo "<label><input type='checkbox' id='allcheckbox5'> 全選</label>";
+                                            foreach($result as $re){
+                                                if(member_array($marking_list,$re["auton"]) == 1){
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }else{
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                }
+                                            }
+                                            echo "</div>";
+                                        }
+                                    ?>
+                                </div>
+                            </div>
+                            
+                        <?php }
+                        ?>
+                    </form>
                 </table>
 
             </div>
@@ -276,7 +431,7 @@ require_once("./include/_bottom.php");
 
         $("#allcheckbox").on("click", function() {
             if ($(this).prop("checked"))
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     $(this).prop("checked", true);
                 });
             else
@@ -288,11 +443,11 @@ require_once("./include/_bottom.php");
         $("#allcheckbox2").on("click", function() {
             $("#allcheckbox3, #allcheckbox4, input[name='marking_list']").prop("checked", false);
             if ($(this).prop("checked"))
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "春天會館") $(this).prop("checked", true);
                 });
             else
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "春天會館") $(this).prop("checked", false);
                 });
         });
@@ -300,11 +455,11 @@ require_once("./include/_bottom.php");
         $("#allcheckbox3").on("click", function() {
             $("#allcheckbox2, #allcheckbox4, input[name='marking_list']").prop("checked", false);
             if ($(this).prop("checked"))
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "DateMeNow") $(this).prop("checked", true);
                 });
             else
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "DateMeNow") $(this).prop("checked", false);
                 });
         });
@@ -312,12 +467,23 @@ require_once("./include/_bottom.php");
         $("#allcheckbox4").on("click", function() {
             $("#allcheckbox2, #allcheckbox3, input[name='marking_list']").prop("checked", false);
             if ($(this).prop("checked"))
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "約會專家") $(this).prop("checked", true);
                 });
             else
-                $("input[name='marking_list']").each(function() {
+                $("input[name='marking_list[]']").each(function() {
                     if ($(this).data("web") == "約會專家") $(this).prop("checked", false);
+                });
+        });
+        $("#allcheckbox5").on("click", function() {		
+            $("#allcheckbox2, #allcheckbox3, #allcheckbox4, input[name='marking_list']").prop("checked", false);
+            if($(this).prop("checked")) 
+                $("input[name='marking_list[]']").each(function() {
+                    if($(this).data("web") == "迷你約") $(this).prop("checked", true);
+                });
+            else
+                $("input[name='marking_list[]']").each(function() {
+                    if($(this).data("web") == "迷你約") $(this).prop("checked", false);
                 });
         });
 
@@ -367,7 +533,7 @@ require_once("./include/_bottom.php");
             $("#end_time").focus();
             return false;
         }
-        if ($("input[name='marking_list']:checked").length <= 0) {
+        if ($("input[name='marking_list[]']:checked").length <= 0) {
             alert("請選擇活動。");
             $("#marking_action_list").collapse("show");
             return false;

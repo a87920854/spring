@@ -150,6 +150,7 @@
                                         <option value="春天會館">春天會館</option>
                                         <option value="DateMeNow">DateMeNow</option>
                                         <option value="約會專家">約會專家</option>
+                                        <option value="迷你約">迷你約</option>
                                     </select></td>
                                 <td><input type="submit" value="新增活動" class="btn btn-default"></td>
                             </tr>

@@ -1,8 +1,188 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_dmn_count_ads.php
+    //後台對應位置：管理系統/DMN-未入會統計[廣告]
+    //改版日期：2022.1.10
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+
+    // ajax
+    if($_REQUEST["st"] == "send"){
+        if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+            echo "在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。";
+            exit();
+        }
+        $start_time = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
+        $end_time = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";        
+        $fullmaxday = ceil((strtotime($end_time) - strtotime(SqlFilter($_REQUEST["ostart_time"],"tab")))/ (60*60*24));
+        $maxday = ceil((strtotime($end_time) - strtotime($start_time))/ (60*60*24));
+
+        if($maxday < 0){
+            echo "在 ".$start_time." ～ ".$end_time." 間沒有資料或日期選擇不正確。";
+        }
+        if($maxday == 0){
+            $smaxday = 1;
+        }else{
+            $smaxday = $fullmaxday;
+        }
+
+        if($_REQUEST["start_time"] == $_REQUEST["ostart_time"]){
+            echo "<div>在 ".$start_time." ～ ".$end_time." 間統計、共 ".$smaxday." 天：</div>";
+            echo "<table id='outtable' width='100%' height=80 align='center' class='table table-striped table-bordered bootstrap-datatable'>";
+            echo "<tr><td>註冊時間</td>";
+            echo "<td colspan=2>Facebook</td>";
+            echo "<td colspan=2>Google</td>";
+            echo "<td colspan=2>Yahoo</td>";
+            echo "<td colspan=2>Line</td>";
+            echo "<td colspan=2>Youtube</td>";
+            echo "<td colspan=2>accupass</td>";
+            echo "<td colspan=2>affiliates</td>";
+            echo "<td colspan=2>cheers</td>";
+            echo "<td colspan=2>wordpress</td>";
+            echo "<td colspan=2>EDM</td>";
+            echo "<td>廣告註冊總數</td>";
+            // echo "<td>首次造訪</td>";
+            // echo "<td colspan=3>新會員比例</td>";
+            echo "</tr>";
+            
+            echo "<tr><td></td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>"; 
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>"; 
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>";
+            echo "<td>新</td><td>總</td>"; 
+            echo "<td>新</td><td>總</td>";    
+            echo "<td></td>";
+            // echo "<td></td>";
+            // echo "<td>比例</td><td>男</td><td>女</td>";
+            echo "</tr>";        
+        }
+
+        $showdate = Date_EN($start_time,1);
+        $all_str = "DMN_FB|1,google|2,yahoo|3,line|4,youtube|5,accupass|6,affiliates|7,cheers|8,wordpress|9,EDM|10";
+        $allnew = 0;
+        $allsize = 0;
+
+        foreach(explode(",",$all_str) as $pp){
+            $pp1 = explode("|",$pp)[0];
+            $pp2 = explode("|",$pp)[1];
+            $pp1 = strtolower($pp1);
+
+            ${"t".$pp2."a"} = 0;
+            ${"t".$pp2} = 0;
+
+            $vsql = " and lower(mem_cc) like '".$pp1."%'";
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_level='guest' and mem_branch = '八德' and datediff(d, mem_time, '".$showdate."') = 0".$vsql;
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2."a"} = $result["tt"];
+            }
+
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_level='guest' and mem_branch = '八德' and datediff(d, mem_time, '".$showdate."') = 0".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_branch = '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch = '八德' and k_mobile = dba.mem_mobile) <= 0)";
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2} = $result["tt"];
+            }
+            if(${"t".$pp2."a"} == ""){
+                ${"t".$pp2."a"} = 0;
+            }
+            if(${"t".$pp2} == ""){
+                ${"t".$pp2} = 0;
+            }
+
+            $all_str2 = $all_str2."'".$pp1."',";
+            $allnew = $allnew + ${"t".$pp2};
+            $allsize = $allsize + ${"t".$pp2."a"};
+            $allstrsize = $allstrsize+1;
+        }
+        $tta = 0;
+        if (substr($all_str2, -1) == ",") {
+            $all_str2 = substr($all_str2, 0, -1);
+        }
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_level='guest' and mem_branch = '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_cc in (".$all_str2.")";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tta = $result["tt"];
+        }
+
+        $tb = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_level='guest' and mem_branch = '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_cc in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_branch = '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch = '八德' and k_mobile = dba.mem_mobile) <= 0) and mem_sex='男'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tb = $result["tt"];
+        }
+        if ($tb == "") {
+            $tb = 0;
+        }
+
+        $tg = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_level='guest' and mem_branch = '八德' and datediff(d, mem_time, '".$showdate."') = 0 and mem_cc in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_branch = '八德' and mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where all_branch = '八德' and k_mobile = dba.mem_mobile) <= 0) and mem_sex='女'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tg = $result["tt"];
+        }
+        if ($tg == "") {
+            $tg = 0;
+        }
+
+        $allnew = $allnew + $tt1;
+        $allsize = $allsize + $tta1;
+
+        if($allsize > 1 && $allnew >1){
+            $allnewp = number_format(($allnew/$allsize)*100,2) ."%";
+        }else{
+            $allnewp = "N/A";
+        }
+
+        echo "<tr><td>" . $showdate . "(" . weekchinesename(date("w", strtotime($showdate))) . ")</td>";
+        for($i=1;$i<=$allstrsize;$i++){
+            if(${"t".$i} <= 0){
+                ${"t".$i} = 0;
+            }
+            if(${"t".$i."a"} <= 0){
+                ${"t".$i."a"} = 0;
+            }
+            echo "<td>".${"t".$i}."</td><td>".${"t".$i."a"}."</td>"; //facebook 
+        }
+
+        echo "<td>".$allsize."</td>"; //網路註冊總數                
+        echo "</tr>"; //未完成註冊數
+
+        if (Date_EN($showdate, 1) == Date_EN($end_time, 1)) {
+            echo "<script type=\"text/javascript\">button_set(1);outmsg_show(\"已讀取 " . $fullmaxday . " 筆資料完畢。\");</script>";
+        } else {
+            $nowdays = $forday + $_REQUEST["nowdays"] + 1;
+            echo "<script type=\"text/javascript\">outmsg_show(\"目前讀取 " . $nowdays . " / " . $fullmaxday . " 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>\");conutice_ajax('" . date("Y/m/d", strtotime($start_time . " +" . ($forday + 1) . " day")) . "','" . SqlFilter($_REQUEST["ostart_time"], "tab") . "','" . SqlFilter($_REQUEST["end_time"], "tab") . "','" . $nowdays . "')</script>";
+        }
+        exit();
+    }
+
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -42,79 +222,7 @@ require_once("./include/_sidebar.php");
                         </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
                     </p>
                 </form>
-                <div id="outdiv" class="table-responsive">
-                    <div>在 2021/10/21 00:00 ～ 2021/10/21 23:59 間統計、共 1 天：</div>
-                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
-                        <tbody>
-                            <tr>
-                                <td>註冊時間</td>
-                                <td colspan="2">Facebook</td>
-                                <td colspan="2">Google</td>
-                                <td colspan="2">Yahoo</td>
-                                <td colspan="2">Line</td>
-                                <td colspan="2">Youtube</td>
-                                <td colspan="2">accupass</td>
-                                <td colspan="2">affiliates</td>
-                                <td colspan="2">cheers</td>
-                                <td colspan="2">wordpress</td>
-                                <td colspan="2">EDM</td>
-                                <td>廣告註冊總數</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>2021/10/21(四)</td>
-                                <td>13</td>
-                                <td>16</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>16</td>
-                            </tr>
-                            <script type="text/javascript">
-                                button_set(1);
-                                outmsg_show("已讀取 1 筆資料完畢。");
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
+                <div id="outdiv" class="table-responsive"></div>
                 <div id="outmsg" height=20 style="font-size:12px;">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
             </div>
         </div>

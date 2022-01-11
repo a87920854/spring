@@ -1,8 +1,170 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_singleparty_counts.php
+    //後台對應位置：管理系統/約會專家-未入會統計
+    //改版日期：2022.1.10
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+
+    // ajax
+    if($_REQUEST["st"] == "send"){
+        if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+            echo "在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。";
+            exit();
+        }
+        $start_time = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
+        $end_time = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";        
+        $fullmaxday = ceil((strtotime($end_time) - strtotime(SqlFilter($_REQUEST["ostart_time"],"tab")))/ (60*60*24));
+        $maxday = ceil((strtotime($end_time) - strtotime($start_time))/ (60*60*24));
+        if($maxday < 0){
+            echo "在 ".$start_time." ～ ".$end_time." 間沒有資料或日期選擇不正確。";
+        }
+        if($maxday == 0){
+            $smaxday = 1;
+        }else{
+            $smaxday = $fullmaxday;
+        }
+
+        $all_str = "手機APP|1,手機板|2,官方APP-android|3,官方APP-ios|4,官方APP-活動報名|5,網站首頁|6,網站內頁|7,活動報名|8,行銷推廣頁|9,春網首頁|10,專屬VIP服務|11,夏日璀璨之星|12,企業加入頁|13,戀愛文章|14,春天首頁導入|15";
+        $all_strs = count(explode(",",$all_str));
+        $all_str_arr = explode(",",$all_str);
+        if($_REQUEST["start_time"] == $_REQUEST["ostart_time"]){
+            echo "<div>在 ".$start_time." ～ ".$end_time." 間統計、共 ".$smaxday." 天：</div>";
+            echo "<table id='outtable' width='100%' height=80 align='center' class='table table-striped table-bordered bootstrap-datatable'>";
+            echo "<tr><td>註冊時間</td>";
+            for($i=0;$i< $all_strs; $i++){
+                echo  "<td colspan=2>".explode("|",$all_str_arr[$i])[0]."</td>";
+            }
+            echo "<td>首次造訪</td>";
+            echo "<td colspan=3>新會員比例</td>";
+            echo "</tr>";
+            
+            echo "<tr><td></td>";
+            for($i=0;$i< $all_strs; $i++){
+                echo "<td>新</td><td>總</td>";
+            }
+            echo "<td></td>";
+            echo "<td>比例</td><td>男</td><td>女</td>";
+            echo "</tr>";            
+        }
+        $showdate = Date_EN($start_time,1);
+        $allnew = 0;
+        $allsize = 0;
+        foreach(explode(",",$all_str) as $pp){
+            $pp1 = explode("|",$pp)[0];
+            $pp2 = explode("|",$pp)[1];
+
+            ${"t".$pp2."a"} = 0;
+            ${"t".$pp2} = 0;
+            
+            if($pp2 == 3){
+                $vsql = " and mem_come2='官方APP' and gcmtype='android'";
+            }elseif($pp2 == 4){
+                $vsql = " and mem_come2='官方APP' and gcmtype='ios'";
+            }else{
+                $vsql = " and mem_come2='".$pp1."'";
+            }
+
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_come='約會專家' and datediff(d, mem_time, '".$showdate."') = 0".$vsql;
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2."a"} = $result["tt"];
+            }
+
+            $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_come='約會專家' and datediff(d, mem_time, '".$showdate."') = 0".$vsql." And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile) <= 0)";
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                ${"t".$pp2} = $result["tt"];
+            }
+
+            if(${"t".$pp2."a"} == ""){
+                ${"t".$pp2."a"} = 0;
+            }
+            if(${"t".$pp2} == ""){
+                ${"t".$pp2} = 0;
+            }
+
+            $all_str2 = $all_str2."'".$pp1."',";
+            $allnew = $allnew + ${"t".$pp2};
+            $allsize = $allsize + ${"t".$pp2."a"};     
+        }
+        $tta = 0;
+        if (substr($all_str2, -1) == ",") {
+            $all_str2 = substr($all_str2, 0, -1);
+        }
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_come='約會專家' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come2 in (".$all_str2.")";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tta = $result["tt"];
+        }
+
+        $tb = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_come='約會專家' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come2 in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile) <= 0) and mem_sex='男'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tb = $result["tt"];
+        }
+        if ($tb == "") {
+            $tb = 0;
+        }
+
+        $tg = 0;
+        $SQL = "SELECT count(mem_auto) as tt FROM member_data as dba Where mem_come='約會專家' and datediff(d, mem_time, '".$showdate."') = 0 and mem_come2 in (".$all_str2.") And ((SELECT count(mem_auto) FROM member_data Where mem_mobile = dba.mem_mobile and datediff(s, dba.mem_time, mem_time) <= 0) <= 1) And ((SELECT count(k_id) FROM love_keyin Where k_mobile = dba.mem_mobile) <= 0) and mem_sex='女'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            $tg = $result["tt"];
+        }
+        if ($tg == "") {
+            $tg = 0;
+        }
+
+        $allnew = $allnew + $tt1;
+        $allsize = $allsize + $tta1;
+
+        if($allsize > 1 && $allnew >1){
+            $allnewp = number_format(($allnew/$allsize)*100,2) ."%";
+        }else{
+            $allnewp = "N/A";
+        }
+
+        echo "<tr><td>" . $showdate . "(" . weekchinesename(date("w", strtotime($showdate))) . ")</td>";
+        for($i=1; $i<=$all_strs;$i++){
+            echo "<td>".${"t".$i}."</td><td>".${"t".$i."a"}."</td>";
+        }
+        echo "<td>".$allnew."</td>"; //首次造訪
+        echo "<td>".$allnewp."</td><td>".$tb."</td><td>".$tg."</td>"; //新會員比例
+        echo "</tr>"; //未完成註冊數
+
+        if (Date_EN($showdate, 1) == Date_EN($end_time, 1)) {
+            echo "<script type=\"text/javascript\">button_set(1);outmsg_show(\"已讀取 " . $fullmaxday . " 筆資料完畢。\");</script>";
+        } else {
+            $nowdays = $forday + $_REQUEST["nowdays"] + 1;
+            echo "<script type=\"text/javascript\">outmsg_show(\"目前讀取 " . $nowdays . " / " . $fullmaxday . " 筆資料..請稍候..<img src='img/wait_loading.gif' align='middle'>\");conutice_ajax('" . date("Y/m/d", strtotime($start_time . " +" . ($forday + 1) . " day")) . "','" . SqlFilter($_REQUEST["ostart_time"], "tab") . "','" . SqlFilter($_REQUEST["end_time"], "tab") . "','" . $nowdays . "')</script>";
+        }
+        exit();
+    }
+
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
 ?>
 
 <!-- MIDDLE -->
@@ -45,111 +207,7 @@ require_once("./include/_sidebar.php");
                         </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
                     </p>
                 </form>
-                <div id="outdiv" class="table-responsive">
-                    <div>在 2021/10/21 00:00 ～ 2021/10/21 23:59 間統計、共 1 天：</div>
-                    <table id="outtable" width="100%" height="80" align="center" class="table table-striped table-bordered bootstrap-datatable">
-                        <tbody>
-                            <tr>
-                                <td>註冊時間</td>
-                                <td colspan="2">手機APP</td>
-                                <td colspan="2">手機板</td>
-                                <td colspan="2">官方APP-android</td>
-                                <td colspan="2">官方APP-ios</td>
-                                <td colspan="2">官方APP-活動報名</td>
-                                <td colspan="2">網站首頁</td>
-                                <td colspan="2">網站內頁</td>
-                                <td colspan="2">活動報名</td>
-                                <td colspan="2">行銷推廣頁</td>
-                                <td colspan="2">春網首頁</td>
-                                <td colspan="2">專屬VIP服務</td>
-                                <td colspan="2">夏日璀璨之星</td>
-                                <td colspan="2">企業加入頁</td>
-                                <td colspan="2">戀愛文章</td>
-                                <td colspan="2">春天首頁導入</td>
-                                <td>首次造訪</td>
-                                <td colspan="3">新會員比例</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td>新</td>
-                                <td>總</td>
-                                <td></td>
-                                <td>比例</td>
-                                <td>男</td>
-                                <td>女</td>
-                            </tr>
-                            <tr>
-                                <td>2021/10/21(四)</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>3</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>N/A</td>
-                                <td>0</td>
-                                <td>0</td>
-                            </tr>
-                            <script type="text/javascript">
-                                button_set(1);
-                                outmsg_show("已讀取 1 筆資料完畢。");
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
+                <div id="outdiv" class="table-responsive"></div>
                 <div id="outmsg" height=20 style="font-size:12px;">讀取資料中...<img src='img/wait_loading.gif' align='middle'></div>
             </div>
         </div>

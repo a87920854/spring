@@ -1,8 +1,8 @@
 <?php
-    /*****************************************/ 
-    //檔案名稱：ad_counts_branch.php
-    //後台對應位置：管理系統/會館新增未入會統計
-    //改版日期：2022.1.5
+    /*****************************************/
+    //檔案名稱：ad_market2.php
+    //後台對應位置：管理系統/行銷活動統計>開統
+    //改版日期：2022.1.4
     //改版設計人員：Jack
     //改版程式人員：Jack
     /*****************************************/
@@ -13,13 +13,10 @@
     require_once("./include/_sidebar.php");
 
     //程式開始 *****
-	if($_SESSION["MM_Username"] == "" ){ 
-        call_alert("請重新登入。","login.php",0);
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
     }
-    if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["MM_UserAuthorization"] != "count" && $_SESSION["MM_UserAuthorization"] != "manager" && $_SESSION["MM_UserAuthorization"] != "love_manager"){
-        call_alert("您沒有查看此頁的權限。","login.php",0);
-    }
-    check_page_power("ad_counts_branch");
+
 ?>
 
 <!-- MIDDLE -->
@@ -27,8 +24,8 @@
     <!-- page title -->
     <header id="page-header">
         <ol class="breadcrumb">
-            <li><a href="index.php">管理系統</a></li>
-            <li class="active">會館新增未入會統計</li>
+            <li><a href="index.asp">管理系統</a></li>
+            <li class="active">行銷活動開發狀態統計</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -38,83 +35,88 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>會館新增未入會統計</strong> <!-- panel title -->
+                    <strong>行銷活動開發狀態統計</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
-
-                <form action="?st=send" method="post" name="counts_form" id="counts_form" class="form-inline">
-                    <p>請選擇時段：<input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["start_time"],"tab"); ?>" required>　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="<?php echo SqlFilter($_REQUEST["end_time"],"tab"); ?>" required>
-                        &nbsp;&nbsp;<select id="fasttime" onchange="fast_sel_time($(this).val())" class="form-control">
-                            <option value="">快速選擇</option>
-                            <option value="0">今天</option>
-                            <option value="1">昨天</option>
-                            <option value="2">前天</option>
-                            <option value="3">本周</option>
-                            <option value="4">上周</option>
-                            <option value="5">本月</option>
-                            <option value="6">上月</option>
-                            <option value="7">今年</option>
-                            <option value="8">去年</option>
-                        </select>&nbsp;&nbsp;<input class="btn btn-default" id="send_submit" type="submit" value="送出">
-                    </p>
-                </form>
                 <?php 
-                    if($_REQUEST["st"] == "send"){
-                        $start_time = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
-                        $end_time = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";
-                        if(!chkDate($start_time)){
-                            call_alert("請選擇開始時間。",0,0);
-                        }
-                        if(!chkDate($end_time)){
-                            call_alert("請選擇結束時間。",0,0);
-                        }
-                        $smaxday = ceil((strtotime($end_time) - strtotime($start_time))/ (60*60*24));
-                        if($smaxday == 0){
-                            $smaxday = 1;
-                        }
-                        $allcome = "流水陌call,樂得流水call,樂得系統回call,萊優流水call,手機1111,向日葵名單,客人自來電,活動宣傳,五人未入會,外部A名單,外部B名單,外部C名單,春天部落格,通路王,高接觸率流水號,台灣電話流水序號開發,手機123,手機104,台灣推薦名單,舊資料再開發,台灣畢冊開發,彰化委外名單,FB名單,好好玩名單";
-                        echo "<p>在 ".$start_time." ～ ".$end_time." 間統計、共 ".$smaxday." 天：</p>";        
-                        echo "<table id='outtable' width='100%' height=80 align='center' class='table table-striped table-bordered bootstrap-datatable'>";
-                        echo "<tr><td></td>";
-                        
-                        $SQL = "Select * From branch_data Where admin_name<>'線上諮詢' and admin_name<>'好好玩旅行社' Order By admin_SOrt";
+                    if($_REQUEST["an"] != ""){
+                        $stime = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),2) . " 00:00";
+                        $etime = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),2) . " 23:59";
+                        $SQL = "select * from marketing_list where auton ='".SqlFilter($_REQUEST["an"],"int")."'";
                         $rs = $SPConn->prepare($SQL);
                         $rs->execute();
-                        $nowbranchs = $rs->fetchAll(PDO::FETCH_ASSOC);
-                        if($nowbranchs){
-                            foreach($nowbranchs as $branch){
-                                echo "<td>".$branch["admin_name"]."</td>";
-                            }
+                        $result = $rs->fetch(PDO::FETCH_ASSOC);
+                        if($result){
+                            $ccome = $result["name"];
                         }
-                        echo "</tr>";
-                        $allcome = explode(",",$allcome);
-                        foreach($allcome as $cc){
-                            echo "<tr><td>".$cc."</td>";
-                            for($i=0;$i<count($nowbranchs);$i++){
-                                $vv = 0;
-                                $SQL = "select count(mem_auto) as tx from member_data where mem_time between '".$start_time."' and '".$end_time."' and mem_come='".$cc."' and mem_branch='".$nowbranchs[$i]["admin_name"]."'";
+                        echo "<p>".$ccome."&nbsp;&nbsp;&nbsp;&nbsp;".$stime." 至 ".$etime."</p>";
+                        echo "<table class='table table-striped table-bordered bootstrap-datatable'>";
+                        $all_types = [];
+                        $SQL = "select distinct all_type from member_data where mem_come='行銷活動' and mem_come2='".$ccome."' and mem_time between '".$stime."' and '".$etime."'";
+                        $rs = $SPConn->prepare($SQL);
+                        $rs->execute();
+                        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                        if($result){
+                            foreach($result as $re){
+                                if($re["all_type"] != ""){
+                                    array_push($all_types,$re["all_type"]);
+                                }
+                            }                            
+                        }
+                        $total_member = 0;
+                        $total_pa = 0;
+                        $SQL = "select count(mem_auto) as t from member_data where mem_come='行銷活動' and mem_come2='".$ccome."' and mem_time between '".$stime."' and '".$etime."'";
+                        $rs = $SPConn->prepare($SQL);
+                        $rs->execute();
+                        $result = $rs->fetch(PDO::FETCH_ASSOC);
+                        if($result){
+                            $total_member = $result["t"];
+                        }
+                        if($total_member == ""){
+                            $total_member = 0;
+                        }
+                        $other_member = $total_member;
+                        echo "<tr><td></td><td>回報狀態</td><td>筆數</td><td>比例</td></tr>";
+                        if($all_types){
+                            foreach($all_types as $tts){
+                                $ttsn = 0;
+                                $SQL = "select count(mem_auto) as t from member_data where mem_come='行銷活動' and mem_come2='".$ccome."' and all_type='".$tts."' and mem_time between '".$stime."' and '".$etime."'";
                                 $rs = $SPConn->prepare($SQL);
                                 $rs->execute();
-                                $result = $rs->fetch(PDO::FETCH_ASSOC);                               
+                                $result = $rs->fetch(PDO::FETCH_ASSOC);
                                 if($result){
-                                    $vv = $result["tx"];
+                                    $ttsn = $result["t"];
                                 }
-                                if(is_null($vv) || $vv == ""){
-                                    $vv = 0;
+                                if($ttsn == ""){
+                                    $ttsn = 0;
                                 }
-                                ${"all_".$i} = ${"all_".$i} + $vv;
-                                echo "<td>".$vv."</td>";
+                                if($ttsn > 0){
+                                    $other_member = $other_member - $ttsn;
+                                    $paa = round(number_format($ttsn*100/$total_member, 2));
+                                    $total_pa = $total_pa + $paa;
+                                    $paa = $paa." %";
+                                }else{
+                                    $paa = "--";
+                                }
+                                echo "<tr><td></td><td>".$tts."</td><td>".$ttsn."</td><td>".$paa."</td></tr>";
                             }
-                            echo "</tr>";
+                            if($other_member > 0){
+                                $paa = round(number_format($other_member*100/$total_member, 2));
+                                $total_pa = $total_pa + $paa;
+                                $paa = $paa . " %";
+                            }else{
+                                $other_member = 0;
+                  	            $paa = "--";
+                            }
+                            echo "<tr><td></td><td>其他</td><td>".$other_member."</td><td>".$paa."</td></tr>";
+                            echo "<tr><td></td><td>總計</td><td>".$total_member."</td><td>".$total_pa." %</td></tr>";
+                        }else{
+                            echo "<tr><td colspan=4>暫無回報狀態</td></tr>";
                         }
-                        echo "<tr><td style='color:blue'>合計</td>";
-                        for($i=0;$i<count($nowbranchs);$i++){
-                            echo "<td>".${"all_".$i}."</td>";
-                        }
-                        echo "</tr>";
                         echo "</table>";
+
                     }
                 ?>
             </div>
@@ -123,22 +125,31 @@
 
     </div>
     <!--/row-->
-
-
-    <hr>
-    <footer>
-    </footer>
-
     </div>
     <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 
 <?php
-require_once("./include/_bottom.php");
+    require_once("./include/_bottom.php");
 ?>
 
 <script type="text/javascript">
+    $mtu = "ad_market2.";
+    $(function() {
+
+        $("#allcheckbox").on("click", function() {
+            if ($(this).prop("checked"))
+                $("input[name='marking_list']").each(function() {
+                    $(this).prop("checked", true);
+                });
+            else
+                $("input[name='marking_list']").each(function() {
+                    $(this).prop("checked", false);
+                });
+        });
+
+    });
     Date.prototype.DateAdd = function(strInterval, Number) {
         var dtTmp = this;
         switch (strInterval) {
@@ -159,6 +170,37 @@ require_once("./include/_bottom.php");
             case 'y':
                 return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
         }
+    }
+
+    function check_form() {
+        if (!$("#start_time").val()) {
+            alert("請輸入開始時段。");
+            $("#start_time").focus();
+            return false;
+        }
+        if (!$("#end_time").val()) {
+            alert("請輸入結束時段。");
+            $("#end_time").focus();
+            return false;
+        }
+        if (isNaN(Date.parse($("#start_time").val()))) {
+            alert("你輸入的開始時段不是日期格式。");
+            $("#start_time").val("");
+            $("#start_time").focus();
+            return false;
+        }
+        if (isNaN(Date.parse($("#end_time").val()))) {
+            alert("你輸入的結束時段不是日期格式。");
+            $("#end_time").val("");
+            $("#end_time").focus();
+            return false;
+        }
+        if ($("input[name='marking_list']:checked").length <= 0) {
+            alert("請選擇活動。");
+            $("#marking_action_list").collapse("show");
+            return false;
+        }
+        return true;
     }
 
     function GetDateStr(AddDayCount) {
@@ -300,6 +342,5 @@ require_once("./include/_bottom.php");
                 $("#end_time").val(getPrevYearDate()[1]);
                 break;
         }
-        $("#counts_form").submit();
     }
 </script>

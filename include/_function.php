@@ -176,7 +176,7 @@
 			default:
 				echo "<script language=\"javascript\">" ;
 				echo "alert('" . $msg ."');";
-				if ( $url != "" && !is_numeric($url)){
+				if ( $url != "" && is_string($url)){
 					echo "window.setTimeout(location.href='" . $url . "'," . $outtime .");";
 				}else {
 					echo "window.setTimeout(location.href='history.back(1)'," . $outtime .");";
@@ -810,6 +810,7 @@
 
 		return $card_name;
 	}
+<<<<<<< HEAD
 
 
 	function sysmsg($mnum, $msg, $url){
@@ -822,4 +823,35 @@
 		$rs_i = $SPConn2->prepare($SQL_i);
 		$rs_i->execute();
 	}
+=======
+	
+	//取得星期幾
+	function weekchinesename($n){
+        switch($n){
+            case 1:
+                return "一";
+                break;
+            case 2:
+                return "二";
+                break;
+            case 3:
+                return "三";
+                break;
+            case 4:
+                return "四";
+                break;
+            case 5:
+                return "五";
+                break;
+            case 6:
+                return "六";
+                break;
+            case 0:
+                return "日";
+                break;
+            default:
+                return "不明";
+        }
+    }
+>>>>>>> 96500dfcd58ec3fd0d0d2a947f41606ee232c14d
 ?>
