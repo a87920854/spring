@@ -1,8 +1,99 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_secretary_fix.php
+    //後台對應位置：管理系統/秘書資料>修改秘書資料
+    //改版日期：2022.1.11
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    // 儲存
+    if($_REQUEST["st"] == "addsave"){
+        $p_auto = SqlFilter($_REQUEST["p_auto"],"int");
+        $p_level = SqlFilter($_REQUEST["p_level"],"tab");
+        if($p_level == "admin" || $p_level == "branch" || $_REQUEST["p_branch"] == "總管理處" || $_SESSION["MM_Username"] == "KYOE"){
+            $p_user = trim(str_replace(" ", "",SqlFilter($_REQUEST["p_user"],"tab")));
+        }else{
+            $p_user = reset_number(SqlFilter($_REQUEST["p_user"],"tab"));
+        }
+
+        if(($p_level == "love" || $p_level == "love_manager") && $_REQUEST["p_lovebranch"] == ""){
+            call_alert("排約部權限必須設定會員會館。",0,0);
+        }
+
+        if($p_user == ""){
+            call_alert("身分證字號錯誤。",0,0);
+        }
+
+        if($p_auto != ""){
+            $SQL = "SELECT * FROM personnel_data Where p_auto = ".$p_auto;
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+        }else{
+            $SQL = "SELECT * FROM personnel_data where p_user='".$p_user."'";
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch(PDO::FETCH_ASSOC);
+            if($result){
+                call_alert("帳號重複。",0,0);
+            }
+        }        
+    }
+
+    if($_REQUEST["p_auto"] != ""){
+        $tt = "修改";
+	    $tt2 = "?st=addsave";
+        $p_auto = SqlFilter($_REQUEST["p_auto"],"int");
+        $SQL = "SELECT * FROM personnel_data where p_auto=".$p_auto;
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){
+            $p_user = $result["p_user"];
+            $p_user2 = $result["p_user2"];
+            $p_name = $result["p_name"];
+            $p_other_name = $result["p_other_name"];
+            $p_branch = $result["p_branch"];
+            $b_year = $result["b_year"];
+            $p_job2 = $result["p_job2"];
+            $p_level = $result["p_level"];
+            $p_desc = $result["p_desc"];
+            $p_desc2 = $result["p_desc2"];
+            $p_note = $result["p_note"];
+            $p_pic = $result["p_pic"];
+            $p_funtourpm = $result["p_funtourpm"];
+            $p_funtourtravel1 = $result["p_funtourtravel1"];
+            $p_funtourtravel2 = $result["p_funtourtravel2"];
+            $p_funtourprint = $result["p_funtourprint"];
+            $p_funtourall1 = $result["p_funtourall1"];
+            $p_funtourall2 = $result["p_funtourall2"];
+            $p_dmnweb = $result["p_dmnweb"];
+            $p_singleweb = $result["p_singleweb"];
+            $action_level = $result["action_level"];
+            $vertest = $result["vertest"];
+            $video = $result["video"];
+            $lines = $result["line"];
+            $p_lovebranch = $result["p_lovebranch"];           
+            $area_branch = $result["area_branch"];
+        }else{
+            $tt = "新增";
+	        $tt2 = "?st=addsave";
+        }
+    }
 ?>
 
 <!-- MIDDLE -->
@@ -12,7 +103,7 @@ require_once("./include/_sidebar.php");
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="ad_secretary.php">秘書資料</a></li>
-            <li class="active">修改秘書資料</li>
+            <li class="active"><?php echo $tt; ?>秘書資料</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -22,7 +113,7 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>修改秘書資料</strong> <!-- panel title -->
+                    <strong><?php echo $tt; ?>秘書資料</strong> <!-- panel title -->
                 </span>
             </div>
 
@@ -47,9 +138,9 @@ require_once("./include/_sidebar.php");
                                         <option value="好好玩旅行社">好好玩旅行社</option>
                                     </select>
                                     　姓名：
-                                    <input name="p_name" type="text" id="p_name" value="尹宜君" class="form-control">
+                                    <input name="p_name" type="text" id="p_name" value="<?php echo $p_name; ?>" class="form-control">
                                     　別名：
-                                    <input name="p_other_name" type="text" id="p_other_name" value="宜君" class="form-control">
+                                    <input name="p_other_name" type="text" id="p_other_name" value="<?php echo $p_other_name; ?>" class="form-control">
                                     　前臺顯示權重：<select name="p_desc" id="p_desc">
                                         <option value="">請選擇</option>
                                         <option value="-2">前台不顯示</option>
@@ -90,11 +181,11 @@ require_once("./include/_sidebar.php");
                             </tr>
                             <tr>
                                 <td>帳號：
-                                    <input name="p_user" type="text" id="p_user" class="form-control" value="candy8060">
+                                    <input name="p_user" type="text" id="p_user" class="form-control" value="<?php echo $p_user; ?>">
                                     密碼：
-                                    <input name="b_year" type="text" id="b_year" class="form-control" value="780806">
+                                    <input name="b_year" type="text" id="b_year" class="form-control" value="<?php echo $b_year; ?>">
                                     　職務：
-                                    <input name="p_job2" type="text" id="p_job2" class="form-control" value="企劃">
+                                    <input name="p_job2" type="text" id="p_job2" class="form-control" value="<?php echo $p_job2; ?>">
                                     　等級：
                                     <select name="p_level" id="p_level" onchange="plevel_change($(this))">
                                         <option value="">請選擇</option>
@@ -113,9 +204,9 @@ require_once("./include/_sidebar.php");
                                         <option value="count">數據統計</option>
                                         <option value="teacher">講師</option>
                                         <!--
-          <option value="paytop" >會計主任</option>
-          <option value="actiontop" >活動主任</option>
-		  -->
+                                        <option value="paytop" >會計主任</option>
+                                        <option value="actiontop" >活動主任</option>
+                                        -->
                                     </select>
 
                                     <span id="plevel_span" style="display:none;"><a href="ad_secretary_group.php?manager=candy8060" class="btn btn-xs btn-warning">設定團隊成員</a></span>
@@ -123,19 +214,19 @@ require_once("./include/_sidebar.php");
                             </tr>
                             <tr>
                                 <td>會計對應(無免填)：
-                                    <input name="p_user2" type="text" id="p_user2" class="form-control" value="">
-                                    &nbsp;&nbsp;影片：<input name="video" type="text" id="video" class="form-control" value="" style="width:20%">
-                                    &nbsp;&nbsp;LINE：<input name="line" type="text" id="line" class="form-control" value="" style="width:20%">
+                                    <input name="p_user2" type="text" id="p_user2" class="form-control" value="<?php echo $p_user2; ?>">
+                                    &nbsp;&nbsp;影片：<input name="video" type="text" id="video" class="form-control" value="<?php echo $video; ?>" style="width:20%">
+                                    &nbsp;&nbsp;LINE：<input name="line" type="text" id="line" class="form-control" value="<?php echo $lines; ?>" style="width:20%">
                                 </td>
                             </tr>
                             <tr>
-                                <td align="left">自我介紹：<textarea name="p_note" id="p_note" class="form-control" style="width:60%;height:140px;"></textarea></td>
+                                <td align="left">自我介紹：<textarea name="p_note" id="p_note" class="form-control" style="width:60%;height:140px;"><?php echo $p_note; ?></textarea></td>
                             </tr>
 
 
                             <tr class="lovebranch_span">
                                 <td class="lovebranch_span">
-                                    <p>排約部-會員會館選擇：(預設開啟 總管理處)</p>
+                                    <p>排約部-會員會館選擇：(預設開啟 <?php echo $p_branch; ?>)</p>
                                     <table class="table table-striped table-bordered bootstrap-datatable">
                                         <tr class="lovebranch_span">
                                             <td class="lovebranch_span"><label><input type="checkbox" name="p_lovebranch" value="台北">&nbsp;&nbsp;台北</leabel>

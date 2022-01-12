@@ -154,7 +154,13 @@
 	
 	//彈跳訊息
 	function call_alert( $msg, $url, $outtime ){
-		switch($url){
+		switch($url){			
+			case 0:
+				echo "<script language=\"javascript\">" ;
+				echo "alert('" . $msg ."');";
+				echo "window.setTimeout(location.href='history.back(1)'," . $outtime .");";
+				echo "</script>" ;
+				break;
 			case "ClOsE":
 				echo "<script language='JavaScript'>";
 				if( $msg != "" ){
@@ -184,7 +190,7 @@
 				echo "</script>" ;
 				break;
 		}
-		exit() ;
+		// exit();
 	}
 	
 	function SqlFilter($content,$strType){
@@ -850,5 +856,60 @@
                 return "不明";
         }
     }
+
+	// 職等
+	function joblv($lv,$a){
+		switch($lv){
+			case "admin":
+				return "總管理者";
+				break;
+			case "paytop":
+				return "會計主任";
+				break;
+			case "actiontop":
+				return "活動主任";
+				break;
+			case "branch":
+				return "會館督導";
+				break;
+			case "manager":
+				return "經理";
+				break;
+			case "love_manager":
+				return "服務部經理";
+				break;
+			case "single":
+				return "秘書";
+				break;
+			case "action":
+				if($a == 1){
+					return "南區企劃經理";
+				}elseif($a == 2){
+					return "北區企劃經理";
+				}elseif($a == 3){
+					return "企劃總監";
+				}else{
+					return "企劃";
+				}				
+				break;
+			case "love":
+				return "排約部";
+				break;
+			case "pay":
+				return "會計部";
+				break;
+			case "keyin":
+				return "資料輸入";
+				break;
+			case "count":
+				return "數據統計";
+				break;
+			case "teacher":
+				return "講師";
+				break;
+			default:
+				return "不明";
+		}
+	}
 
 ?>

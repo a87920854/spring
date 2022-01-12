@@ -19,7 +19,7 @@
     if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["MM_UserAuthorization"] != "count" && $_SESSION["MM_UserAuthorization"] != "manager" && $_SESSION["MM_UserAuthorization"] != "love_manager"){
         call_alert("您沒有查看此頁的權限。","login.php",0);
     }
-    check_page_power("ad_counts_branch");
+    check_page_power("ad_counts_branch");    
 ?>
 
 <!-- MIDDLE -->
@@ -61,7 +61,10 @@
                     </p>
                 </form>
                 <?php 
-                    if($_REQUEST["st"] == "send"){
+                    if($_REQUEST["st"] == "send"){   
+                        if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+                            call_alert("在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。",0,0);
+                        }                     
                         $start_time = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
                         $end_time = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";
                         if(!chkDate($start_time)){

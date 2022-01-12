@@ -58,6 +58,9 @@
                 </form>
                 <?php 
                     if($_REQUEST["st"] == "send"){
+                        if(strtotime($_REQUEST["end_time"]) - strtotime($_REQUEST["start_time"]) < 0){
+                            call_alert("在 ".$_REQUEST["start_time"]." ～ ".$_REQUEST["end_time"]." 間沒有資料或日期選擇不正確。",0,0);
+                        } 
                         $stime = Date_EN(SqlFilter($_REQUEST["start_time"],"tab"),1) . " 00:00";
                         $etime = Date_EN(SqlFilter($_REQUEST["end_time"],"tab"),1) . " 23:59";
                         $marking_listv = str_replace( ",", "','",$marking_list);

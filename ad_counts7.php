@@ -1,8 +1,29 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：ad_counts7.php
+    //後台對應位置：管理系統/網路名單圖表
+    //改版日期：2022.1.11
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["funtourpm"] != 1){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    $start_time = SqlFilter($_REQUEST["start_time"],"tab");
+    $end_time = SqlFilter($_REQUEST["end_time"],"tab");
+
+    
 ?>
 
 <!-- MIDDLE -->
@@ -28,7 +49,7 @@ require_once("./include/_sidebar.php");
             <div class="panel-body">
                 <form action="?st=send" method="post" name="counts_form" id="counts_form" onsubmit="return check_form()">
                     <p>
-                        <input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" placeholder="開始時間" value="2021-09-01">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" placeholder="結束時間" value="2021-09-30">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
+                        <input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" placeholder="開始時間" value="<?php echo $start_time; ?>">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" placeholder="結束時間" value="<?php echo $end_time; ?>">　<select id="fasttime" onchange="fast_sel_time($(this).val())">
                             <option value="">快速選擇</option>
                             <option value="0">今天</option>
                             <option value="1">昨天</option>
@@ -42,7 +63,25 @@ require_once("./include/_sidebar.php");
                         </select>&nbsp;<input id="send_submit" type="submit" class="btn btn-default" value="送出">
                     </p>
                 </form>
-
+                <?php 
+                    if($start_time == "" || $end_time == ""){
+                        echo "請先選擇時間";
+                    }else{
+                        if(!chkDate($start_time)){
+                            call_alert("開始時間錯誤。", 0, 0);                            
+                        }
+                        if(!chkDate($end_time)){
+                            call_alert("結束時間錯誤。", 0, 0);                            
+                        }
+                        if(ceil((strtotime($end_time) - strtotime($start_time))/ (60*60*24)) > 365){
+                            call_alert("時間區間需在 12 個月內。", 0, 0); 
+                        }
+                        if(strtotime($end_time) - strtotime($start_time) < 0){
+                            call_alert("沒有資料或日期選擇不正確。", 0, 0);
+                        }
+                        $canshow = 1;
+                    }                    
+                ?>
                 <div>'網站行銷','春天網站','DMN名單','DMN網站','約會專家','網站活動','網站排約','行銷活動','迷你約'</div>
                 <div style="text-align:center;margin:10px">
                     <div id="chart_div"></div>
@@ -76,42 +115,24 @@ require_once("./include/_bottom.php");
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Time of Day');
         data.addColumn('number', 'Rating');
-
-        data.addRows([
-            [new Date(2021, 8, 1), 107],
-            [new Date(2021, 8, 2), 93],
-            [new Date(2021, 8, 3), 123],
-            [new Date(2021, 8, 4), 113],
-            [new Date(2021, 8, 5), 137],
-            [new Date(2021, 8, 6), 116],
-            [new Date(2021, 8, 7), 116],
-            [new Date(2021, 8, 8), 108],
-            [new Date(2021, 8, 9), 118],
-            [new Date(2021, 8, 10), 102],
-            [new Date(2021, 8, 11), 82],
-            [new Date(2021, 8, 12), 143],
-            [new Date(2021, 8, 13), 98],
-            [new Date(2021, 8, 14), 116],
-            [new Date(2021, 8, 15), 97],
-            [new Date(2021, 8, 16), 114],
-            [new Date(2021, 8, 17), 112],
-            [new Date(2021, 8, 18), 110],
-            [new Date(2021, 8, 19), 131],
-            [new Date(2021, 8, 20), 106],
-            [new Date(2021, 8, 21), 120],
-            [new Date(2021, 8, 22), 141],
-            [new Date(2021, 8, 23), 121],
-            [new Date(2021, 8, 24), 108],
-            [new Date(2021, 8, 25), 119],
-            [new Date(2021, 8, 26), 125],
-            [new Date(2021, 8, 27), 108],
-            [new Date(2021, 8, 28), 107],
-            [new Date(2021, 8, 29), 81],
-            [new Date(2021, 8, 30), 119],
-        ]);
-
-
-
+        <?php 
+            if($canshow == 1){
+                $SQL = "get_member_come '".$start_time."','".$end_time."'";
+                $rs = $SPConn->prepare($SQL);
+                $rs->execute();
+                $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                if($result){
+                    $ii = 1;
+                    echo "data.addRows([";
+                    foreach($result as $re){
+                        $ddr = $ddr."[new Date(".date("Y",strtotime($re["theDate"])).", ".date("m",strtotime($re["theDate"])).", ".date("d",strtotime($re["theDate"]))."), ".$re["theValue"]."],".PHP_EOL;
+                        $ii = $ii+1;
+                    }
+                    echo $ddr;
+					echo "]);".PHP_EOL;
+                }
+            }
+        ?>
         var options = {
             title: '',
             width: '100%',
