@@ -27,8 +27,8 @@
 
 	<!-- THEME CSS -->
 	<link href="assets/css/essentials.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/layout.css" rel="stylesheet" type="text/css" />
-	<link href="assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
+	<link href="assets/css/layout.css?v1.03" rel="stylesheet" type="text/css" />
+	<link href="assets/css/color_scheme/orange.css?v1.03" rel="stylesheet" type="text/css" id="color_scheme" />
 	<link href="assets/plugins/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/bootstrap.datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
 	<link rel="icon" type="image/ico" href="assets/images/crm_favicon.ico">
