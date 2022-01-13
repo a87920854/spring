@@ -18,10 +18,8 @@ check_page_power("ad_mem_login");   //頁面權限
 $default_sql_num = 500;
 if ( $vst == "full" ){
     $subSQL1 = "*";
-    //$sqlv2 = "count(photo_auto)";
 }else{
     $subSQL1 = "top ".$default_sql_num." *";
-    //$sqlv2 = "count(photo_auto)";
 }
 
 $branch2 = SqlFilter($_REQUEST["branch2"],"tab");
@@ -73,19 +71,23 @@ $s77 = SqlFilter($_REQUEST["s77"],"tab");
 //會員身份證號
 if ( $s1 != "" ){
     $subSQL3 = $subSQL3 . " And mem_username Like '%" . str_Replace("'", "''", $s1) . "%'";
+    $keyword = $s1;
 }
 //會員手機號碼
 if ( $s2 != "" ){
     $cs2 = reset_number($s2);
     $subSQL3 = $subSQL3 . " And mem_mobile Like '%".$cs2. "%'";
+    $keyword = $s2;
 }
 //會員姓名
 if ( $s3 != "" ){
     $subSQL3 = $subSQL3 . " And mem_name Like N'%" . str_Replace("'", "''", $s3) . "%'";
+    $keyword = $s3;
 }
 //會員編號
 if ( $s4 != "" ){
     $subSQL3 = $subSQL3 . " And mem_num Like '%" . str_Replace("'", "''", $s4) . "%'";
+    $keyword = $s4;
 }
 //受理祕書姓名
 if ( $s7 != "" ){
@@ -141,10 +143,12 @@ if ( $s97 != "" ){
 }
 //會員最後登入時間
 if ( $s77 != "" ){
-    if ( $s77 > 12 ){
+    if ( $s77 == 12 ){
         $subSQL3 = $subSQL3 . " And datediff(m, last_login, getdate()) >= 12";
+        $s77_txt = "12個月以上";
     }else{
         $subSQL3 = $subSQL3 . " And datediff(m, last_login, getdate()) < ".(int)($s77);
+        $s77_txt = "近".$s77."個月";
     }
 }
 if ( $tshow == "" ){
@@ -179,7 +183,7 @@ if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
 
 //取得分頁資料
 $tPageSize = 50; //每頁幾筆
-$tPage = 1; //目前頁數
+$tPage = 0; //目前頁數
 if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
 $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
 if ( $tPageSize*$tPage < $total_size ){
@@ -191,9 +195,10 @@ if ( $tPageSize*$tPage < $total_size ){
 //分頁語法
 $SQL_list  = "Select Top ".$tPageSize." * ";
 $SQL_list .= "From (Select row_number() ";
-$SQL_list .= "over(".$subSQL4.") As rownumber ";
+$SQL_list .= "over(".$subSQL4.") As rownumber,mem_cc,mem_come,mem_num,mem_name,mem_sex,mem_by,mem_bm,mem_bd,mem_school,last_login,mem_branch,love_single,call_branch,mem_come3,";
+$SQL_list .= "mem_come4,mem_photo,web_startime,web_endtime,mem_auto,mem_username,all_type,all_note,mem_branch2,web_level,mem_mobile,mem_single,call_single ";
 $SQL_list .= "From member_data as dba Where mem_level = 'mem' and last_login <> ''".$subSQL2.$subSQL3." ) temp_row ";
-$SQL_list .= "Where rownumber > ".($tPageSize*$tPage);
+$SQL_list .= "Where rownumber > ".($tPageSize*$tPage)." Order By rownumber";
 $rs_list = $SPConn->prepare($SQL_list);
 $rs_list->execute();
 $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
@@ -223,29 +228,32 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                     <form id="searchform" action="ad_mem_login.php?vst=full&sear=1" method="post" target="_self" class="form-inline" onsubmit="return chk_search_form()">
                         <select name="keyword_type" id="keyword_type">
                             <option value="s2">手機</option>
-                            <option value="s1">身分證字號</option>
-                            <option value="s3">姓名</option>
-                            <option value="s4">編號</option>
+                            <option value="s1"<?php if ( $s1 != "" ){?> selected<?php }?>>身分證字號</option>
+                            <option value="s3"<?php if ( $s2 != "" ){?> selected<?php }?>>姓名</option>
+                            <option value="s4"<?php if ( $s4 != "" ){?> selected<?php }?>>編號</option>
                         </select>
-                        <input name="keyword" id="keyword" class="form-control" type="text">
+                        <input name="keyword" id="keyword" class="form-control" type="text" value="<?php echo $keyword;?>">
                         <input type="submit" value="送出" class="btn btn-default">
                     </form>
                 </div>
                 <p style="clear:both">
-                    <a class="btn btn-success" href="?s77=1">近一個月</a>
-                    <a class="btn btn-success" href="?s77=2">近二個月</a>
-                    <a class="btn btn-success" href="?s77=3">近三個月</a>
-                    <a class="btn btn-success" href="?s77=4">近四個月</a>
-                    <a class="btn btn-success" href="?s77=5">近五個月</a>
-                    <a class="btn btn-success" href="?s77=6">近六個月</a>
-                    <a class="btn btn-success" href="?s77=7">近七個月</a>
-                    <a class="btn btn-success" href="?s77=8">近八個月</a>
-                    <a class="btn btn-success" href="?s77=9">近九個月</a>
-                    <a class="btn btn-success" href="?s77=10">近十個月</a>
-                    <a class="btn btn-success" href="?s77=11">近十一個月</a>
-                    <a class="btn btn-success" href="?s77=12">十二個月以上</a>
+                    <?php if ( $s77 != "" ){?>
+                        <span class="text-status">資料範圍：<?php echo $s77_txt;?></span>&nbsp;▶&nbsp;
+                    <?php }?>
+                    <a class="btn btn-success<?php if ( $s77 == 1 ){?> btn-active<?php }?>" href="?s77=1">近一個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 2 ){?> btn-active<?php }?>" href="?s77=2">近二個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 3 ){?> btn-active<?php }?>" href="?s77=3">近三個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 4 ){?> btn-active<?php }?>" href="?s77=4">近四個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 5 ){?> btn-active<?php }?>" href="?s77=5">近五個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 6 ){?> btn-active<?php }?>" href="?s77=6">近六個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 7 ){?> btn-active<?php }?>" href="?s77=7">近七個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 8 ){?> btn-active<?php }?>" href="?s77=8">近八個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 9 ){?> btn-active<?php }?>" href="?s77=9">近九個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 10 ){?> btn-active<?php }?>" href="?s77=10">近十個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 11 ){?> btn-active<?php }?>" href="?s77=11">近十一個月</a>
+                    <a class="btn btn-success<?php if ( $s77 == 12 ){?> btn-active<?php }?>" href="?s77=12">十二個月以上</a>
                 </p>
-                <table class="table table-striped table-bordered bootstrap-datatable">
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>
                             <th width=180>資料來源</th>
@@ -261,185 +269,177 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         </tr>
                     </thead>
                     <tbody>
-                    <?php 
-                    if ( count($result_list) == 0 ){
-                        echo "<tr><td colspan='10' height='200'>目前沒有資料</td></tr>";
-                    }else{
-                        foreach($result_list as $re_list){
-                            if ( $re_list["mem_cc"] != "" ){
-					            $mem_cc = $re_list["mem_cc"];
-					            if ( substr_count($mem_cc, "sale-") > 0 ){
-                                    //$mem_cc_array = 
-					  	            //$mem_cc = "推廣：".SingleName_auto(split(mem_cc, "-")(1))
-                                }
-						        $mem_cc = " [".$mem_cc."]";
-                            }else{
-						        $mem_cc = "";
-					        }?>
-                            <tr>
-							    <td class="center"><?php echo $re_list["mem_come"];?><?php echo $mem_cc;?></td>
-								<td><?php echo $re_list["mem_num"];?></td>
-								<td class="center"><a href="ad_mem_detail.asp?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><?php echo $re_list["mem_name"];?></a>
-                                    <div style="float:right"><?php echo $supay;?></div>
-                                </td>
-								<td class="center"><?php echo $re_list["mem_sex"];?></td>
-                                <td class="center">
-                                    <?php echo $re_list["mem_by"]." / ".$re_list["mem_bm"]." / ".$re_list["mem_bd"];?>
-                                    <?php if ( $re_list["mem_by"] != "" ){ echo "　　".(date("Y")-date("Y",strtotime($re_list["mem_by"])))." 歲";}?></td>
-								<td class="center"><%=rs("mem_school")%></td>
-								<td class="center">
-								<%
- If isdate(rs("last_login")) Then
- times = FormatDateTime(rs("last_login"), 0)
- today = FormatDateTime(now, 0)
+                        <?php 
+                        if ( count($result_list) == 0 ){
+                            echo "<tr><td colspan='10' height='200'>目前沒有資料</td></tr>";
+                        }else{
+                            foreach($result_list as $re_list){
+                                if ( $re_list["mem_cc"] != "" ){
+                                    $mem_cc = $re_list["mem_cc"];
+                                    if ( substr_count($mem_cc, "sale-") > 0 ){
+                                        $mem_cc_array = explode("sale-", $mem_cc);
+                                        $mem_cc = "推廣：".SingleName($mem_cc_array[1],"auto");
+                                    }
+                                    $mem_cc = " [".$mem_cc."]";
+                                }else{
+                                    $mem_cc = "";
+                                }?>
+                                <tr>
+                                    <td class="center"><?php echo $re_list["mem_come"];?><?php echo $mem_cc;?></td>
+                                    <td><?php echo $re_list["mem_num"];?></td>
+                                    <td class="center"><a href="ad_mem_detail.php?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><?php echo $re_list["mem_name"];?></a>
+                                        <div style="float:right"><?php echo $supay;?></div>
+                                    </td>
+                                    <td class="center"><?php echo $re_list["mem_sex"];?></td>
+                                    <td class="center">
+                                        <?php echo $re_list["mem_by"]." / ".$re_list["mem_bm"]." / ".$re_list["mem_bd"];?>
+                                        <?php if ( $re_list["mem_by"] != "" ){ echo "　　".(date("Y")-date("Y",strtotime($re_list["mem_by"])))." 歲";}?></td>
+                                    <td class="center"><?php echo $re_list["mem_school"];?></td>
+                                    <td class="center">
+                                    <?php
+                                    if ( chkDate($re_list["last_login"] ) ){
+                                        $times = strtotime($re_list["last_login"]);
+                                        $today = strtotime(date("Y-m-d H:i:s"));
+                                        $timesv=($today-$times) /60;
+                                        $timesr = round($timesv) ." 分前";
+                                        if ( $timesv > 60 ){
+                                            $timesv = $timesv / 60;
+                                            $timesr = round($timesv) ." 小時前";
+                                            if ( $timesv > 24 ){
+                                                $timesv = $timesv / 24;
+                                                $timesr = round($timesv) ." 天前";
+                                                if ( $timesv >= 31 ){
+                                                    $timesv = $timesv / 31;
+                                                    $timesr = "<font color='green'>".round($timesv) ." 個月前</font>";
+                                                    if ( $timesv >= 8 ){
+                                                        $timesr = "<font color='red'>8 個月前</font>";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }else{
+                                        $timesr = "<font color='red'>8 個月前</font>";
+                                    }
+                                    echo changeDate($re_list["last_login"])."&nbsp&nbsp&nbsp".$timesr;
+                                    ?>	
+                                    </td>
+                                    <?php
+                                    if ( $re_list["mem_branch"] != "" ){
+                                        $mem_single = "<font color='green'>受理：</font>".$re_list["mem_branch"]. " - ".SingleName($re_list["mem_single"],"normal");
+                                    }else{
+                                        $mem_single = "";
+                                    }
+                                    
+                                    if ( $re_list["love_single"] != "" ){
+                                        $love_single = "<br><font color='green'>排約：</font>".SingleName($re_list["love_single"],"normal");
+                                    }else{
+                                        $love_single = "";
+                                    }
+                                    
+                                    if ( $re_list["call_branch"] != "" ){
+                                        $call_single = "<br><font color='green'>邀約：</font>".$re_list["call_branch"]." - ".SingleName($re_list["call_single"],"normal");
+                                    }else{
+                                        $call_single = "";
+                                    }
 
-   timesv = datediff("n", times, today)
-   timesr = clng(timesv) &" 分前"
-   If timesv > 60 Then
-   timesv = timesv / 60
-   timesr = clng(timesv) &" 小時前"
-   If timesv > 24 Then
-   timesv = timesv / 24
-   timesr = clng(timesv) &" 天前"
-   If timesv > 31 Then
-   timesv = timesv / 31
-   timesr = "<font color=green>"&clng(timesv) &" 個月前</font>"   
-   If timesv >= 8 Then
-   timesr = "<font color=red>8 個月前</font>"
-   End if
-   End if
-   End if   
-   End if
- Else
-    timesr = "<font color=red>8 個月前</font>"
- End if
- response.write rs("last_login")&"&nbsp&nbsp&nbsp"&timesr
-								%>	
-								</td>
-								<%
-								 If rs("mem_branch") <> "" Then
-								  mem_single = "<font color=green>受理：</font>"&rs("mem_branch") & " - " & SingleName(rs("mem_single"))
-								 else
-								 	mem_single = ""
-								 End if
-								 
-								 if rs("love_single") <> "" then
-								 love_single = "<br><font color=green>排約：</font>"&	SingleName(rs("love_single"))
-								 else
-								 love_single = ""
-								 end if
+                                    if ( $re_list["mem_come3"] != "" ){
+                                        $sup_single = "<br><font color='green'>推薦：</font>".$re_list["mem_come3"]." - ".SingleName($re_list["mem_come4"],"normal");
+                                    }else{
+                                        $sup_single = "";
+                                    }
+                                    ?>
+                                    <td class="center"><?php echo $mem_single.$love_single.$call_single.$sup_single;?></td>
+                                    <td class="center">
+                                        <?php if ( ($re_list["mem_sex"] == "男" && $re_list["mem_photo"] != "boy.jpg") || ($re_list["mem_sex"] == "女" && $re_list["mem_photo"] != "girl.jpg") ){?>
+                                            <a href="../photo/<?php echo $re_list["mem_photo"];?>?t=<?php echo (int)(rand()*9999);?>" target="_blank" class="fancybox">有</a>
+                                        <?php }else{?>
+                                            無
+                                        <?php }?>
+                                    </td>
+                                    <td class="center">
+                                        <div class="btn-group">
+                                            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+                                            <ul class="dropdown-menu pull-right">
+                                                <?php
+                                                $reports = get_report_num($re_list["mem_mobile"]);
+                                                if ( substr_count($reports, "|+|") > 0 ){
+                                                    $reports_array = explode("|+|", $reports);
+                                                    $report = $reports_array[0];
+                                                    $report_text = $reports_array[1];
+                                                }else{
+                                                    $report = 0;
+                                                    $report_text = "無";
+                                                }
+                                                ?>
+                                                <li><a href="ad_mem_detail.php?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
+                                                <li><a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re_list["mem_auto"];?>&lu=<?php echo $re_list["mem_username"];?>&ty=member','','scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<?php echo $report;?>)</a></li>
+                                                <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){ ?>
+                                                    <li><a href="ad_mem_fix.php?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><i class="icon-file"></i> 修改</a></li>
+                                                <?php }?>
+                                            </ul>
+                                        </div>								
+                                    </td>
+                                </tr>  
 
-								 if rs("call_branch") <> "" then
-								 call_single = "<br><font color=green>邀約：</font>"&rs("call_branch") & " - " & SingleName(rs("call_single"))
-								 else
-								 call_single = ""
-								 end if
-
-								 if rs("mem_come3") <> "" then
-								 sup_single = "<br><font color=green>推薦：</font>"&rs("mem_come3") & " - " & SingleName(rs("mem_come4"))
-								 else
-								 sup_single = ""
-								 end if
-								 
-								%>
-								<td class="center"><%=mem_single&love_single&call_single&sup_single%></td>
-								<td class="center"><%IF (rs("mem_sex") = "男" and rs("mem_photo") <> "boy.jpg") or (rs("mem_sex") = "女" and rs("mem_photo") <> "girl.jpg") Then%><a href="../photo/<%=rs("mem_photo")%>?t=<%=int(rnd()*9999)%>" target="_blank" class="fancybox">有</a><%Else%>無<%End IF%></font></td>
-								<td class="center">
-			    		<div class="btn-group">
-							<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
-							<ul class="dropdown-menu pull-right">
-		  <%
-		   reports = get_report_num(rs("mem_mobile"))		   
-		   if instr(reports, "|+|") > 0 then
-		     report = split(reports, "|+|")(0)
-		     report_text = split(reports, "|+|")(1)
-		   else
-		   	 report = 0
-		   	 report_text = "無"
-		   end if
-		  %><li><a href="ad_mem_detail.asp?mem_num=<%=rs("mem_num")%>" target="_blank"><i class="icon-file"></i> 詳細</a></li>
-								<li><a href="javascript:Mars_popup('ad_report.asp?k_id=<%=rs("mem_auto")%>&lu=<%=rs("mem_username")%>&ty=member','','scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');"><i class="icon-list-alt"></i> 回報(<%=report%>)</a></li>
-								<%IF Session("MM_UserAuthorization") = "admin" Or Session("MM_UserAuthorization") = "branch" Or Session("MM_UserAuthorization") = "pay" Then%>
-								<li><a href="ad_mem_fix.asp?mem_num=<%=rs("mem_num")%>" target="_blank"><i class="icon-file"></i> 修改</a></li>
-								<%End IF%>								
-							</ul>
-						</div>								
-								</td>
-							</tr>  
-
-
-
-
-
-
-
-
-
-                        <tr>
-                            <td>
-                                <span style="color:blue">璀璨VIP會員-二年期(2019/1/1~2022/2/9)</span>
-                            </td>
-                            <td colspan="6" style="BORDER-bottom: #666666 1px dotted">
-                                (<a href="javascript:Mars_popup('ad_report.php?k_id=495029&lu=99998&ty=member','','scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(156)</a>，處理情形：<font color="#FF0000" size="2">已排約</font>) 內容：由 暫存名單/瑜婷 處理 test浩瀚2(主) 與 張小天(被) 於 2021/7/20 下午 10:00:00 預訂排約，結果：成功　　<font color=blue>舊：</font>[2020-08-17 16:31]愛情實驗室-不合格[2020-08-17 16:31]愛情實驗室-合格[2020-08-17 16:36]愛情實驗室-不合格[2020-08-17 16:37]愛情實驗室-合格[2020-08-17 16:37]愛情實驗室-合格[2020-08-17 17:11]愛情實驗室-不合格[2020-08-17 17:14]愛情實驗室-不合格[2020-08-17 17:14]愛情實驗室-不合格[2020-08-17 17:24]愛情實驗室-合格[2020-08-17 17:25]愛情實驗室-合格[2020-08-17 17:27]愛情實驗室-合格[2020-08-17 17:27]愛情實驗室-合格[2020-08-17 17:27]愛情實驗室-不合格[2020-08-18 13:53]愛情實驗室-不合格[2020-08-22 17:00]愛情實驗室-合格[2020-09-02 14:18]愛情實驗室-合格[2021-01-28 17:14]愛情實驗室-不合格</td>
-                            <td colspan=3>
-
-                            </td>
-                        </tr>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        $wbl = "";
+                                        switch ($re_list["web_level"]){
+                                            case 1:
+                                                $wbl = "資料認證會員";
+                                                break;
+                                            case 2:
+                                                $wbl = "真人認證會員";
+                                                break;
+                                            case 3:
+                                                $wbl = "璀璨會員-一年期";
+                                                break;
+                                            case 4:
+                                                $wbl = "璀璨VIP會員-一年期";
+                                                break;
+                                            case 5:
+                                                $wbl = "璀璨會員-二年期";
+                                                break;
+                                            case 6:
+                                                $wbl = "璀璨VIP會員-二年期";
+                                                break;
+                                        }
+                                        if ( $wbl != "" ){ echo "<span style='color:blue'>".$wbl."(".Date_EN($re_list["web_startime"],1)."~".Date_EN($re_list["web_endtime"],1).")</span>";}
+                                        ?>
+                                    </td>
+                                    <td colspan="6" style="BORDER-bottom: #666666 1px dotted">
+                                        (<a href="javascript:Mars_popup('ad_report.php?k_id=<?php echo $re_list["mem_auto"];?>&lu=<?php echo $re_list["mem_username"];?>&ty=member','','scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=690,height=600,top=10,left=10');">回報(<?php echo $report;?>)</a>
+                                        處理情形：<font color="#FF0000" size="2"><?php echo $re_list["all_type"];?></font>) 內容：<?php echo $report_text;?>　　
+                                        <?php if ( $re_list["all_note"] != "" ){?>
+                                            <br><font color="blue">舊：</font><?php echo $re_list["all_note"];?>
+                                        <?php }?>
+                                    </td>
+                                    <td colspan="3">
+                                    <?php
+                                    if ( $re_list["mem_branch2"] != "" ){
+                                        echo "<font color='green'>跨區：</font>".$re_list["mem_branch2"];
+                                    }
+                                    ?>
+                                    </td>
+                                </tr>
+                            <?php }?>
+                        <?php }?>
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 500 筆、第 1 頁／共 10 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_mem_login.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_mem_login.php?topage=2 class='text'>2</a></li>
-                    <li><a href=/ad_mem_login.php?topage=3 class='text'>3</a></li>
-                    <li><a href=/ad_mem_login.php?topage=4 class='text'>4</a></li>
-                    <li><a href=/ad_mem_login.php?topage=5 class='text'>5</a></li>
-                    <li><a href=/ad_mem_login.php?topage=6 class='text'>6</a></li>
-                    <li><a href=/ad_mem_login.php?topage=7 class='text'>7</a></li>
-                    <li><a href=/ad_mem_login.php?topage=8 class='text'>8</a></li>
-                    <li><a href=/ad_mem_login.php?topage=9 class='text'>9</a></li>
-                    <li><a href=/ad_mem_login.php?topage=10 class='text'>10</a></li>
-                    <li><a href=/ad_mem_login.php?topage=2 class='text' title='Next'>下一頁</a></li>
-                    <li><a href=/ad_mem_login.php?topage=10 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_mem_login.php?topage=1" selected>1</option>
-                            <option value="/ad_mem_login.php?topage=2">2</option>
-                            <option value="/ad_mem_login.php?topage=3">3</option>
-                            <option value="/ad_mem_login.php?topage=4">4</option>
-                            <option value="/ad_mem_login.php?topage=5">5</option>
-                            <option value="/ad_mem_login.php?topage=6">6</option>
-                            <option value="/ad_mem_login.php?topage=7">7</option>
-                            <option value="/ad_mem_login.php?topage=8">8</option>
-                            <option value="/ad_mem_login.php?topage=9">9</option>
-                            <option value="/ad_mem_login.php?topage=10">10</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <!--include頁碼-->
+	        <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
 </section>
 <!-- /MIDDLE -->
 
-<?php
-require_once("./include/_bottom.php")
-?>
+<?php require_once("./include/_bottom.php");?>
 
 <script type="text/javascript">
-    $(function() {
-
-
-
-    });
-
     function chk_search_form() {
         if (!$("#keyword_type").val()) {
             alert("請選擇要搜尋的類型。");

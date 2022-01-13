@@ -394,7 +394,7 @@
 					break;
 				case 9:
 					$reDate = date("Y-m-d H:i",strtotime($dtDate));
-					break;
+					break;				
 			}
 			return $reDate;
 		}
