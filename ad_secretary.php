@@ -9,27 +9,17 @@
 
     require_once("_inc.php");
     require_once("./include/_function.php");
-    require_once("./include/_top.php");
-    require_once("./include/_sidebar.php");
 
-    //程式開始 *****
-	if($_SESSION["MM_Username"] == "" ){ 
-        call_alert("請重新登入。","login.php",0);
+    // 永久刪除
+    if($_REQUEST["st"] == "fulldel"){
+        echo "<table width='300'>";
+        echo "<form name='form1' method='post' action='?st=fulldel2'>";
+        echo "<tr><td>請輸入管理密碼：<input type='password' name='delpd'><input type='hidden' name='p_auto' value='".SqlFilter($_REQUEST["p_auto"],"int")."'></td></tr>";
+        echo "<tr><td><input type='submit' value='確定送出'></td></tr>";
+        echo "</form></table>";
+        exit();
     }
-    if($_SESSION["MM_UserAuthorization"] != "admin"){
-        call_alert("您沒有查看此頁的權限。","login.php",0);
-    }
-   
-    if($_REQUEST["st"] == "del"){
-        $SQL = "update personnel_data set p_work=0 WHERE p_auto=".SqlFilter($_REQUEST["p_auto"],"int");
-        $rs = $SPConn->prepare($SQL);
-        $rs->execute();
-        if($rs){
-            reURL("reload_window.php?m=關閉秘書資料...");
-        }
-    }
-
-    // 刪除
+    // 開始刪除
     if($_REQUEST["st"] == "fulldel2"){
         if($_REQUEST["delpd"] != "springclubadmin"){
             reURL("reload_window.php?m=管理密碼錯誤");
@@ -40,16 +30,31 @@
         if($rs){
             reURL("reload_window.php?m=刪除秘書資料...");
         }
+        exit();
     }
 
-    if($_REQUEST["st"] == "fulldel"){
-        echo "<table width='300'>";
-        echo "<form name='form1' method='post' action='?st=fulldel2'>";
-        echo "<tr><td>請輸入管理密碼：<input type='password' name='delpd'><input type='hidden' name='p_auto' value='".SqlFilter($_REQUEST["p_auto"],"int")."'></td></tr>";
-        echo "<tr><td><input type='submit' value='確定送出'></td></tr>";
-        echo "</form></table>";
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+	if($_SESSION["MM_Username"] == "" ){ 
+        call_alert("請重新登入。","login.php",0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
     }
 
+    // 設為離職
+    if($_REQUEST["st"] == "del"){
+        $SQL = "update personnel_data set p_work=0 WHERE p_auto=".SqlFilter($_REQUEST["p_auto"],"int");
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        if($rs){
+            reURL("reload_window.php?m=關閉秘書資料...");
+        }
+    }
+
+    // 恢復在職
     if($_REQUEST["st"] == "rework"){
         $SQL = "update personnel_data set p_work=1 WHERE p_auto=".SqlFilter($_REQUEST["p_auto"],"int");
         $rs = $SPConn->prepare($SQL);
@@ -72,12 +77,14 @@
         $all_type = "搜尋";
     }
 
-    if($_REQUEST["p_branch"] != ""){
-        $sqlss = $sqlss . " and p_branch like '%" .str_replace("'", "''",SqlFilter($_REQUEST["p_branch"],"tab")). "%'";
+    if($_REQUEST["branch"] != ""){
+        $branch = SqlFilter($_REQUEST["branch"],"tab");
+        $sqlss = $sqlss . " and p_branch like '%" .str_replace("'", "''",$branch). "%'";
     }
 
     if($_REQUEST["keyword"] != ""){
-        $sqlss = $sqlss . " and (p_user like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_other_name like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_auto like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_name like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_level = '".SqlFilter($_REQUEST["keyword"],"tab")."')";
+        $keyword = SqlFilter($_REQUEST["keyword"],"tab");
+        $sqlss = $sqlss . " and (p_user like '%" .str_replace("'", "''",$keyword). "%' or p_other_name like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_auto like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_name like '%" .str_replace("'", "''",SqlFilter($_REQUEST["keyword"],"tab")). "%' or p_level = '".SqlFilter($_REQUEST["keyword"],"tab")."')";
     }
 
     // 總數量
@@ -147,7 +154,7 @@
 
                     <form name="form1" method="post" action="ad_secretary.php<?php echo $all_type2; ?>" class="form-inline">
                         會館：
-                        <select name="p_branch" id="p_branch" style="width:100px;" class="form-control">
+                        <select name="branch" id="branch" style="width:100px;" class="form-control">
                             <option value="">選擇會館</option>
                             <?php
                             //可視會館名稱                            
@@ -156,7 +163,7 @@
                             $rs->execute();
                             $result=$rs->fetchAll(PDO::FETCH_ASSOC);
                             foreach($result as $re){ ?>
-                                <option value="<?php echo $re["admin_name"];?>"><?php echo $re["admin_name"];?></option>
+                                <option value="<?php echo $re["admin_name"];?>"<?php if($_REQUEST["branch"] == $re["admin_name"]){echo "selected"; } ?>><?php echo $re["admin_name"];?></option>
                             <?php }?>
                         </select>
                         <input type="text" name="keyword" id="keyword" class="form-control" placeholder="身分證字號 / 姓名 / 編號">
@@ -186,7 +193,7 @@
                             $rs->execute();
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                             if(!$result){
-                                echo "<tr><td colspan=8 height=200>目前沒有資料</td></tr>";
+                                echo "<tr><td colspan=11 height=200>目前沒有資料</td></tr>";
                             }else{
                                 foreach($result as $re){
                                     if($re["p_pic"] != ""){

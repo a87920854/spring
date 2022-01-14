@@ -337,16 +337,16 @@
                                         $rs->execute();
                                         $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                                         if($result){
-                                            echo "<div id='tab1' class='tab-pane fade in active'>";
-						  	                echo "<label><input type='checkbox' id='allcheckbox2'> 全選</label>";
+                                            echo "<div id='tab1' class='tab-pane fade in active'>".PHP_EOL;
+						  	                echo "<label><input type='checkbox' id='allcheckbox2'> 全選</label>".PHP_EOL;
                                             foreach($result as $re){
                                                 if(member_array($marking_list,$re["auton"]) == 1){
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }else{
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }
                                             }
-                                            echo "</div>";
+                                            echo "</div>".PHP_EOL;
                                         }
 
                                         // DMN
@@ -355,16 +355,16 @@
                                         $rs->execute();
                                         $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                                         if($result){
-                                            echo "<div id='tab2' class='tab-pane fade in active'>";
-						  	                echo "<label><input type='checkbox' id='allcheckbox3'> 全選</label>";
+                                            echo "<div id='tab2' class='tab-pane fade in'>".PHP_EOL;
+						  	                echo "<label><input type='checkbox' id='allcheckbox3'> 全選</label>".PHP_EOL;
                                             foreach($result as $re){
                                                 if(member_array($marking_list,$re["auton"]) == 1){
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }else{
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }
                                             }
-                                            echo "</div>";
+                                            echo "</div>".PHP_EOL;
                                         }
 
                                         // 約會專家
@@ -373,16 +373,16 @@
                                         $rs->execute();
                                         $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                                         if($result){
-                                            echo "<div id='tab3' class='tab-pane fade in active'>";
-						  	                echo "<label><input type='checkbox' id='allcheckbox4'> 全選</label>";
+                                            echo "<div id='tab3' class='tab-pane fade in'>".PHP_EOL;
+						  	                echo "<label><input type='checkbox' id='allcheckbox4'> 全選</label>".PHP_EOL;
                                             foreach($result as $re){
                                                 if(member_array($marking_list,$re["auton"]) == 1){
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }else{
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }
                                             }
-                                            echo "</div>";
+                                            echo "</div>".PHP_EOL;
                                         }
 
                                         // 迷你約
@@ -391,16 +391,16 @@
                                         $rs->execute();
                                         $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                                         if($result){
-                                            echo "<div id='tab4' class='tab-pane fade in active'>";
-						  	                echo "<label><input type='checkbox' id='allcheckbox5'> 全選</label>";
+                                            echo "<div id='tab4' class='tab-pane fade in'>".PHP_EOL;
+						  	                echo "<label><input type='checkbox' id='allcheckbox5'> 全選</label>".PHP_EOL;
                                             foreach($result as $re){
                                                 if(member_array($marking_list,$re["auton"]) == 1){
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."' checked> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }else{
-                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>";
+                                                    echo "<p><label><input type='checkbox' name='marking_list[]' data-web='".$re["web"]."' value='".$re["auton"]."'> [".$re["web"]."] ".Date_EN($re["online_time"],1)." - ".$re["name"]."</label></p>".PHP_EOL;
                                                 }
                                             }
-                                            echo "</div>";
+                                            echo "</div>".PHP_EOL;
                                         }
                                     ?>
                                 </div>
@@ -409,7 +409,6 @@
                         <?php }
                         ?>
                     </form>
-                </table>
 
             </div>
         </div>
