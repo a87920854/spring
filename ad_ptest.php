@@ -1,8 +1,29 @@
 <?php
-require_once("./include/_inc.php");
+/****************************************/
+//檔案名稱：ad_ptest.php
+//後台對應位置：春天網站功能 > 愛的五種語言
+//改版日期：2022.1.18
+//改版設計人員：Jack
+//改版程式人員：Queena
+/****************************************/
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
 require_once("./include/_sidebar.php");
+
+//接收值
+$st = SqlFilter($_REQUEST["st"],"tab");
+$tv_auto = SqlFilter($_REQUEST["tv_auto"],"tab");
+
+//刪除
+if ( $st == "del" ){
+    $SQL_d = "Delect From love_tv Where tv_auto=".$tv_auto;
+    $rs_d = $SPConn->prepare($SQL_d);
+    $rs_d->execute();
+    reURL("reload_window.asp?m=資料刪除中...");
+    exit;
+}
+
 ?>
 
 <!-- MIDDLE -->

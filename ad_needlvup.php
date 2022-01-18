@@ -20,9 +20,8 @@ $st = SqlFilter($_REQUEST["st"],"tab");
 $a = SqlFilter($_REQUEST["a"],"tab");
 $s99 = SqlFilter($_REQUEST["s99"],"tab");
 $s1 = SqlFilter($_REQUEST["s1"],"tab");
-$s2 = SqlFilter($_REQUEST["s2"],"tab");
-$s3 = SqlFilter($_REQUEST["s3"],"tab");
-$s4 = SqlFilter($_REQUEST["s4"],"tab");
+$keyword_type = SqlFilter($_REQUEST["keyword_type"],"tab");
+$keyword = SqlFilter($_REQUEST["keyword"],"tab");
 
 //刪除
 if ( $st == "del" ){
@@ -52,17 +51,17 @@ if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
     $subSQL3 = $subSQL2." And UPPER(mem_single) = '".strtoupper($_SESSION["MM_username"])."'";
 }
 
-if ( $s2 != "" ){
-    $cs2 = reset_number($s2);
+if ( $keyword_type == "s2" ){
+    $cs2 = reset_number($keyword);
     $subSQL3 = $subSQL3 . " And mem_mobile Like '%".$cs2."%'";
 }
 
-if ( $s3 != "" ){
-    $subSQL3 = $subSQL3 . " And mem_name Like N'%" . str_Replace("'", "''", $s3) . "%'";
+if ( $keyword_type == "s3" ){
+    $subSQL3 = $subSQL3 . " And mem_name Like N'%" . str_Replace("'", "''", $keyword) . "%'";
 }
 
-if ( $s4 != "" ){
-    $subSQL3 = $subSQL3 . " And mem_num Like '%" . str_Replace("'", "''", $s4) . "%'";
+if ( $keyword_type == "s4" ){
+    $subSQL3 = $subSQL3 . " And mem_num Like '%" . str_Replace("'", "''", $keyword) . "%'";
 }
 
 $subSQL3 = $subSQL3 . " And (up_come Is Null Or not up_come Like '%約會專家%')";
@@ -70,7 +69,6 @@ $subSQL4 = "Order By auton Desc";
 
 //取得總筆數
 $SQL = "Select count(auton) As total_size From needlvup Where".$subSQL2.$subSQL3;
-echo $SQL;
 $rs = $SPConn->prepare($SQL);
 $rs->execute();
 $result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -143,14 +141,13 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                     <?php }else{?>
                         <a href="?s99=1" class="btn btn-danger pull-left margin-right-10">切換已處理</a>
                     <?php }?>
-                    <?php echo $_REQUEST["s3"];?>
-                    <form id="searchform" action="ad_needlvup.php?vst=full&sear=1" method="post" class="form-inline" target="_self" onsubmit="return chk_search_form()">
+                    <form id="searchform" action="ad_needlvup.php?vst=full&sear=1" method="post" class="form-inline" target="_self">
                         <select name="keyword_type" id="keyword_type" style="width:100px;">
                             <option value="s2">手機</option>
-                            <option value="s3">姓名</option>
-                            <option value="s4">編號</option>
+                            <option value="s3"<?php if ( $keyword_type == "s3" ){?> selected<?php }?>>姓名</option>
+                            <option value="s4"<?php if ( $keyword_type == "s4" ){?> selected<?php }?>>編號</option>
                         </select>
-                        <input name="keyword" id="keyword" class="form-control" type="text">
+                        <input name="keyword" id="keyword" class="form-control" type="text" value="<?php echo $keyword;?>">
                         <input type="submit" value="送出" class="btn btn-default">
                     </form>
                 </div>

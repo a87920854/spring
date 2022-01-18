@@ -133,8 +133,8 @@
 			$mem_single = $re["mem_single"];				
 			
 			if ( $re["mem_username"] == "" || is_null($re["mem_username"]) ) {
-				$in_mem_username = cardid;
-				$mem_username = cardid;
+				$in_mem_username = $cardid;
+				$mem_username = $cardid;
 				$isbranch = 1;
 			}else{
 				$in_mem_username = "";
@@ -202,7 +202,7 @@
 			$rs_i->execute();
 			
 			//新增 single_sysmsg
-			$mem_single_name = SingleName($mem_single);
+			$mem_single_name = SingleName($mem_single,"normal");
 			$SQL_i  = "Insert Into log_data(mem_num, msg, url, branch, single, singlename, times, types, types2, log_single, index_show) Values ( ";
 			$SQL_i .= "'".SqlFilter($mem_num,"tab")."',";
 			$SQL_i .= "'".$mem_single_name."您好，您的會員".$n1." [".$mem_num."] 資料，已由總公司審核通過，麻煩您協助進一步邀請對方到會館進行面對面認證。";
@@ -271,9 +271,9 @@
 			$SQL_u .= "'".SqlFilter($mem_au,"tab")."',";
 			$SQL_u .= "'".SqlFilter($lusername,"tab")."',";
 			$SQL_u .= "'".SqlFilter($n1,"tab")."',";
-			$SQL_u .= "'".SqlFilter(_SESSION["p_other_name"],"tab")."',";
-			$SQL_u .= "'".SqlFilter(_SESSION["branch"],"tab")."',";
-			$SQL_u .= "'".SqlFilter(_SESSION["MM_Username"],"tab")."',";
+			$SQL_u .= "'".SqlFilter($_SESSION["p_other_name"],"tab")."',";
+			$SQL_u .= "'".SqlFilter($_SESSION["branch"],"tab")."',";
+			$SQL_u .= "'".SqlFilter($_SESSION["MM_Username"],"tab")."',";
 			$SQL_u .= "'".SqlFilter($n10,"tab")."',";
 			$SQL_u .= "'系統紀錄',";
 			$SQL_u .= "'".$_SESSION["p_other_name"]."於".date("H:m:s")."刪除".$n4."'";
@@ -300,7 +300,7 @@
 		}
 	
 		//更新 member_data
-		$SQL_u = "Update member_data Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")."' Where mem_auto=".SqlFilter(_REQUEST["mem_auto"],"int");
+		$SQL_u = "Update member_data Set all_type='".SqlFilter($_REQUEST["log_2"],"tab")."' Where mem_auto=".SqlFilter($_REQUEST["mem_auto"],"int");
 		$rs_u = $SPConn->prepare($SQL_u);
 		$rs_u->execute();
 
@@ -1327,7 +1327,8 @@
 									if ( $re["mem_cc"] != "" ){
 										$mem_cc = $re["mem_cc"];
 										if ( strstr($mem_cc, "sale-") > 0 ){
-											$mem_cc = "推廣：".SingleName_auto(split($mem_cc, "-")(1));
+											$mem_cc_array = explode("-",$mem_cc);
+											$mem_cc = "推廣：".SingleName($mem_cc_array[1],"auto");
 										}
 										$mem_cc = " [".$mem_cc."]";
 									}else{
@@ -1377,7 +1378,7 @@
 									}
 								}
 								if ( $re["mem_come4"] != "" && $re["mem_come3"] != "無" ){
-									echo SingleName($re["mem_come4"]);
+									echo SingleName($re["mem_come4"],"normal");
 								}
 								echo "）";
 								?>
@@ -1387,8 +1388,9 @@
 						//Set qrs = Server.CreateObject("ADODB.Recordset")
 						$reports = get_report_num($re["mem_mobile"]);
 						if ( strstr($reports, "|+|") > 0 ){
-							$report = split($reports, "|+|")(0);
-							$report_text = split(reports, "|+|")(1);
+							$report_array = explode("|+|",$report);
+							$report = $report_array[0];
+							$report_text = $report_array[1];
 						}else{
 							$report = 0;
 							$report_text = "無";
@@ -1444,7 +1446,7 @@
 											if ( $re_q["accept"] == "1" ){
 												echo "<br><font color='blue'>審核通過</font>";
 												if ( $re_q["accept_single"] != "" ){
-													echo " - ".SingleName($re_q["accept_single"])."審";
+													echo " - ".SingleName($re_q["accept_single"],"normal")."審";
 												}
 											}elseif ( $re_q["accept"] == "-1" ){ 
 												echo "<br><font color='blue'>審核不通過，".$re_q["acceptm"]."</font>";
@@ -1486,7 +1488,7 @@
 											if ( is_null($re["web_level"]) || $re["web_level"] == 0 || $_SESSION["MM_UserAuthorization"] == "admin" ){
 												echo "身分證反面&nbsp;&nbsp;<a href='ad_mem_detail.asp?st=delpic&v=mem_p2&mem_num=".$mem_num."&mem_au=".$re["mem_auto"]."'>刪除並開放重新上傳</a><br>";
 											}
-											echo "<a href='idcard/"&rs("mem_p2")&"' class='fancybox'><img width='200' src='idcard/".$re["mem_p2"]."'></a>";
+											echo "<a href='idcard/".$re["mem_p2"]."' class='fancybox'><img width='200' src='idcard/".$re["mem_p2"]."'></a>";
 										}else{
 											echo "已上傳身分證反面";
 										}
@@ -1614,7 +1616,7 @@
 										$result_q=$rs_q->fetchAll(PDO::FETCH_ASSOC);
 										foreach($result_q as $re_q);
 										if ( $re_q["pp"] > 0 ){
-											$p1 = $rs_q["pp"];
+											$p1 = $re_q["pp"];
 										}
 										$SQL_q = "Select Count(love_user) As pp FROM love_data_re Where love_user2='".$mem_username."'";
 										$rs_q = $SPConn->prepare($SQL_q);

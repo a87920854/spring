@@ -59,4 +59,12 @@
             exit;
         }
 	}
+
+	//web_mem
+	if ( $auth_limit == "8" ){
+		if ( $_SESSION["MM_UserAuthorization"] == "love" ){
+			call_alert("您沒有權限", 1,0);
+			exit;
+		}
+	}
 ?>
