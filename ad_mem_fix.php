@@ -1,10 +1,882 @@
 <?php
+/************************************************/
+//檔案名稱：ad_mem_fix.php
+//後台對應位置：共用檔案
+//改版日期：2022.1.19
+//改版設計人員：Jack
+//改版程式人員：Queena
+/************************************************/
 require_once("./include/_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
-require_once("./include/_sidebar.php")
-?>
+require_once("./include/_sidebar.php");
 
+//接收值
+$mem_num = SqlFilter($_REQUEST["mem_num"],"tab"); //會員編號
+$state = SqlFilter($_REQUEST["state"],"tab"); //執行項目
+$mem_username = SqlFilter($_REQUEST["mem_username"],"tab"); //會員帳號
+$si_account = SqlFilter($_REQUEST["si_account"],"tab");
+$old_mem_username = SqlFilter($_REQUEST["old_mem_username"],"tab"); //舊的會員帳號
+$sel_y1 = SqlFilter($_REQUEST["sel_y1"],"tab"); //對象條件年齡(起)
+$sel_y2 = SqlFilter($_REQUEST["sel_y2"],"tab"); //對象條件年齡(訖)
+$mem_money_y = SqlFilter($_REQUEST["mem_money_y"],"tab"); //會員年收入
+$mem_branch = SqlFilter($_REQUEST["mem_branch"],"tab"); //受理會館
+$mem_single = SqlFilter($_REQUEST["mem_single"],"tab"); //受理祕書
+$mem_level = SqlFilter($_REQUEST["mem_single"],"tab"); //受理祕書
+
+
+//新增會員資料
+if ( $state == "add" ){
+    if ( $mem_username == "TETETE" || $mem_username == "TETETE2" || $mem_username == "99998" ){
+	    $mem_username = $mem_username;
+    }else{
+	    $mem_username = Checkid($mem_username);
+    }
+
+    $si_account = reset_number($si_account);
+    $old_mem_username = Checkid($old_mem_username);
+
+    //擇友條件年齡
+    if ( ( $sel_y1 != "" && $sel_y2 == "" ) || ( $sel_y2 != "" && $sel_y1 == "" ) ){
+	    call_alert("擇友條件的年齡必須兩項均填。", 0,0);
+    }
+    if ( $sel_y1 != "" && $sel_y2 != "" ){
+	    if ( $sel_y1 > $sel_y2 ){ call_alert("擇友條件的年齡必須從小至大。", 0,0); }
+    }
+
+    //會員年收入
+    if ( $mem_money_y != "" ){
+	    if ( ! is_numeric($mem_money_y) ){
+		    call_alert("年收入只能輸入數字。", 0,0);
+        }
+	    $mem_money_y = round($mem_money_y);
+    }else{
+	    $mem_money_y = 0;
+    }
+
+    //受理會館/祕書
+    if ( $mem_branch != "" && $mem_single == "" ){
+	    call_alert("如選擇受理會館則必須選擇受理秘書。", 0,0);
+    }
+
+    $checkok = 0;
+    if ( $si_account != "" && $si_account != "0" ){ //所有有帳號都 check
+	$fsi_account = 0;
+    $SQL = "Select mem_num From member_data Where si_account = '".$si_account."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    if ( count($result) > 0 ){
+        foreach($result as $re){
+		    if ( chstr($re["mem_num"]) != chstr($mem_num) ){
+	            $fsi_account = 1;
+            }
+		}
+    }
+      
+    if ( $fsi_account == 1 ){
+		call_alert("此網站帳號重覆，請聯絡總公司處理。".$si_account, 0,0);
+    }
+}
+
+$SQL = "Select * From member_data Where mem_num='".$mem_num."'";
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+
+$web_level = $re["web_level"];
+if ( $web_level == "" || is_null($web_level) ){
+	$web_level = 0;
+}
+
+//接收值
+$mem_level = SqlFilter($_REQUEST["mem_level"],"tab");
+$mem_branch = SqlFilter($_REQUEST["mem_branch"],"tab");
+$mem_single = SqlFilter($_REQUEST["mem_single"],"tab");
+$call_branch = SqlFilter($_REQUEST["call_branch"],"tab");
+$call_single = SqlFilter($_REQUEST["call_single"],"tab");
+$mem_passwd = SqlFilter($_REQUEST["mem_passwd"],"tab");
+$stop_str = SqlFilter($_REQUEST["stop_str"],"tab");
+$stop_sy = SqlFilter($_REQUEST["stop_sy"],"tab");
+$stop_sm = SqlFilter($_REQUEST["stop_sm"],"tab");
+$stop_sd = SqlFilter($_REQUEST["stop_sd"],"tab");
+$stop_ey = SqlFilter($_REQUEST["stop_ey"],"tab");
+$stop_em = SqlFilter($_REQUEST["stop_em"],"tab");
+$stop_ed = SqlFilter($_REQUEST["stop_ed"],"tab");
+$noupdatememusername = 0;
+
+if ( $mem_level == "guest" ){
+	if ( $re["web_level"] != 0 ){
+		if ( $re["mem_branch"] != $_SESSION["branch"] && $_SESSION["MM_UserAuthorization"] != "admin" ){
+			call_alert("非受理會館無法修改成未入會。", 0, 0);
+        }
+        $SQL1 = "Select Top 1 * From log_data";
+        $rs1 = $SPConn->prepare($SQL1);
+        $rs1->execute();
+        $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+
+        //新增log
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5, log_service ) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".$re["mem_auto"]."',";
+        $SQL_i .= "'".$re["mem_username"]."',";
+        $SQL_i .= "'".$re["mem_name"]."',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+        $SQL_i .= "'".$_SESSION["branch"]."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".$re["mem_mobile"]."',";
+        $SQL_i .= "'系統紀錄',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."於".chtime(date("Y-d-m H:m:i"))."將會員權益自".num_lv($re["web_level"])."修改成".num_lv(0)."',";
+        $SQL_i .= "'member',1)";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();
+    }
+
+    //會員帳號
+  	if ( $re["mem_username"] != "" ){
+  		$subSQL = "mem_username_last = '".$re["mem_username"]."',mem_username='NULL'";
+  		$noupdatememusername = 1;
+    }
+      $subSQL .= ",web_level=0,web_endtime='NULL',mem_level='guest'";
+}else{
+    if ( $_SESSION["MM_UserAuthorization"] == "admin" || ( ($_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay") && $re["mem_branch"] == $_SESSION["branch"]) ){
+		if ( $mem_branch == "" ){ call_alert("請選擇受理會館。", 0, 0); }
+  		if ( $mem_single == "" ){ call_alert("請選擇受理秘書。", 0, 0); }
+  		if ( $call_branch == "" ){ call_alert("請選擇邀約會館。", 0, 0); }
+  		if ( $call_single == "" ){ call_alert("請選擇邀約秘書。", 0, 0); }
+    }
+	if ( $mem_username == "" ){ call_alert("請輸入身分證字號。", 0, 0); }
+	if ( $si_account == "" || $si_account == "0" ){ call_alert("請輸入帳號。", 0, 0); }	
+	if ( $mem_passwd != "" ){
+		if ( strlen($mem_passwd) < 5 ){ call_alert("密碼請填入5至8字元的英文或數字。", 0, 0); }
+    }
+
+	//判斷暫停欄位是否填寫 20211027 By Queena
+	if ( $stop_str == "是" ){
+		if ( $stop_sy == "" ){ call_alert("暫停日期(起)年份未選擇。",0,0); }
+        if ( $stop_sm == "" ){ call_alert("暫停日期(起)月份未選擇。",0,0); }
+        if ( $stop_sd == "" ){ call_alert("暫停日期(起)日期未選擇。",0,0); }
+        if ( $stop_ey == "" ){ call_alert("暫停日期(訖)年份未選擇。",0,0); }
+        if ( $stop_em == "" ){ call_alert("暫停日期(訖)月份未選擇。",0,0); }
+        if ( $stop_ed == "" ){ call_alert("暫停日期(訖)日期未選擇。",0,0); }
+		$stop_date1 = $stop_sy."-".$stop_sm."-".$stop_sd;
+		$stop_date2 = $stop_ey."-".$stop_em."-".$stop_ed;
+		if ( $stop_date2 < $stop_date1 ){ call_alert("暫停日期錯誤。",0,0); }
+    }
+	//判斷暫停欄位是否填寫 20211027 By Queena
+	
+	$havefid = 0;
+    $SQL1 = "Select mem_num, web_level From member_data Where mem_username = '".$mem_username."' And mem_level='mem'";
+    $rs1 = $SPConn->prepare($SQL);
+    $rs1->execute();
+    $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+	if ( count($result1) > 0 ){
+        foreach($result1 as $re1){
+		    if ( $re["mem_num"] != $re1["mem_num"] ){
+	            $havefid = 1;
+            }
+        }
+    }
+    if ( $havefid == 1 ){
+		call_alert("\n此身分證字號重覆，請聯絡總公司處理。\n\n請拜託務必「不要」輸入錯誤的身分證字號來閃避系統檢查，謝謝。\n\n".$mem_username, 0,0);
+	}
+	
+	$havesiaccount = 0;
+    $SQL1 = "Select mem_num, si_account From member_data Where si_account = '".$si_account."'";
+    $rs1 = $SPConn->prepare($SQL);
+    $rs1->execute();
+    $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+	if ( count($result1) > 0 ){
+        foreach($result1 as $re1){
+		    if ( $re["mem_num"] != $re1["mem_num"] ){
+	            $havesiaccount = 1;
+            }
+		}
+    }
+    if ( $havesiaccount == 1 ){
+		call_alert("此帳號重覆，請聯絡總公司處理。".$si_account, 0,0);
+	}
+
+	$subSQL .= "mem_level = 'mem'";
+	
+	if ( $web_level != round($mem_level) ){
+		if ( ( round($mem_level) == 10 || round($mem_level) == 11 ) && $web_level == 3 ){
+
+        }else{
+		    $checkok = 1;
+        }
+	}	
+}
+
+//接收值
+$mem_s1 = SqlFilter($_REQUEST["mem_s1"],"tab");
+
+//若權限不為single
+if ( $_SESSION["MM_UserAuthorization"] != "single" ){
+    $subSQL .= "mem_s1 = '".$mem_s1."'";
+}else{
+	$subSQL .= "mem_s1 = '無'";
+}
+$change_log_msg = "";
+$old_mem_au = $re["mem_auto"];
+
+if ( $noupdatememusername == 0 ){
+	if ( $re["mem_username"] != $mem_username ){
+		$change_log_msg = $change_log_msg."[身分證字號]".$re["mem_username"]."=>".$mem_username;
+  		$change_memusername_loveandpay_old = $re["mem_username"];
+  		$change_memusername_loveandpay_new = $mem_username;
+    }
+	$subSQL .= "mem_username = '". $mem_username."'";
+}
+$subSQL .= "si_account = '".$si_account."'";
+
+if ( $mem_passwd != "" ){
+    $subSQL .= "mem_passwd = ".$mem_passwd."'";
+}else{
+	if ( $re["si_account"] == "" ){
+		$subSQL .= "mem_passwd = 'NULL'";
+    }
+	if ( $re["mem_username"] != "" && ( $re["mem_passwd"] == "" || is_null($re["mem_passwd"] )) ){
+		$subSQL .= "mem_passwd = '".substr($re["mem_username"], -6)."'";
+    }
+}
+$subSQL .= ",mem_name='".$mem_name."',mem_sex='".$mem_sex."',mem_by='".$mem_by."',mem_bm='".$mem_bm."',mem_bd='".$mem_bd."',mem_phone='".$mem_phone."'";
+$mem_mobile = chk_mobile($mem_mobile);
+if ( $_SESSION["MM_Username"] == "TSAIWEN216" || $_SESSION["MM_Username"] == "SHEERY03130513" || $_SESSION["MM_Username"] == "LI6954029"){
+	if ( $re["mem_mobile"] != $mem_mobile ){
+		$change_log_msg = $change_log_msg."[手機]".$re["mem_mobile"]."=>".$mem_mobile;
+		$old_mem_mobile = $re["mem_mobile"];
+		$subSQL .= "mem_mobile = '".$mem_mobile."'";
+    }
+}
+
+//寫入暫停相關欄位 20211027 By Queena
+$subSQL .= ",mem_stop = '".$stop_str."'";
+if ( $stop_str == "是" ){
+    $subSQL .= "mem_stop_sy='".$stop_sy."',mem_stop_sm='".$stop_sm."',mem_stop_sd='".$stop_sd."',mem_stop_ey='".$stop_ey."',mem_stop_em='".$stop_em."',mem_stop_ed='".$stop_ed."'";
+}else{
+    $subSQL .= "mem_stop_sy='NULL',mem_stop_sm='NULL',mem_stop_sd='NULL',mem_stop_ey='NULL',mem_stop_em='NULL',mem_stop_ed='NULL'";
+
+}
+//寫入暫停相關欄位 20211027 By Queena
+
+//接收值
+$mem_mobile2 = SqlFilter($_REQUEST["mem_mobile2"],"tab");
+$mem_mail = SqlFilter($_REQUEST["mem_mail"],"tab");
+$mem_msn = SqlFilter($_REQUEST["mem_msn"],"tab");
+$mem_address = SqlFilter($_REQUEST["mem_address"],"tab");
+$mem_area = SqlFilter($_REQUEST["mem_area"],"tab");
+$mem_address2 = SqlFilter($_REQUEST["mem_address2"],"tab");
+$mem_area2 = SqlFilter($_REQUEST["mem_area2"],"tab");
+$mem_nick = SqlFilter($_REQUEST["mem_nick"],"tab");
+$mem_he = SqlFilter($_REQUEST["mem_he"],"tab");
+$mem_we = SqlFilter($_REQUEST["mem_we"],"tab");
+$mem_wet = SqlFilter($_REQUEST["mem_wet"],"tab");
+$mem_bmi = SqlFilter($_REQUEST["mem_bmi"],"tab");
+
+$subSQL .= ",mem_mobile2='".$mem_mobile2."',mem_mail='".$mem_mail."',mem_msn='".$mem_msn."',mem_address='".$mem_address."',mem_area='".$mem_area."',mem_address2='".$mem_address2."'";
+$subSQL .= ",mem_area2='".$mem_area2."',mem_nick='".$mem_nick."',mem_he='".$mem_he."',mem_we='".$mem_we."',mem_wet='".$mem_wet."'";
+
+if ( is_numeric($mem_bmi) ){
+	$mem_bmi = $mem_bmi;
+}else{
+	$mem_bmi = 0;
+}
+
+//接收值
+$mem_star = SqlFilter($_REQUEST["mem_star"],"tab");
+$mem_blood = SqlFilter($_REQUEST["mem_blood"],"tab");
+$mem_school = SqlFilter($_REQUEST["mem_school"],"tab");
+$mem_school2 = SqlFilter($_REQUEST["mem_school2"],"tab");
+$mem_school3 = SqlFilter($_REQUEST["mem_school3"],"tab");
+$mem_school4 = SqlFilter($_REQUEST["mem_school4"],"tab");
+$mem_job1 = SqlFilter($_REQUEST["mem_job1"],"tab");
+$mem_job2 = SqlFilter($_REQUEST["mem_job2"],"tab");
+$company = SqlFilter($_REQUEST["company"],"tab");
+$company_year = SqlFilter($_REQUEST["company_year"],"tab");
+
+$subSQL .= ",mem_bmi='".$mem_bmi."',mem_star='".$mem_star."',mem_blood='".$mem_blood."',mem_school='".$mem_school."',mem_school2='".$mem_school2."',mem_school3='".$mem_school3."'";
+$subSQL .= ",mem_school4='".$mem_school4."',mem_job1='".$mem_job1."',mem_job2='".$mem_job2."',company='".$company."',mem_school2='".$mem_school2."',mem_school3='".$mem_school3."'";
+
+if isnumeric(Request("company_year")) then
+	company_year = Request("company_year")
+else
+	company_year = 0
+end if
+rs("company_year") = company_year
+if request("dmn_num") <> "" and Session("MM_UserAuthorization") = "admin" then
+	rs("dmn_num") = request("dmn_num")
+end if
+rs("mem_marry") = Request("mem_marry")
+if Request("mem_note") <> "" then
+	rs("mem_note") = Replace(server.htmlencode(Request("mem_note")), VBCRLF, "<br>")
+end if
+if request("ispay") = "1" then
+	rs("ispay") = 1
+else
+	rs("ispay") = 0
+end if
+if request("si_enterprise") = "1" then
+	rs("si_enterprise") = 1
+else
+	rs("si_enterprise") = 0
+end if
+if request("mem_vip") = "1" then
+	rs("mem_vip") = 1
+else
+	rs("mem_vip") = 0
+end if
+if request("mem_hot") = "1" then
+	rs("mem_hot") = 1
+else
+	rs("mem_hot") = 0
+end if
+if request("mem_hot_in") = "1" then
+	rs("mem_hot_in") = 1
+else
+	rs("mem_hot_in") = 0
+end if
+if request("singleparty_hot_check") = "1" then
+	rs("singleparty_hot_check") = 1
+else
+	rs("singleparty_hot_check") = 0
+end if
+if request("mem_hot1") = "1" then
+	rs("mem_hot1") = 1
+else
+	rs("mem_hot1") = 0
+end if
+if request("mem_hot2") = "1" then
+	rs("mem_hot2") = 1
+else
+	rs("mem_hot2") = 0
+end if
+if request("mem_hot3") = "1" then
+	rs("mem_hot3") = 1
+else
+	rs("mem_hot3") = 0
+end if
+if request("mem_hot4") = "1" then
+	rs("mem_hot4") = 1
+else
+	rs("mem_hot4") = 0
+end if
+if request("mem_hot5") = "1" then
+	rs("mem_hot5") = 1
+else
+	rs("mem_hot5") = 0
+end if
+if request("mem_hot6") = "1" then
+	rs("mem_hot6") = 1
+else
+	rs("mem_hot6") = 0
+end if
+if request("mem_photo_show") = "1" then
+	rs("mem_photo_show") = 1
+else
+	rs("mem_photo_show") = 0
+end if
+if request("no_mail1") = "1" then
+	rs("si_no_mail1") = 0
+else
+	rs("si_no_mail1") = 1
+end if
+if request("no_mail2") = "1" then
+	rs("si_no_mail2") = 0
+else
+	rs("si_no_mail2") = 1
+end if
+if request("no_mail4") = "1" then
+	rs("si_no_mail4") = 0
+else
+	rs("si_no_mail4") = 1
+end if
+rs("mem4") = Request("mem4")
+rs("mem6") = Request("mem6")
+rs("mem7") = Request("mem7")
+rs("mem8") = Request("mem8")
+rs("mem22") = Request("mem22")
+rs("mem18") = request("mem18")
+rs("mem181") = request("mem181")
+rs("mem_join") = Request("mem_join")
+
+if Request("mem_jy") <> "" then
+	rs("mem_jy") = Request("mem_jy")
+end if
+if Request("mem_jm") <> "" then
+	rs("mem_jm") = Request("mem_jm")
+end if
+if Request("mem_jd") <> "" then
+	rs("mem_jd") = Request("mem_jd")
+	rs("mem_jointime") = Request("mem_jy") & "/" & Request("mem_jm") & "/" & Request("mem_jd")
+end if
+
+if request("sel_marry") = "不拘" then
+	rs("sel_marry") = NULL
+else	
+	rs("sel_marry") = request("sel_marry")
+end if
+if request("sel_school") = "不拘" then
+	rs("sel_school") = NULL
+else	
+	rs("sel_school") = request("sel_school")
+end if
+if request("sel_mem6") = "不拘" then
+	rs("sel_mem6") = NULL
+else	
+	rs("sel_mem6") = request("sel_mem6")
+end if
+if request("sel_job") = "不拘" then
+	rs("sel_job") = NULL
+else	
+	rs("sel_job") = request("sel_job")
+end if
+if request("sel_mem4") = "不拘" then
+	rs("sel_mem4") = NULL
+else	
+	rs("sel_mem4") = request("sel_mem4")
+end if
+if request("sel_money_des") = "不拘" then
+	rs("sel_money_des") = NULL
+else	
+	rs("sel_money_des") = request("sel_money_des")
+end if
+if request("sel_y1") <> "" then
+	rs("sel_y1") = request("sel_y1")
+else
+	rs("sel_y1") = 0
+end if
+if request("sel_y2") <> "" then
+	rs("sel_y2") = request("sel_y2")
+else
+	rs("sel_y2") = 0
+end if
+if request("sel_area") = "不拘" then
+	rs("sel_area") = NULL
+else	
+	rs("sel_area") = request("sel_area")
+end if
+if request("sel_star") = "不拘" then
+	rs("sel_star") = NULL
+else	
+	rs("sel_star") = request("sel_star")
+end if
+rs("sel_he1") = request("sel_he1")
+rs("sel_he2") = request("sel_he2")
+if request("sel_wet") = "不拘" then
+	rs("sel_wet") = NULL
+else	
+	rs("sel_wet") = request("sel_wet")
+end if
+if request("sel_money") = "不拘" then
+	rs("sel_money") = NULL
+else	
+	rs("sel_money") = request("sel_money")
+end if
+if request("sel_sociability") = "不拘" then
+	rs("sel_sociability") = NULL
+else	
+	rs("sel_sociability") = request("sel_sociability")
+end if
+if request("sel_view") = "不拘" then
+	rs("sel_view") = NULL
+else	
+	rs("sel_view") = request("sel_view")
+end if
+if request("sel_mem7") = "不拘" then
+	rs("sel_mem7") = NULL
+else	
+	rs("sel_mem7") = request("sel_mem7")
+end if
+if request("sel_mem8") = "不拘" then
+	rs("sel_mem8") = NULL
+else	
+	rs("sel_mem8") = request("sel_mem8")
+end if
+if request("sel_mem22") = "不拘" then
+	rs("sel_mem22") = NULL
+else	
+	rs("sel_mem22") = request("sel_mem22")
+end if
+rs("sys_note") = request("sys_note")
+if request("can_call") = "不拘" then
+	rs("can_call") = NULL
+else	
+	rs("can_call") = request("can_call")
+end if
+if request("can_love") = "不拘" then
+	rs("can_love") = NULL
+else	
+	rs("can_love") = request("can_love")
+end if
+rs("recipe1") = request("recipe1")
+rs("recipe2") = request("recipe2")
+rs("recipe3") = request("recipe3")
+rs("mem_money") = request("mem_money")
+'rs("mem_money_m") = mem_money_m
+rs("mem_money_y") = mem_money_y
+rs("mem_money_des") = request("mem_money_des")
+if request("mem_car") = "1" then
+	rs("mem_car") = 1
+else
+	rs("mem_car") = 0
+end if
+if request("mem_house") = "1" then
+	rs("mem_house") = 1
+else
+	rs("mem_house") = 0
+end if
+'rs("mem_da1") = request("mem_da1")
+rs("mem_da2") = request("mem_da2")
+rs("mem_da3") = request("mem_da3")
+rs("mem_da4") = request("mem_da4")
+rs("mem_da5") = request("mem_da5")
+rs("mem_da6") = request("mem_da6")
+
+old_branch = rs("mem_branch")
+IF Session("MM_UserAuthorization") = "admin" Or ((Session("MM_UserAuthorization") = "branch" or Session("MM_UserAuthorization") = "pay") and old_branch = session("branch")) Then
+	if request("mem_branch") <> "" then
+		rs("mem_branch") = request("mem_branch")
+	else	
+		rs("mem_branch") = NULL
+	end if
+	if request("mem_single") <> "" then
+		if not rs("mem_single") = request("mem_single") then
+			change_log_msg = change_log_msg&"[秘書]"&old_branch&"-"&SingleName(rs("mem_single"))&"=>"&request("mem_branch")&"-"&SingleName(request("mem_single"))&""	
+		end if
+		rs("mem_single") = request("mem_single")
+	else	
+		change_log_msg = change_log_msg&"[秘書]"&old_branch&"-"&SingleName(rs("mem_single"))&"=>NULL"	
+		rs("mem_single") = NULL
+	end if
+end if
+
+if request("love_single") <> "" then
+	if isnull(rs("love_single")) then
+		change_log_msg = change_log_msg&"[排約]NULL=>"&SingleName(request("love_single"))&""	
+	elseif not rs("love_single") = request("love_single") then
+		change_log_msg = change_log_msg&"[排約]"&SingleName(rs("love_single"))&"=>"&SingleName(request("love_single"))&""	
+	end if
+	rs("love_single") = request("love_single")
+else	
+	if rs("love_single") <> "" then
+		change_log_msg = change_log_msg&"[排約]"&SingleName(rs("love_single"))&"=>NULL"	
+  	end if
+	rs("love_single") = NULL
+end if
+if request("call_branch") <> "" then
+	rs("call_branch") = request("call_branch")
+else	
+	rs("call_branch") = NULL
+end if
+if request("call_single") <> "" then
+	if isnull(rs("call_single")) then
+		change_log_msg = change_log_msg&"[邀約]NULL=>"&SingleName(request("call_single"))&""	
+	elseif not rs("call_single") = request("call_single") then
+		change_log_msg = change_log_msg&"[邀約]"&rs("call_branch")&"-"&SingleName(rs("call_single"))&"=>"&request("call_branch")&"-"&SingleName(request("call_single"))&""	
+	end if
+	rs("call_single") = request("call_single")
+else	
+	if rs("call_single") <> "" then
+		change_log_msg = change_log_msg&"[邀約]"&rs("call_branch")&"-"&SingleName(rs("call_single"))&"=>NULL"	
+  	end if
+	rs("call_single") = NULL
+end if
+
+IF Session("MM_UserAuthorization") = "admin" Then
+	rs("mem_tag") = request("mem_tag")
+end if
+
+rs("mem_uptime") = now()
+rs.update
+mem_branch = rs("mem_branch")
+jointime = rs("mem_jointime")
+mem_mobile = rs("mem_mobile")
+rs.close
+
+if change_log_msg <> "" then	
+rs.open "select top 1 * from log_data", SPCon, 1, 3
+if old_mem_mobile <> "" then
+rs.addnew
+rs("log_time") = now
+rs("log_num") = old_mem_au
+rs("log_fid") = lusername
+rs("log_username") = n1
+rs("log_name") = Session("p_other_name")
+rs("log_branch") = Session("branch")
+rs("log_single") = Session("MM_Username")
+rs("log_1") = old_mem_mobile
+rs("log_2") = "系統紀錄"
+rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"修改資料"&change_log_msg&""
+rs("log_5") = "member"
+end if
+rs.addnew
+rs("log_time") = now
+rs("log_num") = old_mem_au
+rs("log_fid") = lusername
+rs("log_username") = n1
+rs("log_name") = Session("p_other_name")
+rs("log_branch") = Session("branch")
+rs("log_single") = Session("MM_Username")
+rs("log_1") = mem_mobile
+rs("log_2") = "系統紀錄"
+rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"修改資料"&change_log_msg&""
+rs("log_5") = "member"
+rs.update
+rs.close
+end if
+
+if change_memusername_loveandpay_old <> "" and change_memusername_loveandpay_new <> "" then
+	if len(change_memusername_loveandpay_old) > 5 and len(change_memusername_loveandpay_new) > 5 then
+	rs.open "UPDATE pay_main SET pay_user='"&change_memusername_loveandpay_new&"' WHERE pay_user='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3
+	rs.open "UPDATE love_data_re SET love_user='"&change_memusername_loveandpay_new&"' WHERE love_user='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3
+	rs.open "UPDATE love_data_re SET love_user2='"&change_memusername_loveandpay_new&"' WHERE love_user2='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3	
+  end if
+end if
+
+if checkok = 1 then
+	
+	if jointime <> "" then
+		if isdate(jointime) then
+			if datediff("d", jointime, date) < 0 then
+				jointime = date()
+			end if
+		end if
+	end if
+	
+	if not isdate(jointime) then
+		jointime = date()
+	end if
+	
+	
+	rs.open "select mem_auto, mem_username, mem_passwd, mem_name, mem_mail, mem_level,mem_mobile, mem_mobile2,web_level, real_web_level, web_startime, web_endtime, si_real_invite, si_enterprise,si_no_mail1, si_no_mail2 from member_data where mem_num="&mem_num&"", SPCon, 1, 3
+	if not rs.eof then	
+		mem_au = rs("mem_auto")
+		lusername = rs("mem_username")
+		n1 = rs("mem_name")
+		mem_name = n1
+		mem_mail = rs("mem_mail")
+		nomail = rs("si_no_mail1")
+		nomail2 = rs("si_no_mail2")
+		n10 = rs("mem_mobile")
+		mem_mobile2 = rs("mem_mobile2")
+		old_level = rs("web_level")
+		web_level = clng(request("mem_level"))
+		
+		rs("web_startime") = jointime		
+		web_level_name = num_lv(web_level)
+		select case web_level
+			case 1
+		rs("web_endtime") = dateadd("m", 2, jointime)
+		timemsg = jointime&"~"&dateadd("m", 2, jointime)
+			case 2
+		rs("web_endtime") = dateadd("m", 3, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 3, jointime)
+		rs("si_real_invite") = 1
+			case 3
+		rs("web_endtime") = dateadd("m", 12, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 12, jointime)
+			case 4
+		rs("web_endtime") = dateadd("m", 12, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 12, jointime)
+			case 5
+		rs("web_endtime") = dateadd("m", 24, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 24, jointime)
+			case 6
+		rs("web_endtime") = dateadd("m", 24, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 24, jointime)
+		case 10 '專案3
+		rs("web_endtime") = dateadd("m", 3, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 3, jointime)
+		web_level = 3
+		case 11 '專案6
+		rs("web_endtime") = dateadd("m", 6, jointime)	
+		timemsg = jointime&"~"&dateadd("m", 6, jointime)
+		web_level = 3
+		end select
+
+		rs("web_level") = web_level		
+		rs("real_web_level") = request("mem_level")
+		
+		if rs("si_enterprise") = 99 then
+		  rs("si_enterprise") = 1
+	  end if
+	  
+		rs.update
+		rs.close
+rs.open "select top 1 * from log_data", SPCon, 1, 3
+rs.addnew
+rs("log_time") = now
+rs("log_num") = mem_au
+rs("log_fid") = lusername
+rs("log_username") = n1
+rs("log_name") = Session("p_other_name")
+rs("log_branch") = Session("branch")
+rs("log_single") = Session("MM_Username")
+rs("log_1") = n10
+rs("log_2") = "系統紀錄"
+rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"將會員權益自"&num_lv(old_level)&"修改成"&web_level_name&" - 效期至"&timemsg&""
+rs("log_5") = "member"
+rs("log_service") = 1
+rs.update
+rs.close
+
+if mem_branch = "八德" then
+  call notice_new_member( "dmn", mem_mail, nomail, mem_name)
+  call notice_new_member_sms("dmn", n10, nomail2, mem_name)
+elseif mem_branch = "迷你約" then
+	'call notice_new_member( "minibar", mem_mail, nomail, mem_name)
+	'call notice_new_member_sms("minibar", n10, nomail2, mem_name)
+elseif mem_branch = "約專" then
+	call notice_new_member( "singleparty", mem_mail, nomail, mem_name)
+	call notice_new_member_sms("singleparty", n10, nomail2, mem_name)
+else
+	call notice_new_member( "spring", mem_mail, nomail, mem_name)
+	call notice_new_member_sms("spring", n10, nomail2, mem_name)
+end if
+
+	if request("mem_sex") = "男" then
+		rsex = 1
+	else
+		rsex = 2
+	end if
+	on error resume next
+Set httpRequest = Server.CreateObject("MSXML2.ServerXMLHTTP")
+httpRequest.Open "POST", "https://edm.springclub.com.tw/si_mem_cron_get.php"
+httpRequest.setRequestHeader "Content-Type", "application/x-www-form-urlencoded; charset=utf-8"
+httpRequest.Send "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty"
+response.write httpRequest.responseText
+Set httpRequest = nothing
+
+'	response.write "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty<Br>"	
+	
+
+	end if
+end if
+
+if mem_branch = "八德" then
+Dim DMNCon
+DMNConOpen
+if request("mem_level") = "guest" then
+'	if mem_username <> "" then
+'	rs.open "select HeadPhotoURL from UserData where mem_username='"&mem_username&"'", DMNCon, 1, 3
+'	if not rs.eof then
+'		hpurl = rs("HeadPhotoURL")		
+'		if hpurl <> "" then			
+'	    rmfile(server.mappath("dphoto/"&hpurl))
+'		end if
+'		rs.delete
+'		rs.update
+'	end if
+'	rs.close
+'	rs.open "select * from photo_data where mem_num='"&mem_num&"' and types='dmn'", SPCon, 1, 3
+'	if not rs.eof then
+'		while not rs.eof
+'		rmfile(server.mappath("dphoto/"&hpurl))		
+'		rs.delete
+'		rs.movenext
+'		wend
+'	end if
+'	rs.close
+'	rs.open "update member_data set mem_photo=NULL where mem_username='"&mem_username&"'", SPCon, 1, 3
+'	
+'  end if  
+else
+
+if mem_username <> "" then	
+Set qrs = Server.CreateObject("ADODB.Recordset")
+qrs.open "select * from member_data where mem_username='"&mem_username&"'", SPCon, 1, 1
+if not qrs.eof then
+rs.open "select * from UserData where mem_username='"&mem_username&"'", DMNCon, 1, 3
+if rs.eof then
+			rs.addnew
+			rs("mem_username") = ucase(qrs("mem_username"))
+			rs("UserID") = qrs("mem_num")
+			rs("Password") = qrs("mem_passwd")
+			rs("FirstName") = qrs("mem_name")
+			rs("Nickname") = qrs("mem_nick")
+			rs("birthday") = qrs("mem_by")&"/"&qrs("mem_bm")&"/"&qrs("mem_bd")
+			rs("Generation") = qrs("mem_by")
+			if qrs("mem_sex") = "男" then
+				sex = "M"
+			else
+				sex = "F"
+			end if
+			rs("Gender") = sex
+			rs("Email") = qrs("mem_mail")
+			rs("city") = qrs("mem_area")
+			rs("Address") = qrs("mem_address")
+			rs("telnum") = qrs("mem_mobile")
+			rs("Education") = qrs("mem_school")
+			rs("Occupation") = qrs("mem_job1")
+			if qrs("mem_photo") <> "" then
+			rs("HeadPhotoURL") = "photo/"&qrs("mem_photo")
+		  end if
+			rs("Constellation") = qrs("mem_star")
+			rs("tall") = qrs("mem_he")
+			rs("fullregtime") = now
+			rs("q37") = qrs("mem_by")
+			rs("mem_photo_show") = qrs("mem_photo_show")
+			rs.update
+else
+			rs("Password") = qrs("mem_passwd")
+			rs("FirstName") = qrs("mem_name")
+			rs("Nickname") = qrs("mem_nick")
+			rs("birthday") = qrs("mem_by")&"/"&qrs("mem_bm")&"/"&qrs("mem_bd")
+			rs("Generation") = qrs("mem_by")
+			if qrs("mem_sex") = "男" then
+				sex = "M"
+			else
+				sex = "F"
+			end if
+			rs("Gender") = sex
+			rs("Email") = qrs("mem_mail")
+			rs("city") = qrs("mem_area")
+			rs("Address") = qrs("mem_address")
+			rs("telnum") = qrs("mem_mobile")
+			rs("Education") = qrs("mem_school")
+			rs("Occupation") = qrs("mem_job1")			
+			rs("Constellation") = qrs("mem_star")
+			rs("tall") = qrs("mem_he")			
+			rs("q37") = qrs("mem_by")
+			rs("mem_photo_show") = qrs("mem_photo_show")
+			rs.update
+end if
+rs.close
+end if
+end if
+end if
+end if
+set qrs=nothing
+Set rs = nothing
+Call alert("修改完成。","ad_mem_fix.asp?mem_num="&mem_num&"", 0)
+Response.end
+End IF
+
+rs.Open "SELECT * FROM member_data Where mem_num='"&mem_num&"'",SPCon,1,1
+mem_branch = rs("mem_branch")
+mem_single = ucase(rs("mem_single"))
+
+mem_branch2 = rs("mem_branch2")
+mem_single2 = rs("mem_single2")
+
+love_single = rs("love_single")
+love_single2 = rs("love_single2")
+
+call_branch = rs("call_branch")
+call_single = rs("call_single")
+
+if Session("MM_Username") = "KYOE" Or Session("MM_Username") = "SHEERY03130513" or Session("MM_Username") = "LI6954029" Or Session("MM_Username") = "TSAIWEN216" Then
+	power_edit = 1
+else
+	power_edit = 0
+end if
+
+if rs("mem_level") = "mem" and not Session("MM_UserAuthorization") = "admin" and not Session("MM_UserAuthorization") = "branch" and not Session("MM_UserAuthorization") = "manager" and not Session("MM_UserAuthorization") = "love_manager" and not Session("MM_UserAuthorization") = "pay" then
+	Call alert("權限不足。",0, 0)
+end if
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->

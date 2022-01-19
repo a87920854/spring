@@ -32,11 +32,6 @@ $tPage = SqlFilter($_REQUEST["tPage"],"int");
 if ( $tPage == 1 ){ $tPage_list = 0; }else{ $tPage_list = $tPage;}
 if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
 $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
-if ( $tPageSize*$tPage < $total_size ){
-    $page2 = 20;
-}else{
-    $page2 = (20-(($tPageSize*$tPage)-$total_size));
-}
 
 //分頁語法
 $SQL_list  = "Select Top ".$tPageSize." * ";
