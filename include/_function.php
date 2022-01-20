@@ -967,7 +967,7 @@
 	//判斷手機號碼
 	function chk_mobile($m){
     	$chk_mobile_result = "";
-    	if ( $m != "" && strlen($m) = 10 ){
+    	if ( $m != "" && strlen($m) == 10 ){
 			$m = trim(str_replace(" ", "", $m));
 			$m = str_replace("-", "", $m);
 			$m = str_replace("_", "", $m);

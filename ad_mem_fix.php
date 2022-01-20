@@ -135,7 +135,7 @@ if ( $mem_level == "guest" ){
 
     //會員帳號
   	if ( $re["mem_username"] != "" ){
-  		$subSQL = "mem_username_last = '".$re["mem_username"]."',mem_username='NULL'";
+  		$subSQL = ",mem_username_last = '".$re["mem_username"]."',mem_username='NULL'";
   		$noupdatememusername = 1;
     }
       $subSQL .= ",web_level=0,web_endtime='NULL',mem_level='guest'";
@@ -198,7 +198,7 @@ if ( $mem_level == "guest" ){
 		call_alert("此帳號重覆，請聯絡總公司處理。".$si_account, 0,0);
 	}
 
-	$subSQL .= "mem_level = 'mem'";
+	$subSQL .= ",mem_level = 'mem'";
 	
 	if ( $web_level != round($mem_level) ){
 		if ( ( round($mem_level) == 10 || round($mem_level) == 11 ) && $web_level == 3 ){
@@ -214,9 +214,9 @@ $mem_s1 = SqlFilter($_REQUEST["mem_s1"],"tab");
 
 //若權限不為single
 if ( $_SESSION["MM_UserAuthorization"] != "single" ){
-    $subSQL .= "mem_s1 = '".$mem_s1."'";
+    $subSQL .= ",mem_s1 = '".$mem_s1."'";
 }else{
-	$subSQL .= "mem_s1 = '無'";
+	$subSQL .= ",mem_s1 = '無'";
 }
 $change_log_msg = "";
 $old_mem_au = $re["mem_auto"];
@@ -227,18 +227,18 @@ if ( $noupdatememusername == 0 ){
   		$change_memusername_loveandpay_old = $re["mem_username"];
   		$change_memusername_loveandpay_new = $mem_username;
     }
-	$subSQL .= "mem_username = '". $mem_username."'";
+	$subSQL .= ",mem_username = '". $mem_username."'";
 }
 $subSQL .= "si_account = '".$si_account."'";
 
 if ( $mem_passwd != "" ){
-    $subSQL .= "mem_passwd = ".$mem_passwd."'";
+    $subSQL .= ",mem_passwd = ".$mem_passwd."'";
 }else{
 	if ( $re["si_account"] == "" ){
-		$subSQL .= "mem_passwd = 'NULL'";
+		$subSQL .= ",mem_passwd = 'NULL'";
     }
 	if ( $re["mem_username"] != "" && ( $re["mem_passwd"] == "" || is_null($re["mem_passwd"] )) ){
-		$subSQL .= "mem_passwd = '".substr($re["mem_username"], -6)."'";
+		$subSQL .= ",mem_passwd = '".substr($re["mem_username"], -6)."'";
     }
 }
 $subSQL .= ",mem_name='".$mem_name."',mem_sex='".$mem_sex."',mem_by='".$mem_by."',mem_bm='".$mem_bm."',mem_bd='".$mem_bd."',mem_phone='".$mem_phone."'";
@@ -247,16 +247,16 @@ if ( $_SESSION["MM_Username"] == "TSAIWEN216" || $_SESSION["MM_Username"] == "SH
 	if ( $re["mem_mobile"] != $mem_mobile ){
 		$change_log_msg = $change_log_msg."[手機]".$re["mem_mobile"]."=>".$mem_mobile;
 		$old_mem_mobile = $re["mem_mobile"];
-		$subSQL .= "mem_mobile = '".$mem_mobile."'";
+		$subSQL .= ",mem_mobile = '".$mem_mobile."'";
     }
 }
 
 //寫入暫停相關欄位 20211027 By Queena
 $subSQL .= ",mem_stop = '".$stop_str."'";
 if ( $stop_str == "是" ){
-    $subSQL .= "mem_stop_sy='".$stop_sy."',mem_stop_sm='".$stop_sm."',mem_stop_sd='".$stop_sd."',mem_stop_ey='".$stop_ey."',mem_stop_em='".$stop_em."',mem_stop_ed='".$stop_ed."'";
+    $subSQL .= ",mem_stop_sy='".$stop_sy."',mem_stop_sm='".$stop_sm."',mem_stop_sd='".$stop_sd."',mem_stop_ey='".$stop_ey."',mem_stop_em='".$stop_em."',mem_stop_ed='".$stop_ed."'";
 }else{
-    $subSQL .= "mem_stop_sy='NULL',mem_stop_sm='NULL',mem_stop_sd='NULL',mem_stop_ey='NULL',mem_stop_em='NULL',mem_stop_ed='NULL'";
+    $subSQL .= ",mem_stop_sy='NULL',mem_stop_sm='NULL',mem_stop_sd='NULL',mem_stop_ey='NULL',mem_stop_em='NULL',mem_stop_ed='NULL'";
 
 }
 //寫入暫停相關欄位 20211027 By Queena
@@ -285,355 +285,271 @@ if ( is_numeric($mem_bmi) ){
 }
 
 //接收值
-$mem_star = SqlFilter($_REQUEST["mem_star"],"tab");
-$mem_blood = SqlFilter($_REQUEST["mem_blood"],"tab");
-$mem_school = SqlFilter($_REQUEST["mem_school"],"tab");
-$mem_school2 = SqlFilter($_REQUEST["mem_school2"],"tab");
-$mem_school3 = SqlFilter($_REQUEST["mem_school3"],"tab");
-$mem_school4 = SqlFilter($_REQUEST["mem_school4"],"tab");
+$mem_star = SqlFilter($_REQUEST["mem_star"],"tab");         //星座
+$mem_blood = SqlFilter($_REQUEST["mem_blood"],"tab");       //血型
+$mem_school = SqlFilter($_REQUEST["mem_school"],"tab");     //學歷1
+$mem_school2 = SqlFilter($_REQUEST["mem_school2"],"tab");   //學歷2
+$mem_school3 = SqlFilter($_REQUEST["mem_school3"],"tab");   //學歷3
+$mem_school4 = SqlFilter($_REQUEST["mem_school4"],"tab");   //學歷4
 $mem_job1 = SqlFilter($_REQUEST["mem_job1"],"tab");
 $mem_job2 = SqlFilter($_REQUEST["mem_job2"],"tab");
-$company = SqlFilter($_REQUEST["company"],"tab");
-$company_year = SqlFilter($_REQUEST["company_year"],"tab");
+$company = SqlFilter($_REQUEST["company"],"tab");           //公司名稱
+$company_year = SqlFilter($_REQUEST["company_year"],"tab"); //年資
+$dmn_num = SqlFilter($_REQUEST["dmn_num"],"tab");
+$mem_marry = SqlFilter($_REQUEST["mem_marry"],"tab");       //婚姻狀況
+$mem_note = SqlFilter($_REQUEST["mem_marry"],"tab");        //會員備註
+$ispay = SqlFilter($_REQUEST["ispay"],"tab");
+$si_enterprise = SqlFilter($_REQUEST["si_enterprise"],"tab");
+$mem_vip = SqlFilter($_REQUEST["mem_vip"],"tab");
+$mem_hot = SqlFilter($_REQUEST["mem_hot"],"tab");
+$mem_hot_in = SqlFilter($_REQUEST["mem_hot_in"],"tab");
+$singleparty_hot_check = SqlFilter($_REQUEST["singleparty_hot_check"],"tab");
+$mem_hot1 = SqlFilter($_REQUEST["mem_hot1"],"tab");
+$mem_hot2 = SqlFilter($_REQUEST["mem_hot2"],"tab");
+$mem_hot3 = SqlFilter($_REQUEST["mem_hot3"],"tab");
+$mem_hot4 = SqlFilter($_REQUEST["mem_hot4"],"tab");
+$mem_hot5 = SqlFilter($_REQUEST["mem_hot5"],"tab");
+$mem_hot6 = SqlFilter($_REQUEST["mem_hot6"],"tab");
+$mem_photo_show = SqlFilter($_REQUEST["mem_photo_show"],"tab");
+$no_mail1 = SqlFilter($_REQUEST["no_mail1"],"tab");
+$no_mail2 = SqlFilter($_REQUEST["no_mail2"],"tab");
+$no_mail4 = SqlFilter($_REQUEST["no_mail4"],"tab");
 
 $subSQL .= ",mem_bmi='".$mem_bmi."',mem_star='".$mem_star."',mem_blood='".$mem_blood."',mem_school='".$mem_school."',mem_school2='".$mem_school2."',mem_school3='".$mem_school3."'";
-$subSQL .= ",mem_school4='".$mem_school4."',mem_job1='".$mem_job1."',mem_job2='".$mem_job2."',company='".$company."',mem_school2='".$mem_school2."',mem_school3='".$mem_school3."'";
+$subSQL .= ",mem_school4='".$mem_school4."',mem_job1='".$mem_job1."',mem_job2='".$mem_job2."',company='".$company."',company_year='".$company_year."'";
 
-if isnumeric(Request("company_year")) then
-	company_year = Request("company_year")
-else
-	company_year = 0
-end if
-rs("company_year") = company_year
-if request("dmn_num") <> "" and Session("MM_UserAuthorization") = "admin" then
-	rs("dmn_num") = request("dmn_num")
-end if
-rs("mem_marry") = Request("mem_marry")
-if Request("mem_note") <> "" then
-	rs("mem_note") = Replace(server.htmlencode(Request("mem_note")), VBCRLF, "<br>")
-end if
-if request("ispay") = "1" then
-	rs("ispay") = 1
-else
-	rs("ispay") = 0
-end if
-if request("si_enterprise") = "1" then
-	rs("si_enterprise") = 1
-else
-	rs("si_enterprise") = 0
-end if
-if request("mem_vip") = "1" then
-	rs("mem_vip") = 1
-else
-	rs("mem_vip") = 0
-end if
-if request("mem_hot") = "1" then
-	rs("mem_hot") = 1
-else
-	rs("mem_hot") = 0
-end if
-if request("mem_hot_in") = "1" then
-	rs("mem_hot_in") = 1
-else
-	rs("mem_hot_in") = 0
-end if
-if request("singleparty_hot_check") = "1" then
-	rs("singleparty_hot_check") = 1
-else
-	rs("singleparty_hot_check") = 0
-end if
-if request("mem_hot1") = "1" then
-	rs("mem_hot1") = 1
-else
-	rs("mem_hot1") = 0
-end if
-if request("mem_hot2") = "1" then
-	rs("mem_hot2") = 1
-else
-	rs("mem_hot2") = 0
-end if
-if request("mem_hot3") = "1" then
-	rs("mem_hot3") = 1
-else
-	rs("mem_hot3") = 0
-end if
-if request("mem_hot4") = "1" then
-	rs("mem_hot4") = 1
-else
-	rs("mem_hot4") = 0
-end if
-if request("mem_hot5") = "1" then
-	rs("mem_hot5") = 1
-else
-	rs("mem_hot5") = 0
-end if
-if request("mem_hot6") = "1" then
-	rs("mem_hot6") = 1
-else
-	rs("mem_hot6") = 0
-end if
-if request("mem_photo_show") = "1" then
-	rs("mem_photo_show") = 1
-else
-	rs("mem_photo_show") = 0
-end if
-if request("no_mail1") = "1" then
-	rs("si_no_mail1") = 0
-else
-	rs("si_no_mail1") = 1
-end if
-if request("no_mail2") = "1" then
-	rs("si_no_mail2") = 0
-else
-	rs("si_no_mail2") = 1
-end if
-if request("no_mail4") = "1" then
-	rs("si_no_mail4") = 0
-else
-	rs("si_no_mail4") = 1
-end if
-rs("mem4") = Request("mem4")
-rs("mem6") = Request("mem6")
-rs("mem7") = Request("mem7")
-rs("mem8") = Request("mem8")
-rs("mem22") = Request("mem22")
-rs("mem18") = request("mem18")
-rs("mem181") = request("mem181")
-rs("mem_join") = Request("mem_join")
+//年資
+if ( is_numeric($company_year) ){
+    $company_year = $company_year;
+}else{
+	$company_year = 0;
+}
+$subSQL .= ",company_year='".$company_year."'";
+//婚姻狀況
+if ( $dmn_num != "" && $_SESSION["MM_UserAuthorization"] == "admin" ){
+    $subSQL .= ",dmn_num='".$dmn_num."'";
+}
+$subSQL .= ",mem_marry='".$mem_marry."'";
+//會員備註
+if ( $mem_note != "" ){
+    $subSQL .= ",mem_note='".nl2br($mem_note)."'";
+}
 
-if Request("mem_jy") <> "" then
-	rs("mem_jy") = Request("mem_jy")
-end if
-if Request("mem_jm") <> "" then
-	rs("mem_jm") = Request("mem_jm")
-end if
-if Request("mem_jd") <> "" then
-	rs("mem_jd") = Request("mem_jd")
-	rs("mem_jointime") = Request("mem_jy") & "/" & Request("mem_jm") & "/" & Request("mem_jd")
-end if
+if ( $ispay == "1" ){ $subSQL .= ",ispay=1"; }else{ $subSQL .= ",ispay=0"; }
+if ( $si_enterprise == "1" ){ $subSQL .= ",si_enterprise=1"; }else{ $subSQL .= ",si_enterprise=0"; }
+if ( $mem_vip == "1" ){ $subSQL .= ",mem_vip=1"; }else{ $subSQL .= ",mem_vip=0"; }
+if ( $mem_hot == "1" ){ $subSQL .= ",mem_hot=1"; }else{ $subSQL .= ",mem_hot=0"; }
+if ( $mem_hot_in == "1" ){ $subSQL .= ",mem_hot_in=1"; }else{ $subSQL .= ",mem_hot_in=0"; }
+if ( $singleparty_hot_check == "1" ){ $subSQL .= ",singleparty_hot_check=1"; }else{ $subSQL .= ",singleparty_hot_check=0"; }
+if ( $mem_hot1 == "1" ){ $subSQL .= ",mem_hot1=1"; }else{ $subSQL .= ",mem_hot1=0"; }
+if ( $mem_hot2 == "1" ){ $subSQL .= ",mem_hot2=1"; }else{ $subSQL .= ",mem_hot2=0"; }
+if ( $mem_hot3 == "1" ){ $subSQL .= ",mem_hot3=1"; }else{ $subSQL .= ",mem_hot3=0"; }
+if ( $mem_hot4 == "1" ){ $subSQL .= ",mem_hot4=1"; }else{ $subSQL .= ",mem_hot4=0"; }
+if ( $mem_hot5 == "1" ){ $subSQL .= ",mem_hot5=1"; }else{ $subSQL .= ",mem_hot5=0"; }
+if ( $mem_hot6 == "1" ){ $subSQL .= ",mem_hot6=1"; }else{ $subSQL .= ",mem_hot6=0"; }
+if ( $mem_photo_show == "1" ){ $subSQL .= ",mem_photo_show=1"; }else{ $subSQL .= ",mem_photo_show=0"; }
+if ( $no_mail1 == "1" ){ $subSQL .= ",si_no_mail1=1"; }else{ $subSQL .= ",si_no_mail1=0"; }
+if ( $no_mail2 == "1" ){ $subSQL .= ",si_no_mail2=1"; }else{ $subSQL .= ",si_no_mail2=0"; }
+if ( $no_mail4 == "1" ){ $subSQL .= ",si_no_mail4=1"; }else{ $subSQL .= ",si_no_mail4=0"; }
 
-if request("sel_marry") = "不拘" then
-	rs("sel_marry") = NULL
-else	
-	rs("sel_marry") = request("sel_marry")
-end if
-if request("sel_school") = "不拘" then
-	rs("sel_school") = NULL
-else	
-	rs("sel_school") = request("sel_school")
-end if
-if request("sel_mem6") = "不拘" then
-	rs("sel_mem6") = NULL
-else	
-	rs("sel_mem6") = request("sel_mem6")
-end if
-if request("sel_job") = "不拘" then
-	rs("sel_job") = NULL
-else	
-	rs("sel_job") = request("sel_job")
-end if
-if request("sel_mem4") = "不拘" then
-	rs("sel_mem4") = NULL
-else	
-	rs("sel_mem4") = request("sel_mem4")
-end if
-if request("sel_money_des") = "不拘" then
-	rs("sel_money_des") = NULL
-else	
-	rs("sel_money_des") = request("sel_money_des")
-end if
-if request("sel_y1") <> "" then
-	rs("sel_y1") = request("sel_y1")
-else
-	rs("sel_y1") = 0
-end if
-if request("sel_y2") <> "" then
-	rs("sel_y2") = request("sel_y2")
-else
-	rs("sel_y2") = 0
-end if
-if request("sel_area") = "不拘" then
-	rs("sel_area") = NULL
-else	
-	rs("sel_area") = request("sel_area")
-end if
-if request("sel_star") = "不拘" then
-	rs("sel_star") = NULL
-else	
-	rs("sel_star") = request("sel_star")
-end if
-rs("sel_he1") = request("sel_he1")
-rs("sel_he2") = request("sel_he2")
-if request("sel_wet") = "不拘" then
-	rs("sel_wet") = NULL
-else	
-	rs("sel_wet") = request("sel_wet")
-end if
-if request("sel_money") = "不拘" then
-	rs("sel_money") = NULL
-else	
-	rs("sel_money") = request("sel_money")
-end if
-if request("sel_sociability") = "不拘" then
-	rs("sel_sociability") = NULL
-else	
-	rs("sel_sociability") = request("sel_sociability")
-end if
-if request("sel_view") = "不拘" then
-	rs("sel_view") = NULL
-else	
-	rs("sel_view") = request("sel_view")
-end if
-if request("sel_mem7") = "不拘" then
-	rs("sel_mem7") = NULL
-else	
-	rs("sel_mem7") = request("sel_mem7")
-end if
-if request("sel_mem8") = "不拘" then
-	rs("sel_mem8") = NULL
-else	
-	rs("sel_mem8") = request("sel_mem8")
-end if
-if request("sel_mem22") = "不拘" then
-	rs("sel_mem22") = NULL
-else	
-	rs("sel_mem22") = request("sel_mem22")
-end if
-rs("sys_note") = request("sys_note")
-if request("can_call") = "不拘" then
-	rs("can_call") = NULL
-else	
-	rs("can_call") = request("can_call")
-end if
-if request("can_love") = "不拘" then
-	rs("can_love") = NULL
-else	
-	rs("can_love") = request("can_love")
-end if
-rs("recipe1") = request("recipe1")
-rs("recipe2") = request("recipe2")
-rs("recipe3") = request("recipe3")
-rs("mem_money") = request("mem_money")
-'rs("mem_money_m") = mem_money_m
-rs("mem_money_y") = mem_money_y
-rs("mem_money_des") = request("mem_money_des")
-if request("mem_car") = "1" then
-	rs("mem_car") = 1
-else
-	rs("mem_car") = 0
-end if
-if request("mem_house") = "1" then
-	rs("mem_house") = 1
-else
-	rs("mem_house") = 0
-end if
-'rs("mem_da1") = request("mem_da1")
-rs("mem_da2") = request("mem_da2")
-rs("mem_da3") = request("mem_da3")
-rs("mem_da4") = request("mem_da4")
-rs("mem_da5") = request("mem_da5")
-rs("mem_da6") = request("mem_da6")
 
-old_branch = rs("mem_branch")
-IF Session("MM_UserAuthorization") = "admin" Or ((Session("MM_UserAuthorization") = "branch" or Session("MM_UserAuthorization") = "pay") and old_branch = session("branch")) Then
-	if request("mem_branch") <> "" then
-		rs("mem_branch") = request("mem_branch")
-	else	
-		rs("mem_branch") = NULL
-	end if
-	if request("mem_single") <> "" then
-		if not rs("mem_single") = request("mem_single") then
-			change_log_msg = change_log_msg&"[秘書]"&old_branch&"-"&SingleName(rs("mem_single"))&"=>"&request("mem_branch")&"-"&SingleName(request("mem_single"))&""	
-		end if
-		rs("mem_single") = request("mem_single")
-	else	
-		change_log_msg = change_log_msg&"[秘書]"&old_branch&"-"&SingleName(rs("mem_single"))&"=>NULL"	
-		rs("mem_single") = NULL
-	end if
-end if
+//接收值
+$mem4 = SqlFilter($_REQUEST["mem4"],"tab");
+$mem6 = SqlFilter($_REQUEST["mem6"],"tab");
+$mem7 = SqlFilter($_REQUEST["mem7"],"tab");
+$mem8 = SqlFilter($_REQUEST["mem8"],"tab");
+$mem22 = SqlFilter($_REQUEST["mem22"],"tab");
+$mem18 = SqlFilter($_REQUEST["mem18"],"tab");
+$mem181 = SqlFilter($_REQUEST["mem181"],"tab");
+$mem_join = SqlFilter($_REQUEST["mem_join"],"tab");
+$mem_jy = SqlFilter($_REQUEST["mem_jy"],"tab");
+$mem_jm = SqlFilter($_REQUEST["mem_jm"],"tab");
+$mem_jd = SqlFilter($_REQUEST["mem_jd"],"tab");
+$sel_marry = SqlFilter($_REQUEST["sel_marry"],"tab");
+$sel_school = SqlFilter($_REQUEST["sel_school"],"tab");
+$sel_mem6 = SqlFilter($_REQUEST["sel_mem6"],"tab");
+$sel_job = SqlFilter($_REQUEST["sel_job"],"tab");
+$sel_mem4 = SqlFilter($_REQUEST["sel_mem4"],"tab");
+$sel_money_des = SqlFilter($_REQUEST["sel_money_des"],"tab");
+$sel_y1 = SqlFilter($_REQUEST["sel_y1"],"tab");
+$sel_y2 = SqlFilter($_REQUEST["sel_y2"],"tab");
+$sel_area = SqlFilter($_REQUEST["sel_area"],"tab");
+$sel_star = SqlFilter($_REQUEST["sel_star"],"tab");
+$sel_wet = SqlFilter($_REQUEST["sel_wet"],"tab");
+$sel_money = SqlFilter($_REQUEST["sel_money"],"tab");
+$sel_sociability = SqlFilter($_REQUEST["sel_sociability"],"tab");
+$sel_view = SqlFilter($_REQUEST["sel_view"],"tab");
+$sel_mem7 = SqlFilter($_REQUEST["sel_mem7"],"tab");
+$sel_mem8 = SqlFilter($_REQUEST["sel_mem8"],"tab");
+$sel_mem22 = SqlFilter($_REQUEST["sel_mem22"],"tab");
+$can_call = SqlFilter($_REQUEST["can_call"],"tab");
+$sys_note = SqlFilter($_REQUEST["sys_note"],"tab");
+$can_love = SqlFilter($_REQUEST["can_love"],"tab");
+$recipe1 = SqlFilter($_REQUEST["recipe1"],"tab");
+$recipe2 = SqlFilter($_REQUEST["recipe2"],"tab");
+$recipe3 = SqlFilter($_REQUEST["recipe3"],"tab");
+$mem_money = SqlFilter($_REQUEST["mem_money"],"tab");
+$mem_money_des = SqlFilter($_REQUEST["mem_money_des"],"tab");
+$mem_car = SqlFilter($_REQUEST["mem_car"],"tab");
+$mem_house = SqlFilter($_REQUEST["mem_house"],"tab");
+for ( $i=2;$i<=5;$i++ ){
+    ${"mem_da".$i} = SqlFilter($_REQUEST["mem_da".$i],"tab");
+}
 
-if request("love_single") <> "" then
-	if isnull(rs("love_single")) then
-		change_log_msg = change_log_msg&"[排約]NULL=>"&SingleName(request("love_single"))&""	
-	elseif not rs("love_single") = request("love_single") then
-		change_log_msg = change_log_msg&"[排約]"&SingleName(rs("love_single"))&"=>"&SingleName(request("love_single"))&""	
-	end if
-	rs("love_single") = request("love_single")
-else	
-	if rs("love_single") <> "" then
-		change_log_msg = change_log_msg&"[排約]"&SingleName(rs("love_single"))&"=>NULL"	
-  	end if
-	rs("love_single") = NULL
-end if
-if request("call_branch") <> "" then
-	rs("call_branch") = request("call_branch")
-else	
-	rs("call_branch") = NULL
-end if
-if request("call_single") <> "" then
-	if isnull(rs("call_single")) then
-		change_log_msg = change_log_msg&"[邀約]NULL=>"&SingleName(request("call_single"))&""	
-	elseif not rs("call_single") = request("call_single") then
-		change_log_msg = change_log_msg&"[邀約]"&rs("call_branch")&"-"&SingleName(rs("call_single"))&"=>"&request("call_branch")&"-"&SingleName(request("call_single"))&""	
-	end if
-	rs("call_single") = request("call_single")
-else	
-	if rs("call_single") <> "" then
-		change_log_msg = change_log_msg&"[邀約]"&rs("call_branch")&"-"&SingleName(rs("call_single"))&"=>NULL"	
-  	end if
-	rs("call_single") = NULL
-end if
+$subSQL .= ",mem4='".$mem4."',mem6='".$mem6."',mem7='".$mem7."',mem8='".$mem8."',mem22='".$mem22."',mem18='".$mem18."',mem181='".$mem181."',mem_join='".$mem_join."'";
 
-IF Session("MM_UserAuthorization") = "admin" Then
-	rs("mem_tag") = request("mem_tag")
-end if
+if ( $mem_jy != "" ){ $subSQL .= ",mem_jy='".$mem_jy."'"; }
+if ( $mem_jm != "" ){ $subSQL .= ",mem_jm='".$mem_jm."'"; }
+if ( $mem_jd != "" ){ 
+    $subSQL .= ",mem_jm='".$mem_jd."',mem_jointime='".$mem_jy."/".$mem_jm."/".$mem_jd."'"; 
+}
 
-rs("mem_uptime") = now()
-rs.update
-mem_branch = rs("mem_branch")
-jointime = rs("mem_jointime")
-mem_mobile = rs("mem_mobile")
-rs.close
+if ( $sel_marry == "不拘" ){ $subSQL .= ",sel_marry=NULL"; }else{ $subSQL .= ",sel_marry='".$sel_marry."'"; }
+if ( $sel_school == "不拘" ){ $subSQL .= ",sel_school=NULL"; }else{ $subSQL .= ",sel_school='".$sel_school."'"; }
+if ( $sel_mem6 == "不拘" ){ $subSQL .= ",sel_mem6=NULL"; }else{ $subSQL .= ",sel_mem6='".$sel_mem6."'"; }
+if ( $sel_job == "不拘" ){ $subSQL .= ",sel_job=NULL"; }else{ $subSQL .= ",sel_job='".$sel_job."'"; }
+if ( $sel_mem4 == "不拘" ){ $subSQL .= ",sel_mem4=NULL"; }else{ $subSQL .= ",sel_mem4='".$sel_mem4."'"; }
+if ( $sel_money_des == "不拘" ){ $subSQL .= ",sel_money_des=NULL"; }else{ $subSQL .= ",sel_money_des='".$sel_money_des."'"; }
+if ( $sel_y1 != "" ){ $subSQL .= ",sel_y1='".$sel_y1."'"; }else{ $subSQL .= ",sel_y1='0'"; }
+if ( $sel_y2 != "" ){ $subSQL .= ",sel_y2='".$sel_y2."'"; }else{ $subSQL .= ",sel_y2='0'"; }
+if ( $sel_mem4 == "不拘" ){ $subSQL .= ",sel_area=NULL"; }else{ $subSQL .= ",sel_area='".$sel_area."'"; }
+if ( $sel_star == "不拘" ){ $subSQL .= ",sel_star=NULL"; }else{ $subSQL .= ",sel_star='".$sel_star."'"; }
+$subSQL .= ",sel_he1='".$sel_he1."',sel_he2='".$sel_he2."'"; 
+if ( $sel_wet == "不拘" ){ $subSQL .= ",sel_wet=NULL"; }else{ $subSQL .= ",sel_wet='".$sel_wet."'"; }
+if ( $sel_money == "不拘" ){ $subSQL .= ",sel_money=NULL"; }else{ $subSQL .= ",sel_money='".$sel_money."'"; }
+if ( $sel_sociability == "不拘" ){ $subSQL .= ",sel_sociability=NULL"; }else{ $subSQL .= ",sel_sociability='".$sel_sociability."'"; }
+if ( $sel_view == "不拘" ){ $subSQL .= ",sel_view=NULL"; }else{ $subSQL .= ",sel_view='".$sel_view."'"; }
+if ( $sel_mem7 == "不拘" ){ $subSQL .= ",sel_mem7=NULL"; }else{ $subSQL .= ",sel_mem7='".$sel_mem7."'"; }
+if ( $sel_mem8 == "不拘" ){ $subSQL .= ",sel_mem8=NULL"; }else{ $subSQL .= ",sel_mem8='".$sel_mem8."'"; }
+if ( $sel_mem8 == "不拘" ){ $subSQL .= ",sel_mem22=NULL"; }else{ $subSQL .= ",sel_mem22='".$sel_mem22."'"; }
+$subSQL .= ",sys_note='".$sys_note."'"; 
+if ( $can_call == "不拘" ){ $subSQL .= ",can_call=NULL"; }else{ $subSQL .= ",can_call='".$can_call."'"; }
+if ( $can_love == "不拘" ){ $subSQL .= ",can_love=NULL"; }else{ $subSQL .= ",can_love='".$can_love."'"; }
+$subSQL .= ",recipe1='".$recipe1."',recipe2='".$recipe2."',recipe3='".$recipe3."',mem_money='".$mem_money."',mem_money_y='".$mem_money_y."',mem_money_des='".$mem_money_des."'"; 
+if ( $mem_car == "1" ){ $subSQL .= ",mem_car=1"; }else{ $subSQL .= ",mem_car=0"; }
+if ( $mem_house == "1" ){ $subSQL .= ",mem_house=1"; }else{ $subSQL .= ",mem_house=0"; }
+$subSQL .= ",mem_da2='".$mem_da2."',mem_da3='".$mem_da3."',mem_da4='".$mem_da4."',mem_da5='".$mem_da5."',mem_da6='".$mem_da6."'"; 
 
-if change_log_msg <> "" then	
-rs.open "select top 1 * from log_data", SPCon, 1, 3
-if old_mem_mobile <> "" then
-rs.addnew
-rs("log_time") = now
-rs("log_num") = old_mem_au
-rs("log_fid") = lusername
-rs("log_username") = n1
-rs("log_name") = Session("p_other_name")
-rs("log_branch") = Session("branch")
-rs("log_single") = Session("MM_Username")
-rs("log_1") = old_mem_mobile
-rs("log_2") = "系統紀錄"
-rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"修改資料"&change_log_msg&""
-rs("log_5") = "member"
-end if
-rs.addnew
-rs("log_time") = now
-rs("log_num") = old_mem_au
-rs("log_fid") = lusername
-rs("log_username") = n1
-rs("log_name") = Session("p_other_name")
-rs("log_branch") = Session("branch")
-rs("log_single") = Session("MM_Username")
-rs("log_1") = mem_mobile
-rs("log_2") = "系統紀錄"
-rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"修改資料"&change_log_msg&""
-rs("log_5") = "member"
-rs.update
-rs.close
-end if
+$old_branch = $re["mem_branch"];
 
-if change_memusername_loveandpay_old <> "" and change_memusername_loveandpay_new <> "" then
-	if len(change_memusername_loveandpay_old) > 5 and len(change_memusername_loveandpay_new) > 5 then
-	rs.open "UPDATE pay_main SET pay_user='"&change_memusername_loveandpay_new&"' WHERE pay_user='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3
-	rs.open "UPDATE love_data_re SET love_user='"&change_memusername_loveandpay_new&"' WHERE love_user='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3
-	rs.open "UPDATE love_data_re SET love_user2='"&change_memusername_loveandpay_new&"' WHERE love_user2='"&change_memusername_loveandpay_old&"'", SPCon, 1, 3	
-  end if
-end if
+//接收值
+$mem_branch = SqlFilter($_REQUEST["mem_branch"],"tab");
+$mem_single = SqlFilter($_REQUEST["mem_single"],"tab");
+$love_single = SqlFilter($_REQUEST["love_single"],"tab");
+$call_branch = SqlFilter($_REQUEST["call_branch"],"tab");
+$call_single = SqlFilter($_REQUEST["call_single"],"tab");
+$mem_tag = SqlFilter($_REQUEST["mem_tag"],"tab");
+
+if ( $_SESSION["MM_UserAuthorization"] == "admin" || ( ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ) && $old_branch == $_SESSION["branch"] ) ){
+	if ( $mem_branch != "" ){ $subSQL .= ",mem_branch='".$mem_branch."'"; }else{ $subSQL .= ",mem_branch=NULL"; }
+	if ( $mem_single != "" ){
+		if ( $re["mem_single"] != $mem_single ){
+			$change_log_msg = $change_log_msg."[秘書]".$old_branch&"-".SingleName($re["mem_single"],"normal")."=>".$mem_branch."-".SingleName($mem_single,"normal");
+        }
+        $subSQL .= ",mem_single='".$mem_da2."'"; 
+    }else{
+		$change_log_msg = $change_log_msg."[秘書]".$old_branch."-".SingleName($re["mem_single"],"normal")."=>NULL";
+        $subSQL .= ",mem_single=NULL"; 
+	}
+}
+
+if ( $love_single != "" ){
+	if ( is_null($re["love_single"]) ){
+		$change_log_msg = $change_log_msg."[排約]NULL=>".SingleName($love_single,"normal");
+    }elseif ( $re["love_single"] != $love_single ){
+		$change_log_msg = $change_log_msg."[排約]".SingleName($re["love_single"],"normal")."=>".SingleName($love_single,"normal");
+	}
+    $subSQL .= ",love_single='".$love_single."'"; 
+}else{
+	if ( $re["love_single"] != "" ){
+		$change_log_msg = $change_log_msg."[排約]".SingleName($re["love_single"],"normal")."=>NULL";
+    }
+    $subSQL .= ",love_single=NULL"; 
+}
+
+if ( $call_branch != "" ){
+    $subSQL .= ",call_branch='".$call_branch."'";
+}else{
+    $subSQL .= ",call_branch=NULL";
+}
+
+if ( $call_single != "" ){
+	if ( is_null($re["call_single"]) ){
+		$change_log_msg = $change_log_msg."[邀約]NULL=>".SingleName($call_single,"normal");
+    }elseif ( $re["call_single"] != $call_single ){
+		$change_log_msg = $change_log_msg."[邀約]".$re["call_branch"]."-".SingleName($re["call_single"],"normal")."=>".$call_branch."-".SingleName($call_single,"normal");
+	}
+    $subSQL .= ",call_single='".$call_single."'";
+}else{
+	if ( $re["call_single"] != "" ){
+		$change_log_msg = $change_log_msg."[邀約]".$re["call_branch"]."-".SingleName($re["call_single"],"normal")."=>NULL";
+    }
+    $subSQL .= ",call_single=NULL";
+}
+
+if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+    $subSQL .= ",mem_tag='".$mem_tag."'";
+}
+$subSQL .= ",mem_uptime='".strftime("%Y/%m/%d %H:%M:%S")."'";
+
+$SQL_u = "Update member_data Set mem_msn=mem_msn".$subSQL." Where mem_num='".$mem_num."'";
+echo $SQL_u;
+exit;
+$rs_u = $SPConn->prepare($SQL_u);
+$rs_u->execute();
+
+$mem_branch = $re["mem_branch"];
+$jointime = $re["mem_jointime"];
+$mem_mobile = $re["mem_mobile"];
+
+if ( $change_log_msg != "" ){
+    if ( $old_mem_mobile != "" ){
+        //新增log_data
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, , log_4, log_5) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".$old_mem_au."',";
+        $SQL_i .= "'".$lusername."',";
+        $SQL_i .= "'".$n1."',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+        $SQL_i .= "'".$_SESSION["branch"]."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".$old_mem_mobile."',";
+        $SQL_i .= "'系統紀錄',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."於".strftime("%Y/%m/%d %H:%M:%S")."修改資料".$change_log_msg."',";
+        $SQL_i .= "'member')";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();
+    }
+    //新增log_data
+    $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, , log_4, log_5) Values ( ";
+    $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+    $SQL_i .= "'".$old_mem_au."',";
+    $SQL_i .= "'".$lusername."',";
+    $SQL_i .= "'".$n1."',";
+    $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+    $SQL_i .= "'".$_SESSION["branch"]."',";
+    $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+    $SQL_i .= "'".$mem_mobile."',";
+    $SQL_i .= "'系統紀錄',";
+    $SQL_i .= "'".$_SESSION["p_other_name"]."於".strftime("%Y/%m/%d %H:%M:%S")."修改資料".$change_log_msg."',";
+    $SQL_i .= "'member')";
+    $rs_i = $SPConn->prepare($SQL_i);
+    $rs_i->execute();
+}
+
+if ( $change_memusername_loveandpay_old != "" && $change_memusername_loveandpay_new != "" ){
+	if ( strlen($change_memusername_loveandpay_old) > 5 && strlen($change_memusername_loveandpay_new) > 5 ){
+        $SQL_u = "Update pay_main Set pay_user='".$change_memusername_loveandpay_new."' Where pay_user='".$change_memusername_loveandpay_old."'";
+        $rs_u = $SPConn->prepare($SQL_i);
+        $rs_u->execute();
+        $SQL_u = "Update love_data_re Set love_user='".$change_memusername_loveandpay_new."' Where love_user='".$change_memusername_loveandpay_old."'"
+        $rs_u = $SPConn->prepare($SQL_i);
+        $rs_u->execute();
+        $SQL_u = "Update love_data_re Set love_user2='".$change_memusername_loveandpay_new."' Where love_user2='".$change_memusername_loveandpay_old."'";
+        $rs_u = $SPConn->prepare($SQL_i);
+        $rs_u->execute();        
+    }
+}
 
 if checkok = 1 then
 	
