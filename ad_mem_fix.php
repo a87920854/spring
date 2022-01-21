@@ -23,6 +23,7 @@ $mem_money_y = SqlFilter($_REQUEST["mem_money_y"],"tab"); //會員年收入
 $mem_branch = SqlFilter($_REQUEST["mem_branch"],"tab"); //受理會館
 $mem_single = SqlFilter($_REQUEST["mem_single"],"tab"); //受理祕書
 $mem_level = SqlFilter($_REQUEST["mem_single"],"tab"); //受理祕書
+$mem_sex = SqlFilter($_REQUEST["mem_sex"],"tab"); //會員性別
 
 
 //新增會員資料
@@ -542,7 +543,7 @@ if ( $change_memusername_loveandpay_old != "" && $change_memusername_loveandpay_
         $SQL_u = "Update pay_main Set pay_user='".$change_memusername_loveandpay_new."' Where pay_user='".$change_memusername_loveandpay_old."'";
         $rs_u = $SPConn->prepare($SQL_i);
         $rs_u->execute();
-        $SQL_u = "Update love_data_re Set love_user='".$change_memusername_loveandpay_new."' Where love_user='".$change_memusername_loveandpay_old."'"
+        $SQL_u = "Update love_data_re Set love_user='".$change_memusername_loveandpay_new."' Where love_user='".$change_memusername_loveandpay_old."'";
         $rs_u = $SPConn->prepare($SQL_i);
         $rs_u->execute();
         $SQL_u = "Update love_data_re Set love_user2='".$change_memusername_loveandpay_new."' Where love_user2='".$change_memusername_loveandpay_old."'";
@@ -551,247 +552,238 @@ if ( $change_memusername_loveandpay_old != "" && $change_memusername_loveandpay_
     }
 }
 
-if checkok = 1 then
+if ( $checkok == 1 ){
+	if ( $jointime != "" ){
+		if ( is_date($jointime) ){
+            $days=(now()-strtotime($jointime))/86400;
+			if ( $days < 0 ){
+				$jointime = date("Y/m/d");
+            }
+		}
+	}
 	
-	if jointime <> "" then
-		if isdate(jointime) then
-			if datediff("d", jointime, date) < 0 then
-				jointime = date()
-			end if
-		end if
-	end if
+	if ( is_date($jointime) == false ){
+		$jointime = date("Y/m/d");
+    }
 	
-	if not isdate(jointime) then
-		jointime = date()
-	end if
-	
-	
-	rs.open "select mem_auto, mem_username, mem_passwd, mem_name, mem_mail, mem_level,mem_mobile, mem_mobile2,web_level, real_web_level, web_startime, web_endtime, si_real_invite, si_enterprise,si_no_mail1, si_no_mail2 from member_data where mem_num="&mem_num&"", SPCon, 1, 3
-	if not rs.eof then	
-		mem_au = rs("mem_auto")
-		lusername = rs("mem_username")
-		n1 = rs("mem_name")
-		mem_name = n1
-		mem_mail = rs("mem_mail")
-		nomail = rs("si_no_mail1")
-		nomail2 = rs("si_no_mail2")
-		n10 = rs("mem_mobile")
-		mem_mobile2 = rs("mem_mobile2")
-		old_level = rs("web_level")
-		web_level = clng(request("mem_level"))
+    $SQL  = "Select mem_auto, mem_username, mem_passwd, mem_name, mem_mail, mem_level,mem_mobile, mem_mobile2,web_level, real_web_level, web_startime, web_endtime, si_real_invite, ";
+    $SQL .= "si_enterprise,si_no_mail1, si_no_mail2 From member_data Where mem_num=".$mem_num;
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);    
+    if ( count($result) > 0 ){
+		$mem_au = $re["mem_auto"];
+		$lusername = $re["mem_username"];
+		$n1 = $re["mem_name"];
+		$mem_name = $n1;
+		$mem_mail = $re["mem_mail"];
+		$nomail = $re["si_no_mail1"];
+		$nomail2 = $re["si_no_mail2"];
+		$n10 = $re["mem_mobile"];
+		$mem_mobile2 = $re["mem_mobile2"];
+		$old_level = $re["web_level"];
+		$web_level = round($mem_level);
+		$web_level_name = num_lv($web_level);
+
+        $subSQL = ",web_startime='".$jointime."'";
+		switch ( $web_level ){
+			case 1:
+                $n_web_endtime = date($jointime,strtotime('+2 month'));
+                $subSQL .= ",web_endtime='".$n_web_endtime."'";
+        		$timemsg = $jointime."~".$n_web_endtime;
+                break;
+			case 2:
+                $n_web_endtime = date($jointime,strtotime('+3 month'));
+		        $timemsg .= $jointime."~".$n_web_endtime;
+                $subSQL = ",web_endtime='".$n_web_endtime."',si_real_invite=1";
+                break;
+			case 3:
+                $n_web_endtime = date($jointime,strtotime('+12 month'));
+                $subSQL .= ",web_endtime='".$n_web_endtime."'";
+		        $timemsg = $jointime."~".$n_web_endtime;
+                break;
+			case 4:
+                $n_web_endtime = date($jointime,strtotime('+12 month'));
+                $subSQL .= ",web_endtime='".$n_web_endtime."'";
+		        $timemsg = $jointime."~".$n_web_endtime;
+                break;
+			case 5:
+                $n_web_endtime = date($jointime,strtotime('+24 month'));
+		        $subSQL .= ",web_endtime='".$n_web_endtime."'";
+		        $timemsg = $jointime."~".$n_web_endtime;
+                break;
+			case 6:
+                $n_web_endtime = date($jointime,strtotime('+24 month'));
+		        $subSQL .= ",web_endtime='".$n_web_endtime."'";
+		        $timemsg = $jointime."~".$n_web_endtime;
+                break;
+		    case 10: //專案3
+                $n_web_endtime = date($jointime,strtotime('+3 month'));
+		        $subSQL .= ",web_endtime='".$n_web_endtime."'";
+		        $timemsg = $jointime."~".$n_web_endtime;
+                $web_level = 3;
+                break;
+		    case 11: //專案6
+                $n_web_endtime = date($jointime,strtotime('+6 month'));
+                $subSQL .= ",web_endtime='".$n_web_endtime."'";
+                $timemsg = $jointime."~".$n_web_endtime;
+                $web_level = 3;
+        }
+
+        $subSQL .= ",web_level='".$web_level."',real_web_level='".$mem_level."'";
 		
-		rs("web_startime") = jointime		
-		web_level_name = num_lv(web_level)
-		select case web_level
-			case 1
-		rs("web_endtime") = dateadd("m", 2, jointime)
-		timemsg = jointime&"~"&dateadd("m", 2, jointime)
-			case 2
-		rs("web_endtime") = dateadd("m", 3, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 3, jointime)
-		rs("si_real_invite") = 1
-			case 3
-		rs("web_endtime") = dateadd("m", 12, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 12, jointime)
-			case 4
-		rs("web_endtime") = dateadd("m", 12, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 12, jointime)
-			case 5
-		rs("web_endtime") = dateadd("m", 24, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 24, jointime)
-			case 6
-		rs("web_endtime") = dateadd("m", 24, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 24, jointime)
-		case 10 '專案3
-		rs("web_endtime") = dateadd("m", 3, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 3, jointime)
-		web_level = 3
-		case 11 '專案6
-		rs("web_endtime") = dateadd("m", 6, jointime)	
-		timemsg = jointime&"~"&dateadd("m", 6, jointime)
-		web_level = 3
-		end select
+		if ( $re["si_enterprise"] == 99 ){
+		    $subSQL .=",si_enterprise = 1";
+        }
 
-		rs("web_level") = web_level		
-		rs("real_web_level") = request("mem_level")
-		
-		if rs("si_enterprise") = 99 then
-		  rs("si_enterprise") = 1
-	  end if
-	  
-		rs.update
-		rs.close
-rs.open "select top 1 * from log_data", SPCon, 1, 3
-rs.addnew
-rs("log_time") = now
-rs("log_num") = mem_au
-rs("log_fid") = lusername
-rs("log_username") = n1
-rs("log_name") = Session("p_other_name")
-rs("log_branch") = Session("branch")
-rs("log_single") = Session("MM_Username")
-rs("log_1") = n10
-rs("log_2") = "系統紀錄"
-rs("log_4") = Session("p_other_name")&"於"&chtime(now)&"將會員權益自"&num_lv(old_level)&"修改成"&web_level_name&" - 效期至"&timemsg&""
-rs("log_5") = "member"
-rs("log_service") = 1
-rs.update
-rs.close
+        //更新member_data
+        $SQL_u = "Update member_data Set mem_branch=mem_branch".$subSQL." Where mem_num=".$mem_num;;
+        $rs_u = $SPConn->prepare($SQL_u);
+        $rs_u->execute();
 
-if mem_branch = "八德" then
-  call notice_new_member( "dmn", mem_mail, nomail, mem_name)
-  call notice_new_member_sms("dmn", n10, nomail2, mem_name)
-elseif mem_branch = "迷你約" then
-	'call notice_new_member( "minibar", mem_mail, nomail, mem_name)
-	'call notice_new_member_sms("minibar", n10, nomail2, mem_name)
-elseif mem_branch = "約專" then
-	call notice_new_member( "singleparty", mem_mail, nomail, mem_name)
-	call notice_new_member_sms("singleparty", n10, nomail2, mem_name)
-else
-	call notice_new_member( "spring", mem_mail, nomail, mem_name)
-	call notice_new_member_sms("spring", n10, nomail2, mem_name)
-end if
+        //新增log_data
+        $SQL_i  = "Insert Into log_data(log_time, log_num, log_fid, log_username, log_name, log_branch, log_single, log_1, log_2, log_4, log_5, log_service) Values ( ";
+        $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+        $SQL_i .= "'".$mem_au."',";
+        $SQL_i .= "'".$lusername."',";
+        $SQL_i .= "'".$n1."',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."',";
+        $SQL_i .= "'".$_SESSION["branch"]."',";
+        $SQL_i .= "'".$_SESSION["MM_Username"]."',";
+        $SQL_i .= "'".$n10."',";
+        $SQL_i .= "'系統紀錄',";
+        $SQL_i .= "'".$_SESSION["p_other_name"]."於".changeDate(now())."將會員權益自".num_lv($old_level)."修改成".$web_level_name." - 效期至".$timemsg."',";
+        $SQL_i .= "'member',";        
+        $SQL_i .= "1)";
+        $rs_i = $SPConn->prepare($SQL_i);
+        $rs_i->execute();        
 
-	if request("mem_sex") = "男" then
-		rsex = 1
-	else
-		rsex = 2
-	end if
-	on error resume next
-Set httpRequest = Server.CreateObject("MSXML2.ServerXMLHTTP")
-httpRequest.Open "POST", "https://edm.springclub.com.tw/si_mem_cron_get.php"
-httpRequest.setRequestHeader "Content-Type", "application/x-www-form-urlencoded; charset=utf-8"
-httpRequest.Send "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty"
-response.write httpRequest.responseText
-Set httpRequest = nothing
+        //寄信未處理
+        if ( $mem_branch == "八德" ){
+            //call notice_new_member( "dmn", mem_mail, nomail, mem_name)
+            //call notice_new_member_sms("dmn", n10, nomail2, mem_name)
+        }elseif ( $mem_branch == "約專" ){
+	        //call notice_new_member( "singleparty", mem_mail, nomail, mem_name)
+	        //call notice_new_member_sms("singleparty", n10, nomail2, mem_name)
+        }else{
+	        //call notice_new_member( "spring", mem_mail, nomail, mem_name)
+	        //call notice_new_member_sms("spring", n10, nomail2, mem_name)
+        }
 
-'	response.write "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty<Br>"	
-	
+	    if ( $mem_sex = "男" ){ $rsex = 1; }else}{ $rsex = 2; }
 
-	end if
-end if
+	    /*on error resume next  寄信
+        Set httpRequest = Server.CreateObject("MSXML2.ServerXMLHTTP")
+        httpRequest.Open "POST", "https://edm.springclub.com.tw/si_mem_cron_get.php"
+        httpRequest.setRequestHeader "Content-Type", "application/x-www-form-urlencoded; charset=utf-8"
+        httpRequest.Send "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty"
+        response.write httpRequest.responseText
+        Set httpRequest = nothing*/
+        //'response.write "email="&mem_mail&"&name="&mem_name&"&sex="&rsex&"&company=singleparty<Br>"	
+    }
+}
 
-if mem_branch = "八德" then
-Dim DMNCon
-DMNConOpen
-if request("mem_level") = "guest" then
-'	if mem_username <> "" then
-'	rs.open "select HeadPhotoURL from UserData where mem_username='"&mem_username&"'", DMNCon, 1, 3
-'	if not rs.eof then
-'		hpurl = rs("HeadPhotoURL")		
-'		if hpurl <> "" then			
-'	    rmfile(server.mappath("dphoto/"&hpurl))
-'		end if
-'		rs.delete
-'		rs.update
-'	end if
-'	rs.close
-'	rs.open "select * from photo_data where mem_num='"&mem_num&"' and types='dmn'", SPCon, 1, 3
-'	if not rs.eof then
-'		while not rs.eof
-'		rmfile(server.mappath("dphoto/"&hpurl))		
-'		rs.delete
-'		rs.movenext
-'		wend
-'	end if
-'	rs.close
-'	rs.open "update member_data set mem_photo=NULL where mem_username='"&mem_username&"'", SPCon, 1, 3
-'	
-'  end if  
-else
+if ( $mem_branch == "八德" ){
+    if ( $mem_level == "guest" ){
+        //*
+    }else{
+        if ( $mem_username != "" ){
+            $SQL1 = "Select * From member_data Where mem_username='".$mem_username."'";
+            $rs1 = $SPConn->prepare($SQL1);
+            $rs1->execute();
+            $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+            foreach($result1 as $re1);
+            if ( count($result1) > 0 ){
+                $SQL2 = "Select * From UserData Where mem_username='".$mem_username."'";
+                $rs2 = $DMNOpen->prepare($SQL2);
+                $rs2->execute();
+                $result1 = $rs2->fetchAll(PDO::FETCH_ASSOC);
+                foreach($result2 as $re2);
+                if ( count($result2) == 0 ){
+                    if ( $re1["mem_sex"] == "男" ){ $sex = "M"; }else{ $sex = "F"; }
+                    if ( $re1["mem_photo"] != "" ){ $mem_photo = "photo/".$re1["mem_photo"];}
+                    //新增UserData
+                    $SQL_i  = "Insert Into UserData(mem_username, UserID, Password, FirstName, Nickname, birthday, Generation, Gender, Email, city, Address, telnum, Education, ";
+                    $SQL_i .= "Occupation, HeadPhotoURL, Constellation, tall, fullregtime, q37, mem_photo_show) Values ( ";
+                    $SQL_i .= "'".strtoupper($re1["mem_username"])."',";
+                    $SQL_i .= "'".$re1["mem_num"]."',";
+                    $SQL_i .= "'".$re1["mem_passwd"]."',";
+                    $SQL_i .= "'".$re1["mem_name"]."',";
+                    $SQL_i .= "'".$re1["mem_nick"]."',";
+                    $SQL_i .= "'".$re1["mem_by"]."/".$re1["mem_bm"]."/".$re1["mem_bd"]."',";
+                    $SQL_i .= "'".$sex."',";
+                    $SQL_i .= "'".$re1["mem_mail"]."',";
+                    $SQL_i .= "'".$re1["mem_area"]."',";
+                    $SQL_i .= "'".$re1["mem_address"]."',";
+                    $SQL_i .= "'".$re1["mem_mobile"]."',";
+                    $SQL_i .= "'".$re1["mem_school"]."',";
+                    $SQL_i .= "'".$re1["mem_job1"]."',";
+                    $SQL_i .= "'".$mem_photo."',";
+                    $SQL_i .= "'".$re1["mem_star"]."',";
+                    $SQL_i .= "'".$re1["mem_he"]."',";
+                    $SQL_i .= "'".strftime("%Y/%m/%d %H:%M:%S")."',";
+                    $SQL_i .= "'".$re1["mem_by"]."',";
+                    $SQL_i .= "'".$re1["mem_photo_show"]."')";
+                    $rs_i = $SPConn->prepare($SQL_i);
+                    $rs_i->execute();
+                }else{
+                    if ( $re1["mem_sex"] == "男" ){ $sex = "M"; }else{ $sex = "F"; }
 
-if mem_username <> "" then	
-Set qrs = Server.CreateObject("ADODB.Recordset")
-qrs.open "select * from member_data where mem_username='"&mem_username&"'", SPCon, 1, 1
-if not qrs.eof then
-rs.open "select * from UserData where mem_username='"&mem_username&"'", DMNCon, 1, 3
-if rs.eof then
-			rs.addnew
-			rs("mem_username") = ucase(qrs("mem_username"))
-			rs("UserID") = qrs("mem_num")
-			rs("Password") = qrs("mem_passwd")
-			rs("FirstName") = qrs("mem_name")
-			rs("Nickname") = qrs("mem_nick")
-			rs("birthday") = qrs("mem_by")&"/"&qrs("mem_bm")&"/"&qrs("mem_bd")
-			rs("Generation") = qrs("mem_by")
-			if qrs("mem_sex") = "男" then
-				sex = "M"
-			else
-				sex = "F"
-			end if
-			rs("Gender") = sex
-			rs("Email") = qrs("mem_mail")
-			rs("city") = qrs("mem_area")
-			rs("Address") = qrs("mem_address")
-			rs("telnum") = qrs("mem_mobile")
-			rs("Education") = qrs("mem_school")
-			rs("Occupation") = qrs("mem_job1")
-			if qrs("mem_photo") <> "" then
-			rs("HeadPhotoURL") = "photo/"&qrs("mem_photo")
-		  end if
-			rs("Constellation") = qrs("mem_star")
-			rs("tall") = qrs("mem_he")
-			rs("fullregtime") = now
-			rs("q37") = qrs("mem_by")
-			rs("mem_photo_show") = qrs("mem_photo_show")
-			rs.update
-else
-			rs("Password") = qrs("mem_passwd")
-			rs("FirstName") = qrs("mem_name")
-			rs("Nickname") = qrs("mem_nick")
-			rs("birthday") = qrs("mem_by")&"/"&qrs("mem_bm")&"/"&qrs("mem_bd")
-			rs("Generation") = qrs("mem_by")
-			if qrs("mem_sex") = "男" then
-				sex = "M"
-			else
-				sex = "F"
-			end if
-			rs("Gender") = sex
-			rs("Email") = qrs("mem_mail")
-			rs("city") = qrs("mem_area")
-			rs("Address") = qrs("mem_address")
-			rs("telnum") = qrs("mem_mobile")
-			rs("Education") = qrs("mem_school")
-			rs("Occupation") = qrs("mem_job1")			
-			rs("Constellation") = qrs("mem_star")
-			rs("tall") = qrs("mem_he")			
-			rs("q37") = qrs("mem_by")
-			rs("mem_photo_show") = qrs("mem_photo_show")
-			rs.update
-end if
-rs.close
-end if
-end if
-end if
-end if
-set qrs=nothing
-Set rs = nothing
-Call alert("修改完成。","ad_mem_fix.asp?mem_num="&mem_num&"", 0)
-Response.end
-End IF
+                    //新增UserData
+                    $SQL_i  = "Insert Into UserData(Password, FirstName, Nickname, birthday, Generation, Gender, Email, city, Address, telnum, Education, Occupation, Constellation, ";
+                    $SQL_i .= "tall, q37, mem_photo_show) Values ( ";
+                    $SQL_i .= "'".$re1["mem_passwd"]."',";
+                    $SQL_i .= "'".$re1["mem_name"]."',";
+                    $SQL_i .= "'".$re1["mem_nick"]."',";
+                    $SQL_i .= "'".$re1["mem_by"]."/".$re1["mem_bm"]."/".$re1["mem_bd"]."',";
+                    $SQL_i .= "'".$re1["mem_by"]."',";
+                    $SQL_i .= "'".$sex."',";
+                    $SQL_i .= "'".$re1["mem_mail"]."',";
+                    $SQL_i .= "'".$re1["mem_area"]."',";
+                    $SQL_i .= "'".$re1["mem_address"]."',";
+                    $SQL_i .= "'".$re1["mem_mobile"]."',";
+                    $SQL_i .= "'".$re1["mem_school"]."',";
+                    $SQL_i .= "'".$re1["mem_job1"]."',";
+                    $SQL_i .= "'".$re1["mem_star"]."',";
+                    $SQL_i .= "'".$re1["mem_he"]."',";
+                    $SQL_i .= "'".$re1["mem_by"]."',";
+                    $SQL_i .= "'".$re1["mem_photo_show"]."')";
+                    $rs_i = $SPConn->prepare($SQL_i);
+                    $rs_i->execute();
+                }
+            }
+        }
+    }
+    call_alert("修改完成。","ad_mem_fix.php?mem_num=".$mem_num."", 0);
+    exit;
+}
 
-rs.Open "SELECT * FROM member_data Where mem_num='"&mem_num&"'",SPCon,1,1
-mem_branch = rs("mem_branch")
-mem_single = ucase(rs("mem_single"))
+//取得會員已存在資料
+$SQL = "Select * From member_data Where mem_num='".$mem_num."'";
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
 
-mem_branch2 = rs("mem_branch2")
-mem_single2 = rs("mem_single2")
+$mem_branch = $re["mem_branch"];
+$mem_single = strtoupper($re["mem_single"]);
+$mem_branch2 = $re["mem_branch2"];
+$mem_single2 = $re["mem_single2"];
+$love_single = $re["love_single"];
+$love_single2 = $re["love_single2"];
+$call_branch = $re["call_branch"];
+$call_single = $re["call_single"];
 
-love_single = rs("love_single")
-love_single2 = rs("love_single2")
+if ( $_SESSION["MM_Username"] == "TSAIWEN216" || $_SESSION["MM_Username"] == "SHEERY03130513" || $_SESSION["MM_Username"] == "LI6954029" ){
+	$power_edit = 1;
+}else{
+	$power_edit = 0;
+}
 
-call_branch = rs("call_branch")
-call_single = rs("call_single")
-
-if Session("MM_Username") = "KYOE" Or Session("MM_Username") = "SHEERY03130513" or Session("MM_Username") = "LI6954029" Or Session("MM_Username") = "TSAIWEN216" Then
-	power_edit = 1
-else
-	power_edit = 0
-end if
-
-if rs("mem_level") = "mem" and not Session("MM_UserAuthorization") = "admin" and not Session("MM_UserAuthorization") = "branch" and not Session("MM_UserAuthorization") = "manager" and not Session("MM_UserAuthorization") = "love_manager" and not Session("MM_UserAuthorization") = "pay" then
-	Call alert("權限不足。",0, 0)
-end if
+if ( $re["mem_level"] == "mem" && $_SESSION["MM_UserAuthorization"] != "admin" && $_SESSION["MM_UserAuthorization"] != "branch" && $_SESSION["MM_UserAuthorization"] != "manager" && $_SESSION["MM_UserAuthorization"] != "love_manager" && $_SESSION["MM_UserAuthorization"] != "pay" ){
+	call_alert("權限不足。",0, 0);
+}
 ?>
 <!-- MIDDLE -->
 <section id="middle">
@@ -800,32 +792,22 @@ end if
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="ad_mem.php">會員管理系統</a></li>
-            <li class="active">修改會員資料 - 2080022</li>
+            <li class="active">修改會員資料 - <?php echo $mem_num;?></li>
         </ol>
     </header>
     <!-- /page title -->
 
     <div id="content" class="padding-20">
         <!-- content starts -->
-
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>修改會員資料 - 2080022</strong> <!-- panel title -->
+                    <strong>修改會員資料 - <?php echo $mem_num;?></strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
-
-                <p>
-                    <a class="btn btn-primary" href="ad_mem_detail.php?mem_num=2080022">基本資料</a>
-                    <a class="btn btn-blue" href="ad_mem_fix.php?mem_num=2080022"><i class="fa fa-arrow-right" style="margin-top:3px;"></i>修改資料</a>
-                    <a class="btn btn-info" href="ad_mem_service.php?mem_num=2080022">服務紀錄</a>
-                    <a class="btn btn-danger" href="ad_mem_ptest.php?mem_num=2080022">心理測驗</a>
-                    <a class="btn btn-warning" href="ad_mem_login_log.php?mem_num=2080022">登入紀錄</a>
-                    <a class="btn btn-dirtygreen" href="ad_important_paper.php?mem_num=2080022">紙本資料</a>
-                </p>
-
+                <?php require_once("./include/mem_menu.php");?>
                 <form id="sform" action="?state=add" method="post" name="form5" onSubmit="return chk_form()" data-cansend="0" class="form-inline">
                     <table class="table table-striped table-bordered bootstrap-datatable input_small">
                         <tr>
@@ -833,44 +815,99 @@ end if
                         </tr>
                         <tr>
                             <td>
-
-
-                                <font color="#FF0000">會員權益</font>：
-
-                                <select name="mem_level" id="mem_level">
-                                    <option value="guest">未入會</option>
-                                    <option value="2">真人認證會員</option>
-                                    <option value="10">菁英專案-三個月</option>
-                                    <option value="11">菁英專案-六個月</option>
-                                    <option value="3" selected>璀璨會員-一年期</option>
-                                    <option value="5">璀璨會員-二年期</option>
-                                    <option value="4">璀璨VIP會員-一年期</option>
-                                    <option value="6">璀璨VIP會員-二年期</option>
-                                </select>
-
-                                <select name="ispay" id="ispay">
-                                    <option value="0" selected>完款</option>
-                                    <option value="1">付訂</option>
-                                </select>
-
-                                <input type="hidden" name="now_mem_level" id="now_mem_level" value="mem">
-
-                                　
-                                待服務名單：
-                                <select name="mem_s1" id="select14">
-
-                                    <option value="無" selected>無</option>
-                                    <option value="有">有</option>
-                                </select>
-
+                                <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){ ?>
+                                    <font color="#FF0000">會員權益</font>：
+                                    <?php
+			                        $web_level = $re["real_web_level"];
+			                        if ( $web_level == "" || is_null($web_level) ){
+			        	                $web_level = $re["web_level"];
+                                    }
+			                        if ( $re["mem_level"] == "guest" ){
+			        	                $web_level = "0";
+                                    }
+			                        ?>
+                                    <select name="mem_level" id="mem_level">
+                                        <option value="guest">未入會</option>
+                                        <option value="2"<?php if ( $web_level == "2" ){ echo " selected";}?>>真人認證會員</option>
+                                        <option value="10"<?php if ( $web_level == "10" ){ echo " selected";}?>>菁英專案-三個月</option>
+                                        <option value="11"<?php if ( $web_level == "11" ){ echo " selected";}?>>菁英專案-六個月</option>
+                                        <option value="3"<?php if ( $web_level == "3" ){ echo " selected";}?>>璀璨會員-一年期</option>
+                                        <option value="5"<?php if ( $web_level == "5" ){ echo " selected";}?>>璀璨會員-二年期</option>
+                                        <option value="4"<?php if ( $web_level == "4" ){ echo " selected";}?>>璀璨VIP會員-一年期</option>
+                                        <option value="6"<?php if ( $web_level == "6" ){ echo " selected";}?>>璀璨VIP會員-二年期</option>
+                                    </select>
+                                    <?php if ( $re["mem_level"] != "guest" ){ ?>
+                                        <select name="ispay" id="ispay">
+                                            <option value="0"<?php if ( $re["ispay"] == "0" ){ echo " selected";?>>完款</option>
+                                            <option value="1"<?php if ( $re["ispay"] == "1" ){ echo " selected";?>>付訂</option>
+                                        </select>
+                                    <?php }?>
+                                <?php }else{
+                                    if ( $re["mem_level"] != "guest" ){
+                                        if ( $re["ispay"] == "0" ){
+                                            echo "<font color='blue'>[完款]</font>";
+                                        }else{
+                                            echo "<font color='red'>[付訂]</font>";
+                                        }
+                                    }
+                                    
+                                    if ( $re["mem_level"] == "guest" ){
+                                        $mem_level = "guest";
+                                    }else{
+                                        $mem_level = $re["web_level"];
+                                    } ?>
+                                    <input type="hidden" name="mem_level" id="mem_level" value="<?php echo $mem_level;?>">
+                                    <b>
+                                    <?php
+                                    echo num_lv($re["web_level"]);
+                                    if ( $re["web_level"] > 0 ){
+                                        echo "(".$re["web_startime"]."~".$re["web_endtime"].")";
+                                    }
+                                    if ( is_date($re["web_endtime"]) ){
+                                        $web_time_diff = floor((strtotime($re["web_endtime"])-strtotime(now()))/86400);
+          	                            if ( $web_time_diff > 0 ){
+          	                                echo "&nbsp;&nbsp;餘 ".$web_time_diff." 天";
+                                        }else{
+                                            echo "&nbsp;&nbsp;已過期";
+                                        }
+                                    }
+                                    ?>
+                                    </b>
+                                <?php }?>
+                                <input type="hidden" name="now_mem_level" id="now_mem_level" value="<?php echo $mem_level;?>">
+                                <?php if ( $_SESSION["MM_UserAuthorization"] != "single" ){ ?>
+                                    待服務名單：
+                                    <select name="mem_s1" id="select14">
+			                            <?php
+				                        $s1 = "";
+				                        $s2 = "";
+				                        switch ($re["mem_s1"]){
+                                            case "有":
+				                                $s1 = " selected";
+                                                break;
+                                            case "無":
+				                                $s2 = " selected";
+                                                break;
+                                        }
+				                        ?>
+                                        <option value="無"<?php echo $s2;?>>無</option>
+                                        <option value="有"<?php echo $s1;?>>有</option>
+                                    </select>
+                                <?php }?>
                             </td>
                         </tr>
-
                         <tr>
                             <td>
-                                <font color=green>受理</font>：
-
-                                <select name="mem_branch" id="mem_branch" required>
+                                <font color="green">受理</font>：
+                                <?php
+                                if ( $_SESSION["MM_UserAuthorization"] == "admin" || ( ($_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ) && $mem_branch = $_SESSION["branch"] ) ){
+		   	                        if ( $re["mem_level"] == "mem" ){
+		   		                        $brq = " required";
+                                    }else{
+		   		                        $brq = "";
+                                    }
+		                        ?>
+                                <select name="mem_branch" id="mem_branch" <?php echo $brq;?>>
                                     <option value="">請選擇</option>
                                     <option value="台北">台北</option>
                                     <option value="桃園">桃園</option>
