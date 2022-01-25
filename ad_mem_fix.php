@@ -62,21 +62,22 @@ if ( $state == "add" ){
 
     $checkok = 0;
     if ( $si_account != "" && $si_account != "0" ){ //所有有帳號都 check
-	$fsi_account = 0;
-    $SQL = "Select mem_num From member_data Where si_account = '".$si_account."'";
-    $rs = $SPConn->prepare($SQL);
-    $rs->execute();
-    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
-    if ( count($result) > 0 ){
-        foreach($result as $re){
-		    if ( chstr($re["mem_num"]) != chstr($mem_num) ){
-	            $fsi_account = 1;
+        $fsi_account = 0;
+        $SQL = "Select mem_num From member_data Where si_account = '".$si_account."'";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+        if ( count($result) > 0 ){
+            foreach($result as $re){
+                if ( chstr($re["mem_num"]) != chstr($mem_num) ){
+                    $fsi_account = 1;
+                }
             }
-		}
-    }
+        }
       
-    if ( $fsi_account == 1 ){
-		call_alert("此網站帳號重覆，請聯絡總公司處理。".$si_account, 0,0);
+        if ( $fsi_account == 1 ){
+    		call_alert("此網站帳號重覆，請聯絡總公司處理。".$si_account, 0,0);
+        }
     }
 }
 
@@ -139,7 +140,7 @@ if ( $mem_level == "guest" ){
   		$subSQL = ",mem_username_last = '".$re["mem_username"]."',mem_username='NULL'";
   		$noupdatememusername = 1;
     }
-      $subSQL .= ",web_level=0,web_endtime='NULL',mem_level='guest'";
+    $subSQL .= ",web_level=0,web_endtime='NULL',mem_level='guest'";
 }else{
     if ( $_SESSION["MM_UserAuthorization"] == "admin" || ( ($_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay") && $re["mem_branch"] == $_SESSION["branch"]) ){
 		if ( $mem_branch == "" ){ call_alert("請選擇受理會館。", 0, 0); }
@@ -494,8 +495,6 @@ if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 $subSQL .= ",mem_uptime='".strftime("%Y/%m/%d %H:%M:%S")."'";
 
 $SQL_u = "Update member_data Set mem_msn=mem_msn".$subSQL." Where mem_num='".$mem_num."'";
-echo $SQL_u;
-exit;
 $rs_u = $SPConn->prepare($SQL_u);
 $rs_u->execute();
 
@@ -671,7 +670,7 @@ if ( $checkok == 1 ){
 	        //call notice_new_member_sms("spring", n10, nomail2, mem_name)
         }
 
-	    if ( $mem_sex = "男" ){ $rsex = 1; }else}{ $rsex = 2; }
+	    if ( $mem_sex = "男" ){ $rsex = 1; }else{ $rsex = 2; }
 
 	    /*on error resume next  寄信
         Set httpRequest = Server.CreateObject("MSXML2.ServerXMLHTTP")
@@ -785,6 +784,7 @@ if ( $re["mem_level"] == "mem" && $_SESSION["MM_UserAuthorization"] != "admin" &
 	call_alert("權限不足。",0, 0);
 }
 ?>
+<script src="js/area.js"></script>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -810,474 +810,115 @@ if ( $re["mem_level"] == "mem" && $_SESSION["MM_UserAuthorization"] != "admin" &
                 <?php require_once("./include/mem_menu.php");?>
                 <form id="sform" action="?state=add" method="post" name="form5" onSubmit="return chk_form()" data-cansend="0" class="form-inline">
                     <table class="table table-striped table-bordered bootstrap-datatable input_small">
-                        <tr>
-                            <td style="font-size:150%;color:blue"><b>基本資料</b></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ){ ?>
-                                    <font color="#FF0000">會員權益</font>：
-                                    <?php
-			                        $web_level = $re["real_web_level"];
-			                        if ( $web_level == "" || is_null($web_level) ){
-			        	                $web_level = $re["web_level"];
-                                    }
-			                        if ( $re["mem_level"] == "guest" ){
-			        	                $web_level = "0";
-                                    }
-			                        ?>
-                                    <select name="mem_level" id="mem_level">
-                                        <option value="guest">未入會</option>
-                                        <option value="2"<?php if ( $web_level == "2" ){ echo " selected";}?>>真人認證會員</option>
-                                        <option value="10"<?php if ( $web_level == "10" ){ echo " selected";}?>>菁英專案-三個月</option>
-                                        <option value="11"<?php if ( $web_level == "11" ){ echo " selected";}?>>菁英專案-六個月</option>
-                                        <option value="3"<?php if ( $web_level == "3" ){ echo " selected";}?>>璀璨會員-一年期</option>
-                                        <option value="5"<?php if ( $web_level == "5" ){ echo " selected";}?>>璀璨會員-二年期</option>
-                                        <option value="4"<?php if ( $web_level == "4" ){ echo " selected";}?>>璀璨VIP會員-一年期</option>
-                                        <option value="6"<?php if ( $web_level == "6" ){ echo " selected";}?>>璀璨VIP會員-二年期</option>
-                                    </select>
-                                    <?php if ( $re["mem_level"] != "guest" ){ ?>
-                                        <select name="ispay" id="ispay">
-                                            <option value="0"<?php if ( $re["ispay"] == "0" ){ echo " selected";?>>完款</option>
-                                            <option value="1"<?php if ( $re["ispay"] == "1" ){ echo " selected";?>>付訂</option>
-                                        </select>
-                                    <?php }?>
-                                <?php }else{
-                                    if ( $re["mem_level"] != "guest" ){
-                                        if ( $re["ispay"] == "0" ){
-                                            echo "<font color='blue'>[完款]</font>";
-                                        }else{
-                                            echo "<font color='red'>[付訂]</font>";
-                                        }
-                                    }
-                                    
-                                    if ( $re["mem_level"] == "guest" ){
-                                        $mem_level = "guest";
-                                    }else{
-                                        $mem_level = $re["web_level"];
-                                    } ?>
-                                    <input type="hidden" name="mem_level" id="mem_level" value="<?php echo $mem_level;?>">
-                                    <b>
-                                    <?php
-                                    echo num_lv($re["web_level"]);
-                                    if ( $re["web_level"] > 0 ){
-                                        echo "(".$re["web_startime"]."~".$re["web_endtime"].")";
-                                    }
-                                    if ( is_date($re["web_endtime"]) ){
-                                        $web_time_diff = floor((strtotime($re["web_endtime"])-strtotime(now()))/86400);
-          	                            if ( $web_time_diff > 0 ){
-          	                                echo "&nbsp;&nbsp;餘 ".$web_time_diff." 天";
-                                        }else{
-                                            echo "&nbsp;&nbsp;已過期";
-                                        }
-                                    }
-                                    ?>
-                                    </b>
-                                <?php }?>
-                                <input type="hidden" name="now_mem_level" id="now_mem_level" value="<?php echo $mem_level;?>">
-                                <?php if ( $_SESSION["MM_UserAuthorization"] != "single" ){ ?>
-                                    待服務名單：
-                                    <select name="mem_s1" id="select14">
-			                            <?php
-				                        $s1 = "";
-				                        $s2 = "";
-				                        switch ($re["mem_s1"]){
-                                            case "有":
-				                                $s1 = " selected";
-                                                break;
-                                            case "無":
-				                                $s2 = " selected";
-                                                break;
-                                        }
-				                        ?>
-                                        <option value="無"<?php echo $s2;?>>無</option>
-                                        <option value="有"<?php echo $s1;?>>有</option>
-                                    </select>
-                                <?php }?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <font color="green">受理</font>：
-                                <?php
-                                if ( $_SESSION["MM_UserAuthorization"] == "admin" || ( ($_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "pay" ) && $mem_branch = $_SESSION["branch"] ) ){
-		   	                        if ( $re["mem_level"] == "mem" ){
-		   		                        $brq = " required";
-                                    }else{
-		   		                        $brq = "";
-                                    }
-		                        ?>
-                                <select name="mem_branch" id="mem_branch" <?php echo $brq;?>>
-                                    <option value="">請選擇</option>
-                                    <option value="台北">台北</option>
-                                    <option value="桃園">桃園</option>
-                                    <option value="新竹">新竹</option>
-                                    <option value="台中">台中</option>
-                                    <option value="台南" selected>台南</option>
-                                    <option value="高雄">高雄</option>
-                                    <option value="八德">八德</option>
-                                    <option value="約專">約專</option>
-                                    <option value="迷你約">迷你約</option>
-                                    <option value="總管理處">總管理處</option>
-                                </select>
-                                <select name="mem_single" id="mem_single">
-                                    <option value="">請選擇</option>
-                                    <option value="D221429903" selected>杜佳倩</option>
-                                </select>
+                        
 
-
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>排約</font>：
-
-                                <select name="love_single" id="love_single">
-                                    <option value="">請選擇</option>
-                                    <option value="R222349969" selected>顏琇</option>
-                                </select>
-
-
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=green>邀約</font>：
-
-                                <select name="call_branch" id="call_branch">
-                                    <option value="">請選擇</option>
-                                    <option value="台北">台北</option>
-                                    <option value="桃園">桃園</option>
-                                    <option value="新竹">新竹</option>
-                                    <option value="台中">台中</option>
-                                    <option value="台南">台南</option>
-                                    <option value="高雄" selected>高雄</option>
-                                    <option value="八德">八德</option>
-                                    <option value="約專">約專</option>
-                                    <option value="迷你約">迷你約</option>
-                                    <option value="總管理處">總管理處</option>
-                                </select>
-                                <select name="call_single" id="call_single">
-                                    <option value="">請選擇</option>
-                                    <option value="E290076419" selected>倪子淇</option>
-                                </select>
-
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;電訪員：倪子棋　　
-
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>參加卡別：
-                                <select name="mem_join" id="mem_join">
-                                    <option value="0">無</option>
-                                    <option value="107">真人認證</option>
-                                    <option value="210">菁英專案三個月</option>
-                                    <option value="211">菁英專案六個月</option>
-                                    <option value="1" selected="selected">璀璨一年</option>
-                                    <option value="200">璀璨一年+Ｍatch1</option>
-                                    <option value="201">璀璨一年+尊榮一年</option>
-                                    <option value="202">尊榮一年</option>
-                                    <option value="203">璀璨頂級VIP一年</option>
-
-                                    <option value="208">菁英約會一年</option>
-                                    <option value="209">魅力成長一年</option>
-
-                                    <option value="2">璀璨二年</option>
-                                    <option value="204">璀璨二年+Ｍatch2</option>
-                                    <option value="205">璀璨二年+尊榮二年</option>
-                                    <option value="206">尊榮二年</option>
-                                    <option value="207">璀璨頂級VIP二年</option>
-
-                                    <option value="6">Match1</option>
-                                    <option value="7">Match2</option>
-
-                                    <option value="3">互動式</option>
-                                    <option value="4">排約式</option>
-                                    <option value="36">臨時卡</option>
-                                    <option value="106">專案</option>
-                                    <option value="101">黃金</option>
-                                    <option value="102">鈦金</option>
-                                    <option value="103">鑽金</option>
-                                    <option value="104">藍鑽</option>
-                                    <option value="105">彩鑽</option>
-                                    <option value="212">VIP-三個月</option>
-                                    <option value="213">VIP-六個月</option>
-                                    <option value="214">VIP-十二個月</option>
-                                    <option value="215">VIP-十五個月</option>
-                                    <option value="216">VVIP-三個月</option>
-                                    <option value="217">VVIP-六個月</option>
-                                    <option value="218">VVIP-十二個月</option>
-
-                                </select>
-                                &nbsp;&nbsp;
-                                入會日期：
-
-                                <select name="mem_jy" id="mem_jy">
-                                    <option value="">請選擇</option>
-                                    <option value="2021" selected>2021 年</option>
-                                    <option value="2020">2020 年</option>
-                                    <option value="2019">2019 年</option>
-                                    <option value="2018">2018 年</option>
-                                    <option value="2017">2017 年</option>
-                                    <option value="2016">2016 年</option>
-                                    <option value="2015">2015 年</option>
-                                    <option value="2014">2014 年</option>
-                                    <option value="2013">2013 年</option>
-                                    <option value="2012">2012 年</option>
-                                    <option value="2011">2011 年</option>
-                                    <option value="2010">2010 年</option>
-                                    <option value="2009">2009 年</option>
-                                    <option value="2008">2008 年</option>
-                                </select>
-                                <select name="mem_jm" id="mem_jm">
-                                    <option value="">請選擇</option>
-                                    <option value="1">1 月</option>
-                                    <option value="2">2 月</option>
-                                    <option value="3">3 月</option>
-                                    <option value="4">4 月</option>
-                                    <option value="5">5 月</option>
-                                    <option value="6">6 月</option>
-                                    <option value="7">7 月</option>
-                                    <option value="8" selected>8 月</option>
-                                    <option value="9">9 月</option>
-                                    <option value="10">10 月</option>
-                                    <option value="11">11 月</option>
-                                    <option value="12">12 月</option>
-                                </select>
-
-                                <select name="mem_jd" id="mem_jd">
-                                    <option value="">請選擇</option>
-                                    <option value="1">1 日</option>
-                                    <option value="2">2 日</option>
-                                    <option value="3">3 日</option>
-                                    <option value="4">4 日</option>
-                                    <option value="5">5 日</option>
-                                    <option value="6">6 日</option>
-                                    <option value="7">7 日</option>
-                                    <option value="8">8 日</option>
-                                    <option value="9">9 日</option>
-                                    <option value="10">10 日</option>
-                                    <option value="11">11 日</option>
-                                    <option value="12">12 日</option>
-                                    <option value="13">13 日</option>
-                                    <option value="14">14 日</option>
-                                    <option value="15">15 日</option>
-                                    <option value="16">16 日</option>
-                                    <option value="17">17 日</option>
-                                    <option value="18">18 日</option>
-                                    <option value="19">19 日</option>
-                                    <option value="20">20 日</option>
-                                    <option value="21">21 日</option>
-                                    <option value="22">22 日</option>
-                                    <option value="23">23 日</option>
-                                    <option value="24">24 日</option>
-                                    <option value="25">25 日</option>
-                                    <option value="26">26 日</option>
-                                    <option value="27">27 日</option>
-                                    <option value="28">28 日</option>
-                                    <option value="29" selected>29 日</option>
-                                    <option value="30">30 日</option>
-                                    <option value="31">31 日</option>
-                                </select>
-
-                                &nbsp;&nbsp;<a href="ad_mem_fix_up.php?mem_num=2080022" class="btn btn-danger">續約升卡</a>
-
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>身分證字號：
-                                R121560195
-                                <input type="hidden" name="mem_username" id="mem_username" class="form-control" value="R121560195">
-                                <input name="old_mem_username" type="hidden" value="nocheck">
-
-                                &nbsp;&nbsp;
-                                <label id="iscaselabel" style="display:none;"><input type="checkbox" id="iscase" name="iscase" value="1"> 個案&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                &nbsp;&nbsp;帳號：
-                                R121560195
-                                <input type="hidden" name="si_account" id="si_account" value="R121560195">
-
-                                &nbsp;&nbsp;密碼：<input name="mem_passwd" type="text" id="mem_passwd" class="form-control" value="560195" maxlength="20" disabled>
-
-                                <br>
-                                <small id="mem_username_chk" class="text-red" style="display:none;">自 2021/01/01 起，未在收支系統有收入紀錄的身分證字號將無法成為會員。</small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>姓名：
-                                <input name="mem_name" class="form-control" type="text" id="mem_name" value="林春福" required>
+                        <!--姓名-->
+                        <tr> 
+                            <td>姓名： 
+                                <input name="mem_name" class="form-control" type="text" id="mem_name" value="<?php echo $re["mem_name"];?>" required> 
                                 <font color="#999999">（請填入中文姓名）</font>暱稱：
-                                <input name="mem_nick" class="form-control" type="text" id="mem_nick2" value="林先生" maxlength="8">
+                                <input name="mem_nick" class="form-control" type="text" id="mem_nick2" value="<?php echo $re["mem_nick"];?>" maxlength="8">
                                 <font color="#999999">（網站顯示名稱）</font>
                             </td>
                         </tr>
+                        
+                        <!--性別/生日/星座/血型-->
                         <tr>
-                            <td>性別：
+                            <td>性別： 
                                 <select name="mem_sex" id="mem_sex" required>
                                     <option value="">請選擇</option>
-                                    <option value="男" selected>男</option>
-                                    <option value="女">女</option>
+                                    <option value="男"<?php if ( $re["mem_sex"] == "男" ){ echo " selected"; }?>>男</option>
+                                    <option value="女"<?php if ( $re["mem_sex"] == "女" ){ echo " selected"; }?>>女</option>
                                 </select>
                                 &nbsp;&nbsp;
+                                
                                 生日：
                                 <select name="mem_by" id="mem_by">
-                                    <option value="2001">2001</option>
-                                    <option value="2000">2000</option>
-                                    <option value="1999">1999</option>
-                                    <option value="1998">1998</option>
-                                    <option value="1997">1997</option>
-                                    <option value="1996">1996</option>
-                                    <option value="1995">1995</option>
-                                    <option value="1994">1994</option>
-                                    <option value="1993">1993</option>
-                                    <option value="1992">1992</option>
-                                    <option value="1991">1991</option>
-                                    <option value="1990">1990</option>
-                                    <option value="1989">1989</option>
-                                    <option value="1988">1988</option>
-                                    <option value="1987">1987</option>
-                                    <option value="1986">1986</option>
-                                    <option value="1985">1985</option>
-                                    <option value="1984">1984</option>
-                                    <option value="1983">1983</option>
-                                    <option value="1982">1982</option>
-                                    <option value="1981">1981</option>
-                                    <option value="1980">1980</option>
-                                    <option value="1979">1979</option>
-                                    <option value="1978">1978</option>
-                                    <option value="1977">1977</option>
-                                    <option value="1976">1976</option>
-                                    <option value="1975">1975</option>
-                                    <option value="1974">1974</option>
-                                    <option value="1973">1973</option>
-                                    <option value="1972">1972</option>
-                                    <option value="1971">1971</option>
-                                    <option value="1970">1970</option>
-                                    <option value="1969">1969</option>
-                                    <option value="1968">1968</option>
-                                    <option value="1967">1967</option>
-                                    <option value="1966">1966</option>
-                                    <option value="1965" selected>1965</option>
-                                    <option value="1964">1964</option>
-                                    <option value="1963">1963</option>
-                                    <option value="1962">1962</option>
-                                    <option value="1961">1961</option>
-                                    <option value="1960">1960</option>
-                                    <option value="1959">1959</option>
-                                    <option value="1958">1958</option>
-                                    <option value="1957">1957</option>
-                                    <option value="1956">1956</option>
-                                    <option value="1955">1955</option>
-                                    <option value="1954">1954</option>
-                                    <option value="1953">1953</option>
-                                    <option value="1952">1952</option>
-                                    <option value="1951">1951</option>
-                                    <option value="1950">1950</option>
-                                    <option value="1949">1949</option>
-                                    <option value="1948">1948</option>
-                                    <option value="1947">1947</option>
-                                    <option value="1946">1946</option>
-                                    <option value="1945">1945</option>
-                                    <option value="1944">1944</option>
-                                    <option value="1943">1943</option>
-                                    <option value="1942">1942</option>
-                                    <option value="1941">1941</option>
-                                    <option value="1940">1940</option>
-                                    <option value="1939">1939</option>
-                                    <option value="1938">1938</option>
-                                    <option value="1937">1937</option>
-                                    <option value="1936">1936</option>
-                                    <option value="1935">1935</option>
-                                    <option value="1934">1934</option>
-                                    <option value="1933">1933</option>
-                                    <option value="1932">1932</option>
-                                    <option value="1931">1931</option>
+                                    <?php
+                                    for ( $i=(date("Y")-20);$i>=(date("Y")-90);$i-- ){
+                                        if ( $re["mem_by"] == $i ){
+                                            echo "<option value='".$i."' selected>".$i."</option>";
+                                        }else{
+                                            echo "<option value='".$i."'>".$i."</option>";
+                                        }
+                                    }
+                                    ?>
                                 </select>
-                                年
+                                年 
                                 <select name="mem_bm" id="mem_bm">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7" selected>7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
+                                    <?php
+                                    for ( $i=1;$i<=12;$i++ ){
+                                        if ( $re["mem_bm"] == $i ){
+                                            echo "<option value='".$i."' selected>".$i."</option>";
+                                        }else{
+                                            echo "<option value='".$i."'>".$i."</option>";
+                                        }
+                                    }
+                                    ?>
                                 </select>
-                                月
+                                月 
                                 <select name="mem_bd" id="mem_bd">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8" selected>8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
-                                    <option value="13">13</option>
-                                    <option value="14">14</option>
-                                    <option value="15">15</option>
-                                    <option value="16">16</option>
-                                    <option value="17">17</option>
-                                    <option value="18">18</option>
-                                    <option value="19">19</option>
-                                    <option value="20">20</option>
-                                    <option value="21">21</option>
-                                    <option value="22">22</option>
-                                    <option value="23">23</option>
-                                    <option value="24">24</option>
-                                    <option value="25">25</option>
-                                    <option value="26">26</option>
-                                    <option value="27">27</option>
-                                    <option value="28">28</option>
-                                    <option value="29">29</option>
-                                    <option value="30">30</option>
-                                    <option value="31">31</option>
+                                <?php
+                                    for ( $i=1;$i<=31;$i++ ){
+                                        if ( $re["mem_bd"] == $i ){
+                                            echo "<option value='".$i."' selected>".$i."</option>";
+                                        }else{
+                                            echo "<option value='".$i."'>".$i."</option>";
+                                        }
+                                    }
+                                ?>
                                 </select>
                                 日
                                 &nbsp;&nbsp;
+                                
                                 星座：
                                 <select name="mem_star" id="mem_star">
                                     <option value="">請選擇</option>
-                                    <option value="牡羊座">牡羊座</option>
-                                    <option value="金牛座">金牛座</option>
-                                    <option value="雙子座">雙子座</option>
-                                    <option value="巨蟹座">巨蟹座</option>
-                                    <option value="獅子座">獅子座</option>
-                                    <option value="處女座">處女座</option>
-                                    <option value="天秤座">天秤座</option>
-                                    <option value="天蠍座">天蠍座</option>
-                                    <option value="射手座">射手座</option>
-                                    <option value="魔羯座">魔羯座</option>
-                                    <option value="水瓶座">水瓶座</option>
-                                    <option value="雙魚座">雙魚座</option>
+                                    <?php
+                                    $star_array = array("牡羊座","金牛座","雙子座","巨蟹座","獅子座","處女座","天秤座","天蠍座","射手座","魔羯座","水瓶座","雙魚座");
+                                    for ( $s=0;$s<12;$s++ ){
+                                        echo "<option value='".$star_array[$i]."'";
+                                        if ( $re["mem_star"] == $star_array[$i] ){ echo " selected";}
+                                        echo ">".$star_array[$i]."</option>";
+                                    }?>
                                 </select>
                                 &nbsp;&nbsp;
-                                血型：
+                                
+                                血型： 
                                 <select name="mem_blood" id="mem_blood">
                                     <option value="">請選擇</option>
-                                    <option value="A">A型</option>
-                                    <option value="B" selected>B型</option>
-                                    <option value="O">O型</option>
-                                    <option value="AB">AB型</option>
+                                    <?php
+                                    $blood_array = array("A型","B型","C型","AB型");
+                                    for ( $s=0;$s<4;$s++ ){
+                                        echo "<option value='".$blood_array[$i]."'";
+                                        if ( $re["mem_blood"] == $blood_array[$i] ){ echo " selected";}
+                                        echo ">".$blood_array[$i]."</option>";
+                                    }?>
                                 </select>
                             </td>
                         </tr>
 
+                        <!--手機/手機2/居住電話/公司電話-->
                         <tr>
-                            <td>手機：
-                                0932703652
+                            <td>
+                                手機：
+                                <?php
+			                    if ( $power_edit == 1 ){
+                                    echo "<input name='mem_mobile' type='text' id='mem_mobile' class='form-control' value='".$re["mem_mobile"]."'>";
+                                }else{
+			                        echo $re["mem_mobile"];
+                                }
+			                    ?>
                                 &nbsp;&nbsp;手機2：
-                                <input name="mem_mobile2" type="tel" id="mem_mobile2" class="form-control phone" pattern="^[09]{2}[0-9]{8}$" minlength="10" maxlength="10" title="請輸入 09 開頭的十位數手機號碼" value="">
+                                <input name="mem_mobile2" type="tel" id="mem_mobile2"  class="form-control phone" pattern="^[09]{2}[0-9]{8}$" minlength="10" maxlength="10" title="請輸入 09 開頭的十位數手機號碼" value="<?php echo $re["mem_mobile2"];?>">
                                 &nbsp;&nbsp;居住電話：
-                                <input tabindex="99" name="mem_phone" type="text" id="mem_phone" class="form-control" value="">
+                                <input tabindex="99" name="mem_phone" type="text" id="mem_phone" class="form-control" value="<?php echo $re["mem_phone"];?>">
                                 &nbsp;&nbsp;公司電話：
-                                <input tabindex="99" name="mem_phone2" type="text" id="mem_phone2" class="form-control" value="">
+                                <input tabindex="99" name="mem_phone2" type="text" id="mem_phone2" class="form-control" value="<?php echo $re["mem_phone2"];?>">
                             </td>
                         </tr>
 
+                        <!--居住地地區-->
                         <tr>
                             <td>居住地地區：
                                 <select name="mem_area" id="mem_area">
@@ -1314,578 +955,691 @@ if ( $re["mem_level"] == "mem" && $_SESSION["MM_UserAuthorization"] != "admin" &
                                 <input name="mem_address" tabindex="99" type="text" id="mem_address" class="form-control" style="width:60%" value="新化區蔡厝仔14號">
                             </td>
                         </tr>
+
+                        <!---戶籍地地區-->
                         <tr>
                             <td>戶籍地地區：
-                                <select name="mem_area2" id="mem_area2">
-                                    <option value="">請選擇</option>
-                                    <option value="基隆市">基隆市</option>
-                                    <option value="台北市">台北市</option>
-                                    <option value="新北市">新北市</option>
-                                    <option value="宜蘭縣">宜蘭縣</option>
-                                    <option value="桃園市">桃園市</option>
-                                    <option value="新竹縣">新竹縣</option>
-                                    <option value="新竹市">新竹市</option>
-                                    <option value="苗栗縣">苗栗縣</option>
-                                    <option value="苗栗市">苗栗市</option>
-                                    <option value="台中市">台中市</option>
-                                    <option value="彰化縣">彰化縣</option>
-                                    <option value="彰化市">彰化市</option>
-                                    <option value="南投縣">南投縣</option>
-                                    <option value="嘉義縣">嘉義縣</option>
-                                    <option value="嘉義市">嘉義市</option>
-                                    <option value="雲林縣">雲林縣</option>
-                                    <option value="台南市">台南市</option>
-                                    <option value="高雄市">高雄市</option>
-                                    <option value="屏東縣">屏東縣</option>
-                                    <option value="花蓮縣">花蓮縣</option>
-                                    <option value="台東縣">台東縣</option>
-                                    <option value="澎湖縣">澎湖縣</option>
-                                    <option value="金門縣">金門縣</option>
-                                    <option value="馬祖">馬祖</option>
-                                    <option value="綠島">綠島</option>
-                                    <option value="蘭嶼">蘭嶼</option>
-                                    <option value="其他">其他</option>
+                            <input name="PostCode" type="hidden" class="form-control fd_input1" id="PostCode" value="<?php echo $PostCode ?>" size="5" readonly />
+                                <select name="strCountry" id="strCountry" class="form-control fd_select" onChange="changeZone(document.form1.strCountry, document.form1.strCity, document.form1.PostCode)">
+                                </select>&nbsp;&nbsp;
+                                <select name="strCity" id="strCity" class="form-control fd_select" onChange="showZipCode(document.form1.strCountry, document.form1.strCity, document.form1.PostCode)">
                                 </select>
+                                <script type="text/javascript"> 
+                                    initCounty2(document.form1.strCountry,"<?php echo $strCountry ?>");
+                                    initZone2(document.form1.strCountry, document.form1.strCity, document.form1.PostCode,"<?php echo $strCity ?>");
+                                </script>
                                 &nbsp;&nbsp;地址：
                                 <input tabindex="99" name="mem_address2" type="text" id="mem_address2" class="form-control" style="width:60%" value="">
                             </td>
                         </tr>
+
+                        <!---學歷/學校名稱/科系名稱-->
                         <tr>
                             <td>學歷：
                                 <select name="mem_school" id="mem_school">
                                     <option value="">請選擇</option>
-                                    <option value="博士">博士</option>
-                                    <option value="碩士">碩士</option>
-                                    <option value="大學">大學</option>
-                                    <option value="專科">專科</option>
-                                    <option value="高職" selected>高職</option>
-                                    <option value="高中">高中</option>
-                                    <option value="國中">國中</option>
-                                    <option value="其他">其他</option>
+                                    <?php
+                                    $school_array = array("博士","碩士","大學","專科","高職","高中","國中","其他");
+                                    for ( $s=0;$s<8;$s++ ){
+                                        echo "<option value='".$school_array[$i]."'";
+                                        if ( $re["mem_school"] == $school_array[$i] ){ echo " selected";}
+                                        echo ">".$school_array[$i]."</option>";
+                                    }?>
                                 </select>
                                 　學校名稱：
                                 <select name="mem_school4" id="mem_school4">
                                     <option value="">請選擇</option>
-                                    <option value="國立" selected>國立</option>
-                                    <option value="私立">私立</option>
-                                    <option value="海外">海外</option>
+                                    <?php
+                                    $school4_array = array("國立","私立","海外");
+                                    for ( $s=0;$s<3;$s++ ){
+                                        echo "<option value='".$school4_array[$i]."'";
+                                        if ( $re["mem_school"] == $school4_array[$i] ){ echo " selected";}
+                                        echo ">".$school4_array[$i]."</option>";
+                                    }?>
                                 </select>
-                                <input name="mem_school2" type="text" id="mem_school2" class="form-control" value="新化高工">
-                                　科系名稱：
-                                <input name="mem_school3" type="text" id="mem_school3" class="form-control" value="">
+                                <input name="mem_school2" type="text" id="mem_school2" class="form-control" value="<?php echo $re["mem_school2"];?>">
+                                　科系名稱： 
+                                <input name="mem_school3" type="text" id="mem_school3" class="form-control" value="<?php echo $re["mem_school3"];?>">
                             </td>
                         </tr>
 
+                        <!---職業/公司名稱/年資/職務名稱-->
                         <tr>
                             <td>職業：
                                 <select name="mem_job1" id="mem_job1">
-                                    <option value="公務/國家機關">公務/國家機關</option>
-                                    <option value="司法/法務">司法/法務</option>
-                                    <option value="軍警單位">軍警單位</option>
-                                    <option value="自營/投資" selected>自營/投資</option>
-                                    <option value="電腦/網路">電腦/網路</option>
-                                    <option value="電子/通信/電器">電子/通信/電器</option>
-                                    <option value="教育/研究單位">教育/研究單位</option>
-                                    <option value="醫療/護理服務業">醫療/護理服務業</option>
-                                    <option value="媒體傳播/出版業">媒體傳播/出版業</option>
-                                    <option value="藝術/音樂/設計">藝術/音樂/設計</option>
-                                    <option value="建築/裝修/物業">建築/裝修/物業</option>
-                                    <option value="營銷/業務">營銷/業務</option>
-                                    <option value="文化/演藝/娛樂業">文化/演藝/娛樂業</option>
-                                    <option value="金融/證券/財會/保險">金融/證券/財會/保險</option>
-                                    <option value="專利商標/諮詢服務業">專利商標/諮詢服務業</option>
-                                    <option value="生產製造業">生產製造業</option>
-                                    <option value="旅遊服務業">旅遊服務業</option>
-                                    <option value="運輸服務業">運輸服務業</option>
-                                    <option value="百貨/零售業">百貨/零售業</option>
-                                    <option value="餐飲服務業">餐飲服務業</option>
-                                    <option value="美容/美髮業">美容/美髮業</option>
-                                    <option value="農林漁牧業">農林漁牧業</option>
-                                    <option value="自由業/其它">自由業/其它</option>
-                                    <option value="在校學生">在校學生</option>
-                                    <option value="業務/仲价業">業務/仲价業</option>
-
+                                    <?php
+                                    $job1_array = array("公務/國家機關","司法/法務","軍警單位","自營/投資","電腦/網路","電子/通信/電器","教育/研究單位","醫療/護理服務業","媒體傳播/出版業","藝術/音樂/設計","建築/裝修/物業","營銷/業務,文化/演藝/娛樂業","金融/證券/財會/保險","專利商標/諮詢服務業","生產製造業","旅遊服務業","運輸服務業","百貨/零售業","餐飲服務業","美容/美髮業","農林漁牧業","自由業/其它","在校學生","業務/仲价業");
+                                    for ( $s=0;$s<24;$s++ ){
+                                        echo "<option value='".$job1_array[$i]."'";
+                                        if ( $re["mem_school"] == $job1_array[$i] ){ echo " selected";}
+                                        echo ">".$job1_array[$i]."</option>";
+                                    }?>
                                 </select>
-                                　公司名稱：
-                                <input name="company" type="text" id="company" class="form-control" value="群茂工程行">
-                                　年資：
+                                　公司名稱： 
+                                <input name="company" type="text" id="company" class="form-control" value="<?php echo $re["company"];?>">
+                                　年資： 
                                 <div class="input-group">
-                                    <input name="company_year" type="number" id="company_year" class="form-control" style="width:100px" value="0">
-                                    <div class="input-group-addon">年</div>
+                                    <input name="company_year" type="number" id="company_year" class="form-control" style="width:100px" value="<?php echo $re["company_year"];?>"><div class="input-group-addon">年</div>
                                 </div>
-                                　職務名稱：
-                                <input name="mem_job2" type="text" id="mem_job2" class="form-control" value="負責人">
+                                　職務名稱： 
+                                <input name="mem_job2" type="text" id="mem_job2" class="form-control" value="<?php $re["mem_job2"];?>">
                             </td>
                         </tr>
+
+                        <!--年收入-->
                         <tr>
-                            <td>經濟狀況：年收入約 <select name="mem_money" id="mem_money">
+                            <td>經濟狀況：年收入約 
+                                <select name="mem_money" id="mem_money">
                                     <option value="">請選擇</option>
-                                    <option value="50萬以下">50萬以下</option>
-                                    <option value="51萬到80萬">51萬到80萬</option>
-                                    <option value="81萬到100萬">81萬到100萬</option>
-                                    <option value="101萬到199萬" selected>101萬到199萬</option>
-                                    <option value="200萬以上">200萬以上</option>
-                                </select>&nbsp;&nbsp;
+                                    <?php
+                                    $money_array = array("50萬以下","51萬到80萬","81萬到100萬","101萬到199萬","200萬以上");
+                                    for ( $s=0;$s<5;$s++ ){
+                                        echo "<option value='".$money_array[$i]."'";
+                                        if ( $re["mem_money"] == $money_array[$i] ){ echo " selected";}
+                                        echo ">".$money_array[$i]."</option>";
+                                    }?>
+                                </select>
+                                &nbsp;&nbsp;
                                 <select name="mem_money_des" id="mem_money_des">
                                     <option value="">請選擇</option>
-                                    <option value="自足">自足</option>
-                                    <option value="小康">小康</option>
-                                    <option value="中上">中上</option>
-                                    <option value="富有">富有</option>
+                                    <?php
+                                    $money_des_array = array("自足","小康","中上","富有");
+                                    for ( $s=0;$s<4;$s++ ){
+                                        echo "<option value='".$money_des_array[$i]."'";
+                                        if ( $re["mem_money_des"] == $money_des_array[$i] ){ echo " selected";}
+                                        echo ">".$money_des_array[$i]."</option>";
+                                    }?>
                                 </select>
-                                <!--月收：<input type="number" name="mem_money_m" id="mem_money_m" class="form-control" value="">-->
                                 年收：
                                 <div class="input-group">
-                                    <input type="number" name="mem_money_y" id="mem_money_y" class="form-control" value="0">
+                                    <input type="number" name="mem_money_y" id="mem_money_y" class="form-control" value="<?php echo $re["mem_money_y"];?>">
                                     <span class="input-group-addon">元</span>
                                 </div>
-                                &nbsp;&nbsp;<label class="checkbox"><input type="checkbox" name="mem_car" id="mem_car" value="1" checked><i></i>有車</label>&nbsp;&nbsp;<label class="checkbox"><input type="checkbox" name="mem_house" id="mem_house" value="1" checked><i></i>有房</label>
+                                &nbsp;&nbsp;
+                                <label class="checkbox">
+                                    <input type="checkbox" name="mem_car" id="mem_car" value="1"<?php if ( $re["mem_car"] == "1" ){ echo " checked"; }?>><i></i>有車
+                                </label>
+                                &nbsp;&nbsp;
+                                <label class="checkbox">
+                                    <input type="checkbox" name="mem_house" id="mem_house" value="1"<?php if ( $re["mem_house"] == "1" ){ echo " checked"; }?>><i></i>有房
+                                </label>
                             </td>
                         </tr>
 
-                        <tr>
+                        <!--身高/體重/BMI-->
                         <tr>
                             <td>
-                                身高：
-                                <input name="mem_he" type="text" id="mem_he" class="form-control" value="165" onkeyup="bmicount()">
-                                公分
+                                身高：             	
+                                <input name="mem_he" type="text" id="mem_he" class="form-control" value="<?php echo $re["mem_he"];?>" onkeyup="bmicount()">公分
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                體重：
-                                <input name="mem_we" type="text" id="mem_we" class="form-control" value="90" onkeyup="bmicount()">
-                                公斤
+                                體重： 
+                                <input name="mem_we" type="text" id="mem_we" class="form-control" value="<?php echo $re["mem_we"];?>" onkeyup="bmicount()">公斤 
                                 <select id="mem_wet" name="mem_wet">
                                     <option value="">體重描述(身型)</option>
-
-                                    <option value="苗條">苗條</option>
-                                    <option value="普通">普通</option>
-                                    <option value="豐腴">豐腴</option>
-                                    <option value="有肌肉">有肌肉</option>
-                                    <option value="豐滿">豐滿</option>
-                                    <option value="肥胖">肥胖</option>
-                                    <option value="偏瘦">偏瘦(<18)< /option>
-                                    <option value="中等">中等(18.1~24)</option>
-                                    <option value="偏肉" selected>偏肉(>24)</option>
+                                    <?php
+                                    $we_array = array("苗條","普通","豐腴","有肌肉","豐滿","肥胖","偏瘦","中等","偏肉");
+                                    for ( $s=0;$s<9;$s++ ){
+                                        echo "<option value='".$we_array[$i]."'";
+                                        if ( $re["mem_wet"] == $we_array[$i] ){ echo " selected";}
+                                        echo ">".$we_array[$i]."</option>";
+                                    }?>			
                                 </select>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                BMI：
-                                <input name="mem_bmi" type="text" id="mem_bmi" class="form-control" value="33.1" readonly>
+                                BMI： 
+                                <input name="mem_bmi" type="text" id="mem_bmi" class="form-control" value="<?php echo $re["mem_bmi"];?>" readonly>
                             </td>
                         </tr>
+
+                        <!--Email/LINDID-->
                         <tr>
                             <td>E-mail：
-                                <input name="mem_mail" type="text" id="mem_mail" class="form-control" value="">
+                                <input name="mem_mail" type="text" id="mem_mail" class="form-control" value="<?php echo $re["mem_mail"];?>">
                                 　LINE ID：
-                                <input name="mem_msn" type="text" id="mem_msn" class="form-control" value="">
+                                <input name="mem_msn" type="text" id="mem_msn" class="form-control" value="<?php echo $re["mem_msn"];?>">
                             </td>
                         </tr>
 
-
-                        <td>
-                            個性：<select name="mem4">
-                                <option value="" selected>請選擇</option>
-                                <option value="內向">內向</option>
-                                <option value="外向">外向</option>
-                                <option value="隨和">隨和</option>
-                                <option value="嚴謹">嚴謹</option>
-                                <option value="善良熱情">善良熱情</option>
-                                <option value="陽光">陽光</option>
-                                <option value="不拘">不拘</option>
-                            </select>
-                            &nbsp;&nbsp;
-                            抽菸：<select name="mem7">
-                                <option value="">請選擇</option>
-                                <option value="是">是</option>
-                                <option value="否">否</option>
-                                <option value="偶爾">偶爾</option>
-                            </select>
-                            &nbsp;&nbsp;
-                            喝酒：<select name="mem8">
-                                <option value="">請選擇</option>
-                                <option value="是">是</option>
-                                <option value="否">否</option>
-                                <option value="偶爾">偶爾</option>
-                            </select>
-                            &nbsp;&nbsp;
-                            飲食：<select name="mem22">
-                                <option value="">請選擇</option>
-                                <option value="不拘">不拘</option>
-                                <option value="全素">全素</option>
-                                <option value="鍋邊素">鍋邊素</option>
-                                <option value="奶蛋素">奶蛋素</option>
-                                <option value="吃辣">吃辣</option>
-                                <option value="不吃辣">不吃辣</option>
-                                <option value="葷食">葷食</option>
-                            </select>
-                            &nbsp;&nbsp;
-                            信仰：
-                            <select name="mem6" id="mem6">
-                                <option value="無" selected>無</option>
-                                <option value="佛道教">佛道教</option>
-                                <option value="基督教">基督教</option>
-                                <option value="天主教">天主教</option>
-                                <option value="一貫道">一貫道</option>
-                                <option value="其他">其他</option>
-                            </select>
-                        </td>
-                        </tr>
-                        <tr>
-                            <td>婚姻狀態：
-                                <label class="radio"><input name="mem_marry" type="radio" value="未婚"><i></i>未婚</label><label class="radio"><input name="mem_marry" type="radio" value="離婚"><i></i>離婚</label><label class="radio"><input name="mem_marry" type="radio" value="離婚沒小孩"><i></i>離婚沒小孩</label><label class="radio"><input name="mem_marry" type="radio" value="離婚有小孩"><i></i>離婚有小孩</label><label class="radio"><input name="mem_marry" type="radio" value="喪偶" checked><i></i>喪偶</label><label class="radio"><input name="mem_marry" type="radio" value="已婚"><i></i>已婚</label><label class="radio"><input name="mem_marry" type="radio" value="保密"><i></i>保密</label><label class="radio"><input name="mem_marry" type="radio" value="交往中"><i></i>交往中</label><label class="radio"><input name="mem_marry" type="radio" value="有心儀對象"><i></i>有心儀對象</label>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>自我介紹：<font color=red>(請注意此區文字將會在網站顯示，除自我介紹外勿填入其他資訊，如需清除文字請輸入空格)</font><br>
-                                <div id="mem_note_div"></div>
-                                <a id="mem_note_a" href="#v" onclick="mem_note_edit()">點擊修改</a>
-                                <textarea id="mem_note" name="mem_note" cols="100" rows="8" id="textarea" class="form-control" style="display:none"></textarea>
-                            </td>
-                        </tr>
+                        <!--個性/抽菸/喝酒/飲食/信仰-->
                         <tr>
                             <td>
-                                <label class="checkbox"><input type="checkbox" name="mem_photo_show" id="mem_photo_show" value="1"><i></i>前台不顯示照片</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="no_mail1" id="no_mail1" value="1"><i></i>電子信件通知</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="no_mail2" id="no_mail2" value="1"><i></i>簡訊通知</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="no_mail4" id="no_mail4" value="1"><i></i>約會邀請被拒絕通知</label>&nbsp;&nbsp;
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <label class="checkbox"><input type="checkbox" name="si_enterprise" id="si_enterprise" value="1"><i></i>企業會員</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_vip" id="mem_vip" value="1"><i></i>優質會員</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot" id="mem_hot" value="1"><i></i>超人氣會員</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot_in" id="mem_hot_in" value="1"><i></i>春天首頁超人氣會員</label>
-
-                                <label class="checkbox"><input type="checkbox" name="singleparty_hot_check" id="singleparty_hot_check" value="1"><i></i>約專首頁推薦會員</label>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-
-                                <label class="checkbox"><input type="checkbox" name="mem_hot3" id="mem_hot3" value="1"><i></i>醫師、教師、律師</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot1" id="mem_hot1" value="1"><i></i>碩博士、科技新貴</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot6" id="mem_hot6" value="1"><i></i>百萬年薪俱樂部</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot5" id="mem_hot5" value="1"><i></i>BOSS、高階主管</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot4" id="mem_hot4" value="1"><i></i>軍警、公務人員</label>&nbsp;&nbsp;
-                                <label class="checkbox"><input type="checkbox" name="mem_hot2" id="mem_hot2" value="1"><i></i>金融服務</label>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                首頁頁籤：<select name="mem_tag" id="mem_tag">
-                                    <option value="">無</option>
-                                    <option value="百大科技">百大科技</option>
-                                    <option value="公教醫護">公教醫護</option>
-                                    <option value="傳播藝術">傳播藝術</option>
-                                    <option value="餐飲服務">餐飲服務</option>
-                                    <option value="金融保險">金融保險</option>
+                                個性：
+                                <select name="mem4" id="mem4">
+                                    <option value="">請選擇</option>
+                                    <?php
+                                    $mem4_array = array("內向","外向","隨和","嚴謹","善良熱情","陽光","不拘");
+                                    for ( $s=0;$s<7;$s++ ){
+                                        echo "<option value='".$mem4_array[$i]."'";
+                                        if ( $re["mem4"] == $mem4_array[$i] ){ echo " selected";}
+                                        echo ">".$mem4_array[$i]."</option>";
+                                    }?>
+                                </select>
+                                &nbsp;&nbsp;
+                                抽菸：
+                                <select name="mem7" id="mem7">
+                                    <option value="">請選擇</option>
+                                    <?php
+                                    $mem7_array = array("是","否","偶爾");
+                                    for ( $s=0;$s<3;$s++ ){
+                                        echo "<option value='".$mem7_array[$i]."'";
+                                        if ( $re["mem7"] == $mem7_array[$i] ){ echo " selected";}
+                                        echo ">".$mem7_array[$i]."</option>";
+                                    }?>
+                                </select>
+                                &nbsp;&nbsp;
+                                喝酒：
+                                <select name="mem8">
+                                    <option value="">請選擇</option>
+                                    <?php
+                                    $mem8_array = array("是","否","偶爾");
+                                    for ( $s=0;$s<3;$s++ ){
+                                        echo "<option value='".$mem8_array[$i]."'";
+                                        if ( $re["mem8"] == $mem8_array[$i] ){ echo " selected";}
+                                        echo ">".$mem8_array[$i]."</option>";
+                                    }?>
+                                </select>
+                                &nbsp;&nbsp;
+                                飲食：
+                                <select name="mem22">
+                                    <option value="">請選擇</option>
+                                    <?php
+                                    $mem22_array = array("不拘","全素","鍋邊素","奶蛋素","吃辣","不吃辣","葷食");
+                                    for ( $s=0;$s<7;$s++ ){
+                                        echo "<option value='".$mem22_array[$i]."'";
+                                        if ( $re["mem22"] == $mem22_array[$i] ){ echo " selected";}
+                                        echo ">".$mem22_array[$i]."</option>";
+                                    }?>
+                                </select>
+                                &nbsp;&nbsp;
+                                信仰：
+                                <select name="mem6" id="mem6">
+                                    <option value="">請選擇</option>
+                                    <?php
+                                    $mem6_array = array("無","佛道教","基督教","天主教","一貫道","其他");
+                                    for ( $s=0;$s<7;$s++ ){
+                                        echo "<option value='".$mem6_array[$i]."'";
+                                        if ( $re["mem6"] == $mem6_array[$i] ){ echo " selected";}
+                                        echo ">".$mem6_array[$i]."</option>";
+                                    }?>
                                 </select>
                             </td>
                         </tr>
-
-
+                        <!--婚姻狀態-->
                         <tr>
-                            <td>興趣：
-                                <label class="checkbox"><input type="checkbox" name="mem18" value="做菜"><i></i>做菜</label><label class="checkbox"><input type="checkbox" name="mem18" value="郊遊"><i></i>郊遊</label><label class="checkbox"><input type="checkbox" name="mem18" value="登山"><i></i>登山</label><label class="checkbox"><input type="checkbox" name="mem18" value="兜風"><i></i>兜風</label><label class="checkbox"><input type="checkbox" name="mem18" value="逛街"><i></i>逛街</label><label class="checkbox"><input type="checkbox" name="mem18" value="看電影"><i></i>看電影</label><label class="checkbox"><input type="checkbox" name="mem18" value="閱讀"><i></i>閱讀</label><label class="checkbox"><input type="checkbox" name="mem18" value="騎小折"><i></i>騎小折</label><label class="checkbox"><input type="checkbox" name="mem18" value="游泳"><i></i>游泳</label><label class="checkbox"><input type="checkbox" name="mem18" value="品嘗美食"><i></i>品嘗美食</label><label class="checkbox"><input type="checkbox" name="mem18" value="旅遊"><i></i>旅遊</label><label class="checkbox"><input type="checkbox" name="mem18" value="冒險"><i></i>冒險</label><label class="checkbox"><input type="checkbox" name="mem18" value="寫作"><i></i>寫作</label><label class="checkbox"><input type="checkbox" name="mem18" value="上山下海"><i></i>上山下海</label><label class="checkbox"><input type="checkbox" name="mem18" value="運動"><i></i>運動</label><label class="checkbox"><input type="checkbox" name="mem18" value="慢跑"><i></i>慢跑</label><label class="checkbox"><input type="checkbox" name="mem18" value="看風景"><i></i>看風景</label><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="checkbox"><input type="checkbox" name="mem18" value="散步"><i></i>散步</label><label class="checkbox"><input type="checkbox" name="mem18" value="園藝"><i></i>園藝</label><label class="checkbox"><input type="checkbox" name="mem18" value="水族"><i></i>水族</label><label class="checkbox"><input type="checkbox" name="mem18" value="財經"><i></i>財經</label><label class="checkbox"><input type="checkbox" name="mem18" value="拼圖"><i></i>拼圖</label><label class="checkbox"><input type="checkbox" name="mem18" value="咖啡"><i></i>咖啡</label><label class="checkbox"><input type="checkbox" name="mem18" value="宅在家裡"><i></i>宅在家裡</label><label class="checkbox"><input type="checkbox" name="mem18" value="買東西"><i></i>買東西</label><label class="checkbox"><input type="checkbox" name="mem18" value="插花"><i></i>插花</label><label class="checkbox"><input type="checkbox" name="mem18" value="繪畫"><i></i>繪畫</label><label class="checkbox"><input type="checkbox" name="mem18" value="逛展覽"><i></i>逛展覽</label>
-
-                                <br>
-                                其他興趣：<input type="text" class="form-control" name="mem181" style="width:80%" value="">
-
+                            <td>
+                                <?php
+                                $marry_array = array("未婚","離婚","離婚沒小孩","離婚有小孩","喪偶","已婚","保密","交往中","有心儀對象");
+                                echo "婚姻狀態：";
+                                for ( $m=0;$m<9;$m++ ){
+                                    echo "<label class='radio'><input name='mem_marry' type='radio' value='".$marry_array[$m]."'><i></i></label>";
+                                }
+                                ?>
                             </td>
                         </tr>
-                        <tr>
-                            <td>外型：<input type="text" name="mem_da2" id="mem_da2" class="form-control" style="width:80%" value=""></td>
+                        <!--自我介紹-->
+                        <tr> 
+                            <td>
+                                自我介紹：<font color='red'>(請注意此區文字將會在網站顯示，除自我介紹外勿填入其他資訊，如需清除文字請輸入空格)</font><br>
+                                <div id="mem_note_div"><?php echo $re["mem_note"];?></div>
+                                <a id="mem_note_a" href="#v" onclick="mem_note_edit()">點擊修改</a> 
+                                <textarea id="mem_note" name="mem_note" cols="100" rows="8" id="textarea" class="form-control" style="display:none">
+                                <?php
+                                    if ( $re["mem_note"] != "" ){
+                                        echo str_replace("\r\n","<br>",$re["mem_note"]);
+                                    }
+                                ?>
+                                </textarea> 
+                            </td>
                         </tr>
-                        <tr>
-                            <td>內在：<input type="text" name="mem_da3" id="mem_da3" class="form-control" style="width:80%" value=""></td>
+                        <tr> 
+                            <td>
+                                <label class="checkbox"><input type="checkbox" name="mem_photo_show" id="mem_photo_show" value="1"<?php if ( $re["mem_photo_show"] == "1" ){ echo " checked";}?>><i></i>前台不顯示照片</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="no_mail1" id="no_mail1" value="1"<?php if ( $re["si_no_mail1"] != "1" ){ echo " checked";}?>><i></i>電子信件通知</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="no_mail2" id="no_mail2" value="1"<?php if ( $re["si_no_mail2"] != "1" ){ echo " checked";}?>><i></i>簡訊通知</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="no_mail4" id="no_mail4" value="1"<?php if ( $re["si_no_mail4"] != "1" ){ echo " checked";}?>><i></i>約會邀請被拒絕通知</label>&nbsp;&nbsp;
+                            </td>
                         </tr>
-                        <tr>
-                            <td>資料速報：<input type="text" name="mem_da6" id="mem_da6" class="form-control" style="width:80%" value=""></td>
+                        <tr> 
+                            <td>
+                                <label class="checkbox"><input type="checkbox" name="si_enterprise" id="si_enterprise" value="1"<?php if ( $re["si_enterprise"] == "1" || $re["si_enterprise"] == "99" ){ echo " checked";} ?>><i></i>企業會員</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_vip" id="mem_vip" value="1"<?php if ( $re["mem_vip"] == "1" ){ echo " checked"; }?>><i></i>優質會員</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot" id="mem_hot" value="1"<?php if ( $re["mem_hot"] == "1" ){ echo " checked";}?>><i></i>超人氣會員</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot_in" id="mem_hot_in" value="1"<?php if ( $re["mem_hot_in"] == "1" ){ echo " checked"; }?>><i></i>春天首頁超人氣會員</label>
+                                <?php if ( $re["mem_level"] != "guest" ){ ?>
+                                    <label class="checkbox"><input type="checkbox" name="singleparty_hot_check" id="singleparty_hot_check" value="1"<?php if ( $re["singleparty_hot_check"] == "1" ){ echo " checked";?>><i></i>約專首頁推薦會員</label>
+                                <?php }?>
+                            </td>
+                        </tr>
+                        <tr> 
+                            <td>
+                                <label class="checkbox"><input type="checkbox" name="mem_hot3" id="mem_hot3" value="1"<?php if ( $re["mem_hot3"] == "1" ){ echo " checked";} ?>><i></i>醫師、教師、律師</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot1" id="mem_hot1" value="1"<?php if ( $re["mem_hot1"] == "1" ){ echo " checked";} ?>><i></i>碩博士、科技新貴</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot6" id="mem_hot6" value="1"<?php if ( $re["mem_hot6"] == "1" ){ echo " checked";} ?>><i></i>百萬年薪俱樂部</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot5" id="mem_hot5" value="1"<?php if ( $re["mem_hot5"] == "1" ){ echo " checked";} ?>><i></i>BOSS、高階主管</label>&nbsp;&nbsp;
+                                <label class="checkbox"><input type="checkbox" name="mem_hot4" id="mem_hot4" value="1"<?php if ( $re["mem_hot4"] == "1" ){ echo " checked";} ?>><i></i>軍警、公務人員</label>&nbsp;&nbsp;            	
+                                <label class="checkbox"><input type="checkbox" name="mem_hot2" id="mem_hot2" value="1"<?php if ( $re["mem_hot2"] == "1" ){ echo " checked";} ?>><i></i>金融服務</label>
+                            </td>
                         </tr>
 
+                        <!--首頁頁籤-->
+                        <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
+                            <tr>
+                                <td>
+                                    首頁頁籤：
+                                    <select name="mem_tag" id="mem_tag">
+                                        <option value="">請選擇</option>
+                                        <?php
+                                        $tag_array = array("百大科技","公教醫護","傳播藝術","餐飲服務","金融保險");
+                                        for ( $s=0;$s<5;$s++ ){
+                                            echo "<option value='".$tag_array[$s]."'";
+                                            if ( $re["mem_tag"] == $tag_array[$s] || $tag == $s ){ echo " selected";}
+                                            echo ">".$tag_array[$s]."</option>";
+                                        }?>
+                                    </select>
+                                </td>
+                            </tr>
+                        <?php }?>
+
+                        <!--興趣/其他興趣-->
+                        <tr>
+                            <td>
+                                興趣：
+  								<?php
+                                $mem18_array = array("做菜","郊遊","登山","兜風","逛街","看電影","閱讀","騎小折","游泳","品嘗美食","旅遊","冒險","寫作","上山下海","運動","慢跑","看風景","散步","園藝","水族","財經","拼圖","咖啡","宅在家裡","買東西","插花","繪畫","逛展覽","不拘");
+                                for ( $i=0;$i<count($mem18_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='mem18' value='".$mem18_array[$i]."'";
+                                    if ( substr_count($re["mem18"],$mem18_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$mem18_array[$i]."</label>";
+                                }
+                                ?>
+                                <br>
+                                其他興趣：<input type="text" class="form-control" name="mem181" style="width:80%" value="<?php echo $re["mem181"];?>">									  
+                            </td>
+                        </tr>
+                        <tr><td>外型：<input type="text" name="mem_da2" id="mem_da2" class="form-control" style="width:80%" value="<?php echo $re["mem_da2"];?>"></td></tr>
+                        <tr><td>內在：<input type="text" name="mem_da3" id="mem_da3" class="form-control" style="width:80%" value="<?php echo $re["mem_da3"];?>"></td></tr>
+                        <tr><td>資料速報：<input type="text" name="mem_da6" id="mem_da6" class="form-control" style="width:80%" value="<?php echo $re["mem_da6"];?>"></td></tr>
                         <tr>
                             <td style="font-size:150%;color:blue"><b>擇友條件</b></td>
                         </tr>
+                        <!--婚況-->
                         <tr>
-                            <td>婚況：
-                                <label class="checkbox"><input type="checkbox" name="sel_marry" value="未婚"><i></i>未婚</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="離婚"><i></i>離婚</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="離婚沒小孩"><i></i>離婚沒小孩</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="離婚有小孩"><i></i>離婚有小孩</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="喪偶"><i></i>喪偶</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="已婚"><i></i>已婚</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="保密"><i></i>保密</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="交往中"><i></i>交往中</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="有心儀對象"><i></i>有心儀對象</label><label class="checkbox"><input type="checkbox" name="sel_marry" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                婚況：
+          	                    <?php          	        
+                                $sel_marry_array = array("未婚","離婚","離婚沒小孩","離婚有小孩","喪偶","已婚","保密","交往中","有心儀對象","不拘");
+                                for ( $i=0;$i<count($sel_marry_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_marry' value='".$sel_marry_array[$i]."'";
+                                    if ( substr_count($re["sel_marry"],$sel_marry_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_marry_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--學歷-->
                         <tr>
-                            <td>學歷：
-                                <label class="checkbox"><input type="checkbox" name="sel_school" value="博士"><i></i>博士</label><label class="checkbox"><input type="checkbox" name="sel_school" value="碩士"><i></i>碩士</label><label class="checkbox"><input type="checkbox" name="sel_school" value="大學"><i></i>大學</label><label class="checkbox"><input type="checkbox" name="sel_school" value="專科"><i></i>專科</label><label class="checkbox"><input type="checkbox" name="sel_school" value="高職"><i></i>高職</label><label class="checkbox"><input type="checkbox" name="sel_school" value="高中"><i></i>高中</label><label class="checkbox"><input type="checkbox" name="sel_school" value="國中"><i></i>國中</label><label class="checkbox"><input type="checkbox" name="sel_school" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                學歷：
+                                <?php          	        
+                                $sel_school_array = array("博士","碩士","大學","專科","高職","高中","國中","不拘");
+                                for ( $i=0;$i<count($sel_school_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_school' value='".$sel_school_array[$i]."'";
+                                    if ( substr_count($re["sel_school"],$sel_school_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_school_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--宗教-->
                         <tr>
-                            <td>宗教：
-                                <label class="checkbox"><input type="checkbox" name="sel_mem6" value="佛道教"><i></i>佛道教</label><label class="checkbox"><input type="checkbox" name="sel_mem6" value="基督教"><i></i>基督教</label><label class="checkbox"><input type="checkbox" name="sel_mem6" value="天主教"><i></i>天主教</label><label class="checkbox"><input type="checkbox" name="sel_mem6" value="一貫道"><i></i>一貫道</label><label class="checkbox"><input type="checkbox" name="sel_mem6" value="無"><i></i>無</label><label class="checkbox"><input type="checkbox" name="sel_mem6" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                宗教：
+                                <?php          	        
+                                $sel_mem6_array = array("佛道教","基督教","天主教","一貫道","無","不拘");
+                                for ( $i=0;$i<count($sel_mem6_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_mem6' value='".$sel_mem6_array[$i]."'";
+                                    if ( substr_count($re["sel_mem6"],$sel_mem6_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_mem6_array[$i]."</label>";
+                                }
+                                ?>
+                          </td>
+                        </tr>
+                        <!--職業：-->
+                        <tr>
+                            <td>
+                                職業：
+                                <?php          	        
+                                $sel_job_array = array("公務/國家機關","司法/法務","軍警單位","自營/投資","電腦/網路","電子/通信/電器","教育/研究單位","醫療/護理服務業","媒體傳播/出版業","藝術/音樂/設計","建築/裝修/物業","營銷/業務","文化/演藝/娛樂業","金融/證券/財會/保險","專利商標/諮詢服務業","生產製造業","旅遊服務業","運輸服務業","百貨/零售業","餐飲服務業","美容/美髮業","農林漁牧業","自由業/其它","在校學生","業務/仲价業","不拘");
+                                for ( $i=0;$i<count($sel_job_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_job' value='".$sel_job_array[$i]."'";
+                                    if ( substr_count($re["sel_job"],$sel_job_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_job_array[$i]."</label>";
+                                }
+                                ?>    
                             </td>
                         </tr>
+                        <!--個性-->
                         <tr>
-                            <td>職業：
-                                <label class="checkbox"><input type="checkbox" name="sel_job" value="公務/國家機關"><i></i>公務/國家機關</label><label class="checkbox"><input type="checkbox" name="sel_job" value="司法/法務"><i></i>司法/法務</label><label class="checkbox"><input type="checkbox" name="sel_job" value="軍警單位"><i></i>軍警單位</label><label class="checkbox"><input type="checkbox" name="sel_job" value="自營/投資"><i></i>自營/投資</label><label class="checkbox"><input type="checkbox" name="sel_job" value="電腦/網路"><i></i>電腦/網路</label><label class="checkbox"><input type="checkbox" name="sel_job" value="電子/通信/電器"><i></i>電子/通信/電器</label><label class="checkbox"><input type="checkbox" name="sel_job" value="教育/研究單位"><i></i>教育/研究單位</label><label class="checkbox"><input type="checkbox" name="sel_job" value="醫療/護理服務業"><i></i>醫療/護理服務業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="媒體傳播/出版業"><i></i>媒體傳播/出版業</label><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="checkbox"><input type="checkbox" name="sel_job" value="藝術/音樂/設計"><i></i>藝術/音樂/設計</label><label class="checkbox"><input type="checkbox" name="sel_job" value="建築/裝修/物業"><i></i>建築/裝修/物業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="營銷/業務"><i></i>營銷/業務</label><label class="checkbox"><input type="checkbox" name="sel_job" value="文化/演藝/娛樂業"><i></i>文化/演藝/娛樂業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="金融/證券/財會/保險"><i></i>金融/證券/財會/保險</label><label class="checkbox"><input type="checkbox" name="sel_job" value="專利商標/諮詢服務業"><i></i>專利商標/諮詢服務業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="生產製造業"><i></i>生產製造業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="旅遊服務業"><i></i>旅遊服務業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="運輸服務業"><i></i>運輸服務業</label><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="checkbox"><input type="checkbox" name="sel_job" value="百貨/零售業"><i></i>百貨/零售業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="餐飲服務業"><i></i>餐飲服務業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="美容/美髮業"><i></i>美容/美髮業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="農林漁牧業"><i></i>農林漁牧業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="自由業/其它"><i></i>自由業/其它</label><label class="checkbox"><input type="checkbox" name="sel_job" value="在校學生"><i></i>在校學生</label><label class="checkbox"><input type="checkbox" name="sel_job" value="業務/仲价業"><i></i>業務/仲价業</label><label class="checkbox"><input type="checkbox" name="sel_job" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                個性：
+                                <?php          	        
+                                $sel_mem4_array = array("內向","外向","隨和","嚴謹","善良熱情","陽光","不拘");
+                                for ( $i=0;$i<count($sel_mem4_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_mem4' value='".$sel_mem4_array[$i]."'";
+                                    if ( substr_count($re["sel_mem4"],$sel_mem4_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_mem4_array[$i]."</label>";
+                                }
+                                ?>                                      	
                             </td>
                         </tr>
+                        <!--經濟-->
                         <tr>
-                            <td>個性：
-                                <label class="checkbox"><input type="checkbox" name="sel_mem4" value="內向"><i></i>內向</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="外向"><i></i>外向</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="隨和"><i></i>隨和</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="嚴謹"><i></i>嚴謹</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="善良熱情"><i></i>善良熱情</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="陽光"><i></i>陽光</label><label class="checkbox"><input type="checkbox" name="sel_mem4" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                經濟：
+                                <?php          	        
+                                $sel_money_des_array = array("富有","中上","小康","自足","不拘");
+                                for ( $i=0;$i<count($sel_money_des_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_money_des' value='".$sel_money_des_array[$i]."'";
+                                    if ( substr_count($re["sel_money_des"],$sel_money_des_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_money_des_array[$i]."</label>";
+                                }
+                                ?> 
                             </td>
                         </tr>
+                        <!--年收入-->
                         <tr>
-                            <td>經濟：
-                                <label class="checkbox"><input type="checkbox" name="sel_money_des" value="富有"><i></i>富有</label><label class="checkbox"><input type="checkbox" name="sel_money_des" value="中上"><i></i>中上</label><label class="checkbox"><input type="checkbox" name="sel_money_des" value="小康"><i></i>小康</label><label class="checkbox"><input type="checkbox" name="sel_money_des" value="自足"><i></i>自足</label><label class="checkbox"><input type="checkbox" name="sel_money_des" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                年收入：
+                                <?php          	        
+                                $sel_money_array = array("50萬以下","51萬到80萬","81萬到100萬","101萬到199萬","200萬以上","不拘");
+                                for ( $i=0;$i<count($sel_money_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_money' value='".$sel_money_array[$i]."'";
+                                    if ( substr_count($re["sel_money"],$sel_money_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_money_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--年齡-->
                         <tr>
-                            <td>年收入：
-                                <label class="checkbox"><input type="checkbox" name="sel_money" value="50萬以下"><i></i>50萬以下</label><label class="checkbox"><input type="checkbox" name="sel_money" value="51萬到80萬"><i></i>51萬到80萬</label><label class="checkbox"><input type="checkbox" name="sel_money" value="81萬到100萬"><i></i>81萬到100萬</label><label class="checkbox"><input type="checkbox" name="sel_money" value="101萬到199萬"><i></i>101萬到199萬</label><label class="checkbox"><input type="checkbox" name="sel_money" value="200萬以上"><i></i>200萬以上</label><label class="checkbox"><input type="checkbox" name="sel_money" value="不拘" checked><i></i>不拘</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>年齡：
+                            <td>
+                                年齡：
                                 <select name="sel_y1" id="sel_y1">
                                     <option value="">不限</option>
-                                    <option value="1941">1941 年/民國 30 年</option>
-                                    <option value="1942">1942 年/民國 31 年</option>
-                                    <option value="1943">1943 年/民國 32 年</option>
-                                    <option value="1944">1944 年/民國 33 年</option>
-                                    <option value="1945">1945 年/民國 34 年</option>
-                                    <option value="1946">1946 年/民國 35 年</option>
-                                    <option value="1947">1947 年/民國 36 年</option>
-                                    <option value="1948">1948 年/民國 37 年</option>
-                                    <option value="1949">1949 年/民國 38 年</option>
-                                    <option value="1950">1950 年/民國 39 年</option>
-                                    <option value="1951">1951 年/民國 40 年</option>
-                                    <option value="1952">1952 年/民國 41 年</option>
-                                    <option value="1953">1953 年/民國 42 年</option>
-                                    <option value="1954">1954 年/民國 43 年</option>
-                                    <option value="1955">1955 年/民國 44 年</option>
-                                    <option value="1956">1956 年/民國 45 年</option>
-                                    <option value="1957">1957 年/民國 46 年</option>
-                                    <option value="1958">1958 年/民國 47 年</option>
-                                    <option value="1959">1959 年/民國 48 年</option>
-                                    <option value="1960">1960 年/民國 49 年</option>
-                                    <option value="1961">1961 年/民國 50 年</option>
-                                    <option value="1962">1962 年/民國 51 年</option>
-                                    <option value="1963" selected>1963 年/民國 52 年</option>
-                                    <option value="1964">1964 年/民國 53 年</option>
-                                    <option value="1965">1965 年/民國 54 年</option>
-                                    <option value="1966">1966 年/民國 55 年</option>
-                                    <option value="1967">1967 年/民國 56 年</option>
-                                    <option value="1968">1968 年/民國 57 年</option>
-                                    <option value="1969">1969 年/民國 58 年</option>
-                                    <option value="1970">1970 年/民國 59 年</option>
-                                    <option value="1971">1971 年/民國 60 年</option>
-                                    <option value="1972">1972 年/民國 61 年</option>
-                                    <option value="1973">1973 年/民國 62 年</option>
-                                    <option value="1974">1974 年/民國 63 年</option>
-                                    <option value="1975">1975 年/民國 64 年</option>
-                                    <option value="1976">1976 年/民國 65 年</option>
-                                    <option value="1977">1977 年/民國 66 年</option>
-                                    <option value="1978">1978 年/民國 67 年</option>
-                                    <option value="1979">1979 年/民國 68 年</option>
-                                    <option value="1980">1980 年/民國 69 年</option>
-                                    <option value="1981">1981 年/民國 70 年</option>
-                                    <option value="1982">1982 年/民國 71 年</option>
-                                    <option value="1983">1983 年/民國 72 年</option>
-                                    <option value="1984">1984 年/民國 73 年</option>
-                                    <option value="1985">1985 年/民國 74 年</option>
-                                    <option value="1986">1986 年/民國 75 年</option>
-                                    <option value="1987">1987 年/民國 76 年</option>
-                                    <option value="1988">1988 年/民國 77 年</option>
-                                    <option value="1989">1989 年/民國 78 年</option>
-                                    <option value="1990">1990 年/民國 79 年</option>
-                                    <option value="1991">1991 年/民國 80 年</option>
-                                    <option value="1992">1992 年/民國 81 年</option>
-                                    <option value="1993">1993 年/民國 82 年</option>
-                                    <option value="1994">1994 年/民國 83 年</option>
-                                    <option value="1995">1995 年/民國 84 年</option>
-                                    <option value="1996">1996 年/民國 85 年</option>
-                                    <option value="1997">1997 年/民國 86 年</option>
-                                    <option value="1998">1998 年/民國 87 年</option>
-                                    <option value="1999">1999 年/民國 88 年</option>
-                                    <option value="2000">2000 年/民國 89 年</option>
-                                    <option value="2001">2001 年/民國 90 年</option>
+                                    <?php
+                                    for ( $i=(date("Y")-80);$i>=(date("Y")-20);$i-- ){
+                                        echo "<option value='".$i."'";
+                                        if ( strval($re["sel_y1"]) == strval($i) ){
+                                            echo " selected";
+                                        }
+                                        echo ">".$i." 年/民國 ".($i-1911)." 年</option>";
+                                    }
+                                    ?>
                                 </select>
-                                到
+                                到 
                                 <select name="sel_y2" id="sel_y2">
                                     <option value="">不限</option>
-                                    <option value="1941">1941 年/民國 30 年</option>
-                                    <option value="1942">1942 年/民國 31 年</option>
-                                    <option value="1943">1943 年/民國 32 年</option>
-                                    <option value="1944">1944 年/民國 33 年</option>
-                                    <option value="1945">1945 年/民國 34 年</option>
-                                    <option value="1946">1946 年/民國 35 年</option>
-                                    <option value="1947">1947 年/民國 36 年</option>
-                                    <option value="1948">1948 年/民國 37 年</option>
-                                    <option value="1949">1949 年/民國 38 年</option>
-                                    <option value="1950">1950 年/民國 39 年</option>
-                                    <option value="1951">1951 年/民國 40 年</option>
-                                    <option value="1952">1952 年/民國 41 年</option>
-                                    <option value="1953">1953 年/民國 42 年</option>
-                                    <option value="1954">1954 年/民國 43 年</option>
-                                    <option value="1955">1955 年/民國 44 年</option>
-                                    <option value="1956">1956 年/民國 45 年</option>
-                                    <option value="1957">1957 年/民國 46 年</option>
-                                    <option value="1958">1958 年/民國 47 年</option>
-                                    <option value="1959">1959 年/民國 48 年</option>
-                                    <option value="1960">1960 年/民國 49 年</option>
-                                    <option value="1961">1961 年/民國 50 年</option>
-                                    <option value="1962">1962 年/民國 51 年</option>
-                                    <option value="1963">1963 年/民國 52 年</option>
-                                    <option value="1964">1964 年/民國 53 年</option>
-                                    <option value="1965">1965 年/民國 54 年</option>
-                                    <option value="1966">1966 年/民國 55 年</option>
-                                    <option value="1967">1967 年/民國 56 年</option>
-                                    <option value="1968">1968 年/民國 57 年</option>
-                                    <option value="1969">1969 年/民國 58 年</option>
-                                    <option value="1970">1970 年/民國 59 年</option>
-                                    <option value="1971">1971 年/民國 60 年</option>
-                                    <option value="1972">1972 年/民國 61 年</option>
-                                    <option value="1973" selected>1973 年/民國 62 年</option>
-                                    <option value="1974">1974 年/民國 63 年</option>
-                                    <option value="1975">1975 年/民國 64 年</option>
-                                    <option value="1976">1976 年/民國 65 年</option>
-                                    <option value="1977">1977 年/民國 66 年</option>
-                                    <option value="1978">1978 年/民國 67 年</option>
-                                    <option value="1979">1979 年/民國 68 年</option>
-                                    <option value="1980">1980 年/民國 69 年</option>
-                                    <option value="1981">1981 年/民國 70 年</option>
-                                    <option value="1982">1982 年/民國 71 年</option>
-                                    <option value="1983">1983 年/民國 72 年</option>
-                                    <option value="1984">1984 年/民國 73 年</option>
-                                    <option value="1985">1985 年/民國 74 年</option>
-                                    <option value="1986">1986 年/民國 75 年</option>
-                                    <option value="1987">1987 年/民國 76 年</option>
-                                    <option value="1988">1988 年/民國 77 年</option>
-                                    <option value="1989">1989 年/民國 78 年</option>
-                                    <option value="1990">1990 年/民國 79 年</option>
-                                    <option value="1991">1991 年/民國 80 年</option>
-                                    <option value="1992">1992 年/民國 81 年</option>
-                                    <option value="1993">1993 年/民國 82 年</option>
-                                    <option value="1994">1994 年/民國 83 年</option>
-                                    <option value="1995">1995 年/民國 84 年</option>
-                                    <option value="1996">1996 年/民國 85 年</option>
-                                    <option value="1997">1997 年/民國 86 年</option>
-                                    <option value="1998">1998 年/民國 87 年</option>
-                                    <option value="1999">1999 年/民國 88 年</option>
-                                    <option value="2000">2000 年/民國 89 年</option>
-                                    <option value="2001">2001 年/民國 90 年</option>
+                                    <?
+                                    for ( $i=(date("Y")-80);$i>=(date("Y")-20);$i-- ){
+                                        echo "<option value='".$i."'";
+                                        if ( strval($re["sel_y2"]) == strval($i) ){
+                                            echo " selected";
+                                        }
+                                        echo ">".$i." 年/民國 ".($i-1911)." 年</option>";
+                                    }
+                                    ?>
                                 </select>
                             </td>
                         </tr>
+                        <!--居住區域-->
                         <tr>
-                            <td>居住區域：
-                                <label class="checkbox"><input type="checkbox" name="sel_area" value="北部"><i></i>北部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="中部"><i></i>中部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="南部"><i></i>南部</label><label class="checkbox"><input type="checkbox" name="sel_area" value="台北"><i></i>台北</label><label class="checkbox"><input type="checkbox" name="sel_area" value="桃竹苗"><i></i>桃竹苗</label><label class="checkbox"><input type="checkbox" name="sel_area" value="中彰投"><i></i>中彰投</label><label class="checkbox"><input type="checkbox" name="sel_area" value="雲嘉南"><i></i>雲嘉南</label><label class="checkbox"><input type="checkbox" name="sel_area" value="高屏"><i></i>高屏</label><label class="checkbox"><input type="checkbox" name="sel_area" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                居住區域：
+                                <?php          	        
+                                $sel_area_array = array("北部","中部","南部","台北","桃竹苗","中彰投","雲嘉南","高屏","不拘");
+                                for ( $i=0;$i<count($sel_area_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_area' value='".$sel_area_array[$i]."'";
+                                    if ( substr_count($re["sel_area"],$sel_area_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_area_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--星座-->
                         <tr>
-                            <td>星座：
-                                <label class="checkbox"><input type="checkbox" name="sel_star" value="牡羊座"><i></i>牡羊座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="金牛座"><i></i>金牛座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="雙子座"><i></i>雙子座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="巨蟹座"><i></i>巨蟹座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="獅子座"><i></i>獅子座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="處女座"><i></i>處女座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="天秤座"><i></i>天秤座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="天蠍座"><i></i>天蠍座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="射手座"><i></i>射手座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="魔羯座"><i></i>魔羯座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="水瓶座"><i></i>水瓶座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="雙魚座"><i></i>雙魚座</label><label class="checkbox"><input type="checkbox" name="sel_star" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                星座：
+                                <?php          	        
+                                $sel_star_array = array("牡羊座","金牛座","雙子座","巨蟹座","獅子座","處女座","天秤座","天蠍座","射手座","魔羯座","水瓶座","雙魚座","不拘");
+                                for ( $i=0;$i<count($sel_star_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_star' value='".$sel_star_array[$i]."'";
+                                    if ( substr_count($re["sel_star"],$sel_star_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_star_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--身高-->
                         <tr>
-                            <td>身高：<input type="text" name="sel_he1" id="sel_he1" class="form-control" style="width:100px" value=""> - <input type="text" name="sel_he2" id="sel_he2" class="form-control" style="width:100px" value=""> 公分
+                            <td>
+                                身高：<input type="text" name="sel_he1" id="sel_he1" class="form-control" style="width:100px" value="<?php echo $re["sel_he1"];?>"> - <input type="text" name="sel_he2" id="sel_he2" class="form-control" style="width:100px" value="<?php echo $re["sel_he2"];?>"> 公分
                             </td>
                         </tr>
+                        <!--身型-->
                         <tr>
-                            <td>身型：
-                                <label class="checkbox"><input type="checkbox" name="sel_wet" value="苗條"><i></i>苗條</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="普通"><i></i>普通</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="豐腴"><i></i>豐腴</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="有肌肉"><i></i>有肌肉</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="豐滿"><i></i>豐滿</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="肥胖"><i></i>肥胖</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="偏瘦"><i></i>偏瘦(<18)< /label><label class="checkbox"><input type="checkbox" name="sel_wet" value="中等"><i></i>中等(18.1~24)</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="偏肉"><i></i>偏肉(>24)</label><label class="checkbox"><input type="checkbox" name="sel_wet" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                身型：
+                                <?php          	        
+                                $sel_wet_array = array("苗條","普通","豐腴","有肌肉","豐滿","肥胖","偏瘦","中等","偏肉","不拘");
+                                for ( $i=0;$i<count($sel_wet_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_wet' value='".$sel_wet_array[$i]."'";
+                                    if ( substr_count($re["sel_wet"],$sel_wet_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_wet_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--社交性-->
                         <tr>
-                            <td>社交性：
-                                <label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡與多人相處"><i></i>喜歡與多人相處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡與少數人相處"><i></i>喜歡與少數人相處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="喜歡獨處"><i></i>喜歡獨處</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="很熟"><i></i>很熟</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="慢熟"><i></i>慢熟</label><label class="checkbox"><input type="checkbox" name="sel_sociability" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                社交性：
+                                <?php          	        
+                                $sel_sociability_array = array("喜歡與多人相處","喜歡與少數人相處","喜歡獨處","很熟","慢熟","不拘");
+                                for ( $i=0;$i<count($sel_sociability_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_sociability' value='".$sel_sociability_array[$i]."'";
+                                    if ( substr_count($re["sel_sociability"],$sel_sociability_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_sociability_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--交友觀點-->
                         <tr>
-                            <td>交友觀點：
-                                <label class="checkbox"><input type="checkbox" name="sel_view" value="純粹擴大交友"><i></i>純粹擴大交友</label><label class="checkbox"><input type="checkbox" name="sel_view" value="尋找談戀愛對象"><i></i>尋找談戀愛對象</label><label class="checkbox"><input type="checkbox" name="sel_view" value="尋找依靠終身伴侶"><i></i>尋找依靠終身伴侶</label><label class="checkbox"><input type="checkbox" name="sel_view" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                交友觀點：
+                                <?php          	        
+                                $sel_view_array = array("純粹擴大交友","尋找談戀愛對象","尋找依靠終身伴侶","不拘");
+                                for ( $i=0;$i<count($sel_view_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_view' value='".$sel_view_array[$i]."'";
+                                    if ( substr_count($re["sel_view"],$sel_view_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_view_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--抽菸-->
                         <tr>
-                            <td>抽菸：
-                                <label class="checkbox"><input type="checkbox" name="sel_mem7" value="是"><i></i>是</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="否"><i></i>否</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="偶爾"><i></i>偶爾</label><label class="checkbox"><input type="checkbox" name="sel_mem7" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                抽菸：
+                                <?php          	        
+                                $sel_mem7_array = array("是","否","偶爾","不拘");
+                                for ( $i=0;$i<count($sel_mem7_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_mem7' value='".$sel_mem7_array[$i]."'";
+                                    if ( substr_count($re["sel_mem7"],$sel_mem7_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_mem7_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--喝酒-->
                         <tr>
-                            <td>喝酒：
-                                <label class="checkbox"><input type="checkbox" name="sel_mem8" value="是"><i></i>是</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="否"><i></i>否</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="偶爾"><i></i>偶爾</label><label class="checkbox"><input type="checkbox" name="sel_mem8" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                喝酒：
+                                <?php          	        
+                                $sel_mem8_array = array("是","否","偶爾","不拘");
+                                for ( $i=0;$i<count($sel_mem8_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_mem8' value='".$sel_mem8_array[$i]."'";
+                                    if ( substr_count($re["sel_mem8"],$sel_mem8_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_mem8_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--飲食-->
                         <tr>
-                            <td>飲食：
-                                <label class="checkbox"><input type="checkbox" name="sel_mem22" value="全素"><i></i>全素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="鍋邊素"><i></i>鍋邊素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="奶蛋素"><i></i>奶蛋素</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="吃辣"><i></i>吃辣</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="不吃辣"><i></i>不吃辣</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="葷食"><i></i>葷食</label><label class="checkbox"><input type="checkbox" name="sel_mem22" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                飲食：
+                                <?php          	        
+                                $sel_mem22_array = array("全素","鍋邊素","奶蛋素","吃辣","不吃辣","葷食","不拘");
+                                for ( $i=0;$i<count($sel_mem22_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='sel_mem22' value='".$sel_mem22_array[$i]."'";
+                                    if ( substr_count($re["sel_mem22"],$sel_mem22_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$sel_mem22_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <tr><td>忌諱：<input type="text" name="mem_da4" id="mem_da4" class="form-control" style="width:80%" value="<?php echo $re["mem_da4"];?>"></td></tr>
+                        <tr><td>擇友條件：<input type="text" name="mem_da5" id="mem_da5" class="form-control" style="width:80%" value="<?php echo $re["mem_da5"];?>"></td></tr>
+                        <tr><td style="font-size:150%;color:blue"><b>其他事項</b></td></tr>
+                        <tr><td>備註說明：<textarea id="sys_note" name="sys_note" style="width:80%" rows="8" id="textarea" class="form-control"><?php echo $re["sys_note"];?></textarea> </td></tr>
+                        <tr><td>備註說明：<textarea id="tosinglenote" name="tosinglenote" style="width:80%" rows="8" id="textarea" class="form-control" readonly><?php echo $re["tosinglenote"];?></textarea></td></tr>
+                        <!--方便聯繫時間-->
                         <tr>
-                            <td>忌諱：<input type="text" name="mem_da4" id="mem_da4" class="form-control" style="width:80%" value=""></td>
-                        </tr>
-                        <tr>
-                            <td>擇友條件：<input type="text" name="mem_da5" id="mem_da5" class="form-control" style="width:80%" value=""></td>
-                        </tr>
-                        <tr>
-                            <td style="font-size:150%;color:blue"><b>其他事項</b></td>
-                        </tr>
-                        <tr>
-                            <td>備註說明：<textarea id="sys_note" name="sys_note" style="width:80%" rows="8" id="textarea" class="form-control"></textarea> </td>
-                        </tr>
-                        <tr>
-                            <td>備註說明：<textarea id="tosinglenote" name="tosinglenote" style="width:80%" rows="8" id="textarea" class="form-control" readonly></textarea></td>
-                        </tr>
-                        <tr>
-                            <td>方便聯繫時間：
-                                <label class="checkbox"><input type="checkbox" name="can_call" value="星期一"><i></i>星期一</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期二"><i></i>星期二</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期三"><i></i>星期三</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期四"><i></i>星期四</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期五"><i></i>星期五</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期六"><i></i>星期六</label><label class="checkbox"><input type="checkbox" name="can_call" value="星期日"><i></i>星期日</label><label class="checkbox"><input type="checkbox" name="can_call" value="上午"><i></i>上午</label><label class="checkbox"><input type="checkbox" name="can_call" value="下午"><i></i>下午</label><label class="checkbox"><input type="checkbox" name="can_call" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                方便聯繫時間：
+                                <?php          	        
+                                $can_call_array = array("星期一","星期二","星期三","星期四","星期五","星期六","星期日","上午","下午","不拘");
+                                for ( $i=0;$i<count($can_call_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='can_call' value='".$can_call_array[$i]."'";
+                                    if ( substr_count($re["can_call"],$can_call_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$can_call_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--可以排約時間-->
                         <tr>
-                            <td>可以排約時間：
-                                <label class="checkbox"><input type="checkbox" name="can_love" value="星期一"><i></i>星期一</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期二"><i></i>星期二</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期三"><i></i>星期三</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期四"><i></i>星期四</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期五"><i></i>星期五</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期六"><i></i>星期六</label><label class="checkbox"><input type="checkbox" name="can_love" value="星期日"><i></i>星期日</label><label class="checkbox"><input type="checkbox" name="can_love" value="上午"><i></i>上午</label><label class="checkbox"><input type="checkbox" name="can_love" value="下午"><i></i>下午</label><label class="checkbox"><input type="checkbox" name="can_love" value="不拘" checked><i></i>不拘</label>
+                            <td>
+                                可以排約時間：
+                                <?php          	        
+                                $can_love_array = array("星期一","星期二","星期三","星期四","星期五","星期六","星期日","上午","下午","不拘");
+                                for ( $i=0;$i<count($can_love_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='can_love' value='".$can_love_array[$i]."'";
+                                    if ( substr_count($re["can_love"],$can_love_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$can_love_array[$i]."</label>";
+                                }
+                                ?>
                             </td>
                         </tr>
+                        <!--魅力處方箋01-->
                         <tr>
-                            <td>魅力處方箋01：
-                                <label class="checkbox"><input type="checkbox" name="recipe1" value="戀愛講堂"><i></i>戀愛講堂</label><label class="checkbox"><input type="checkbox" name="recipe1" value="魅力有約"><i></i>魅力有約</label><label class="checkbox"><input type="checkbox" name="recipe1" value="品味生活"><i></i>品味生活</label><label class="checkbox"><input type="checkbox" name="recipe1" value="互動美學"><i></i>互動美學</label>
+                            <td>
+                                魅力處方箋01：
+                                <?php          	        
+                                $recipe1_array = array("戀愛講堂","魅力有約","品味生活","互動美學");
+                                for ( $i=0;$i<count($recipe1_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='recipe1' value='".$recipe1_array[$i]."'";
+                                    if ( substr_count($re["recipe1"],$recipe1_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$recipe1_array[$i]."</label>";
+                                }
+                                ?>   	  
                             </td>
                         </tr>
+                        <!--魅力處方箋02-->
                         <tr>
-                            <td>魅力處方箋02：
-                                <label class="checkbox"><input type="checkbox" name="recipe2" value="輕旅行"><i></i>輕旅行</label><label class="checkbox"><input type="checkbox" name="recipe2" value="主題特別企劃"><i></i>主題特別企劃</label><label class="checkbox"><input type="checkbox" name="recipe2" value="主題精緻餐會"><i></i>主題精緻餐會</label><label class="checkbox"><input type="checkbox" name="recipe2" value="美味廚房"><i></i>美味廚房</label><label class="checkbox"><input type="checkbox" name="recipe2" value="健康料理"><i></i>健康料理</label><label class="checkbox"><input type="checkbox" name="recipe2" value="國外旅遊"><i></i>國外旅遊</label>
+                            <td>
+                                魅力處方箋02：
+                                <?php          	        
+                                $recipe2_array = array("輕旅行","主題特別企劃","主題精緻餐會","美味廚房","健康料理","國外旅遊");
+                                for ( $i=0;$i<count($recipe2_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='recipe2' value='".$recipe2_array[$i]."'";
+                                    if ( substr_count($re["recipe2"],$recipe2_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$recipe2_array[$i]."</label>";
+                                }
+                                ?>      	  
                             </td>
                         </tr>
+                        <!--魅力處方箋03-->
                         <tr>
-                            <td>魅力處方箋03：
-                                <label class="checkbox"><input type="checkbox" name="recipe3" value="一對一排約"><i></i>一對一排約</label><label class="checkbox"><input type="checkbox" name="recipe3" value="多平台排約"><i></i>多平台排約</label><label class="checkbox"><input type="checkbox" name="recipe3" value="多對多約會"><i></i>多對多約會</label><label class="checkbox"><input type="checkbox" name="recipe3" value="主題式約會"><i></i>主題式約會</label><label class="checkbox"><input type="checkbox" name="recipe3" value="下午茶約會"><i></i>下午茶約會</label>
+                            <td>
+                                魅力處方箋03：
+                                <?php          	        
+                                $recipe3_array = array("輕旅行","主題特別企劃","主題精緻餐會","美味廚房","健康料理","國外旅遊");
+                                for ( $i=0;$i<count($recipe3_array);$i++ ){
+                                    echo "<label class='checkbox'><input type='checkbox' name='recipe3' value='".$recipe3_array[$i]."'";
+                                    if ( substr_count($re["recipe3"],$recipe3_array[$i]) > 0 ){
+                                        echo " checked";
+                                    }
+                                    echo "><i></i>".$recipe3_array[$i]."</label>";
+                                }
+                                ?>      	  
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div align="center">
                                     <input name="Submit3" type="submit" value="確定修改" class="btn btn-primary" style="width:50%">
-                                    <input name="mem_num" type="hidden" id="mem_num" value="2080022">
+                                    <<input name="mem_num" type="hidden" id="mem_num" value="<?php echo $re["mem_num"];?>">
                                 </div>
                             </td>
-                        </tr>
-                        </td>
                         </tr>
                     </table>
                 </form>
             </div>
         </div>
-        <!--/span-->
-
     </div>
-    <!--/row-->
     <hr>
-
-
-    <footer>
-    </footer>
-    </div>
+</div>
     </div>
 
     </div>
@@ -1896,6 +1650,22 @@ if ( $re["mem_level"] == "mem" && $_SESSION["MM_UserAuthorization"] != "admin" &
 <?php
 require_once("./include/_bottom.php");
 ?>
+
+<!--若暫停選項為「是」則日期欄位區間就要show，反之hide-->
+<script lanaguage="javascript">
+	function chkstop(){
+		var stop_str_val = $('input[name=stop_str]:checked').val()
+		if ( stop_str_val == "是" ){
+			var stop_sy_val = $('input[name=stop_sm]:checked').val()
+			var stop_ey_val = $('input[name=stop_em]:checked').val()
+			if ( stop_sy_val == "" || stop_ey_val == "" ){ $("#stop_sy").focus;}
+			$("#stop_date").show();
+		}else{
+			$("#stop_date").hide();
+		}
+	}
+</script>
+<!--//若暫停選項為「是」則日期欄位區間就要show，反之hide-->
 
 <script language="JavaScript" type="text/JavaScript">
     $(function() {

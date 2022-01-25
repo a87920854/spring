@@ -1,10 +1,148 @@
 <?php
-require_once("./include/_inc.php");
+/*****************************************/
+//檔案名稱：ad_singleparty_invite_list.php
+//後台對應位置：約會專家功能->會館約會
+//改版日期：2022.01.25
+//改版設計人員：Jack
+//改版程式人員：Queena
+/*****************************************/
+
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
 require_once("./include/_sidebar.php");
-?>
 
+//接收值
+$st = SqlFilter($_REQUEST["st"],"tab");
+$an = SqlFilter($_REQUEST["an"],"int");
+$times1 = SqlFilter($_REQUEST["times1"],"tab");
+$times2 = SqlFilter($_REQUEST["times2"],"tab");
+$branch = SqlFilter($_REQUEST["branch"],"tab");
+$single = SqlFilter($_REQUEST["single"],"tab");
+$vst = SqlFilter($_REQUEST["vst"],"tab");
+$t = SqlFilter($_REQUEST["t"],"tab");
+$keyword = SqlFilter($_REQUEST["keyword"],"tab");
+$tPage = SqlFilter($_REQUEST["tPage"],"tab");
+
+//刪除資料
+iF ( $st == "del" ){
+    $SQL_d = "Delect From si_invite Where auton=".$an;
+    $rs_d = $SPConn->prepare($SQL_d);
+    $rs_d -> execute();        
+    reURL("reload_window.asp?m=資料刪除中...");
+    exit;
+}
+
+//判斷日期格式
+if ( $times1 != "" && chkDate($times1) ){
+    $acre_sign1 = $times1 . " 00:00";
+    $vacre_sign1 = $times1;
+    if ( ! chkDate($acre_sign1) ){
+        call_alert("起始日期有誤。", 0, 0);
+    }
+}
+
+if ( $times2 != "" && chkDate($times2) ){
+    $acre_sign2 = $times2 . " 00:00";
+    $acre_sign2 = $times2;
+    if ( ! chkDate($acre_sign2) ){
+        call_alert("結束日期有誤。", 0, 0);
+    }
+}
+
+//default_sql_num = 500
+/*If request("vst") = "full" Then
+    sqlv = "*"
+    sqlv2 = "count(auton)"
+Else
+    sqlv = "top "&default_sql_num&" *"
+    sqlv2 = "count(auton)"
+End If    */
+
+//組合語法 si_invite Where types='branch'
+$subSQL = "types='branch' ";
+if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+    $subSQL = $subSQL;
+    $selfix2 = 1;
+}elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
+    $subSQL .= "And (mbranch = '".$_SESSION["branch"]."' Or tbranch = '".$_SESSION["branch"]."' Or datebranch = '".$_SESSION["branch"]."') ";
+}elseif ( $_SESSION["MM_UserAuthorization"] == "single" || $_SESSION["MM_UserAuthorization"] == "manager" ){
+    $subSQL .= "And (msingle = '".$_SESSION["MM_username"]."' Or tsingle = '".$_SESSION["MM_username"]."') ";
+}else{
+    call_alert("您沒有查看此頁的權限。",0,0);
+}
+
+//判斷日期區間
+if ( chkDate($acre_sign1) && chkDate($acre_sign2) ){
+    $days = (strtotime($acre_sign2)-strtotime($acre_sign1))/86400;
+    if ( $days < 0 ){ call_alert("結束日期不能大於起始日期。", 0, 0); }
+    $subSQL .= "And times Between '".$acre_sign1."' And '".$acre_sign2."' ";
+}
+
+//篩選條件-會館名稱
+if ( $branch != "" ){
+    $subSQL .= "And (mbranch Like '%".$branch."%' Or tbranch Like '%"$branch."%' Or datebranch Like '%".$branch."%')";
+}
+
+//篩選條件-祕書
+if ( $single != "" ){
+    $subSQL .= "And (msingle Like '%".$single."%' Or tsingle Like '%".$single."%')";
+}
+
+if ( $vst != "full" ){
+    if ( $t == "1" ){
+	    $subSQL .= "And stats < 3 ";
+    }else{
+	    $subSQL .= "And datetime_stat = 2 ";
+    }
+}
+
+//編號搜尋
+if ( $keyword != "" ){
+	$subSQL .= "And (mnum Like '%".$keyword."%' Or tnum Like '%".$keyword."%') ";
+}
+
+$orderSQL = " Order By times Desc, statstime2 Desc";
+
+//取得總筆數
+$SQL = "Select count(auton) As total_size From si_invite Where".$subSQL;
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+if ( count($result) == 0 || $re["total_size"] == 0 ) {
+    $total_size = 0;
+}else{
+    $total_size = $re["total_size"];
+}
+
+//查看清單連結文字
+if ( $vst == "full" ){
+    $count_href = "　<a href='?vst=n'>[查看前五百筆]</a>";
+}else{
+    if ( $total_size > 500 ){ $total_size = 500;}
+    $count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
+}
+
+//取得分頁資料
+$tPageSize = 20; //每頁幾筆
+$tPage = 1; //目前頁數
+$tPage_list = 0;
+if ( $tPage > 1 ){ 
+    $tPage = $tPage;
+    $tPage_list = ($tPage-1);
+}
+
+//分頁程式
+$SQL_list  = "Select Top ".$tPageSize." * ";
+$SQL_list .= "From (Select row_number() ";
+$SQL_list .= "over(".$orderSQL.") As rownumber ";
+$SQL_list .= "From si_invite Where ".$subSQL." ) temp_row ";
+$SQL_list .= "Where rownumber > ".($tPageSize*$tPage_list);
+$rs_list = $SPConn->prepare($SQL_list);
+$rs_list->execute();
+$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!-- MIDDLE -->
 <section id="middle">
     <!-- page title -->
@@ -19,50 +157,67 @@ require_once("./include/_sidebar.php");
     <div id="content" class="padding-20">
         <!-- content starts -->
 
+        <?php
+        $linkd1 = " disabled";
+        $linkd2 = "";
+        $linkd1h = "javascript:void(0)";
+        $linkd2h = "ad_singleparty_invite_list.asp?t=1";
+        $head_t = "等待秘書聯繫";
+        if ( $t == "1" ){
+            $linkd1 = "";
+            $linkd2 = " disabled";
+            $linkd1h = "ad_singleparty_invite_list.asp";
+            $linkd2h = "javascript:void(0)";
+            $head_t = "已邀約未同意";
+        }
+        ?>
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>會館約會 - 等待秘書聯繫 - 數量：71　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>會館約會 - <?php echo $head_t;?> - 數量：<?php echo $total_size;?></strong> <!-- panel title -->
                 </span>
             </div>
-
             <div class="panel-body">
-
                 <div class="col-md-12">
-                    <!--<p><a href="#" class="btn btn-success"  disabled>未完成</a>&nbsp;<a href="ad_singleparty_invite_list.php?t=1" class="btn btn-info" >已完成</a></p>-->
-                    <p><a href="#" class="btn btn-success" disabled>等待秘書聯繫</a>&nbsp;<a href="ad_singleparty_invite_list.php?t=1" class="btn btn-info">已邀約未同意</a></p>
+                    <p>
+                        <a href="<?php echo $linkd1h;?>" class="btn btn-success" <?php echo $linkd1;?>>等待秘書聯繫</a>&nbsp;
+                        <a href="<?php echo $linkd2h;?>" class="btn btn-info" <?php echo $linkd2;?>>已邀約未同意</a>
+                    </p>
                     <form name="form1" method="post" action="?vst=full" class="form-inline">
-                        <p>排約日期：
-                            <input type="text" class="datepicker" autocomplete="off" name="times1" value="" autocomplete="off">
-                            ～
-                            <input type="text" class="datepicker" autocomplete="off" name="times2" value="" autocomplete="off">
-
-
-                            <select name="s6" id="s6">
-                                <option value="">請選擇會館</option>
-                                <option value="台北">台北</option>
-                                <option value="桃園">桃園</option>
-                                <option value="新竹">新竹</option>
-                                <option value="台中">台中</option>
-                                <option value="台南">台南</option>
-                                <option value="高雄">高雄</option>
-                                <option value="八德">八德</option>
-                                <option value="約專">約專</option>
-                                <option value="迷你約">迷你約</option>
-                                <option value="總管理處">總管理處</option>
-                            </select>
-                            <select name="s7" id="s7">
-                                <option value="">請選擇秘書</option>
-                            </select>
-                            <input type="text" name="keyword" placeholder="編號" class="form-control" value="">
-
+                        <p>
+                            排約日期：
+                            <input type="text" class="datepicker" autocomplete="off" name="times1" value="<?php echo $vacre_sign1;?>" autocomplete="off">
+                            ～ 
+                            <input type="text" class="datepicker" autocomplete="off" name="times2" value="<?php echo $vacre_sign2;?>" autocomplete="off">
+                            
+                            <?php
+                            if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                //會館資料
+                                $SQL = "Select * From branch_data Where auto_no<>10 Order By admin_Sort";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetchAll(PDO::FETCH_ASSOC);?>
+                                <select name="branch" id="branch">
+                                    <option value="">請選擇會館</option>
+                                    <?php
+                                        foreach($result as $re){
+                                            echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+                                        }
+                                    ?>
+                                </select>
+                                <select name="single" id="single">
+                                    <option value="">請選擇秘書</option>
+                                </select>
+                                <input type="text" name="keyword" placeholder="編號" class="form-control" value="<?php echo $keyword;?>">
+                            <?php }?>
                             <input type="submit" value="送出" class="btn btn-default">
                         </p>
                     </form>
                     <p style="color:blue">受理會館務必與<font color=red>發起人及被邀約人</font>兩方都聯絡確認後，才能設定排約時間。<br>如果有一方不願排約或取消，請一樣設定排約時間後再到排約預定表中選取取消原因。</p>
                 </div>
 
-                <table class="table table-striped table-bordered bootstrap-datatable">
+                <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>
                             <th width=160>發起人</th>
@@ -74,26 +229,174 @@ require_once("./include/_sidebar.php");
                             <th>狀態</th>
                             <th width="100">　</th>
                         </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ( count($result_list) == 0 ){
+                            echo "<tr><td colspan='8' height='200'>目前沒有資料</td></tr>";
+                        }else{
+                            foreach($result_list as $re_list){
+                                $selfix2 = 0;
+                                $see_phone = 0;
+                                $mem_phone = "";
+                                $mem_phone2 = "";
+                                $SQL1 = "Select mem_name,mem_mobile,web_endtime From member_data Where mem_num=".$re_list["mnum"];
+                                $rs1 = $SPConn->prepare($SQL1);
+                                $rs1->execute();
+                                $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+                                foreach($result1 as $re1);
+                                if ( count($result1) > 0 ){
+                                    $mem_name = $re1["mem_name"];
+                                    $mem_phone = "<br>[".$re1["mem_mobile"]."]";
+                                    $web_endtime = $re1["web_endtime"];
+                                }
+                                $SQL1 = "Select mem_name,mem_mobile,web_endtime From member_data Where mem_num=".$re_list["tnum"];
+                                $rs1 = $SPConn->prepare($SQL1);
+                                $rs1->execute();
+                                $result1 = $rs1->fetchAll(PDO::FETCH_ASSOC);
+                                foreach($result1 as $re1);                                
+                                if ( count($result1) > 0 ){
+                                    $mem_name2 = $re1["mem_name"];
+                                    $mem_phone2 = "<br>[".$re1["mem_mobile"]."]";
+                                    $web_endtime2 = $re1["web_endtime"];
+                                }
+                                if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                    $see_phone = 1;
+                                }
 
-                        <tr>
-                            <td align="center"><a href="ad_mem_detail.php?mem_num=1606486" target="_blank">測試小君</a><br>[0955789456]/223天</td>
-                            <td align="center">總管理處 - 宜君</td>
-                            <td align="center"><a href="ad_mem_detail.php?mem_num=1503490" target="_blank">測試-尹宜君</a><br>[0916920837]/588天</td>
-                            <td align="center">總管理處 - 宜君</td>
-                            <td align="center">總管理處</td>
-                            <td align="left">
-                                測試小君於 2021-05-26 11:08 發出邀請<br>測試-尹宜君於 2021-05-26 11:10 同意邀請<br>雙方選定 2021-05-31 16:00 到 總管理處會館 約會<br>
-                                <font color=purple>結果：等待回報</font>
+                                if ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love" ){
+                                    if ( $re_list["datebranch"] == $_SESSION["branch"] ){
+                                        $see_phone = 1;
+                                        $selfix2 = 1;
+                                    }
+                                }
 
+                                if ( $t == 1 ){
+                                    if ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "manager" || $_SESSION["MM_UserAuthorization"] == "love" ){
+                                        if ( $re_list["mbranch"] == $_SESSION["branch"] ){
+                                            $see_phone = 1;
+                                            $selfix2 = 1;
+                                        }
+                                    }
+                                }
 
+                                if ( $see_phone == 0 ){
+                                    $mem_phone = "";
+                                    $mem_phone2 = "";
+                                }
 
-                            </td>
+                                $statmsg = "";
+                                $statmsg = $statmsg . $mem_name."於 ".strtotime($re_list["times"])." 發出邀請";
+                                if ( $re_list["statstime2"] != "" && chkDate($re_list["statstime2"]) ){
+                                    if ( $re_list["stats"] == 1 ){
+                                        $statmsg = $statmsg."<br>".$mem_name2."於 ".strtotime($re_list["statstime2"])." 拒絕邀請";
+                                    }else{
+                                        $statmsg = $statmsg."<br>".$mem_name2."於 ".strtotime($re_list["statstime2"])." 同意邀請";
+                                    }
+                                }
+
+                                $selfix = 0;
+                                $nouse = 0;
+                                $dayadd15 = date('Y-m-d H:i:s', strtotime ("+15 day", $re_list["times"]));
+
+                                if ( $re_list["stats"] == 0 ){
+                                    $days = ( $dayadd15-strtotime(date()))/86400;
+                                    if ( $days <= 0 ){
+                                        $nouse = 1;
+                                    }
+                                    $statmsg = $statmsg.$mem_name."對".$mem_name2."發起約會邀請，正在等待".$mem_name2."同意 - ".strtotime($re_list["times"]);
+                                }elseif ( $re_list["stats"] == 1 ){
+                                    $statmsg = $statmsg.$mem_name."對".$mem_name2."發起約會邀請，".$mem_name2."已經拒絕 - ".strtotime($re_list["times"]);
+                                }elseif ( $re_list["stats"] == 2 ){
+                                    $days = ( $dayadd15-strtotime(date()))/86400;
+                                    if ( $days <= 0 ){
+                                        $nouse = 1;
+                                    }
+                                    if ( $re_list["datetime_stat"] == 2 ){
+                                        $statmsg = $statmsg."<br>雙方選定 ".strtotime($re_list["datetime_real"])." 到 ".$re_list["datebranch"]."會館 約會";
+                                        $statmsg = $statmsg."<br><font color='red'>正在等待<b>".$re_list["datebranch"]."會館</b>秘書與雙方聯絡</font>";
+                                        $selfix = 1;
+                                        $nouse = 0;
+                                    }elseif ( $re_list["datetime_stat"] == 1 ){
+                                        $statmsg = $statmsg."<br>正在等候".$mem_name."重新選擇約會時間";
+                                        $nouse = 0;
+                                    }else{
+                                        $statmsg = $statmsg."<br>正在等候".$mem_name."選擇約會時間";
+                                        $nouse = 0;
+                                    }
+                                }elseif ( $re_list["stats"] == 4 || $re_list["stats"] == 8 ){
+                                    if ( $re_list["datetime_stat"] == 2 ){
+                                        $statmsg = $statmsg."<br>雙方選定 ".strtotime($re_list["datetime_real"])." 到 ".$re_list["datebranch"]."會館 約會";
+                                    }
+                                    if ( $re_list["statstime3"] != "" ){
+                                        if ( chkDate($re_list["statstime3"]) ) {
+                                            $statmsg = $statmsg."<br>秘書已於 ".strtotime($re_list["statstime3"])." 與雙方聯絡完畢並轉入";
+                                        }
+                                    }
+                                    if ( $re_list["invite_stats"] != "" ){
+                                        $statmsg = $statmsg."<br><font color='purple'>結果：".invite_stats($re_list["invite_stats"])."</font>";
+                                    }else{
+                                        $statmsg = $statmsg."<br><font color=purple>結果：約會未成功</font>";
+                                    }
+                                }else{
+                                    $statmsg = $statmsg."<br>雙方選定 ".strtotime($re_list["datetime_real"])." 到 ".$re_list["datebranch"]."會館 約會";
+                                    $statmsg = $statmsg."<br><font color=blue>秘書於 ".strtotime($re_list["statstime3"])." 已與雙方聯絡完畢並將資料轉入排約預訂表</font>";
+                                }
+                                
+                                if ( $nouse == 1 ){
+                                    $statmsg = $statmsg."<br><font color='red'>本筆邀約已超過 15 天已失效。</font>";
+                                    $mem_phone = "";
+                                    $mem_phone2 = "";
+                                }
+
+                                if ( chkDate($web_endtime) ){
+                                    $web_time_diff = ( $web_endtime-strtotime(date()))/86400;
+                                    if ( $web_time_diff > 0 ){
+                                        $web_time = "/".$web_time_diff."天";
+                                    }else{
+                                        $web_time = "/<font color='red'>過期</font>";
+                                    }
+                                }
+
+                                if ( chkDate($web_endtime2) ){
+                                    $web_time_diff = ( $web_endtime2-strtotime(date()))/86400;
+                                    if ( $web_time_diff2 > 0 ){
+                                        $web_time2 = "/".$web_time_diff2."天";
+                                    }else{
+                                        $web_time2 = "/<font color='red'>過期</font>";
+                                    }
+                                }
+                            }
+                        }
+                        ?>
+                        <tr> 
                             <td align="center">
-
+                                <a href="ad_mem_detail.asp?mem_num=<?php echo $re_list["mnum"];?>" target="_blank">
+                                <?php echo $mem_name;?></a><?php echo $mem_phone;?><?php echo $web_time;?>
                             </td>
+                            <td align="center"><?php echo $re_list["mbranch"];?> - <?php echo SingleName($re_list["msingle"],"normal");?></td>
                             <td align="center">
-                                4-2-0-36931
+                                <a href="ad_mem_detail.php?mem_num=<?php echo $re_list["tnum"];?>" target="_blank">
+                                <?php echo $mem_name2;?></a><?php echo $mem_phone2;?><?php echo $web_time2;?>
                             </td>
+                            <td align="center"><?php echo $re_list["tbranch"];?> - <?php echo SingleName($re_list["tsingle"],"normal");?></td>
+                            <td align="center"><?php echo $re_list["datebranch"];?></td>
+                            <td align="left"><?php echo $statmsg;?></td>
+                            <td align="center"></td>
+                            <td align="center">
+    	                        <?php $re_list["stats"]."-".$re_list["datetime_stat"]."-".$re_list["invite_stats"]."-".$re_list["auton"];?>
+    	                        <%if (selfix = 1 and selfix2 = 1) or (Session("MM_Username")="KYOE") or (Session("MM_Username")="SHEERY03130513") then%>
+			    		<div class="btn-group">
+							<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+							<ul class="dropdown-menu pull-right">
+                <li><a href="#set" onclick="Mars_popup('ad_singleparty_invite_list_set.asp?st=read&a=<%=rs("auton")%>&keyword1=<%=rs("mnum")%>&keyword2=<%=rs("tnum")%>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=700,height=550,top=10,left=10');">設定排約時間</a></li>
+                <%if Session("MM_UserAuthorization")="admin" then%>
+                <li><a href="#del" onclick="Mars_popup2('ad_singleparty_invite_list.asp?st=del&an=<%=rs("auton")%>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=300,height=150,top=10,left=10');">刪除</a></li>
+                <%end if%>
+              </ul>
+						</div>
+						<%end if%>
+   </td>
                         </tr>
 
                         <tr>

@@ -183,7 +183,7 @@ if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
 
 //取得分頁資料
 $tPageSize = 50; //每頁幾筆
-$tPage = 0; //目前頁數
+$tPage = 1; //目前頁數
 if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
 $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
 if ( $tPageSize*$tPage < $total_size ){
