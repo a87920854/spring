@@ -1,8 +1,96 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+
+    /*****************************************/
+    //檔案名稱：teach_video_add.php
+    //後台對應位置：管理系統/教學影片>新增教學影片
+    //改版日期：2022.1.24
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    if($_REQUEST["st"] == "add"){
+        if($_REQUEST["an"] != ""){     
+            $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int");
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            $result = $rs->fetch();
+            if(!$result){
+                call_alert("資料讀取錯誤。","ClOsE",0);
+            }
+        }else{
+            $title = SqlFilter($_REQUEST["title"],"tab");
+            $types = SqlFilter($_REQUEST["types"],"tab");
+            $types2 = SqlFilter($_REQUEST["types2"],"tab");
+            if($_REQUEST["notes"] != ""){
+                $notes = str_ireplace("\r\n","",$_REQUEST["notes"]);
+                $notes = SqlFilter($notes,"tab");
+            }else{
+                $notes = NULL;
+            }
+            if($_REQUEST["branch"] != ""){
+                $branch = SqlFilter($_REQUEST["branch"],"tab");
+            }
+            if($_REQUEST["onlybranch"] == "1"){
+                $onlybranch = 1;
+            }else{
+                $onlybranch = 0;
+            }
+            if($_REQUEST["url"] != ""){
+                if(strpos($_REQUEST["url"],"?v=") != false){
+                    if(strpos($_REQUEST["url"],"&") != false){
+                        $url = SqlFilter($_REQUEST["url"],"tab");
+                        $url = substr($url,strpos($url,"&"));
+                    }
+                }
+            }
+            $times = date("Y/m/d H:i:s");
+            $SQL = "INSERT INTO teach_video (title,types,types2,notes,branch,ownerbranch,url,times) VALUES ('".$title."','".$types."','".$types2."','".$notes."','".$branch."','".$ownerbranch."','".$url."','".$times."')";
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+            reURL("teach_video.php");
+        }
+    }
+
+    if($_REQUEST["an"] != ""){
+        $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int");
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if(!$result){
+            call_alert("資料讀取錯誤。","ClOsE",0);
+        }else{
+            $types = $result["types"];
+            $branch = $result["branch"];
+            $title = $result["title"];
+            $notes = $result["notes"];
+            $onlybranch = $result["onlybranch"];
+            $ownerbranch = $result["ownerbranch"];
+            $types2 = $result["types2"];
+            if($notes != ""){
+                $notes = str_ireplace("\r\n","",$notes);                
+            }
+            $vurl = $result["url"];
+            $fsq = "&an=".SqlFilter($_REQUEST["an"],"int");
+            $fsb = "修改";
+        }
+    }else{
+        $branch = "all";
+	    $fsb = "新增";
+    }
+
 ?>
 
 <!-- MIDDLE -->
@@ -12,7 +100,7 @@ require_once("./include/_sidebar.php");
         <ol class="breadcrumb">
             <li><a href="index.php">管理系統</a></li>
             <li><a href="teach_video.php">教學影片</a></li>
-            <li class="active">新增教學影片</li>
+            <li class="active"><?php echo $fsb; ?>教學影片</li>
         </ol>
     </header>
     <!-- /page title -->
@@ -22,22 +110,22 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>新增教學影片</strong> <!-- panel title -->
+                    <strong><?php echo $fsb; ?>教學影片</strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
                 <table class="table table-striped table-bordered bootstrap-datatable input_small" style="font-size:12px;">
                     <tbody>
-                        <form action="?st=add" method="post" id="form1" onSubmit="return chk_form()">
+                        <form action="?st=add<?php echo $fsq; ?>" method="post" id="form1" onSubmit="return chk_form()">
 
                             <tr>
                                 <td>
                                     類型： <select name="types" id="types" required>
                                         <option value="">請選擇</option>
-                                        <option value="一般區">一般區</option>
-                                        <option value="管制區">管制區(需督導授權)</option>
-                                        <option value="限制區">限制區(需總公司授權)</option>
+                                        <option value="一般區"<?php if($types == "一般區") echo " selected"; ?>>一般區</option>
+                                        <option value="管制區"<?php if($types == "管制區") echo " selected"; ?>>管制區(需督導授權)</option>
+                                        <option value="限制區"<?php if($types == "限制區") echo " selected"; ?>>限制區(需總公司授權)</option>
                                     </select>
                                 </td>
                             </tr>
@@ -45,49 +133,83 @@ require_once("./include/_sidebar.php");
                             <tr>
                                 <td>
                                     限制觀看會館：
-                                    <label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="台北" checked>台北</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="桃園" checked>桃園</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="新竹" checked>新竹</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="台中" checked>台中</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="台南" checked>台南</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="高雄" checked>高雄</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="八德" checked>八德</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="約專" checked>約專</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="迷你約" checked>迷你約</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="checkbox" name="branch" value="總管理處" checked>總管理處</label>&nbsp;&nbsp;
+                                    <?php
+                                        // if(is_null($branch)) $branch = "all";       
+                                        $SQL = "Select * From branch_data Where admin_name<>'線上諮詢' and admin_name<>'好好玩旅行社' Order By admin_SOrt";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+                                        foreach($result as $re){
+                                            if(member_array($branch, $re["admin_name"]) == "1"){
+                                                $cc = " checked";
+                                            }else{
+                                                $cc = "";
+                                            }
+                                            if($branch == "all"){
+                                                $cc = " checked";
+                                            }
+                                            echo "<label style='display:inline;'><input style='width:20px;' data-no-uniform='true' type='checkbox' name='branch' value='".$re["admin_name"]."'".$cc.">".$re["admin_name"]."</label>&nbsp;&nbsp;";
+                                        }
+                                    ?>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>
                                     提供會館：
-                                    <label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="台北" required>台北</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="桃園" required>桃園</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="新竹" required>新竹</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="台中" required>台中</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="台南" required>台南</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="高雄" required>高雄</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="八德" required>八德</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="約專" required>約專</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="迷你約" required>迷你約</label>&nbsp;&nbsp;<label style="display:inline;"><input style="width:20px;" data-no-uniform="true" type="radio" name="ownerbranch" value="總管理處" required>總管理處</label>&nbsp;&nbsp;
+                                    <?php
+                                        // if(is_null($ownerbranch)) $ownerbranch = "all";                                                       
+                                        $SQL = "Select * From branch_data Where admin_name<>'線上諮詢' and admin_name<>'好好玩旅行社' Order By admin_SOrt";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+                                        foreach($result as $re){
+                                            if(member_array($ownerbranch, $re["admin_name"]) == "1"){
+                                                $cc = " checked";
+                                            }else{
+                                                $cc = "";
+                                            }
+                                            if($ownerbranch == "all"){
+                                                $cc = " checked";
+                                            }
+                                            echo "<label style='display:inline;'><input style='width:20px;' data-no-uniform='true' type='radio' name='ownerbranch' value='".$re["admin_name"]."'".$cc." required>".$re["admin_name"]."</label>&nbsp;&nbsp;";
+                                        }
+                                    ?>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="開發"> 開發</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="邀約" required> 邀約</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="訪談"> 訪談</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="排約"> 排約</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="企劃"> 企劃</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="教育訓練"> 教育訓練</label>
-                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="行銷"> 行銷</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="開發"<?php if($types2 == "開發") echo " checked"; ?>> 開發</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="邀約"<?php if($types2 == "邀約") echo " checked"; ?>> 邀約</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="訪談"<?php if($types2 == "訪談") echo " checked"; ?>> 訪談</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="排約"<?php if($types2 == "排約") echo " checked"; ?>> 排約</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="企劃"<?php if($types2 == "企劃") echo " checked"; ?>> 企劃</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="教育訓練"<?php if($types2 == "教育訓練") echo " checked"; ?>> 教育訓練</label>
+                                    <label style="display:inline;"><input type="radio" style="width:20px;" name="types2" value="行銷"<?php if($types2 == "行銷") echo " checked"; ?>> 行銷</label>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <label><input type="checkbox" style="width:20px;" name="onlybranch" value="1"> 僅督導可見</label>
+                                    <label><input type="checkbox" style="width:20px;" name="onlybranch" value="1"<?php if($onlybranch == 1) echo " checked"; ?>> 僅督導可見</label>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    影片標題： <input name="title" type="text" id="title" class="form-control" value="" required>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    影片說明： <textarea type="text" name="notes" id="notes" class="form-control" style="width:80%;height:100px;font-size:13px;" rows=4></textarea>
+                                    影片標題： <input name="title" type="text" id="title" class="form-control" value="<?php echo $title; ?>" required>
                                 </td>
                             </tr>
 
+                            <tr>
+                                <td>
+                                    影片說明： <textarea type="text" name="notes" id="notes" class="form-control" style="width:80%;height:100px;font-size:13px;" rows=4><?php echo $notes; ?></textarea>
+                                </td>
+                            </tr>
+
 
                             <tr>
                                 <td>
-                                    影片位置： <input name="url" type="text" id="url" value="" class="form-control" required>
+                                    影片位置： <input name="url" type="text" id="url" value="<?php echo $vurl; ?>" class="form-control" required>
                                 </td>
                             </tr>
 
@@ -95,7 +217,7 @@ require_once("./include/_sidebar.php");
                                 <td>
                                     <div align="center">
 
-                                        <input id="submit3" type="submit" value="確定新增" class="btn btn-info" style="width:50%;">
+                                        <input id="submit3" type="submit" value="確定<?php echo $fsb; ?>" class="btn btn-info" style="width:50%;">
                                     </div>
                                 </td>
                             </tr>
@@ -124,5 +246,5 @@ require_once("./include/_sidebar.php");
 <!-- /MIDDLE -->
 
 <?php
-require_once("./include/_bottom.php");
+    require_once("./include/_bottom.php");
 ?>

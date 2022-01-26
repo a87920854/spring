@@ -21,6 +21,7 @@
         call_alert("您沒有查看此頁的權限。", "login.php", 0);
     }
 
+    //刪除
     if($_REQUEST["st"] == "del"){
         $SQL = "select * from bgroup_list where auton=".SqlFilter($_REQUEST["an"],"int");
         $rs = $SPConn->prepare($SQL);
@@ -29,15 +30,15 @@
         if($result){
             $group_name = $result["group_name"];
         }
-        $rs = $SPConn->prepare($SQL);
-        $rs->execute("DELETE from bgroup_list where auton=".SqlFilter($_REQUEST["an"],"int"));
+        $rs = $SPConn->prepare("DELETE from bgroup_list where auton=".SqlFilter($_REQUEST["an"],"int"));
+        $rs->execute();
         if($group_name != ""){           
             $rs = $SPConn->prepare("update personnel_data_aparty set group_name=NULL where group_name='".$group_name."'");
             $rs->execute();
             $rs = $SPConn->prepare("update personnel_data set group_name=NULL where group_name='".$group_name."'");
-            $rs->execute();
-            reURL("win_close.php?m=團隊資料刪除中");
+            $rs->execute();            
         }
+        reURL("win_close.php?m=團隊資料刪除中");
     }
 ?>
 
