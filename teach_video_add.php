@@ -30,10 +30,9 @@
             if(!$result){
                 call_alert("資料讀取錯誤。","ClOsE",0);
             }
-        }else{
             $title = SqlFilter($_REQUEST["title"],"tab");
             $types = SqlFilter($_REQUEST["types"],"tab");
-            $types2 = SqlFilter($_REQUEST["types2"],"tab");
+            $types2 = SqlFilter($_REQUEST["types2"],"tab");            
             if($_REQUEST["notes"] != ""){
                 $notes = str_ireplace("\r\n","",$_REQUEST["notes"]);
                 $notes = SqlFilter($notes,"tab");
@@ -41,23 +40,54 @@
                 $notes = NULL;
             }
             if($_REQUEST["branch"] != ""){
-                $branch = SqlFilter($_REQUEST["branch"],"tab");
+                $branch = implode(",",$_REQUEST["branch"]);
             }
+            $ownerbranch = SqlFilter($_REQUEST["ownerbranch"],"tab"); 
             if($_REQUEST["onlybranch"] == "1"){
                 $onlybranch = 1;
             }else{
                 $onlybranch = 0;
             }
-            if($_REQUEST["url"] != ""){
-                if(strpos($_REQUEST["url"],"?v=") != false){
-                    if(strpos($_REQUEST["url"],"&") != false){
-                        $url = SqlFilter($_REQUEST["url"],"tab");
-                        $url = substr($url,strpos($url,"&"));
+            $vurl = $_REQUEST["url"];
+            if($vurl != ""){
+                if(strpos($vurl,"?v=") != false){
+                    if(strpos($vurl,"&") != false){                        
+                        $vurl = substr($vurl,strpos($vurl,"&"));
+                    }
+                }
+            }
+            $SQL = "UPDATE teach_video SET title='', types='', types2='', notes='', branch='', ownerbranch='', onlybranch='', url='' WHERE auton='".SqlFilter($_REQUEST["an"],"int");
+            $rs = $SPConn->prepare($SQL);
+            $rs->execute();
+        }else{
+            $title = SqlFilter($_REQUEST["title"],"tab");
+            $types = SqlFilter($_REQUEST["types"],"tab");
+            $types2 = SqlFilter($_REQUEST["types2"],"tab");            
+            if($_REQUEST["notes"] != ""){
+                $notes = str_ireplace("\r\n","",$_REQUEST["notes"]);
+                $notes = SqlFilter($notes,"tab");
+            }else{
+                $notes = NULL;
+            }
+            if($_REQUEST["branch"] != ""){
+                $branch = implode(",",$_REQUEST["branch"]);
+            }
+            $ownerbranch = SqlFilter($_REQUEST["ownerbranch"],"tab"); 
+            if($_REQUEST["onlybranch"] == "1"){
+                $onlybranch = 1;
+            }else{
+                $onlybranch = 0;
+            }
+            $vurl = $_REQUEST["url"];
+            if($vurl != ""){
+                if(strpos($vurl,"?v=") != false){
+                    if(strpos($vurl,"&") != false){                        
+                        $vurl = substr($vurl,strpos($vurl,"&"));
                     }
                 }
             }
             $times = date("Y/m/d H:i:s");
-            $SQL = "INSERT INTO teach_video (title,types,types2,notes,branch,ownerbranch,url,times) VALUES ('".$title."','".$types."','".$types2."','".$notes."','".$branch."','".$ownerbranch."','".$url."','".$times."')";
+            $SQL = "INSERT INTO teach_video (title,types,types2,notes,branch,ownerbranch,onlybranch,url,times) VALUES ('".$title."','".$types."','".$types2."','".$notes."','".$branch."','".$ownerbranch."','".$onlybranch."','".$vurl."','".$times."')";
             $rs = $SPConn->prepare($SQL);
             $rs->execute();
             reURL("teach_video.php");
@@ -148,7 +178,7 @@
                                             if($branch == "all"){
                                                 $cc = " checked";
                                             }
-                                            echo "<label style='display:inline;'><input style='width:20px;' data-no-uniform='true' type='checkbox' name='branch' value='".$re["admin_name"]."'".$cc.">".$re["admin_name"]."</label>&nbsp;&nbsp;";
+                                            echo "<label style='display:inline;'><input style='width:20px;' data-no-uniform='true' type='checkbox' name='branch[]' value='".$re["admin_name"]."'".$cc.">".$re["admin_name"]."</label>&nbsp;&nbsp;";
                                         }
                                     ?>
                                 </td>

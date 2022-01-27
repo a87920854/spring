@@ -991,4 +991,37 @@
 		}
 		return $chk_mobile;
 	}
+
+	//排約狀態	
+	function invite_stats($b){
+		switch ($b){
+			case 0:
+				$invite_stats = "等待回報";
+				break;
+			case 1:
+				$invite_stats = "成功";
+				break;
+			case 2:
+				$invite_stats = "主約人改期";
+				break;
+  			case 3:
+				$invite_stats = "主約人取消";
+				break;
+  			case 4:
+				$invite_stats = "主約人未到";
+				break;
+			case 5:
+				$invite_stats = "排約對象未到";
+				break;
+  			case 6:
+				$invite_stats = "排約對象改期";
+				break;
+  			case 7:
+				$invite_stats = "排約對象取消";
+				break;
+  			default:
+  				$invite_stats = "";
+		}
+		return $invite_stats;
+	}
 ?>

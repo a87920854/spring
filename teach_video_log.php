@@ -1,8 +1,96 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/ 
+    //檔案名稱：teach_video_log.php
+    //後台對應位置：管理系統/教學影片>授權及影片播放記錄
+    //改版日期：2022.1.27
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    //程式開始 *****
+    if ($_SESSION["MM_Username"] == "") {
+        call_alert("請重新登入。", "login.php", 0);
+    }
+    if($_SESSION["MM_UserAuthorization"] != "admin"){
+        call_alert("您沒有查看此頁的權限。","login.php",0);
+    }
+
+    $default_sql_num = 500;
+    if($_REQUEST["vst"] == "full"){
+        $sqlv = "*";
+        $sqlv2 = "count(auton)";
+    }else{
+        $sqlv = "top ".$default_sql_num." *";
+        $sqlv2 = "count(auton)";
+    }
+
+    if($_REQUEST["start_time"] != ""){
+        $start_time = SqlFilter($_REQUEST["start_time"],"tab")." 00:00:00";
+	    $start_time2 = SqlFilter($_REQUEST["start_time"],"tab");
+    }    
+    if($_REQUEST["end_time"] != ""){
+        $end_time = SqlFilter($_REQUEST["end_time"],"tab")." 23:59:59";
+	    $end_time2 = SqlFilter($_REQUEST["end_time"],"tab");
+    }
+    if($start_time != "" && $end_time != ""){
+        $sqlss = $sqlss . " and times between '".$start_time."' and '".$end_time."'";
+    }
+    if($_REQUEST["branch"] != ""){
+        $sqlss = $sqlss . " and owner_branch = '" .SqlFilter($_REQUEST["branch"],"tab"). "'";
+    }
+    if($_REQUEST["ty"] != ""){
+        if($_REQUEST["ty"] == "1"){
+            $sqlss = $sqlss . " and video_an = 'all'";
+        }elseif($_REQUEST["ty"] == "2"){
+            $sqlss = $sqlss . " and video_an <> 'all'";
+        }
+    }
+
+    // 總數量
+    $sqls2 = "SELECT ".$sqlv2." as total_size FROM teach_video_log Where 1=1";
+    $sqls2 = $sqls2 . $sqlss;
+
+    $rs = $SPConn->prepare($sqls2);
+    $rs->execute();
+    $result = $rs->fetch(PDO::FETCH_ASSOC);
+    if(!$result || $result["total_size"] == 0){
+        $total_size = 0;
+    }else{
+        if( $_REQUEST["vst"] == "full" ){
+            $total_size = $result["total_size"]; //總筆數
+        }else{
+            if($result["total_size"] > 500 ) {
+                $total_size =  500; //限制到500筆
+            }else{
+                $total_size =  $result["total_size"];
+            }   
+        }
+    }
+
+    $tPage = 1; //目前頁數
+    $tPageSize = 20; //每頁幾筆
+	if ( $_REQUEST["tPage"] > 1 ){ $tPage = $_REQUEST["tPage"];}
+	$tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
+	if ( $tPageSize*$tPage < $total_size ){
+		$page2 = 20;
+	}else{
+		$page2 = (20-(($tPageSize*$tPage)-$total_size));
+	}
+    // sql
+    $sqls = "SELECT ".$sqlv." FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM teach_video_log Where 1=1";
+    $sqls = $sqls . $sqlss . " order by times desc ) t1 order by times) t2 order by times desc";
+    
+    if( $_REQUEST["vst"] == "full" ){
+        $total_sizen = $total_size . "　<a href='?vst=n'>[查看前五百筆]</a>";
+    }else{
+        if( $total_size > 500 ) $total_size = 500;
+        $total_sizen = $total_size . "　<a href='?vst=full'>[查看完整清單]</a>";
+    } 
 ?>
 
 <!-- MIDDLE -->
@@ -23,31 +111,34 @@ require_once("./include/_sidebar.php");
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="title elipsis">
-                    <strong>授權及影片播放記錄 - 數量：500　<a href="?vst=full">[查看完整清單]</a></strong> <!-- panel title -->
+                    <strong>授權及影片播放記錄 - 數量：<?php echo $total_sizen; ?></strong> <!-- panel title -->
                 </span>
             </div>
 
             <div class="panel-body">
                 <div class="col-md-12">
                     <form name="form1" method="post" class="form-inline" action="?vst=full">
-                        　 記錄時間： <input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="">
+                        　 記錄時間： <input type="text" name="start_time" id="start_time" class="datepicker" autocomplete="off" value="<?php echo $start_time2; ?>">　～　<input type="text" name="end_time" id="end_time" class="datepicker" autocomplete="off" value="<?php echo $end_time2; ?>">
                         <select name="branch" id="branch">
                             <option value="">所有會館</option>
-                            <option value="台北">台北</option>
-                            <option value="桃園">桃園</option>
-                            <option value="新竹">新竹</option>
-                            <option value="台中">台中</option>
-                            <option value="台南">台南</option>
-                            <option value="高雄">高雄</option>
-                            <option value="八德">八德</option>
-                            <option value="約專">約專</option>
-                            <option value="迷你約">迷你約</option>
-                            <option value="總管理處">總管理處</option>
+                            <?php
+                                $SQL = "Select * From branch_data Where admin_name<>'線上諮詢' and admin_name<>'好好玩旅行社' Order By admin_SOrt";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result=$rs->fetchAll(PDO::FETCH_ASSOC);                                
+                                foreach($result as $re){                                    
+                                    if($_REQUEST["branch"] == $re["admin_name"]){
+                                        echo "<option value='".$re["admin_name"]."' selected>".$re["admin_name"]."</option>";
+                                    }else{
+                                        echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+                                    }
+                                }
+                            ?>
                         </select>
                         <select name="ty" id="ty">
                             <option value="">所有類型</option>
-                            <option value="1">授權設定</option>
-                            <option value="2">影片播放</option>
+                            <option value="1"<?php if($_REQUEST["ty"] == "1") echo " selected"; ?>>授權設定</option>
+                            <option value="2"<?php if($_REQUEST["ty"] == "2") echo " selected"; ?>>影片播放</option>
                         </select>
                         <input type="submit" value="送出" class="btn btn-default">
                     </form>
@@ -57,73 +148,34 @@ require_once("./include/_sidebar.php");
                     <thead>
                         <tr>
                             <th>記錄</th>
-
                             <th width=100>區域</th>
                             <th width=200>記錄人</th>
                             <th width=180>日期</th>
                         </tr>
-
-                        <tr>
-                            <td align="center">陳妍瑀[F227296026]暫停播放一般區 - 2021-08-07-19-39-54-4003-台中宇婕串聯邀約樂得開發72大女護理服務業到高雄會館7455.mp3[2400] - 2021/9/8 下午 07:25:59/ip:59.124.171.187</td>
-                            <td align="center">一般區</td>
-                            <td align="center">新竹-陳妍瑀[F227296026]</td>
-                            <td align="center">2021/9/8 下午 07:25:59</td>
-                        </tr>
-
-                        <tr>
-                            <td align="center">陳妍瑀[F227296026]開始播放一般區 - 2021-08-07-19-39-54-4003-台中宇婕串聯邀約樂得開發72大女護理服務業到高雄會館7455.mp3[2400] - 2021/9/8 下午 07:24:59/ip:59.124.171.187</td>
-                            <td align="center">一般區</td>
-                            <td align="center">新竹-陳妍瑀[F227296026]</td>
-                            <td align="center">2021/9/8 下午 07:25:00</td>
-                        </tr>
-                        </tbody>
+                    </thead>
+                    <tbody>
+                        <?php 
+                            $rs = $SPConn->prepare($sqls);
+                            $rs->execute();
+                            $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                            if($result){
+                                foreach($result as $re){ ?>
+                                    <tr> 
+                                        <td align="left"><?php echo $re["txt"]; ?></td>
+                                        <td align="left"><?php echo $re["video_types"]; ?></td>
+                                        <td align="left"><?php echo $re["owner_branch"]; ?>-<?php echo $re["owner_name"]; ?>[<?php echo $re["owner"]; ?>]</td>
+                                        <td align="left"><?php echo changeDate($re["times"]); ?></td>    
+                                    </tr>
+                                <?php }
+                            }else{
+                                "<tr><td colspan=8 height=200>目前沒有資料</td></tr>";
+                            }
+                        ?>
+                    </tbody>
                 </table>
             </div>
-            <div class="text-center">共 500 筆、第 1 頁／共 25 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/teach_video_log.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/teach_video_log.php?topage=2 class='text'>2</a></li>
-                    <li><a href=/teach_video_log.php?topage=3 class='text'>3</a></li>
-                    <li><a href=/teach_video_log.php?topage=4 class='text'>4</a></li>
-                    <li><a href=/teach_video_log.php?topage=5 class='text'>5</a></li>
-                    <li><a href=/teach_video_log.php?topage=6 class='text'>6</a></li>
-                    <li><a href=/teach_video_log.php?topage=7 class='text'>7</a></li>
-                    <li><a href=/teach_video_log.php?topage=8 class='text'>8</a></li>
-                    <li><a href=/teach_video_log.php?topage=9 class='text'>9</a></li>
-                    <li><a href=/teach_video_log.php?topage=10 class='text'>10</a></li>
-                    <li><a href=/teach_video_log.php?topage=2 class='text' title='Next'>下一頁</a></li>
-                    <li><a href=/teach_video_log.php?topage=25 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/teach_video_log.php?topage=1" selected>1</option>
-                            <option value="/teach_video_log.php?topage=2">2</option>
-                            <option value="/teach_video_log.php?topage=3">3</option>
-                            <option value="/teach_video_log.php?topage=4">4</option>
-                            <option value="/teach_video_log.php?topage=5">5</option>
-                            <option value="/teach_video_log.php?topage=6">6</option>
-                            <option value="/teach_video_log.php?topage=7">7</option>
-                            <option value="/teach_video_log.php?topage=8">8</option>
-                            <option value="/teach_video_log.php?topage=9">9</option>
-                            <option value="/teach_video_log.php?topage=10">10</option>
-                            <option value="/teach_video_log.php?topage=11">11</option>
-                            <option value="/teach_video_log.php?topage=12">12</option>
-                            <option value="/teach_video_log.php?topage=13">13</option>
-                            <option value="/teach_video_log.php?topage=14">14</option>
-                            <option value="/teach_video_log.php?topage=15">15</option>
-                            <option value="/teach_video_log.php?topage=16">16</option>
-                            <option value="/teach_video_log.php?topage=17">17</option>
-                            <option value="/teach_video_log.php?topage=18">18</option>
-                            <option value="/teach_video_log.php?topage=19">19</option>
-                            <option value="/teach_video_log.php?topage=20">20</option>
-                            <option value="/teach_video_log.php?topage=21">21</option>
-                            <option value="/teach_video_log.php?topage=22">22</option>
-                            <option value="/teach_video_log.php?topage=23">23</option>
-                            <option value="/teach_video_log.php?topage=24">24</option>
-                            <option value="/teach_video_log.php?topage=25">25</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <!-- 頁碼 -->
+            <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
 
@@ -137,12 +189,3 @@ require_once("./include/_sidebar.php");
 <?php
 require_once("./include/_bottom.php");
 ?>
-
-<script type="text/javascript">
-    $mtu = "teach_video.";
-    $(function() {
-        $("#pay1").on("change", function() {
-            personnel_get("pay1", "pay2");
-        });
-    });
-</script>
