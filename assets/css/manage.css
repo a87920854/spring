@@ -1,0 +1,40 @@
+@charset "utf-8";
+@import url(http://fonts.googleapis.com/css?family=Lato:400,900,300); /* google font */
+/* CSS Document */
+
+/*全頁共用hack*/
+*, *:before, *:after { box-sizing: border-box;}
+.clearfix:after { content: " "; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { zoom: 1;}  /*清左右浮動*/
+
+/* CSS3 style  陰影圓角範例，可自行增減使用 */
+.css-radius {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+} 
+
+.panel h2 { background:#e5e5e5; padding:5px 10px; text-align:center; border-top:1px solid #CCC; font-size:1.5rem;  }
+.m-search-bar { padding:10px 15px; background:#F5F5F5; border:1px solid #e5e5e5; color:#666; font-size:1.5rem; margin-bottom:2em; }
+.m-search-bar p { padding:3px 0;  }
+.m-search-bar .span-group { display:inline-block; padding:3px 0; margin-right:2em; }
+.m-search-bar .btn { padding:4px 10px; }
+
+h2.pageTitle { color:#192376; line-height:1; padding:10px 15px; border:1px solid #E5E5E5; background:url(../images/bar.jpg) repeat-x; margin-bottom:10px; position:relative; text-align: left; font-weight:bold;}
+h2.pageTitle .layout-demo { font-size:1.5rem; position:absolute; right:20px; top:8px; }
+
+/* notes */
+.notes { list-style:none; margin:0; padding:0; font-size:0.813rem; margin:1em 0; padding:1em 2em; background:#fffef5; border:1px solid #efe9b3; }
+.notes li {
+	padding-left:1em;
+	background-image: url(../images/disc.png);
+	background-repeat: no-repeat;
+	background-position: left 6px;
+}
+.notes li.th { font-weight:900; background:none; padding-left:0; margin-bottom:5px; border-bottom:1px solid #CCC }
+
+/*導航*/
+.m-crumb { color:#999; margin:10px 0; font-size:0.75rem; }
+.m-crumb a { color:#999; }
+.m-crumb a:hover { text-decoration:underline; }
+.m-crumb i { margin-right:5px; }
