@@ -40,4 +40,8 @@ if ( $_REQUEST["topage"] != "" && is_numeric($_REQUEST["topage"]) ){
 }else{
 	$topage = 1;
 }
+
+//變數值
+$m_home = "<a href='index.php'>客戶管理系統</a>";
+$icon = "&nbsp;»&nbsp;";
 ?>
