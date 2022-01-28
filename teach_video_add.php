@@ -23,7 +23,7 @@
 
     if($_REQUEST["st"] == "add"){
         if($_REQUEST["an"] != ""){     
-            $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int");
+            $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int")."'";
             $rs = $SPConn->prepare($SQL);
             $rs->execute();
             $result = $rs->fetch();
@@ -56,7 +56,7 @@
                     }
                 }
             }
-            $SQL = "UPDATE teach_video SET title='', types='', types2='', notes='', branch='', ownerbranch='', onlybranch='', url='' WHERE auton='".SqlFilter($_REQUEST["an"],"int");
+            $SQL = "UPDATE teach_video SET title='".$title."', types='".$types."', types2='".$types2."', notes='".$notes."', branch='".$branch."', ownerbranch='".$ownerbranch."', onlybranch='".$onlybranch."', url='".$vurl."' WHERE auton='".SqlFilter($_REQUEST["an"],"int")."'";
             $rs = $SPConn->prepare($SQL);
             $rs->execute();
         }else{
@@ -89,18 +89,19 @@
             $times = date("Y/m/d H:i:s");
             $SQL = "INSERT INTO teach_video (title,types,types2,notes,branch,ownerbranch,onlybranch,url,times) VALUES ('".$title."','".$types."','".$types2."','".$notes."','".$branch."','".$ownerbranch."','".$onlybranch."','".$vurl."','".$times."')";
             $rs = $SPConn->prepare($SQL);
-            $rs->execute();
-            reURL("teach_video.php");
+            $rs->execute();            
         }
+        reURL("teach_video.php");
     }
 
     if($_REQUEST["an"] != ""){
-        $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int");
+        $SQL = "SELECT * FROM teach_video where auton='".SqlFilter($_REQUEST["an"],"int")."'";
         $rs = $SPConn->prepare($SQL);
         $rs->execute();
         $result = $rs->fetch(PDO::FETCH_ASSOC);
         if(!$result){
             call_alert("資料讀取錯誤。","ClOsE",0);
+            // var_dump($result);
         }else{
             $types = $result["types"];
             $branch = $result["branch"];
