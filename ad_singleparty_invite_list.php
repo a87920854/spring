@@ -47,7 +47,7 @@ if ( $times1 != "" && chkDate($times1) ){
 
 if ( $times2 != "" && chkDate($times2) ){
     $acre_sign2 = $times2 . " 23:59";
-    $acre_sign2 = $times2;
+    $vacre_sign2 = $times2;
     if ( ! chkDate($acre_sign2) ){
         call_alert("結束日期有誤。", 0, 0);
     }
@@ -187,7 +187,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                     <a href="javascript:void(0);" class="btn btn-info btn-active" style="color:black; cursor:not-allowed;" disabled>▶ 已邀約未同意</a>
                 <?php }?>
             </p>
-            <form name="form1" method="post" id="form1" action="?vst=full">
+            <form name="form1" method="post" id="form1" action="<?php echo $_SERVER["PHP_SELF"]?>">
                 <div class="m-search-bar">
                     <span class="span-group">
                         排約日期：
@@ -207,12 +207,25 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                                 <option value="">請選擇會館</option>
                                 <?php
                                     foreach($result as $re){
-                                        echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+                                        echo "<option value='".$re["admin_name"]."'";
+                                        if ( $branch == $re["admin_name"] ) { echo " selected";}
+                                        echo ">".$re["admin_name"]."</option>";
                                     }
                                 ?>
                             </select>
                             <select name="single" id="single">
                                 <option value="">請選擇秘書</option>
+                                <?php
+                                $SQL = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".$branch."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
+                                $rs = $SPConn->prepare($SQL);
+                                $rs->execute();
+                                $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                foreach($result as $re){
+                                    echo "<option value='".$re["p_other_name"]."'";
+                                    if ( $single == $re["p_user"] ){ echo " selected";}
+                                    echo ">".$re["p_other_name"]."</option>";
+                                }
+                                ?>
                             </select>
                         </span>
                         <span class="span-group">
@@ -222,6 +235,8 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                     <span class="span-group">
                         <input type="submit" value="送出" class="btn btn-default">
                     </span>
+                    <input type="hidden" name="vst" id="vst" value="<?php echo $vst;?>">
+                    <input type="hidden" name="t" id="t" value="<?php echo $t;?>">
                 </div>
             </form>
             <span>
