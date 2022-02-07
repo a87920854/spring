@@ -47,4 +47,6 @@
 	<input type="hidden" name="joindate1" id="joindate1" value="<?php echo $joindate1;?>">
 	<input type="hidden" name="joindate2" id="joindate2" value="<?php echo $joindate2;?>">
 	<input type="hidden" name="sex" id="sex" value="<?php echo $sex;?>">
+	<input type="hidden" name="times1" id="times1" value="<?php echo $times1;?>">
+	<input type="hidden" name="times2" id="times2" value="<?php echo $times2;?>">
 </form>

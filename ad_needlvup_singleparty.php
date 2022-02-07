@@ -1,8 +1,86 @@
 <?php
-require_once("./include/_inc.php");
+/******************************************/
+//檔案名稱：ad_needlvup_singleparty.php
+//後台對應位置：約會專家功能->約會專家升級意願
+//改版日期：2022.02.07
+//改版設計人員：Jack
+//改版程式人員：Queena
+/******************************************/
+
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
 require_once("./include/_sidebar.php");
+
+//權限判斷
+$auth_limit = 6;
+require_once("./include/_limit.php");
+check_page_power("ad_needlvup");
+
+//麵包屑
+$unitprocess = $m_home.$icon."約會專家功能".$icon."約會專家升級意願";
+
+//接收值
+$st = SqlFilter($_REQUEST["st"],"tab");
+$a = SqlFilter($_REQUEST["a"],"tab");
+$s99 = SqlFilter($_REQUEST["s99"],"tab");
+
+//刪除
+if ( $st == "del" ){
+    $SQL_d = "Delete From needlvup Where auton=".$a;
+    $rs_d = $SPConn->prepare($SQL_d);
+    $rs_d->execute();
+    reURL("win_close.asp?m=刪除中....");
+    exit;
+}
+
+/*
+default_sql_num = 500
+
+If request("vst") = "full" Then
+  sqlv = "*"
+  sqlv2 = "count(auton)"
+Else
+  sqlv = "top "&default_sql_num&" *"
+  sqlv2 = "count(auton)"
+End if
+
+*/
+
+if ( $s99 == "1" ){
+    $subSQL = " fix=1";
+    $types = "已處理";
+}else{
+    $subSQL = " fix=0";
+    $types = "未處理";
+}
+
+$selfix2 = 0;
+//"SELECT "&sqlv&" FROM needlvup WHERE "&sqls2
+if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+    $subSQL1 = $subSQL;
+    $selfix2 = 1;
+	    case "branch","pay","love","love_manager"
+      sqls = "SELECT "&sqlv&" FROM needlvup WHERE "&sqls2&" and mem_branch='"&session("branch")&"'"      
+	    sqls2 = "SELECT "&sqlv2&" as total_size FROM needlvup WHERE "&sqls2&" and mem_branch='"&session("branch")&"'"
+	    selfix2 = 1
+'	    case "love","love_manager"
+'      lovebranch = Session("lovebranch")
+'	    if lovebranch <> "" then
+'	      lovebranch = replace(lovebranch, ",", "','")
+'      end if
+'	    sqls = "SELECT "&sqlv&" FROM needlvup WHERE "&sqls2&" and mem_branch in ('"&lovebranch&"')"      
+'	    sqls2 = "SELECT "&sqlv2&" as total_size FROM needlvup WHERE "&sqls2&" and mem_branch in ('"&lovebranch&"')"
+'	    selfix2 = 1
+	    
+	    case "single","manager"
+      sqls = "SELECT "&sqlv&" FROM needlvup Where "&sqls2&" and UPPER(mem_single) = '"&Ucase(Session("MM_username"))&"'"
+	    sqls2 = "SELECT "&sqlv2&" as total_size FROM needlvup Where "&sqls2&" and UPPER(mem_single) = '"&Ucase(Session("MM_username"))&"'"
+	    selfix2 = 1
+	    case else
+    	Call Alert("您沒有查看此頁的權限。",0,0)
+      End Select
+
 ?>
 
 <!-- MIDDLE -->

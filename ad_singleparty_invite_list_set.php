@@ -273,11 +273,12 @@ if ( count($result) > 0 ){
                         <legend style="color:#fc3bf5;font-weight:bold;">約會專家 - 轉入會館排約預訂表</legend>
                         <table width="650" align="center" cellpadding="3" style="font-size:14px; color:midnightblue;">
                             <tr>
-                                <td bgcolor="#d9dbfd" colspan=2>
+                                <td bgcolor="#d9dbfd" colspan="2">
                                     <form style="margin:0px;" action="?st=read" method="post" id="form1" onSubmit="return chk_form1()">
                                         <strong style="color: #1a218e;">
                                         ▲ 預訂排約人編號或手機： <input name="keyword1" type="text" id="keyword1" value="<?php echo $keyword1;?>" size="6"> 
-                                        　▲ 預訂排約對象編號或手機： <input name="keyword2" type="text" id="keyword2" value="<?php echo $keyword2;?>" size="6"></strong>
+                                        　▲ 預訂排約對象編號或手機： <input name="keyword2" type="text" id="keyword2" value="<?php echo $keyword2;?>" size="6">
+                                        </strong>
                                         <input type="hidden" name="a" value="<?php echo $a;?>"><input type="submit" value="讀取資料" class="css-radius">
                                     </form>
                                 </td>
