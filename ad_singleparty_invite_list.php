@@ -153,16 +153,8 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
         <!-- content starts -->
 
         <?php
-        $linkd1 = " disabled";
-        $linkd2 = "";
-        $linkd1h = "javascript:void(0)";
-        $linkd2h = "ad_singleparty_invite_list.php?t=1";
         $head_t = "等待秘書聯繫";
         if ( $t == "1" ){
-            $linkd1 = "";
-            $linkd2 = " disabled";
-            $linkd1h = "ad_singleparty_invite_list.php";
-            $linkd2h = "javascript:void(0)";
             $head_t = "已邀約未同意";
         }
         ?>

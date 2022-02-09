@@ -67,19 +67,23 @@ if ( count($result) > 0 ){
             <tr> 
                 <td>
                     <fieldset>
-                        <legend>春天會館資料</legend>
+                        <legend style="color:#fc3bf5;font-weight:bold;">春天會館資料</legend>
                         <table width="340" border="0" align="center" cellpadding="3">
-                            <tr bgcolor="#FFF0E1"> 
-                                <td colspan="2" bgcolor="#336699">&nbsp;</td>
-                            </tr>
+                            <tr> 
+								<td colspan="2" bgcolor="#d9dbfd"><strong style="color: #1a218e;">▼ 請輸入處理結果</strong></td>
+							</tr>
                             <tr bgcolor="#F0F0F0"> 
-                                <td height="100" colspan="2" bgcolor="#F0F0F0" style="word-break:break-all"><div align="left"> 
-                                    <p><font color="#990066" size="3">請輸入處理結果</font></p>
-                                    <p><input type="text" style="width:90%" name="msg" id="msg"></p>
-                                </td>
-                            </tr>
-                            <tr bgcolor="#FFF0E1"> 
-                                <td colspan="2" bgcolor="#DA5893"> 
+								<td height="100" colspan="2" bgcolor="#F0F0F0" style="word-break:break-all">
+									<div align="center"> 
+										<p>
+											<textarea name="Text1" cols="40" rows="7" id="msg" name="msg"></textarea>
+											<!--<input type="text" style="width:90%" name="msg" id="msg">-->
+										</p>
+									</div>
+								</td>
+							</tr>
+                            <tr>
+                                <td colspan="2" bgcolor="#d9dbfd"> 
                                     <div align="center"> 
                                         <input name="Submit" type="submit" id="Submit2" style="font-size: 9pt" value="確定送出">
                                         <input name="a" type="hidden" id="a" value="<?php echo $a;?>">

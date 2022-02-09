@@ -207,7 +207,11 @@ if ( $t == 1){ $head_t = "已處理";}
                 </div>
             </form>
         </div>
-
+        <span>
+            <strong style="background-color: yellow; color:brown">
+                ※排序欄位：排約日期(由近至遠)。
+            </strong>
+        </span>
         <div class="panel-body">
             <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                 <thead>

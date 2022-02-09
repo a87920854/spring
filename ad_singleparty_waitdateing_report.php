@@ -60,7 +60,7 @@ if ( count($result) > 0 ){ ?>
 								<td colspan="2" bgcolor="#d9dbfd"> 
 									<div align="center"> 
 										<input name="Submit" type="submit" id="Submit2" style="font-size: 9pt" value="確定送出">
-										<input name="a" type="hidden" id="a" value="49655">                               
+										<input name="a" type="hidden" id="a" value="<?php echo $a;?>">                               
 									</div>
 								</td>
 							</tr>

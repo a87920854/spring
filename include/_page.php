@@ -49,4 +49,5 @@
 	<input type="hidden" name="sex" id="sex" value="<?php echo $sex;?>">
 	<input type="hidden" name="times1" id="times1" value="<?php echo $times1;?>">
 	<input type="hidden" name="times2" id="times2" value="<?php echo $times2;?>">
+	<input type="hidden" name="s99" id="s99" value="<?php echo $s99;?>">
 </form>
