@@ -37,19 +37,6 @@ if ( $st == "del" ){
     exit;
 }
 
-/*
-default_sql_num = 500
-
-If request("vst") = "full" Then
-  sqlv = "*"
-  sqlv2 = "count(auton)"
-Else
-  sqlv = "top "&default_sql_num&" *"
-  sqlv2 = "count(auton)"
-End if
-
-*/
-
 if ( $s99 == "1" ){
     $subSQL = " fix=1";
     $types = "已處理";

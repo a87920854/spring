@@ -796,17 +796,6 @@ if ( count($result) == 0 || $re["total_size"] == 0 ) {
     $total_size = $re["total_size"];
 }
 
-
-
-echo $total_size;
-exit;
-
-
-
-
-
-
-
 ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
 

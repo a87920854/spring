@@ -34,11 +34,13 @@
 <?php }?>
 <form name="frmpage" id="frmpage" method="post">
 	<input type="hidden" name="tPage" id="tPage" value="<?php echo $tPage;?>">
+	<input type="hidden" name="keyword_type" id="keyword_type" value="<?php echo $keyword_type;?>">
 	<input type="hidden" name="keyword" id="keyword" value="<?php echo $keyword;?>">
 	<input type="hidden" name="branch" id="branch" value="<?php echo $branch;?>">
+	<input type="hidden" name="single" id="single" value="<?php echo $single;?>">
 	<input type="hidden" name="timeend" id="timeend" value="<?php echo $timeend;?>">
 	<input type="hidden" name="daysel" id="daysel" value="<?php echo $daysel;?>">
-	<input type="hidden" name="	oby" id="oby" value="<?php echo $oby;?>">
+	<input type="hidden" name="oby" id="oby" value="<?php echo $oby;?>">
 	<input type="hidden" name="tr" id="tr" value="<?php echo $tr;?>">
 	<input type="hidden" name="lovesize1" id="lovesize1" value="<?php echo $lovesize1;?>">
 	<input type="hidden" name="lovesize2" id="lovesize2" value="<?php echo $lovesize2;?>">
@@ -50,4 +52,5 @@
 	<input type="hidden" name="times1" id="times1" value="<?php echo $times1;?>">
 	<input type="hidden" name="times2" id="times2" value="<?php echo $times2;?>">
 	<input type="hidden" name="s99" id="s99" value="<?php echo $s99;?>">
+	<input type="hidden" name="vst" id="vst" value="<?php echo $vst;?>">
 </form>

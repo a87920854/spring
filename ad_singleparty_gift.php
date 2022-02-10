@@ -25,6 +25,9 @@ $b1 = SqlFilter($_REQUEST["b1"],"tab");
 $b2 = SqlFilter($_REQUEST["b2"],"tab");
 $keyword_type = SqlFilter($_REQUEST["keyword_type"],"tab");
 $keyword = SqlFilter($_REQUEST["keyword"],"tab");
+$branch = SqlFilter($_REQUEST["branch"],"tab");
+$single = SqlFilter($_REQUEST["single"],"tab");
+$vst = SqlFilter($_REQUEST["vst"],"tab");
 
 //日期判斷
 if ( $a1 > $b1 ){ call_alert("日期請由小到大選擇",0,0);}
@@ -53,7 +56,13 @@ End If
 
 //語法 SELECT "&sqlv&" FROM si_gift_data WHERE gift_send_branch= '"&request("branch")&"' or gift_re_branch= '"&request("branch")&"'"
 if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
-    $subSQL1 = "gift_send_branch='".$branch."' Or gift_re_branch= '".$branch."' ";
+    if ( $branch != "" ){
+        if ( $single != "" ){
+            $subSQL1 = "(gift_send_branch='".$branch."' And gift_send_single='".$single."') Or (gift_re_branch= '".$branch."' And gift_re_single='".$single."') ";
+        }else{
+            $subSQL1 = "(gift_send_branch='".$branch."' Or gift_re_branch= '".$branch."') ";
+        }
+    }
 }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
     $subSQL1 = "gift_send_branch='".$_SESSION["branch"]."' Or gift_re_branch='".$_SESSION["branch"]." '";
     $all_type = "";
@@ -65,11 +74,19 @@ if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 
 //篩選條件(姓名)
 if ( $keyword_type == "s3"){
-    $subSQL1 .= "And (gift_send_name Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re_name Like '%".str_Replace("'", "''", $keyword)."%') ";
+    if ( $branch != "" ){
+        $subSQL1 .= "And (gift_send_name Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re_name Like '%".str_Replace("'", "''", $keyword)."%') ";
+    }else{
+        $subSQL1 .= "(gift_send_name Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re_name Like '%".str_Replace("'", "''", $keyword)."%') ";
+    }
 }
 //篩選條件(編號)
 if ( $keyword_type == "s4"){
-    $subSQL1 .= "And (gift_send Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re Like '%".str_Replace("'", "''", $keyword)."%') ";
+    if ( $branch != "" ){
+        $subSQL1 .= "And (gift_send Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re Like '%".str_Replace("'", "''", $keyword)."%') ";
+    }else{
+        $subSQL1 .= "(gift_send Like '%".str_Replace("'", "''", $keyword)."%' Or gift_re Like '%".str_Replace("'", "''", $keyword)."%') ";
+    }
 }
 
 //取得總筆數
@@ -85,11 +102,11 @@ if ( count($result) == 0 || $re["total_size"] == 0 ) {
 }
 
 //查看清單連結文字
-if ( SqlFilter($_REQUEST["vst"],"tab") == "full" ){
-    $count_href = "　<a href='?vst=n'>[查看前五百筆]</a>";
+if ( $vst == "full" ){
+    $count_href = "　<a href=\"javascript:full_btn('n');\" class='btn btn-success'>查看前五百筆</a>";
 }else{
     if ( $total_size > 500 ){ $total_size = 500;}
-    $count_href = "　<a href='?vst=full'>[查看完整清單]</a>";
+    $count_href = "　<a href=\"javascript:full_btn('full');\" class='btn btn-success'>查看完整清單</a>";
 }
 
 //取得分頁資料
@@ -105,8 +122,8 @@ $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
 //分頁程式
 $SQL_list  = "Select Top ".$tPageSize." * ";
 $SQL_list .= "From (Select row_number() ";
-$SQL_list .= "over(".$subSQL5." Asc) As rownumber,member_data.mem_num,mem_name ";
-$SQL_list .= "From photo_data INNER JOIN member_data ON photo_data.mem_num = member_data.mem_num Where ".$subSQL2.$subSQL3.$subSQL4." ) temp_row ";
+$SQL_list .= "over( Order By gift_time Desc ) As rownumber,gift_send,gift_send_name,gift_re,gift_re_name,gift_time,gift_title,gift_note,gift_send_branch,gift_re_branch,gift_send_single,gift_re_single ";
+$SQL_list .= "From si_gift_data Where ".$subSQL1." ) temp_row ";
 $SQL_list .= "Where rownumber > ".($tPageSize*$tPage_list);
 $rs_list = $SPConn->prepare($SQL_list);
 $rs_list->execute();
@@ -126,7 +143,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="panel panel-default">
             <h2 class="pageTitle">約會專家升級意願 》會員禮物互動 》資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料</i> ]"; if ( $total_size >= 500 ){ echo $count_href;}?></h2>
-            <form id="searchform" action="ad_no_mem.php?vst=full&sear=1" method="post" target="_self" class="form-inline">
+            <form id="searchform" action="ad_singleparty_gift.php" method="post" target="_self" class="form-inline">
                 <div class="m-search-bar">
                     <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
                         <span class="span-group">
@@ -147,6 +164,18 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         <span class="span-group">
                             <select name="single" id="single">
                                 <option value="">請選擇</option>
+                                <?php
+                                if ( $branch != "" ){
+                                    $SQL = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".$branch."' Order By p_desc2 Desc, lastlogintime Desc";
+                                    $rs = $SPConn->prepare($SQL);
+                                    $rs->execute();
+                                    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                                    if ( count($result) > 0 ){
+                                        foreach($result as $re){?>
+                                            <option value="<?php echo $re["p_user"];?>"<?php if ( $single == $re["p_user"] ){?> selected<?php }?>><?php echo $re["p_other_name"]?></option>
+                                        <?php }?>
+                                    <?php }?>
+                                <?php }?>
                             </select>
                         </span>
                     <?php }?>
@@ -161,127 +190,57 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         <input type="submit" value="送出" class="btn btn-default">
                     </span>
                 </div>
+                <input type="hidden" name="vst" id="vst" value="">
             </form>
+            <span style="background-color: yellow; color:brown;"><strong>※排序欄位：送禮時間(由近至遠)排序。</strong></span>
             <div class="panel-body">
                 <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
-                        <tr>
-                            <th>時間</th>
-                            <th>送禮人</th>
-                            <th>收禮人</th>
-                            <th>禮物</th>
-                            <th width=400>招呼</th>
-                            <th>送禮會秘</th>
-                            <th>收禮會秘</th>
+                        <tr style="background-color: #FFDA96;">
+                            <th width="15%">時間</th>
+                            <th width="6%">送禮人</th>
+                            <th width="6%">收禮人</th>
+                            <th width="10%">禮物</th>
+                            <th>招呼</th>
+                            <th width="10%">送禮會秘</th>
+                            <th width="10%">收禮會秘</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if ( count($result_list) == 0 ){?>
                             <tr><td colspan="10" height="200">目前沒有資料或請最少選擇會館</td></tr>
                         <?php }else{
-                            $gift_send_name = "<a href='ad_mem_detail.asp?mem_num=".$re("gift_send")&""">"&rs("gift_send_name")&"</a>"
-                            $gift_re_name = "<a href=""ad_mem_detail.asp?mem_num="&rs("gift_re")&""">"&rs("gift_re_name")&"</a>"
-                            
-                            
-                            ?>
-                        <tr>
-                            <td>2018/8/15 上午 10:24:10</th>
-                            <td><a href="ad_mem_detail.php?mem_num=1308543">柯雯琪</a></td>
-                            <td><a href="ad_mem_detail.php?mem_num=99998">張小天</a></td>
-                            <td>閃耀皇冠</td>
-                            <td>我們倆的興趣一樣喔！</td>
-                            <td>-不明</td>
-                            <td>台北-陳紅</td>
-
-                        </tr>
-
-                        <tr>
-                            <td>2017/11/15 下午 06:19:57</th>
-                            <td><a href="ad_mem_detail.php?mem_num=1308543">柯雯琪</a></td>
-                            <td><a href="ad_mem_detail.php?mem_num=1356719">盧彥男</a></td>
-                            <td>可愛小熊</td>
-                            <td>很高興認識你喔！</td>
-                            <td>-不明</td>
-                            <td>八德-kitty</td>
-
-                        </tr>
-
+                            foreach($result_list as $re_list){
+                                $gift_send_name = "<a href='ad_mem_detail.php?mem_num=".$re_list["gift_send"]."'>".$re_list["gift_send_name"]."</a>";
+                                $gift_re_name = "<a href='ad_mem_detail.php?mem_num=".$re_list["gift_re"]."'>".$re_list["gift_re_name"]."</a>"; ?>
+                                <tr>
+								    <td><?php echo changeDate($re_list["gift_time"]);?></th>
+								    <td><?php echo $gift_send_name;?></td>
+								    <td><?php echo $gift_re_name;?></td>
+								    <td><?php echo $re_list["gift_title"];?></td>
+								    <td><?php echo $re_list["gift_note"];?></td>
+								    <td><?php echo $re_list["gift_send_branch"]."-".SingleName($re_list["gift_send_single"],"normal");?></td>
+								    <td><?php echo $re_list["gift_re_branch"];?>-<?php echo SingleName($re_list["gift_re_single"],"normal");?></td>
+							  </tr>
+                            <?php }?>
+                        <?php }?>
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 2 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_singleparty_gift.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_singleparty_gift.php?topage=1 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_singleparty_gift.php?topage=1" selected>1</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <!--include頁碼-->
+	        <?php require_once("./include/_page.php"); ?>
         </div>
         <!--/span-->
-
     </div>
     <!--/row-->
 </section>
 <!-- /MIDDLE -->
 
-<?php
-require_once("./include/_bottom.php")
-?>
+<?php require_once("./include/_bottom.php");?>
 
 <script language="JavaScript">
-    $(function() {
-        $("#branch").on("change", function() {
-            personnel_get("branch", "single");
-        });
-
-        $("input[name='nums']").prop("checked", false);
-        $("#selnums").on("click", function() {
-            if ($(this).prop("checked"))
-                $("input[name='nums']").each(function() {
-                    $(this).prop("checked", true);
-                });
-            else
-                $("input[name='nums']").each(function() {
-                    $(this).prop("checked", false);
-                });
-        });
-    });
-
-    function mutil_send() {
-        var $allnum = [];
-        $("input[name='nums']").each(function() {
-            if ($(this).val() && $(this).prop("checked")) $allnum.push($(this).val());
-        });
-        if ($allnum.length <= 0) alert("請勾選要發送的會員。");
-        else Mars_popup('ad_send_branch.php?mem_num=' + $allnum, '', 'scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');
-    }
-
-    function mutil_del() {
-        var $allnum = [];
-        $("input[name='nums']").each(function() {
-            if ($(this).val() && $(this).prop("checked")) $allnum.push($(this).val());
-        });
-        if ($allnum.length <= 0) alert("請勾選要刪除的資料。");
-        else Mars_popup2('ad_del.php?t=n&mem_num=' + $allnum, '', 'scrollbars=yes,location=yes,status=yes,menubar=yes,resizable=yes,width=400,height=250,top=100,left=100');
-    }
-
-    function chk_search_form() {
-        var $branch = $("#branch");
-        if (!$branch.val() && !$("#keyword_type").val()) {
-            alert("請選擇要搜尋的類型。");
-            $("#keyword_type").focus();
-            return false;
-        }
-        if (!$branch.val() && !$("#keyword").val()) {
-            alert("請輸入要搜尋的關鍵字。");
-            $("#keyword").focus();
-            return false;
-        }
-        location.href = "ad_singleparty_gift.php?sear=1&vst=&branch=" + $branch.val() + "&" + $("#keyword_type").val() + "=" + $("#keyword").val();
-        return false;
+    function full_btn(vst_val){
+        document.getElementById("vst").value = vst_val;
+        searchform.submit();
     }
 </script>
