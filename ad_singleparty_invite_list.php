@@ -53,15 +53,6 @@ if ( $times2 != "" && chkDate($times2) ){
     }
 }
 
-//default_sql_num = 500
-/*If request("vst") = "full" Then
-    sqlv = "*"
-    sqlv2 = "count(auton)"
-Else
-    sqlv = "top "&default_sql_num&" *"
-    sqlv2 = "count(auton)"
-End If    */
-
 //組合語法 si_invite Where types='branch'
 $subSQL = "types='branch' ";
 if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
@@ -162,22 +153,14 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
         <!-- content starts -->
 
         <?php
-        $linkd1 = " disabled";
-        $linkd2 = "";
-        $linkd1h = "javascript:void(0)";
-        $linkd2h = "ad_singleparty_invite_list.php?t=1";
         $head_t = "等待秘書聯繫";
         if ( $t == "1" ){
-            $linkd1 = "";
-            $linkd2 = " disabled";
-            $linkd1h = "ad_singleparty_invite_list.php";
-            $linkd2h = "javascript:void(0)";
             $head_t = "已邀約未同意";
         }
         ?>
 
         <div class="panel panel-default">
-            <h2 class="pageTitle">會館約會 》<?php echo $head_t;?> 》資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料</i> ]".$count_href;?></h2>            
+            <h2 class="pageTitle">會館約會 》<?php echo $head_t;?> 》資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料</i> ]".$count_href;?></h2>
             <p>
                 <?php if ( $t == "" ){?>
                     <a href="javascript:void(0);" class="btn btn-success btn-active" style="color:black" disabled>▶ 等待秘書聯繫</a>&nbsp;
