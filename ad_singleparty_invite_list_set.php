@@ -211,7 +211,7 @@ if ( $st == "read" ){
         $n4 = $re["mem_school"];
         $n5 = $re["mem_he"];
         $n6 = $re["mem_we"];
-        $n7 = $re["mem_job1")&rs("mem_job2"];
+        $n7 = $re["mem_job1"].$re["mem_job2"];
         $n10 = $re["mem_mobile"];
         $mem_num1 = $re["mem_num"];
     }
@@ -244,7 +244,7 @@ if ( $st == "read" ){
     }
 }
 
-$a = SqlFilter($_REQUEST["a"],int);
+$a = SqlFilter($_REQUEST["a"],"int");
 $sts = "新增";
 $SQL = "Select * From si_invite Where auton=".$a;
 $rs = $SPConn->prepare($SQL);
@@ -256,6 +256,7 @@ if ( count($result) > 0 ){
     $datetime_real = $re["datetime_real"];
 }
 ?>
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -269,60 +270,59 @@ if ( count($result) > 0 ){
             <tr>
                 <td>
                     <fieldset>
-                        <legend>約會專家 - 轉入會館排約預訂表</legend>
-                        <table width="650" border="0" align="center" cellpadding="3">
-                            <tr bgcolor="#FFF0E1">
-                                <td bgcolor="#336699" colspan=2 align="center" height=20></td>
-                            </tr>
+                        <legend style="color:#fc3bf5;font-weight:bold;">約會專家 - 轉入會館排約預訂表</legend>
+                        <table width="650" align="center" cellpadding="3" style="font-size:14px; color:midnightblue;">
                             <tr>
-                                <td bgcolor="#F0F0F0" colspan=2>
+                                <td bgcolor="#d9dbfd" colspan=2>
                                     <form style="margin:0px;" action="?st=read" method="post" id="form1" onSubmit="return chk_form1()">
-                                        預訂排約人編號或手機： <input name="keyword1" type="text" id="keyword1" value="<%=keyword1%>" size="10"> 
-                                        預訂排約對象編號或手機： <input name="keyword2" type="text" id="keyword2" value="<%=keyword2%>" size="10"> 
-                                        <input type="hidden" name="a" value="<?php echo $a;?>"><input type="submit" value="讀取資料">
+                                        <strong style="color: #1a218e;">
+                                        ▲ 預訂排約人編號或手機： <input name="keyword1" type="text" id="keyword1" value="<?php echo $keyword1;?>" size="6"> 
+                                        　▲ 預訂排約對象編號或手機： <input name="keyword2" type="text" id="keyword2" value="<?php echo $keyword2;?>" size="6"></strong>
+                                        <input type="hidden" name="a" value="<?php echo $a;?>"><input type="submit" value="讀取資料" class="css-radius">
                                     </form>
                                 </td>
                             </tr>
                             <?php if ( $st == "read" ){ ?>
                                 <tr>
-                                    <td bgcolor="#F0F0F0" colspan="2" style="color:red">
-                                        請確定排約人必須在左邊，排約對象必須在右邊，如資料相反請
-                                        <a href="?st=read&keyword1=<?php echo $keyword2;?>&keyword2=<?php echo $keyword1;?>&a=<?php echo $a;?>">點此交換</a>
+                                    <td colspan="2" style="color: red;">
+                                        <strong>
+                                        ★ 請確定排約人必須在左邊(綠區)，排約對象必須在右邊(紅區)，如資料相反請
+                                        <a href="?st=read&keyword1=<?php echo $keyword2;?>&keyword2=<?php echo $keyword1;?>&a=<?php echo $a;?>">點此交換</strong></a>
                                     </td>
                                 </tr>
                             <?php }?>
                             <tr>
-                                <td bgcolor="#F0F0F0" width="50%">↓↓↓預訂排約人↓↓↓</td>
-                                <td bgcolor="#F0F0F0" width="50%">↓↓↓預訂排約對象↓↓↓</td>
+                                <td bgcolor="#91fded" width="50%"><strong>▼ ▼ ▼ 預訂排約人 ▼ ▼ ▼ </strong></td>
+                                <td bgcolor="#fdbabe" width="50%"><strong>▼ ▼ ▼ 預訂排約對象 ▼ ▼ ▼ </strong></td>
                             </tr>
                             <form action="?st=add" method="post" id="form2" onSubmit="return chk_form()">
                                 <tr>
-                                    <td bgcolor="#F0F0F0" width="50%">
-                                        姓名： <input name="n1" type="text" id="n1" value="<?php echo $n1;?>" size="15">　
-                                        性別： 
+                                    <td bgcolor="#91fded" width="50%">
+                                        姓　名： <input name="n1" type="text" id="n1" value="<?php echo $n1;?>" size="15">　
+                                        <br>性　別： 
                                         <select name="n2" id="n2">
                                             <option value="男"<?php if ( $n2 == "男" ){ echo " selected"; }?>>男</option>
                                             <option value="女"<?php if ( $n2 == "女" ){ echo " selected"; }?>>女</option>
                                         </select><br>
-                                        身分證： <input name="n0" id="n0" type=text" value="<?php echo $n0;?>" size="10"> 
-                                        會館： <input type="text" value="<?php echo $n1b;?>" size="5" disabled>
+                                        身分證： <input name="n0" id="n0" type=text" value="<?php echo $n0;?>" size="10" maxlength="10"> 
+                                        <br>會　館： <input type="text" value="<?php echo $n1b;?>" size="5" disabled>
                                         <input name="n1b" type="hidden" id="n1b" value="<?php echo $n1b;?>">
                                     </td>
-                                    <td bgcolor="#F0F0F0" width="50%">
-                                        姓名： <input name="v1" type="text" id="v1" value="<?php echo $v1;?>" size="15">　
-                                        性別： 
+                                    <td bgcolor="#fdbabe" width="50%">
+                                        姓　名： <input name="v1" type="text" id="v1" value="<?php echo $v1;?>" size="15">　
+                                        <br>性　別： 
                                         <select name="v2" id="v2">
                                             <option value="男"<?php if ( $v2 == "男" ){ echo " selected"; }?>>男</option>
                                             <option value="女"<?php if ( $v2 == "女" ){ echo " selected"; }?>>女</option>
                                         </select><br>
-                                        身分證： <input name="v0" id="v0" type=text" value="<?php echo $v0;?>" size="15"> 
-                                        會館： <input type="text" value="<?php echo $v1b;?>" size="5" disabled>
+                                        身分證： <input name="v0" id="v0" type=text" value="<?php echo $v0;?>" size="10" maxlength="10"> 
+                                        <br>會　館： <input type="text" value="<?php echo $v1b;?>" size="5" disabled>
                                         <input name="v1b" type="hidden" id="v1b" value="<?php echo $v1b;?>">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0">
-                                        年次： <input name="n3" type="text" id="n3" value="<?php echo $n3;?>" size="15">　
+                                    <td bgcolor="#91fded">
+                                        年次： <input name="n3" type="text" id="n3" value="<?php echo $n3;?>" size="6">　
                                         學歷： 
                                         <select name="n4" id="n4">
                                             <option value="國中"<?php if ( $n4 == "國中" ){ echo " selected"; }?>>國中</option>
@@ -335,8 +335,8 @@ if ( count($result) > 0 ){
                                             <option value="其他"<?php if ( $n4 == "其他" ){ echo " selected"; }?>>其他</option>
                                         </select>
                                     </td>
-                                    <td bgcolor="#F0F0F0">
-                                        年次： <input name="v3" type="text" id="v3" value="<?php echo $v3;?>" size="15">　
+                                    <td bgcolor="#fdbabe">
+                                        年次： <input name="v3" type="text" id="v3" value="<?php echo $v3;?>" size="6">　
                                         學歷： 
                                         <select name="v4" id="v4">
                                             <option value="國中"<?php if ( $v4 == "國中" ){ echo " selected"; }?>>國中</option>
@@ -351,25 +351,25 @@ if ( count($result) > 0 ){
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0">
-                                        身高： <input name="n5" type="text" id="n5" value="<?php echo $n5;?>" size="10">　
-                                        體重： <input name="n6" type="text" id="n6" value="<?php echo $n6;?>" size="10">
+                                    <td bgcolor="#91fded">
+                                        身高： <input name="n5" type="text" id="n5" value="<?php echo $n5;?>" size="6">　
+                                        體重： <input name="n6" type="text" id="n6" value="<?php echo $n6;?>" size="6">
                                     </td>
-                                    <td bgcolor="#F0F0F0">
-                                        身高： <input name="v5" type="text" id="v5" value="<?php echo $v5;?>" size="10">　
-                                        體重： <input name="v6" type="text" id="v6" value="<?php echo $v6;?>" size="10">
+                                    <td bgcolor="#fdbabe">
+                                        身高： <input name="v5" type="text" id="v5" value="<?php echo $v5;?>" size="6">　
+                                        體重： <input name="v6" type="text" id="v6" value="<?php echo $v6;?>" size="6">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0">工作情形： <input name="n7" type="text" id="n7" value="<?php echo $n7;?>" size="20"></td>
-                                    <td bgcolor="#F0F0F0">工作情形： <input name="v7" type="text" id="v7" value="<?php echo $v7;?>" size="20"></td>
+                                    <td bgcolor="#91fded">工作情形： <input name="n7" type="text" id="n7" value="<?php echo $n7;?>" size="20"></td>
+                                    <td bgcolor="#fdbabe">工作情形： <input name="v7" type="text" id="v7" value="<?php echo $v7;?>" size="20"></td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0">手機： <input name="n10" type="text" id="n10" value="<?php echo $n10;?>" size="20"></td>
-                                    <td bgcolor="#F0F0F0">手機： <input name="v10" type="text" id="v10" value="<?php echo $v10;?>" size="20"></td>
+                                    <td bgcolor="#91fded">手機： <input name="n10" type="text" id="n10" value="<?php echo $n10;?>" size="10" maxlength="10"></td>
+                                    <td bgcolor="#fdbabe">手機： <input name="v10" type="text" id="v10" value="<?php echo $v10;?>" size="10" maxlength="10"></td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0" colspan="2">預訂時間：
+                                    <td bgcolor="#fdf0d3" colspan="2">預訂時間：
                                         <?php
                                         if ( $datetime_real != "" && chkDate($datetime_real) ){
                                             $dry = date("Y",$datetime_real);
@@ -412,7 +412,7 @@ if ( count($result) > 0 ){
                                             <?php
                                             for ( $i=10;$i<=22;$i++ ){
                                                 echo "<option value='".$i."'";
-                                                if ( $drh == i ){ echo " selected";}
+                                                if ( $drh == $i ){ echo " selected";}
                                                 echo ">".$i."</option>";
                                             }
                                             ?>
@@ -423,96 +423,105 @@ if ( count($result) > 0 ){
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0" colspan=2>
+                                    <td bgcolor="#fdf0d3" colspan=2>
                                         排約人秘書：
                                         <select name="branch" id="branch" autocomplete="off">
                                             <option value="">請選擇</option>
-                                            <%
-                If ran <> "" Then
-                    Response.write "<option value="""&rbranch&""" selected>"&rbranch&"</option>"
-                Else
-
-                If session("branch") <> "" Then
-            If Session("MM_UserAuthorization") = "admin" then
-            For each ab in all_branchs("好好玩旅行社")
-            Response.write "<option value="""&ab&""">"&ab&"</option>"
-                    next
-                    else
-                        Response.write "<option value="""&session("branch")&""">"&session("branch")&"</option>"
-                    end if
-                Else
-                Response.write "<option value="""" selected>請選擇</option>"
-            End if
-                End if
-                    %>
-                                        </select><select name="single" id="single">
-                                            <%
-                If ran <> "" Then
-                Response.write "<option value="""&rsingle&""">"&SingleName(rsingle)&"</option>"
-                Else
-                Response.write "<option value="""">請選擇</option>"
-                End if
-                %>
-                                        </select>　類型：<select name="types">
-                                            <option value="singleparty" <%If types = "singleparty" Then Response.write " selected" End if%>>約會專家</option>
+                                            <?php
+                                            if ( $ran != "" ){
+                                                echo  "<option value='".$rbranch."' selected>".$rbranch."</option>";
+                                            }else{
+                                                if ( $_SESSION["branch"] != "" ){
+                                                    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                                        //會館資料
+                                                        $SQL = "Select * From branch_data Where auto_no<>10 Order By admin_Sort";
+                                                        $rs = $SPConn->prepare($SQL);
+                                                        $rs->execute();
+                                                        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    	                                                foreach($result as $re){
+    		                                                echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+                                                        }
+                                                    }else{
+                                                            echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
+                                                    }
+                                                }else{
+                                                    echo "<option value='' selected>請選擇</option>";
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                        <select name="single" id="single">
+                                            <?php
+                                            if ( $ran != "" ){
+                                                echo "<option value='".$rsingle."'>".SingleName($rsingle,"normal")."</option>";
+                                            }else{
+                                                echo "<option value=''>請選擇</option>";
+                                            }
+                                            ?>
+                                        </select>　
+                                        類型：
+                                        <select name="types">
+                                            <option value="singleparty"<?php if ( $types == "singleparty" ){ echo " selected";}?>>約會專家</option>
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0" colspan=2>
+                                    <td bgcolor="#fdf0d3" colspan=2>
                                         排約對象秘書：
                                         <select name="branch2" id="branch2" autocomplete="off">
                                             <option value="">請選擇</option>
-                                            <%
-                If ran <> "" Then
-                    Response.write "<option value="""&rbranch2&""" selected>"&rbranch2&"</option>"
-                Else
-
-                If session("branch") <> "" Then
-            If Session("MM_UserAuthorization") = "admin" then
-            For each ab in all_branchs("好好玩旅行社")
-            Response.write "<option value="""&ab&""">"&ab&"</option>"
-                    next
-                    else
-                        Response.write "<option value="""&session("branch")&""">"&session("branch")&"</option>"
-                    end if
-                Else
-                Response.write "<option value="""" selected>請選擇</option>"
-            End if
-                End if
-                    %>
-                                        </select><select name="single2" id="single2">
-                                            <%
-                If ran <> "" and rsingle2 <> "" Then
-                Response.write "<option value="""&rsingle2&""">"&SingleName(rsingle2)&"</option>"
-                Else
-                Response.write "<option value="""">請選擇</option>"
-                End if
-                %>
+                                            <?php
+                                            if ( $ran != "" ){
+                                                echo "<option value='".$rbranch2."' selected>".$rbranch2."</option>";
+                                            }else{
+                                                if ( $_SESSION["branch"] != "" ){
+                                                    if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
+                                                        //會館資料
+                                                        $SQL = "Select * From branch_data Where auto_no<>10 Order By admin_Sort";
+                                                        $rs = $SPConn->prepare($SQL);
+                                                        $rs->execute();
+                                                        $result=$rs->fetchAll(PDO::FETCH_ASSOC);
+    	                                                foreach($result as $re){
+    		                                                echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";
+                                                        }
+                                                    }else{
+                                                        echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
+                                                    }
+                                                }else{
+                                                    echo "<option value='' selected>請選擇</option>";
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                        <select name="single2" id="single2">
+                                            <?php
+                                            if ( $ran != "" && $rsingle2 != "" ){
+                                                echo "<option value='".$rsingle2."'>".SingleName($rsingle2,"normal")."</option>";
+                                            }else{
+                                                echo "<option value=''>請選擇</option>";
+                                            }
+                                            ?>
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td bgcolor="#F0F0F0" colspan=2>接待注意事項及備註：<br> <textarea name="n12" id="n12" style="width:95%" rows=3><%=n12%></textarea></td>
+                                    <td bgcolor="#fdf0d3" colspan=2>接待注意事項及備註：<br> <textarea name="n12" id="n12" style="width:100%" rows=3><?php echo $n12;?></textarea></td>
                                 </tr>
-
-
-                                <tr bgcolor="#FFF0E1">
-                                    <td bgcolor="#336699" colspan=2 align="center">
-                                        <input name="mem_num1" type="hidden" id="mem_num1" value="<%=mem_num1%>">
-                                        <input name="mem_num2" type="hidden" id="mem_num2" value="<%=mem_num2%>">
-                                        <input name="invitea" type="hidden" id="invitea" value="<%=request("a")%>">
+                                <tr bgcolor="#d9dbfd">
+                                    <td colspan="2" align="center" style="color: midnightblue;">
+                                        <input name="mem_num1" type="hidden" id="mem_num1" value="<?php echo $mem_num1;?>">
+                                        <input name="mem_num2" type="hidden" id="mem_num2" value="<?php echo $mem_num2;?>">
+                                        <input name="invitea" type="hidden" id="invitea" value="<?php echo $a;?>">
                                         <input name="Submit" type="submit" id="Submit2" value="確定送出">
                                     </td>
                                 </tr>
+                            </form>
                         </table>
                     </fieldset>
                 </td>
             </tr>
         </table>
-        </form>
     </body>
-
 </html>
 
 <script language="JavaScript">
@@ -578,82 +587,44 @@ if ( count($result) > 0 ){
     }
 
     $(function() {
-        window.resizeTo(720, 600); <
-        % If ran < > ""
-        Then % >
-            personnel_get("branch", "single", "<%=rsingle%>"); <
-        %
-        if rsingle2 < > ""
-        then % >
-            personnel_get("branch2", "single2", "<%=rsingle2%>"); <
-        %
-        else % >
-            personnel_get("branch2", "single2"); <
-        % end
-        if % >
-        <
-        %
-        else % >
-            personnel_get("branch", "single", "<%=Session("
-                MM_Username ")%>");
-        personnel_get("branch2", "single2", "<%=Session("
-            MM_Username ")%>"); <
-        % end
-        if % >
-        <
-        %
-        if request("st") = "read"
-        then % >
-            <
-            %
-            if n2 < > ""
-        then % >
-            $("#n2").val("<%=n2%>"); <
-        % end
-        if % >
-        <
-        %
-        if n4 < > ""
-        then % >
-            $("#n4").val("<%=n4%>"); <
-        % end
-        if % >
-        <
-        %
-        if n8 < > ""
-        then % >
-            $("#n8").val("<%=n8%>"); <
-        % end
-        if % >
-        <
-        %
-        if v2 < > ""
-        then % >
-            $("#v2").val("<%=v2%>"); <
-        % end
-        if % >
-        <
-        %
-        if v4 < > ""
-        then % >
-            $("#v4").val("<%=v4%>"); <
-        % end
-        if % >
-        <
-        %
-        if v8 < > ""
-        then % >
-            $("#v8").val("<%=v8%>"); <
-        % end
-        if % >
-        <
-        %
-        else % >
+        window.resizeTo(720, 600); 
+        <?php if ( $ran != "" ){?>
+            personnel_get("branch", "single", "<?php echo $rsingle;?>"); 
+            <?php if ( $rsingle2 != "" ){?>
+                personnel_get("branch2", "single2", "<?php echo $rsingle2;?>");
+            <?php }else{?>
+                personnel_get("branch2", "single2"); 
+            <?php }?>
+        <?php }else{?>
+            personnel_get("branch", "single", "<?php echo $_SESSION["MM_Username"];?>");
+            personnel_get("branch2", "single2", "<?php echo $_SESSION["MM_Username"];?>");
+        <?php }?>
+
+        <?php if ( $st == "read" ){?>
+            <?php if ( $n2 != "" ){?>
+                $("#n2").val("<?php echo $n2;?>"); 
+            <?php }?>
+            <?php if ( $n4 != "" ){?>
+                $("#n4").val("<?php echo $n4;?>");
+            <?php }?>
+            <?php if ( $n8 != "" ){?>
+                $("#n8").val("<?php echo $n8;?>");
+            <?php }?>
+            <?php if ( $v2 != "" ){?>
+                $("#v2").val("<?php echo $v2;?>");
+            <?php }?>
+            <?php if ( $v4 != "" ){?>
+                $("#v4").val("<?php echo $v4;?>");
+            <?php }?>
+            <?php if ( $v8 != "" ){?>
+                $("#v8").val("<?php echo $v8;?>");
+            <?php }?>
+        <?php }else{?>
             $("select").each(function() {
                 $(this).get(0).selectedIndex = 0;
-            }); <
-        % end
-        if % >
+            });
+        <?php }?>
+
         $("#branch").on("change", function() {
             personnel_get("branch", "single");
         });
@@ -674,8 +645,13 @@ if ( count($result) > 0 ){
 
         });
 <<<<<<< HEAD
+<<<<<<< HEAD
     });
 =======
     });
 </script>
 >>>>>>> 7f222a2df509f547431240a7b98ec0eeb49fd0d6
+=======
+    });
+</script>
+>>>>>>> 3fd8216c6bbe588037306985726be908b01fb859

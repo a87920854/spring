@@ -65,7 +65,9 @@
 	.panel-primary>.panel-heading {
 		border-color: #cc3f37 !important;
 	}
-	
+	.btn-primary{
+		border-color: #ae352e !important;
+	}
 	@media only screen and (min-width: 768px) {
 		body.min #aside ul.nav>li:hover>a span {
 			background-color: #fff;

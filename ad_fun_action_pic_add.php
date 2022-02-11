@@ -17,22 +17,23 @@
     $ac_auto = SqlFilter($_REQUEST["ac_auto"],"int");
     
     if($_REQUEST["st"] == "upload"){
-        // $urlpath = "webfile/funtour/upload_image/"; //儲存路徑
-        $urlpath = "Upload/"; //儲存路徑
-        $fileCount = count($_FILES['file']['name']);
+        $urlpath = "webfile/funtour/upload_image/"; //儲存路徑
+        // $urlpath = "Upload/"; //儲存路徑
+        $fileCount = count($_FILES["fileupload"]['name']);
 
         for ($i = 0; $i < $fileCount; $i++) {
-            if ($_FILES["file"]["error"][$i] !== UPLOAD_ERR_OK){
-                echo "Error: " . $_FILES["file"]["error"];
+            if ($_FILES["fileupload"]["error"][$i] !== UPLOAD_ERR_OK){
+                echo "Error: " . $_FILES["fileupload"]["error"];
             }else{
-                $ext = pathinfo($_FILES["file"]["name"][$i], PATHINFO_EXTENSION); //附檔名      
+                $ext = pathinfo($_FILES["fileupload"]["name"][$i], PATHINFO_EXTENSION); //附檔名      
                 $fileName = date("Y").date("n").date("j").date("H").date("i").date("s")."_".$ac_auto."_".rand(1,999).".".$ext; //檔名
-                move_uploaded_file($_FILES["file"]["tmp_name"][$i],($urlpath.$fileName)); //儲存檔案
+                move_uploaded_file($_FILES["fileupload"]["tmp_name"][$i],($urlpath.$fileName)); //儲存檔案
                 $SQL = "Insert into action_photo (ac_photo_time, ac_auto, ac_photo_name) values (getdate(), ".$ac_auto.", '".$fileName."')";
                 $rs = $FunConn->prepare($SQL);
                 $rs->execute();
             }
-        }        
+        }
+        exit();      
     }
 
 ?>
@@ -77,22 +78,16 @@
                         <tr>
                             <td bgcolor="#F0F0F0">請選擇要上傳的檔案：(可多選)　<input type="button" id="start_upload" value="確定上傳">
                                 <br>
-                                <div><span class="btn btn-danger fileinput-button"><span>選擇檔案</span><input data-no-uniform="true" id="file_uploads" type="file" class="fileupload" name="files[]" multiple></span>
+                                <div>
+                                    <span class="btn btn-danger fileinput-button">
+                                        <span>選擇檔案</span>
+                                        <input data-no-uniform="true" id="file_uploads" type="file" class="fileupload" name="fileupload[]" multiple>
+                                    </span>
                                     <div id="progress" class="progress progress-striped" style="display:none">
                                         <div class="bar progress-bar progress-bar-lovepy"></div>
                                     </div>
                                     <div id="fileupload_show"></div>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <form action="ad_fun_action_pic_add.php?st=upload&ac_auto=<?php echo $ac_auto; ?>" method="post" enctype="multipart/form-data">
-                                    Send these files:<br />
-                                    <input name="file[]" type="file" /><br />
-                                    <input name="file[]" type="file" /><br />
-                                    <input type="submit" value="Send files" />
-                                </form>
                             </td>
                         </tr>
                     </table>
@@ -122,7 +117,7 @@
                 url: "ad_fun_action_pic_add.php?st=upload&ac_auto=<?php echo $ac_auto; ?>",
                 type: "POST",
                 dropZone: $this,
-                dataType: 'json',
+                dataType: 'html',
                 singleFileUploads: false,
                 autoUpload: true,
                 stop: function(e, data) {

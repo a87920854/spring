@@ -24,21 +24,20 @@
             $bb = "小姐";
         }
         $rurl = "<a href='http://www.funtour.com.tw/rm.php?v=".SqlFilter($_REQUEST["mem_auto"],"int")."'>http://www.funtour.com.tw/rm.php?v=".SqlFilter($_REQUEST["mem_auto"],"int")."</a>";
-        $mbody = "<table width='415' border='0' cellspacing='0' cellpadding='0' style='font-size:15px;'>";
-        $mbody = $mbody . "<tr><td height=20>".SqlFilter($_REQUEST["mem_name"],"tab")." ".$bb." 您好：</td></tr>";
-        $mbody = $mbody . "<tr><td height=20>恭喜您成為好好玩金卡俱樂部的貴賓</td></tr>";
-        $mbody = $mbody . "<tr><td height=20>請點擊以下網址完成 Email 驗證</td></tr>";
-        $mbody = $mbody . "<tr><td height=20>".$rurl."</td></tr>";
-        $mbody = $mbody . "<tr><td height=20>即可享有完整好好玩金卡俱樂部會員優惠服務！</td></tr>";
-        $mbody = $mbody . "<tr><td height=20>祝福您早日牽手成功！</td></tr>";
-        $mbody = $mbody . "<tr><td height='12'></td><td></td></tr></table>";
-        $mbody = $mbody . "<a href='http://www.funtour.com.tw'><img src='http://www.funtour.com.tw/images/i_logo.jpg' border=0></a>";
+        $message = "<table width='415' border='0' cellspacing='0' cellpadding='0' style='font-size:15px;'>";
+        $message = $message . "<tr><td height=20>".SqlFilter($_REQUEST["mem_name"],"tab")." ".$bb." 您好：</td></tr>";
+        $message = $message . "<tr><td height=20>恭喜您成為好好玩金卡俱樂部的貴賓</td></tr>";
+        $message = $message . "<tr><td height=20>請點擊以下網址完成 Email 驗證</td></tr>";
+        $message = $message . "<tr><td height=20>".$rurl."</td></tr>";
+        $message = $message . "<tr><td height=20>即可享有完整好好玩金卡俱樂部會員優惠服務！</td></tr>";
+        $message = $message . "<tr><td height=20>祝福您早日牽手成功！</td></tr>";
+        $message = $message . "<tr><td height='12'></td><td></td></tr></table>";
+        $message = $message . "<a href='http://www.funtour.com.tw'><img src='http://www.funtour.com.tw/images/i_logo.jpg' border=0></a>";
 
         $to      = $_REQUEST["mem_mail"];
-        $subject = '好好玩旅行社';
-        $message = $mbody;
+        $subject = '好好玩旅行社';        
         $headers = array(
-            'From' => '好好玩旅行社<funtour@funtour.com.tw>',
+            'From' => '好好玩旅行社 <funtour@funtour.com.tw>',
             'X-Mailer' => 'PHP/' . phpversion()
         );
         mail($to, $subject, $message, $headers);
