@@ -27,7 +27,7 @@ $keyword_type = SqlFilter($_REQUEST["keyword_type"],"tab");
 $keyword = SqlFilter($_REQUEST["keyword"],"tab");
 $vst = SqlFilter($_REQUEST["vst"],"tab");
 
-//設定/刪除
+//遮蔽留言
 if ( $st == "del" ){
     $SQL_u = "Update si_guestbook Set del=".$v." Where auton=".$a;
     $rs_u = $SPConn->prepare($SQL_u);
@@ -35,6 +35,7 @@ if ( $st == "del" ){
 	reURL("win_close.php?m=設定中....");
     exit;
 }
+//刪除留言
 if ( $st == "del2" ){
     $SQL_d = "Delete si_guestbook Where auton=".$a;
     $rs_d = $SPConn->prepare($SQL_d);
@@ -42,18 +43,6 @@ if ( $st == "del2" ){
     reURL("win_close.php?m=刪除中....");
     exit;
 }
-
-/*
-If request("vst") = "full" Then
-  sqlv = "*"
-  sqlv2 = "count(auton)"
-Else
-  sqlv = "top "&default_sql_num&" *"
-  sqlv2 = "count(auton)"
-End If
-*/
-
-//$SQL = "Select * From si_guestbook Where 1=1 ";
 
 //篩選條件(姓名)
 if ( $keyword_type == "s3" ){
@@ -97,7 +86,7 @@ $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
 //分頁語法
 $SQL_list  = "Select Top ".$tPageSize." * ";
 $SQL_list .= "From (Select row_number() ";
-$SQL_list .= "over(Order By times Desc) As rownumber,mnum,mname,tnum,tname,notes,times,auton ";
+$SQL_list .= "over(Order By times Desc) As rownumber,mnum,mname,tnum,tname,notes,times,auton,del ";
 $SQL_list .= "From si_guestbook Where 1=1 ".$subSQL1." ) temp_row ";
 $SQL_list .= "Where rownumber > ".($tPageSize*$tPage_list);
 $rs_list = $SPConn->prepare($SQL_list);

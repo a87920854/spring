@@ -53,4 +53,6 @@
 	<input type="hidden" name="times2" id="times2" value="<?php echo $times2;?>">
 	<input type="hidden" name="s99" id="s99" value="<?php echo $s99;?>">
 	<input type="hidden" name="vst" id="vst" value="<?php echo $vst;?>">
+	<input type="hidden" name="search_sex" id="search_sex" value="<?php echo $search_sex;?>">
+	<input type="hidden" name="types" id="types" value="<?php echo $types;?>">
 </form>
