@@ -1,8 +1,43 @@
 <?php
-require_once("_inc.php");
-require_once("./include/_function.php");
-require_once("./include/_top.php");
-require_once("./include/_sidebar.php");
+    /*****************************************/
+    //檔案名稱：ad_action_add.php
+    //後台對應位置：管理系統/網站活動上傳>新增(修改)網站活動
+    //改版日期：2022.2.14
+    //改版設計人員：Jack
+    //改版程式人員：Jack
+    /*****************************************/
+    require_once("_inc.php");
+    require_once("./include/_function.php");
+    require_once("./include/_top.php");
+    require_once("./include/_sidebar.php");
+
+    if($_REQUEST["st"] == "upload"){
+        $old_pic = SqlFilter($_REQUEST["old_pic"],"tab");
+        $ext = pathinfo($_FILES["fileupload"]["name"][$i], PATHINFO_EXTENSION); //附檔名  
+        $fileName = date("Y").date("n").date("j").date("H").date("i").date("s")."_action_".rand(1,999).".".$ext; //檔名
+        $jpegpath = "upload_image/".$fileName;
+        list($width,$height) = getimagesize($_FILES['image']['tmp_name']);
+        if($width < 500){
+            echo "nowidth";
+            DelFile($jpegpath);
+            exit();
+        }
+
+        $exif = exif_read_data($str);
+        if(!empty($exif['Orientation'])) {
+        switch($exif['Orientation']) {
+            case 8:
+                $image = imagerotate($image,90,0);
+                break;
+            case 3:
+                $image = imagerotate($image,180,0);
+                break;
+            case 6:
+                $image = imagerotate($image,-90,0);
+                break;
+            }
+        }
+    }
 ?>
 
 <!-- MIDDLE -->

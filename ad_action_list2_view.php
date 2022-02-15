@@ -8,6 +8,49 @@
     /*****************************************/
     require_once("_inc.php");
     require_once("./include/_function.php");
+
+    if($_REQUEST["st"] == "istell"){
+        if($_REQUEST["v"] == "1"){
+            $SQL2 = "UPDATE love_keyin SET istell='".$ist."' Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";
+    		$txt = "已通知";
+        }else{
+            $SQL2 = "UPDATE love_keyin SET istell=NULL Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";
+    		$txt = "取消通知";
+        }
+        $SQL = "SELECT * FROM love_keyin Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        $result = $rs->fetch(PDO::FETCH_ASSOC);
+        if($result){            
+            $mem_num = $result["mem_num"];
+            $k_name = $result["k_name"];
+            $k_mobile = $result["k_mobile"];
+            $action_auto = $result["action_auto"];
+            $action_branch = $result["action_branch"];
+            $action_time = $result["action_time"];
+            $action_title = $result["action_title"];            
+            $rs = $SPConn->prepare($SQL2);
+            $rs->execute();
+        }
+        $singlenames = SingleName($_SESSION["MM_Username"],"normal");
+        $log_4 = "由 ".$singlenames." 設定 ".$k_name." 在[".$action_auto."]".$action_branch." - ".$action_time." - ".$action_title." ".$txt;
+        $SQL =  "INSERT INTO log_data (log_time,log_num,log_username,log_name,log_branch,log_single,log_1,log_2,log_4,log_5,log_service) VALUES (
+                '".date("Y/m/d H:i:s")."', 
+                '".$mem_num."', 
+                '".$k_name."', 
+                '".$singlenames."', 
+                '".$_SESSION["branch"]."', 
+                '".$_SESSION["MM_Username"]."', 
+                '".$k_mobile."', 
+                '系統紀錄', 
+                '".$log_4."', 
+                'member', 
+                '1')";
+        $rs = $SPConn->prepare($SQL);
+        $rs->execute();
+        reURL("win_close.php?m=變更中...");               
+    }
+
     require_once("./include/_top.php");
     require_once("./include/_sidebar.php");
 
@@ -37,16 +80,26 @@
             if($_REQUEST["full"] == "1"){
                 $k_pay_num = SqlFilter($_REQUEST["k_pay_num"],"tab");
                 $k_pay_m = SqlFilter($_REQUEST["k_pay_m"],"tab");
+                $SQL = "UPDATE love_keyin SET k_pay_num='".$k_pay_num."', k_pay_m='".$k_pay_m."' Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";                
             }else{
                 if($_REQUEST["k_pay_num"] != ""){
-                    if($_REQUEST["k_pay_num"] != "none"){
+                    if($_REQUEST["k_pay_num"] == "none"){
                         $k_pay_num = "";
                     }else{
                         $k_pay_num = SqlFilter($_REQUEST["k_pay_num"],"tab");
                     }
-                }                
+                    $SQL = "UPDATE love_keyin SET k_pay_num='".$k_pay_num."' Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";   
+                } 
+                if($_REQUEST["k_pay_m"] != ""){
+                    if($_REQUEST["k_pay_m"] == "none"){
+                        $k_pay_m = "";
+                    }else{
+                        $k_pay_m = SqlFilter($_REQUEST["k_pay_m"],"tab");
+                    }
+                    $SQL = "UPDATE love_keyin SET k_pay_m='".$k_pay_m."' Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";   
+                }               
             }
-            $SQL = "UPDATE love_keyin SET k_pay_num = '".$k_pay_num."', k_pay_m = '".$k_pay_m."',  Where k_id = ".SqlFilter($_REQUEST["id"],"int")."";
+                   
             $rs = $SPConn->prepare($SQL);
             $rs->execute();
         }
@@ -318,10 +371,61 @@
                                                                 $k_be = "備取";
 					                                            $k_bev = 1;
                                                             }
-                                                            $k_pay_num = "<form style='border:0px;margin:0px;padding:0px;' id='searchform2' action='ad_action_list2_view.php?topage=".SqlFilter($_REQUEST["topage"],"tab")."&ac=".SqlFilter($_REQUEST["id"],"int")."&id=".$re2["k_id"]."&st=uppaynum' method='post' target='_self' onsubmit='return save_b3($(this))'><input type='text' id='k_pay_num' name='k_pay_num' value='".$re2["k_pay_num"]."' rel='".$re2["k_pay_num"]."' style='width:60px;' placeholder='後五碼' onblur=\"save_b1($(this))\"><br><input type='text' id='k_pay_check' name='k_pay_check' value='".$re2["k_pay_m"]."' rel='".$re2["k_pay_m"]."' style='width:60px;' placeholder='對帳金額' onblur=\"save_b2($(this))\"><input type='submit' style='border:0px;margin:0px;padding:0px;visibility:hidden;height:0px;width:0px;'></form>";
+                                                            $k_pay_num = "<form style='border:0px;margin:0px;padding:0px;' id='searchform2' action='ad_action_list2_view.php?topage=".SqlFilter($_REQUEST["topage"],"tab")."&ac=".SqlFilter($_REQUEST["id"],"int")."&id=".$re2["k_id"]."&st=uppaynum' method='post' target='_self' onsubmit='return save_b3($(this))'><input type='text' id='k_pay_num' name='k_pay_num' value='".$re2["k_pay_num"]."' rel='".$re2["k_pay_num"]."' style='width:60px;' placeholder='後五碼' onblur=\"save_b1($(this))\"><br><input type='text' id='k_pay_m' name='k_pay_m' value='".$re2["k_pay_m"]."' rel='".$re2["k_pay_m"]."' style='width:60px;' placeholder='對帳金額' onblur=\"save_b2($(this))\"><input type='submit' style='border:0px;margin:0px;padding:0px;visibility:hidden;height:0px;width:0px;'></form>";
 					                                        $bb = "<a href='#' onClick=\"Mars_popup('ad_action_list2_view.php?st=k_be&v=".$k_bev."&id=".$re2["k_id"]."','','width=300,height=200,top=100,left=100')\">變</a>";
-                                                            
+
+                                                            if($re2["istell"] != ""){
+                                                                echo "<font color=blue>已通知</font>";
+                                                                echo "&nbsp;&nbsp;<a href='#' onClick=\"Mars_popup('ad_action_list2_view.php?st=istell&v=2&id=".$re2["k_id"]."','','width=300,height=200,top=100,left=100')\"><i class='fa fa-remove color-red'></i></a>";
+                                                            }else{
+                                                                echo "<input type='checkbox' onClick=\"Mars_popup('ad_action_list2_view.php?st=istell&v=1&id=".$re2["k_id"]."','','width=300,height=200,top=100,left=100')\">";
+                                                            }                                                            
+                                                            echo "<form style='border:0px;margin:0px;padding:0px;' id='searchform3' action=\"ad_action_list2_view.php?topage=".SqlFilter($_REQUEST["topage"],"tab")."&ac=".SqlFilter($_REQUEST["id"],"int")."&id=".$re2["k_id"]."&st=istell2\" method='post' target='_self' onsubmit=\"return save_b4($(this))\"><input type='text' id='msg' name='msg' value='".$re2["istell2"]."' rel='".$re2["istell2"]."' style='width:150px;' placeholder='備註' onblur=\"save_b5($(this))\"><input type='submit' style='border:0px;margin:0px;padding:0px;visibility:hidden;height:0px;width:0px;'></form>";
                                                         ?>
+                                                    </td>
+                                                    <td class="center"><?php echo $k_pay_num; ?></td>								
+                                                    <td class="center"><?php echo $k_be; ?>　<?php echo $bb; ?></td>								
+                                                    <td class="center">
+                                                        <?php
+                                                            $um = "";
+                                                            $SQL = "select mem_p1,mem_p2,mem_p3 from member_data where mem_num='".$re2["mem_num"]."'";
+                                                            $rs->execute();
+                                                            $result3 = $rs->fetch(PDO::FETCH_ASSOC);
+                                                            if($result3){
+                                                                if($result3["mem_p1"] != ""){
+                                                                    $um = $um . "身正";
+                                                                }
+
+                                                                if($result3["mem_p2"] != ""){
+                                                                    $um = $um . "<br>身反";
+                                                                }
+
+                                                                if($result3["mem_p3"] != ""){
+                                                                    $um = $um . "<br>工證";
+                                                                }
+                                                            }
+                                                            if($um == ""){
+                                                                $um = "無";
+                                                            }
+                                                            echo $um;
+                                                        ?>
+                                                    </td>
+                                                    <td class="center"><?php echo $re2["k_come"]; ?></td>								
+                                                    <td><?php echo changeDate($re2["k_time"]); ?></td>
+                                                    <td class="center">
+                                                        <div class="btn-group">
+                                                        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
+							                                <ul class="dropdown-menu pull-right">
+                                                                <?php 
+                                                                    if($cansee == 1){
+                                                                        echo "<li><a href='ad_action_list2_add.php?kid=".$re2["k_id"]."&id=".SqlFilter($_REQUEST["id"],"int")."'><i class='icon-edit'></i> 修改</a></li>";
+                                                                    }
+                                                                    if($_SESSION["MM_UserAuthorization"] == "admin" || $_SESSION["funtourall1"] == "1"){ ?>
+                                                                        <li><a href="#" onClick="Mars_popup2('ad_action_list2_view.php?st=del&id=<?php echo $re2["k_id"]; ?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
+                                                                    <?php }
+                                                                ?>
+                                                            </ul>
+                                                        </div>
                                                     </td>
                                                 <?php }
                                             ?>
@@ -354,7 +458,6 @@ require_once("./include/_bottom.php");
 <script type="text/javascript">
     $mtu = "ad_action_list.";
     $(function() {
-
 
         $(".show_check").on("click", function() {
             var $this = $(this),
@@ -408,6 +511,7 @@ require_once("./include/_bottom.php");
                 }
             });
         }
+        console.log($vv);
         return false;
     }
 
@@ -422,7 +526,7 @@ require_once("./include/_bottom.php");
             $.ajax({
                 url: thisv.parent().attr("action"),
                 data: {
-                    k_pay_check: $vv
+                    k_pay_m: $vv
                 },
                 type: "POST",
                 dataType: 'text',
@@ -436,6 +540,7 @@ require_once("./include/_bottom.php");
                 }
             });
         }
+        console.log($vv);     
         return false;
     }
 
