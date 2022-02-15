@@ -74,8 +74,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                                 }else{
                                     $upic =  "<img class=\"img-responsive\" src=\"../photo/".$mem_photo."\">";
                                 }
-                            }
-                            $diffm = floor(    (   strtotime(changeDate(date("Y-m-d H:i:s")))-changeDate($re_list["mtimes"])     )%86400/60      );?>
+                            } ?>
                             <div class="col-md-2">
 								<section class="panel" style="border: 1px solid #ddd;">
 									<div class="panel-body noradius padding-10">
@@ -86,7 +85,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
 										<!-- updated -->
 										<ul class="list-unstyled size-13">
 											<li><?php echo $re_list["mbranch"];?>會館</li>
-											<li><?php echo changeDate($re_list["mtimes"]);?> 上線 <?php echo $diffm;?> m</li>																						
+											<li><?php echo changeDate($re_list["mtimes"]);?> 上線</li><<!--原本有m 但因感覺沒什麼作用直接拿掉-->>
 											<li><a href="https://www.singleparty.com.tw/profile.asp?m=<?php echo $re_list["mnum"];?>" target="_blank">約專檔案</a>&nbsp;&nbsp;<a href="ad_mem_detail.php?mem_num=<?php echo $re_list["mnum"];?>" target="_blank">後台個人資料</a></li>
 										</ul>
                                         <!-- /updated -->

@@ -403,7 +403,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                 </table>
             </div>
             <!--include頁碼-->
-	        <?php require_once("./include/_page.php"); ?>\
+	        <?php require_once("./include/_page.php"); ?>
         </div>
     </div>
 </section>

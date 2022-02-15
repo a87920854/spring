@@ -25,8 +25,10 @@ $st = SqlFilter($_REQUEST["st"],"tab");
 $an = SqlFilter($_REQUEST["an"],"tab");
 $times1 = SqlFilter($_REQUEST["times1"],"tab");
 $times2 = SqlFilter($_REQUEST["times2"],"tab");
-$keyword_type = SqlFilter($_REQUEST["keyword_type"],"tab");
+$types = SqlFilter($_REQUEST["types"],"tab");
 $keyword = SqlFilter($_REQUEST["keyword"],"tab");
+$branch = SqlFilter($_REQUEST["branch"],"tab");
+$single = SqlFilter($_REQUEST["single"],"tab");
 
 //刪除
 if ( $st == "del" ){
@@ -37,7 +39,7 @@ if ( $st == "del" ){
     exit;
 }
 
-//??
+//已確認
 if ( $st =="fixc" ){
     $SQL = "Select * from si_salon_teacher_consult where auton='".$an."'";
     $rs = $SPConn->prepare($SQL);
@@ -45,7 +47,7 @@ if ( $st =="fixc" ){
     $result = $rs->fetchAll(PDO::FETCH_ASSOC);
     foreach($result as $re);
     if ( count($result) > 0 ){
-        $SQL_u = "Update si_salon_teacher_consult Set stat=1,t2='".strftime("%Y/%m/%d %H:%M:%S")."'";
+        $SQL_u = "Update si_salon_teacher_consult Set stat=1,t2='".strtotime("%Y/%m/%d %H:%M:%S")."'";
         $rs_u = $SPConn->prepare($SQL_u);
         $rs_u->execute();        
     }
@@ -69,19 +71,6 @@ if ( $times2 != "" ){
     }
 }
 
-/*
-default_sql_num = 500
-
-If request("vst") = "full" Then
-  sqlv = "*"
-  sqlv2 = "count(auton)"
-Else
-  sqlv = "top "&default_sql_num&" *"
-  sqlv2 = "count(auton)"
-End if
-*/
-
-//語法 sqls = "SELECT "&sqlv&" FROM si_salon_teacher_consult WHERE 1=1"
 if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
     $subSQL1 = "Where 1=1 ";
 }elseif ( $_SESSION["MM_UserAuthorization"] == "branch" || $_SESSION["MM_UserAuthorization"] == "love" || $_SESSION["MM_UserAuthorization"] == "love_manager" ){
@@ -118,9 +107,6 @@ if ( $single != "" ){
 if ( $tshow == "" ){
 	$tshow = "所有會員";
 }
-
-//order by stat asc, times desc
-
 
 //取得總筆數
 $SQL = "Select count(auton) As total_size From si_salon_teacher_consult ".$subSQL1;
@@ -159,13 +145,12 @@ $tPageTotal = ceil(($total_size/$tPageSize)); //總頁數
 //分頁語法
 $SQL_list  = "Select Top ".$tPageSize." * ";
 $SQL_list .= "From (Select row_number() ";
-$SQL_list .= "over(Order By stat Asc) As rownumber ";
-$SQL_list .= "From si_salon_teacher_consult".$subSQL1.") temp_row ";
-$SQL_list .= "Where rownumber > ".($tPageSize*$tPage_list)." Order By stat Asc, times Desc";
+$SQL_list .= "over(Order By stat Asc,times Desc) As rownumber,tname,tdate,ttime,mem_num,mname,lineid,email,phone,mbranch,msingle,times,t3,auton ";
+$SQL_list .= "From si_salon_teacher_consult ".$subSQL1.") temp_row ";
+$SQL_list .= "Where rownumber > ".($tPageSize*$tPage_list);
 $rs_list = $SPConn->prepare($SQL_list);
 $rs_list->execute();
-$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
-?>
+$result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC); ?>
 <script type="text/JavaScript" src="./include/script.js"></script>
 
 <!-- MIDDLE -->
@@ -223,7 +208,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                         <input type="text" class="datepicker" autocomplete="off" style="width:100px;" name="times2" value="<?php echo $vacre_sign2;?>">
                     </span>
                     <span class="span-group">
-                    <select name="keyword_type" id="keyword_type">
+                    <select name="types" id="types">
                             <option value="">請選擇</option>
                             <option value="s3"<?php if ( $types == "s3" ){?> selected<?php }?>>姓名</option>
                             <option value="s4"<?php if ( $types == "s4" ){?> selected<?php }?>>編號</option>
@@ -243,140 +228,69 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-striped table-bordered bootstrap-datatable table-hover">
                     <thead>
                         <tr>
-                            <th>預約教練</th>
-                            <th>預約時間</th>
-                            <th>姓名</th>
-                            <th>Line ID</th>
-                            <th>Email</th>
-                            <th>手機號碼</th>
-                            <th>會館秘書</th>
-                            <th>諮詢結果</th>
+                            <th width="6%" style="text-align: center;">預約教練</th>
+                            <th width="10%">預約時間</th>
+                            <th width="6%" style="text-align: center;">姓名</th>
+                            <th width="8%">Line ID</th>
+                            <th width="10%">Email</th>
+                            <th width="8%">手機號碼</th>
+                            <th width="8%">會館秘書</th>
+                            <th width="8%">諮詢結果</th>
                             <th>狀態</th>
                         </tr>
                     </thead>
                     <tbody>
-
-                        <tr>
-                            <td>黃宇綸</td>
-                            <td>2021/8/8&nbsp;&nbsp;10:00</td>
-                            <td><a href="ad_mem_detail.php?mem_num=414544" target="_blank">彭詳程</a></td>
-                            <td>ponbu1121</td>
-                            <td>spon5945@gmail.com</td>
-                            <td>0907225594</td>
-                            <td>桃園黃毓淳</td>
-                            <td></td>
-                            <td>
-                                發起諮詢預約：2021-07-30 20:48
-                                <br>
-                                確認雙方時間：<a href="javascript:Mars_popup('ad_mem_singleparty_consult_changetime.php?an=31','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">修改時間</a>&nbsp;&nbsp;&nbsp;<a href="javascript:Mars_popup('ad_mem_singleparty_consult.php?st=fixc&an=31','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">已確認</a>
-                                <br>
-                                諮詢完成：尚未開始&nbsp;&nbsp;<a href="javascript:Mars_popup2('ad_mem_singleparty_consult.php?st=del&an=31','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">刪</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>瑪那熊</td>
-                            <td>2021/8/27&nbsp;&nbsp;14:00</td>
-                            <td><a href="ad_mem_detail.php?mem_num=99998" target="_blank">張小天</a></td>
-                            <td>hhhhh</td>
-                            <td>lovekyoe@gmail.com</td>
-                            <td>0988706831</td>
-                            <td>台北陳紅</td>
-                            <td></td>
-                            <td>
-                                發起諮詢預約：2021-08-24 17:31
-                                <br>
-                                確認雙方時間：2021-08-24 17:33
-                                <br>
-                                諮詢完成：尚未開始&nbsp;&nbsp;<a href="javascript:Mars_popup2('ad_mem_singleparty_consult.php?st=del&an=32','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">刪</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>姜沛紳</td>
-                            <td>2021/3/6&nbsp;&nbsp;15:00</td>
-                            <td><a href="ad_mem_detail.php?mem_num=1980038" target="_blank">賴永晏</a></td>
-                            <td>ffyy43</td>
-                            <td>identify8840@yahoo.com</td>
-                            <td>0938662583</td>
-                            <td>高雄李順慈</td>
-                            <td></td>
-                            <td>
-                                發起諮詢預約：2021-02-28 22:40
-                                <br>
-                                確認雙方時間：<a href="javascript:Mars_popup('ad_mem_singleparty_consult_changetime.php?an=28','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">修改時間</a>&nbsp;&nbsp;&nbsp;<a href="javascript:Mars_popup('ad_mem_singleparty_consult.php?st=fixc&an=28','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">已確認</a>
-                                <br>
-                                諮詢完成：尚未開始&nbsp;&nbsp;<a href="javascript:Mars_popup2('ad_mem_singleparty_consult.php?st=del&an=28','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">刪</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>瑪那熊</td>
-                            <td>2021/6/28&nbsp;&nbsp;19:00</td>
-                            <td><a href="ad_mem_detail.php?mem_num=99998" target="_blank">張小天</a></td>
-                            <td>ddddddd</td>
-                            <td>Lovesingleclub@gmail.com</td>
-                            <td>0988706831</td>
-                            <td>台北陳紅</td>
-                            <td>已完成</td>
-                            <td>
-                                發起諮詢預約：2021-06-21 16:44
-                                <br>
-                                確認雙方時間：2021-06-21 17:56
-                                <br>
-                                諮詢完成：2021-06-21 17:58&nbsp;&nbsp;<a href="javascript:Mars_popup2('ad_mem_singleparty_consult.php?st=del&an=30','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">刪</a>
-                            </td>
-                        </tr>
-
+                        <?php if ( count($result_list) == 0 ){?>
+                            <tr><td colspan="10" height="200">目前沒有資料</td></tr>
+                        <?php }else{
+                            foreach($result_list as $re_list){ ?>
+                                <tr>
+                                    <td align="center"><?php echo $re_list["tname"];?></td>
+                                    <td><?php echo Date_EN($re_list["tdate"],1);?>&nbsp;&nbsp;<?php echo $re_list["ttime"];?></td>
+                                    <td align="center"><a href="ad_mem_detail.asp?mem_num=<?php echo $re_list["mem_num"];?>" target="_blank"><?php echo $re_list["mname"];?></a></td>
+                                    <td><?php echo $re_list["lineid"];?></td>
+                                    <td><?php echo $re_list["email"];?></td>
+                                    <td><?php echo $re_list["phone"];?></td>		
+                                    <td><?php echo $re_list["mbranch"];?><?php echo SingleName($re_list["msingle"],"normal");?></td>														
+                                    <td>
+                                        <?php
+								        if ( $re_list["notes"] != "" ){
+                                            echo strip_tags($re_list["notes"]);
+                                        } ?>
+								    </td>
+							        <td>
+								        發起諮詢預約：<?php echo Date_EN($re_list["times"],9);?>
+								        <br>
+								        確認雙方時間：
+                                        <?php
+								        if ( chkDate($re_list["t2"]) ){
+									        echo Date_EN($re_list["t2"],6);
+                                        }else{ ?>
+									        <a href="javascript:Mars_popup('ad_mem_singleparty_consult_changetime.php?an=<?php echo $re_list["auton"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">修改時間</a>&nbsp;&nbsp;&nbsp;
+                                            <a href="javascript:Mars_popup('ad_mem_singleparty_consult.php?st=fixc&an=<?php echo $re_list["auton"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">已確認</a>
+                                        <?php }?>
+								        <br>
+								        諮詢完成：
+                                        <?php
+								        if ( chkDate($re_list["t3"]) ){
+									        echo Date_EN($re_list["t3"],9);
+                                        }else{
+									        echo "尚未開始";
+								        }
+								        if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
+										    &nbsp;&nbsp;<a href="javascript:Mars_popup2('ad_mem_singleparty_consult.php?st=del&an=<?php echo $re_list["auton"];?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=400,height=220,top=300,left=300');">刪</a>
+                                        <?php }?>
+							        </td>
+							    </tr> 
+                            <?php }?>
+                        <?php }?>
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">共 6 筆、第 1 頁／共 1 頁&nbsp;&nbsp;
-                <ul class='pagination pagination-md'>
-                    <li><a href=/ad_mem_singleparty_consult.php?topage=1>第一頁</a></li>
-                    <li class='active'><a href="#">1</a></li>
-                    <li><a href=/ad_mem_singleparty_consult.php?topage=1 class='text'>最後一頁</a></li>
-                    <li><select style="width:60px;height:34px;margin-left:5px;" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                            <option value="/ad_mem_singleparty_consult.php?topage=1" selected>1</option>
-                        </select></li>
-                </ul>
-            </div>
-
+            <!--include頁碼-->
+	        <?php require_once("./include/_page.php"); ?>
         </div>
-        <!--/span-->
-
     </div>
-    <!--/row-->
-
-    </div>
-    <!--/.fluid-container-->
 </section>
-<!-- /MIDDLE -->
 
-<?php
-require_once("./include/_bottom.php")
-?>
-
-<script type="text/javascript">
-    $(function() {
-        $("#s6").on("change", function() {
-            personnel_get("s6", "s7");
-
-        });
-    });
-
-    function chk_search_form() {
-
-        /*  if(!$("#keyword_type").val()) {
-            alert("請選擇要搜尋的類型。");
-            $("#keyword_type").focus();
-        	return false;
-          }
-          if(!$("#keyword").val()) {
-            alert("請輸入要搜尋的關鍵字。");
-            $("#keyword").focus();
-        	return false;
-          }*/
-        return true;
-    }
-</script>
+<?php require_once("./include/_bottom.php"); ?>
