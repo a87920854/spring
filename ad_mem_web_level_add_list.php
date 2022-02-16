@@ -18,11 +18,8 @@ $unitprocess = $m_home.$icon."排約/記錄功能".$icon."會員權益延長";
 //接收值
 $branch = SqlFilter($_REQUEST["branch"],"tab");
 
-//語法
-if ( $branch != "" ){ $subSQL1 = "And log_branch='".$branch."'"; }
-
 //取得總筆數
-$SQL = "Select count(log_auto) As total_size From log_data where log_2='系統紀錄' And log_3='延長會員權益' ".$subSQL1;
+$SQL = "Select count(log_auto) As total_size From log_data where log_2='系統紀錄' And log_3='延長會員權益' And log_branch='".$branch."'";
 $rs = $SPConn->prepare($SQL);
 $rs->execute();
 $result=$rs->fetchAll(PDO::FETCH_ASSOC);
@@ -65,7 +62,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
     <div id="content" class="padding-20">
         
         <div class="panel panel-default">
-            <h2 class="pageTitle">排約/記錄功能 》會員權益延長 》[<?php echo $branch;?>] 資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料";?></i> ]</h2>
+            <h2 class="pageTitle">排約/記錄功能 》會員權益延長 》<?php if ( $branch != "" ){?>[<?php echo $branch;?>]<?php }?> 資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料";?></i> ]</h2>
             <p>
             <?php
                 //會館資料
