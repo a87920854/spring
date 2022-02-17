@@ -1,36 +1,116 @@
-<style type="text/css">
-    table td {
-        font-size: 12px;
+<?php
+/***************************************/
+//檔案名稱：ad_advisory_fix.php
+//後台對應位置：排約/記錄功能 → 諮詢記錄表(修改)
+//改版日期：2022.2.16
+//改版設計人員：Jack
+//改版程式人員：Queena
+/***************************************/
+require_once("_inc.php");
+require_once("./include/_function.php");
+
+//接收值
+$an = SqlFilter($_REQUEST["an"],"tab");
+$st = SqlFilter($_REQUEST["st"],"tab");
+$n11y = SqlFilter($_REQUEST["n11y"],"tab");
+$n11m = SqlFilter($_REQUEST["n11m"],"tab");
+$n11d = SqlFilter($_REQUEST["n11d"],"tab");
+$n11h = SqlFilter($_REQUEST["n11h"],"tab");
+$n11mm = SqlFilter($_REQUEST["n11mm"],"tab");
+$mem_name = SqlFilter($_REQUEST["mem_name"],"tab");
+$mem_sex = SqlFilter($_REQUEST["mem_sex"],"tab");
+$pay_money = SqlFilter($_REQUEST["pay_money"],"tab");
+$pay_money2 = SqlFilter($_REQUEST["pay_money2"],"tab");
+$pay_money3 = SqlFilter($_REQUEST["pay_money3"],"tab");
+$pay_money4 = SqlFilter($_REQUEST["pay_money4"],"tab");
+$types = SqlFilter($_REQUEST["types"],"tab");
+$itimes = SqlFilter($_REQUEST["itimes"],"tab");
+$notes = SqlFilter($_REQUEST["notes"],"tab");
+$mem_phone = SqlFilter($_REQUEST["mem_phone"],"tab");
+$mem_mobile = SqlFilter($_REQUEST["mem_mobile"],"tab");
+
+//判斷編號
+if ( $an == "" ){ call_alert("編號錯誤。","ClOsE",0);}
+
+//新增記錄
+if ( $st == "add" ){
+    $n11 = $n11y."/".$n11m."/".$n11d." ".$n11h.":".$n11mm;
+    if ( ! chkDate($n11) ){
+        call_alert("諮詢時間有誤。",0,0);
     }
-</style>
-<html>
-<script type="text/javascript" src="js/jquery-1.8.3.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>春天會館</title>
-</head>
+    $SQL = "Select Top 1 * From ad_advisory Where auton='".$an."'";
+    $rs = $SPConn->prepare($SQL);
+    $rs->execute();
+    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+    foreach($result as $re);
+    if ( count($result) == 0 ){
+        call_alert("資料錯誤。",0,0);
+    }else{
+        $SQL_u  = "Update ad_advisory Set ";
+        $SQL_u .= "mem_name = '".$mem_name."',";
+        $SQL_u .= "mem_sex = '".$mem_sex."',";
+        if ( $pay_money != "" ){
+            $SQL_u .= "pay_money = '".$pay_money."',";
+        }
+        if ( $pay_money2 != "" ){
+            $SQL_u .= "pay_money2 = '".$pay_money2."',";
+        }
+        if ( $pay_money3 != "" ){
+            $SQL_u .= "pay_money3 = '".$pay_money3."',";
+        }
+        if ( $pay_money4 != "" ){
+            $SQL_u .= "pay_money4 = '".$pay_money4."',";
+        }
+        $SQL_u .= "types = '".$types."',";
+        $SQL_u .= "itimes = '".$n11."',";
+        $SQL_u .= "notes = '".$notes."',";
+        $SQL_u .= "mem_phone = '".$mem_phone."',";
+        $SQL_u .= "mem_mobile = '".$mem_mobile."'";
+        $SQL_u .= " Where auton='".$an."'";
+        $rs_u = $SPConn->prepare($SQL_u);
+        $rs_u->execute();
+        reURL("win_close.php?m=修改完成.......");
+        exit;
+    }
+}
 
-<body leftmargin="0" topmargin="0">
-    <table width="660" border="0" align="center">
-        <tr>
-            <td>
-                <fieldset>
-                    <legend>春天會館資料 - 修改諮詢紀錄</legend>
-                    <table width="650" border="0" align="center" cellpadding="3">
-                        <tr bgcolor="#FFF0E1">
-                            <td bgcolor="#336699" colspan=2 align="center" height=20></td>
-                        </tr>
-                        <form action="?st=add" method="post" id="form2" onSubmit="return chk_form()">
-                            <tr>
-                                <td bgcolor="#F0F0F0">
-                                    處理會館/秘書：台北 - 詹明錡
-                                </td>
-                                <td bgcolor="#F0F0F0">
-                                    講師：台北 - Ethan
-                                </td>
-                            </tr>
+//資料語法
+$SQL = "Select Top 1 * From ad_advisory Where auton='".$an."'";
+$rs = $SPConn->prepare($SQL);
+$rs->execute();
+$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+foreach($result as $re);
+if ( count($result) == 0 ){
+    call_alert("資料錯誤。",0,0);
+}else{ ?>
+    <style type="text/css">
+        table td {
+            font-size: 12px;
+        }
+    </style>
+    <html>
+        <script type="text/javascript" src="js/jquery-1.8.3.js"></script>
+        <script type="text/javascript" src="js/util.js"></script>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title>春天會館</title>
+        </head>
+        <body leftmargin="0" topmargin="0">
+            <table width="660" border="0" align="center">
+                <tr>
+                    <td>
+                        <fieldset>
+                            <legend style="color:#fc3bf5;font-weight:bold;">春天會館資料</legend>
+                            <table width="650" border="0" align="center" cellpadding="3">
+                                <tr> 
+                                    <td colspan="2" bgcolor="#d9dbfd"><strong style="color: #1a218e;">▼ 請輸入修改資料</strong></td>
+                                </tr>
+                                <form action="?st=add" method="post" id="form2" onSubmit="return chk_form()">
+                                    <tr>
+                                        <td bgcolor="#F0F0F0">處理會館/秘書：<?php echo $re["mem_branch"];?> - <?php echo SingleName($re["mem_single"],"normal");?></td>
+                                        <td bgcolor="#F0F0F0">講師：<?php echo $re["mem_wbranch"];?> - <?php echo SingleName($re["mem_who"],"normal");?></td>
+                                    </tr>
 
                             <tr>
                                 <td bgcolor="#F0F0F0" colspan=2>類型：<select name="types" id="types">
