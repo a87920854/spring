@@ -87,7 +87,7 @@
                                                     echo "<option value='".$re["admin_name"]."'>".$re["admin_name"]."</option>";                               
                                                 }
                                             }else{
-                                                echo "<option value='".$_SESSION["branch"].".>".$_SESSION["branch"]."</option>";
+                                                echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
                                             }                                            
                                         ?>
                                     </select>
