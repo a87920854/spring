@@ -201,7 +201,9 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="panel panel-default">
             <h2 class="pageTitle">排約/記錄功能 》諮詢記錄表 》資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料</i> ]"; if ( $total_size >= 500 ){ echo $count_href;}?></h2>
-            
+            <p>
+                <a href="#o" class="btn btn-info btn-sm" onclick="Mars_popup('ad_advisory_add.php','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=700,height=490,top=300,left=600');">新增諮詢紀錄</a>&nbsp;&nbsp;
+            </p>
             <div class="panel-body">
                 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="searchform" id="searchform" class="form-inline">
                     <div class="m-search-bar">
@@ -333,7 +335,7 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
                                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">操作 <span class="caret"></span></button>
                                                     <ul class="dropdown-menu pull-right">
                                                         <?php if ( $_SESSION["MM_UserAuthorization"] == "admin" ){ ?>
-                                                            <li><a href="javascript:Mars_popup('ad_advisory_fix.php?an=<?php echo $re_list["auton"];?>','','width=690,height=470,top=100,left=100')"><i class="icon-trash"></i> 修改</a></li>
+                                                            <li><a href="javascript:Mars_popup('ad_advisory_fix.php?an=<?php echo $re_list["auton"];?>','','width=690,height=370,top=100,left=100')"><i class="icon-trash"></i> 修改</a></li>
                                                             <li><a href="javascript:Mars_popup2('ad_advisory.php?st=del&an=<?php echo $re_list["auton"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>
                                                         <?php }elseif ( date("Y",$re_list["times"]) ==  date("Y") && date("m",$re_list["times"]) == date("m") ){ ?>
                                                             <li><a href="javascript:Mars_popup2('ad_advisory.php?st=del&an=<?php echo $re_list["auton"];?>','','width=300,height=200,top=100,left=100')"><i class="icon-trash"></i> 刪除</a></li>

@@ -1,30 +1,140 @@
 <?php
-require_once("./include/_inc.php");
+/***************************************/
+//檔案名稱：ad_advisory_invite.php
+//後台對應位置：排約/記錄功能 → 諮詢預訂單
+//改版日期：2022.02.17
+//改版設計人員：Jack
+//改版程式人員：Queena
+/***************************************/
+
+require_once("_inc.php");
 require_once("./include/_function.php");
 require_once("./include/_top.php");
 require_once("./include/_sidebar.php");
+
+//判斷權限
+check_page_power("ad_advisory_invite");
+
+//麵包屑
+$unitprocess = $m_home.$icon."排約/記錄功能".$icon."諮詢預訂單";
+
+//接收值
+$y = SqlFilter($_REQUES["y"],"tab");
+$m = SqlFilter($_REQUES["m"],"tab");
+$d = SqlFilter($_REQUES["d"],"tab");
 ?>
 
 <!-- MIDDLE -->
 <section id="middle">
-    <!-- page title -->
+
+    <!-- 麵包屑 -->
     <header id="page-header">
-        <ol class="breadcrumb">
-            <li><a href="index.asp">管理系統</a></li>
-            <li class="active">諮詢預訂表</li>
-        </ol>
+        <div class="m-crumb"><i class="fa fa-folder-open-o"></i><?php echo $unitprocess;?></div>
     </header>
-    <!-- /page title -->
+    <!-- /麵包屑 -->
 
     <div id="content" class="padding-20">
-        <!-- content starts -->
+        <?php
+        //判讀日期
+        $y = (int)($y);
+        $m = (int)($m);
+        $d = (int)($d);
+
+        if ( $y == 0 && $m == 0 && $d == 0 ){
+            $thisdate = date("Y-m-d");
+            $y = date("Y");
+            $m = date("m");
+        }else{
+            if ( $m > 12 ){
+                $y = ($y + 1);
+                $m = 1;
+            }
+            if ( $m < 1 ){
+                $y = ($y-1);
+                $m = 12;
+            }
+            $thisdate = $y . "/" . $m . "/1";
+        }
+        
+        //判讀當月第一天
+        $strfirstday = cstr(date("Y",$thisdate))+"/"+cstr(date("m",$thisdate))+"/1";
+
+        //變數宣告
+        Dim strweek(6)
+            strweek(0) = "<font color=red><b>日</b></font>"
+            strweek(1) = "一"
+            strweek(2) = "二"
+            strweek(3) = "三"
+            strweek(4) = "四"
+            strweek(5) = "五"
+            strweek(6) = "<font color=green><b>六</b></font>"
+        
+        '取的當月一號星期幾
+        nweek=datepart("w",strfirstday) - 1
+        
+        '取的該月天數
+        nmonthday=day(dateadd("d",-1,dateadd("m",1,year(thisdate)&"-"&month(thisdate)&"-1")))
+        
+        '上個月
+        Function nprevmonth(thisdate)                  
+            nprevmonth = dateadd("m",-1,thisdate)
+        End Function
+        
+        '下個月
+        Function nnextmonth(thisdate)                 
+            nnextmonth = dateadd("m",1,thisdate)
+        End Function
+        
+        '讀取該日資料
+        choiceday = cstr(year(thisdate))+"/"+cstr(month(thisdate))+"/"+cstr(day(thisdate))
+        choiceday = cdate(choiceday)
+        choiceday_1 = dateadd("d",-1,choiceday)
+
+            Set rs = Server.CreateObject("ADODB.Recordset")
+
+            Select case Session("MM_UserAuthorization")
+            case "admin"
+            sqls = "SELECT top 1000 * FROM ad_advisory_invite WHERE year(itimes) = "&year(thisdate)&" and month(itimes) = "&month(thisdate)&""
+            If request("branch") <> "" Then
+            branch = request("branch")
+            End if
+        '      case "love","love_manager"
+        '      sqls = "SELECT * FROM ad_advisory_invite WHERE year(itimes) = "&year(thisdate)&" and month(itimes) = "&month(thisdate)&""
+        '      branch = session("lovebranch")
+        '  if branch <> "" then
+        '	branch = replace(branch, ",", "','")
+        '  end if
+            case else
+            sqls = "SELECT * FROM ad_advisory_invite WHERE year(itimes) = "&year(thisdate)&" and month(itimes) = "&month(thisdate)&""
+                branch = session("branch")
+            'Case Else
+            'sqls = "SELECT * FROM invite WHERE year(itimes) = "&year(thisdate)&" and month(itimes) = "&month(thisdate)&" and (single='"&Session("MM_Username")&"' or single3='"&Session("MM_Username")&"')"
+            ' sqls = "SELECT * FROM ad_advisory_invite WHERE year(itimes) = "&year(thisdate)&" and month(itimes) = "&month(thisdate)&""
+            End Select
+
+
+
+            If branch <> "" Then
+                sqls = sqls & " and (mem_branch in ('"&branch&"')"
+                if Session("area_branch")="" Or Session("area_branch")=Null then
+                    sqls = sqls & ")"
+                end if
+            End If
+
+            if Session("area_branch")<>"" Or Session("area_branch")<>Null then
+                area_branch = replace(replace(session("area_branch")," ",""), ",", "','")
+                sqls = sqls & " or mem_branch in ('"&area_branch&"'))"
+            end if
+
+            sqls = sqls & " order by auton desc"
+            'response.write sqls
+	
+
+
+
 
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="title elipsis">
-                    <strong>諮詢預訂表</strong> <!-- panel title -->
-                </span>
-            </div>
+            <h2 class="pageTitle">排約/記錄功能 》諮詢預訂表</h2>
 
             <div class="panel-body">
 
