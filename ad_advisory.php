@@ -142,7 +142,7 @@ if ( $keyword != "" ){
 	$subSQL1 .= "And (mem_name like N'%".str_Replace("'", "''", $keyword)."%' or mem_num like '%".str_Replace("'", "''", $keyword)."%') ";
 }
 
-//order by auton desc
+$get_txt = "time1=".$time1."&time2=".$time2."&qtime1=".$qtime1."&qtime2=".$qtime2."&branch=".$branch."&single=".$single."&s8=".$s8."&keyword=".$keyword;
 
 //取得總筆數
 $SQL = "Select count(auton) As total_size From ad_advisory Where ".$subSQL1;
@@ -203,6 +203,8 @@ $result_list = $rs_list->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="pageTitle">排約/記錄功能 》諮詢記錄表 》資料列表 [ <i style="color: #76192e;">共計 <?php echo $total_size."筆資料</i> ]"; if ( $total_size >= 500 ){ echo $count_href;}?></h2>
             <p>
                 <a href="#o" class="btn btn-info btn-sm" onclick="Mars_popup('ad_advisory_add.php','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=700,height=490,top=300,left=600');">新增諮詢紀錄</a>&nbsp;&nbsp;
+                <a href="#o" class="btn btn-info btn-sm" onclick="Mars_popup('ad_advisory_print.php?<?php echo $get_txt;?>','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=700,height=700,top=10,left=10');">列印紀錄</a>&nbsp;&nbsp;
+                <a href="#o" class="btn btn-info btn-sm" onclick="Mars_popup('ad_advisory_query.php','','scrollbars=yes,status=yes,menubar=yes,resizable=yes,width=690,height=300,top=300,left=600');">查詢服務成本</a><br>    	
             </p>
             <div class="panel-body">
                 <form action="<?php echo $_SERVER["PHP_SELF"]?>" method="post" name="searchform" id="searchform" class="form-inline">

@@ -154,7 +154,14 @@
 	
 	//彈跳訊息
 	function call_alert( $msg, $url, $outtime ){
-		switch($url){			
+		switch( $url ){
+			case "nClose":
+				echo "<script language=\"javascript\">" ;
+				echo "alert('".$msg."');" ;
+				echo "window.close();" ;
+				echo "</script>" ;
+				exit() ;
+				break;
 			case 0:
 				echo "<script language=\"javascript\">" ;
 				echo "alert('" . $msg ."');";

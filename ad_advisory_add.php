@@ -13,6 +13,7 @@ require_once("./include/_function.php");
 //接收值
 $st = SqlFilter($_REQUEST["st"],"tab");
 $n11y = SqlFilter($_REQUEST["n11y"],"tab");
+$n11m = SqlFilter($_REQUEST["n11m"],"tab");
 $n11d = SqlFilter($_REQUEST["n11d"],"tab");
 $n11h = SqlFilter($_REQUEST["n11h"],"tab");
 $n11mm = SqlFilter($_REQUEST["n11mm"],"tab");
@@ -23,10 +24,10 @@ $pay_money4 = SqlFilter($_REQUEST["pay_money4"],"tab");
 $ap_4 = SqlFilter($_REQUEST["ap_4"],"tab");
 $ap_4new = SqlFilter($_REQUEST["ap_4new"],"tab");
 $mem_num = SqlFilter($_REQUEST["mem_num"],"tab");
-$mem_branch = SqlFilter($_REQUEST["mem_branch"],"tab");
-$mem_single = SqlFilter($_REQUEST["mem_single"],"tab");
-$mem_wbranch = SqlFilter($_REQUEST["mem_who"],"tab");
-$mem_who = SqlFilter($_REQUEST["mem_num"],"tab");
+$mem_branch = SqlFilter($_REQUEST["branch"],"tab");
+$mem_single = SqlFilter($_REQUEST["single"],"tab");
+$mem_wbranch = SqlFilter($_REQUEST["mem_wbranch"],"tab");
+$mem_who = SqlFilter($_REQUEST["mem_who"],"tab");
 $mem_name = SqlFilter($_REQUEST["mem_name"],"tab");
 $mem_sex = SqlFilter($_REQUEST["mem_sex"],"tab");
 $types = SqlFilter($_REQUEST["types"],"tab");
@@ -40,11 +41,22 @@ $keyword = SqlFilter($_REQUEST["keyword"],"tab");
 
 //新增資料
 if ( $st == "add" ){
-	$n11 = $n11y . "/" . $n11m . "/" . $n11d . " " . $n11h . ":" . $n11mm;
+
+	//判斷日期時間是否有空值
+	if ( $n11y == "" || $n11m == "" || $n11d == "" || $n11h == "" || $n11mm == "" ){
+		call_alert("請輸入正確的日期時間",0,0);
+	}
+
+	$n11 = $n11y . "-" . $n11m . "-" . $n11d . " " . $n11h . ":" . $n11mm;
 	if ( chkDate($n11) == false ){
 		call_alert("諮詢時間有誤。",0,0);
 	}
-	$days=(strtotime(date("Y-m-d"))-strtotime($n11))/86400;
+	
+	$datetime1 = date_create(date("Y-m-d H:i")); 
+	$datetime2 = date_create($n11); 
+	$interval = date_diff($datetime1, $datetime2); 
+	$days = $interval->format('%R%a days'); 
+	
 	if ( $days > 7 ){ call_alert("無法輸入超過前七天的諮詢紀錄。",0,0); }
 	if ( $pay_money == "" && $pay_money2 == "" && $pay_money3 == "" ){ call_alert("請輸入正確的諮詢費用。",0,0);}
 	if ( $pay_money3 != "" ){
@@ -67,8 +79,8 @@ if ( $st == "add" ){
 	$insert2 = "'".$mem_num."','".$mem_branch."','".$mem_single."','".$mem_wbranch."','".$mem_who."','".$mem_name."','".$mem_sex."'";
 
 	if ( $pay_money != "" ){ 
-		$insert1 .= ",'".$pay_money."'"; 
-		$insert2 .= "'".$pay_money."'";
+		$insert1 .= ",pay_money"; 
+		$insert2 .= ",'".$pay_money."'";
 	}
 	if ( $pay_money2 != "" ){
 		$insert1 .= ",pay_money2";
@@ -83,8 +95,8 @@ if ( $st == "add" ){
 		$insert2 .= ",'".$pay_money4."'"; 
 	}
 
-	$insert1 .= "types,times,itimes,keyin,notes,mem_phone,mem_mobile";
-	$insert2 .= "'".$types."','".strftime("%Y/%m/%d %H:%M:%S")."','".$n11."','".$_SESSION["MM_Username"]."','".$notes."','".$mem_phone."','".$mem_mobile."'";
+	$insert1 .= ",types,times,itimes,keyin,notes,mem_phone,mem_mobile";
+	$insert2 .= ",'".$types."','".strftime("%Y/%m/%d %H:%M:%S")."','".$n11."','".$_SESSION["MM_Username"]."','".$notes."','".$mem_phone."','".$mem_mobile."'";
 		
 	if ( $pay_money3 != "" ){
 		if ( is_numeric($pay_money3) && is_numeric($ap_4) ){
@@ -119,11 +131,11 @@ if ( $st == "add" ){
 		$insert1 = "log_time,log_num,log_fid,log_username,log_name,log_branch,log_single,log_1,log_2,log_4,log_5,log_service";
 		$insert2 = "'".strftime("%Y/%m/%d %H:%M:%S")."','".$mem_auto."','".$mem_username."','".$n1."','".SingleName($_SESSION["MM_Username"],"normal")."','".$mem_wbranch."','".$_SESSION["MM_Username"]."','".$mem_phone."','系統記錄'";
 		if ( $ran != "" ){
-			$insert2 .= "由 ".SingleName($mem_who,"n")." 擔任講師於 ".$n11." 在".$mem_wbranch." 諮詢[".$types."] - 諮詢紀錄";
+			$insert2 .= ",N'由 ".SingleName($mem_who,"n")." 擔任講師於 ".$n11." 在".$mem_wbranch." 諮詢[".$types."] - 諮詢紀錄'";
 		}else{
-			$insert2 .= "由 ".SingleName($mem_who,"n")&" 擔任講師於 ".$n11." 在".$mem_wbranch." 諮詢[".$types."] - 諮詢紀錄";
+			$insert2 .= ",N'由 ".SingleName($mem_who,"n")." 擔任講師於 ".$n11." 在".$mem_wbranch." 諮詢[".$types."] - 諮詢紀錄'";
 		}
-		$insert2 .= "'member',1";
+		$insert2 .= ",'member',1";
 
 		//新增記錄
 		$SQL_i = "Insert Into log_data (".$insert1.") Values (".$insert2.");";
@@ -136,30 +148,26 @@ if ( $st == "add" ){
 
 //讀取資料
 if ( $st == "read" ){
-	$subSQL1 = "Select * From member_data Where mem_level='mem' ";
-	$subSQL2 = "Select * From member_data Where 1=1";
+	$SQL1 = "Select * From member_data Where mem_level='mem' ";
+	$SQL2 = "Select * From member_data Where 1=1";
 	if ( is_numeric($keyword) ){
 		$subSQL1 .= "And (mem_num='".$keyword."' or mem_mobile='".$keyword."' or mem_username='".$keyword."') ";
 	}else{
 		$subSQL1 .= "And (mem_mobile='".$keyword."' or mem_username='".$keyword."') ";
 	}
 	$subSQL1 .= "order by mem_time desc";
-	$rs = $SPConn->prepare($subSQL1);
+	$rs = $SPConn->prepare($SQL1.$subSQL1);
 	$rs->execute();
 	$result = $rs->fetchAll(PDO::FETCH_ASSOC);
-	
+
 	if ( count($result) == 0 ){
-		$rs = $SPConn->prepare($subSQL2);
+		$rs = $SPConn->prepare($SQL2.$subSQL1);
 		$rs->execute();
 		$result = $rs->fetchAll(PDO::FETCH_ASSOC);
 	}
 	if ( count($result) == 0 ){
-		echo "b";
-		exit;
 		call_alert("找不到此編號或手機的會員資料。", 1, 1);
 	}else{
-		echo "a";
-		exit;
 		foreach($result as $re);
 		$mem_branch = $re["mem_branch"];
 		$mem_single = $re["mem_single"];
@@ -251,8 +259,6 @@ if ( $st == "read" ){
 }
 ?>
 <html>
-	<script type="text/javascript" src="js/jquery-1.8.3.js"></script>
-	<script type="text/javascript" src="js/util.js"></script>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>春天會館</title>
@@ -271,7 +277,7 @@ if ( $st == "read" ){
 								<td bgcolor="#F0F0F0" colspan=2>
 									<form style="margin:0px;" action="?st=read" method="post" id="form1" onSubmit="return chk_form1()">
 										諮詢對象編號/手機/身分證： 
-										<input name="keyword" type="text" id="keyword" value="" size="20"> <input type="submit" value="讀取資料">
+										<input name="keyword" type="text" id="keyword" value="<?php echo $keyword;?>" size="20"> <input type="submit" value="讀取資料">
 										<?php
             							if ( $st == "read" ){
               								if ( $mem_level == "mem" ){ echo "&nbsp;&nbsp;&nbsp;&nbsp;<font color='blue'>會員 - 編號 [".$mem_num."]</font>";}
@@ -291,21 +297,18 @@ if ( $st == "read" ){
 											if ( $ran != "" ){
 												echo "<option value='".$mem_branch."' selected>".$mem_branch."</option>";
 											}else{
-												if ( $mem_branch != "" ){
-													echo "<option value='".$mem_branch."' selected>".$mem_branch."</option>";
-												}else{
-													echo "<option value='' selected>請選擇</option>";
-												}
-
+												echo "<option value=\"\">請選擇</option>";
 												if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 													//會館資料
-													$SQL = "Select * From branch_data Where auto_no<>10 Order By admin_Sort";
+													$SQL = "Select * From branch_data Where auto_no<>10 and auto_no<>12 Order By admin_Sort";
 													$rs = $SPConn->prepare($SQL);
 													$rs->execute();
 													$result=$rs->fetchAll(PDO::FETCH_ASSOC);    
-													foreach($result as $re){ ?>
-														<option value="<?php echo $re["admin_name"];?>"<?php if ( $branch == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
-												<?php }
+													foreach($result as $re){
+														echo "<option value='".$re["admin_name"]."'";
+														if ( $mem_branch == $re["admin_name"] ){ echo " selected";}
+														echo ">".$re["admin_name"]."</option>";
+													}
 												}else{
 													echo "<option value='".$_SESSION["branch"]."'>".$_SESSION["branch"]."</option>";
 												}
@@ -318,7 +321,8 @@ if ( $st == "read" ){
 			  									echo "<option value='".$mem_single."'>".SingleName($mem_single,"normal")."</option>";
 											}else{
 												if ( $mem_branch != "" ){
-													$SQL = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".$mem_branch."' Order By p_desc2 Desc, lastlogintime Desc";
+													//祕書資料
+													$SQL = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".$mem_branch."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
 													$rs = $SPConn->prepare($SQL);
 													$rs->execute();
 													$result = $rs->fetchAll(PDO::FETCH_ASSOC);
@@ -338,32 +342,41 @@ if ( $st == "read" ){
 											if ( $ran != "" ){
 												echo "<option value='".$mem_wbranch."' selected>".$mem_wbranch."</option>";
 											}else{
-												if ( $mem_branch != "" ){
-													echo "<option value='".$mem_branch."' selected>".$mem_branch."</option>";
-												}else{
-													echo "<option value='' selected>請選擇</option>";
-												}
+												echo "<option value=\"\">請選擇</option>";
 												if ( $_SESSION["MM_UserAuthorization"] == "admin" ){
 													//會館資料
-													$SQL = "Select * From branch_data Where auto_no<>10 Order By admin_Sort";
+													$SQL = "Select * From branch_data Where auto_no<>10 and auto_no<>12 Order By admin_Sort";
 													$rs = $SPConn->prepare($SQL);
 													$rs->execute();
 													$result=$rs->fetchAll(PDO::FETCH_ASSOC);    
 													foreach($result as $re){ ?>
-														<option value="<?php echo $re["admin_name"];?>"<?php if ( $branch == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
+														<option value="<?php echo $re["admin_name"];?>"<?php if ( $mem_branch == $re["admin_name"] ){?> selected<?php }?>><?php echo $re["admin_name"];?></option>
 													<?php } ?>
 												<?php }?>
 											<?php }?>
 										</select>
 										<select name="mem_who" id="mem_who">
 											<option value="">請選擇</option>
+											<?php
+											if ( $mem_branch != "" ){
+												//祕書資料
+												$SQL = "Select p_user, p_name, p_other_name, lastlogintime From personnel_data Where p_branch = '".$mem_branch."' And p_work=1 Order By p_desc2 Desc, lastlogintime Desc";
+												$rs = $SPConn->prepare($SQL);
+												$rs->execute();
+												$result = $rs->fetchAll(PDO::FETCH_ASSOC);
+												if ( count($result) > 0 ){
+													foreach($result as $re){?>
+														<option value="<?php echo $re["p_user"];?>"<?php if ( $mem_who == $re["p_user"] ){?> selected<?php }?>><?php echo $re["p_other_name"]?></option>
+													<?php }?>
+												<?php }?>
+											<?php }?>
 										</select>
 									</td>
 								</tr>
 								<tr>
-									<td bgcolor="#F0F0F0" colspan=2>類型：
+									<td bgcolor="#F0F0F0" colspan="2">類型：
 										<select name="types" id="types">
-											<option value="一對一諮詢"<?php if ( $types == "一對一諮詢" ){ echo " selected"; }?>一對一諮詢</option>
+											<option value="一對一諮詢"<?php if ( $types == "一對一諮詢" ){ echo " selected"; }?>>一對一諮詢</option>
 											<option value="一對一造型諮詢"<?php if ( $types == "一對一造型諮詢" ){ echo " selected"; }?>>一對一造型諮詢</option>
 											<option value="一對一愛情諮詢"<?php if ( $types == "一對一愛情諮詢" ){ echo " selected"; }?>>一對一愛情諮詢</option>
 											<option value="魅力解析"<?php if ( $types == "魅力解析" ){ echo " selected"; }?>>魅力解析</option>      
@@ -422,9 +435,9 @@ if ( $st == "read" ){
 										諮詢時間：
 										<select name="n11y" id="n11y">
 											<?php
-											for ( $i=date("Y");$i<=(date("date")+2);$i++ ){
+											for ( $i=date("Y");$i<=(date("Y")+2);$i++ ){
               									echo "<option value='".$i."'";
-												if ( $i == date("T") ){ echo " selected"; }
+												if ( $i == date("Y") ){ echo " selected"; }
 												echo ">".$i."</option>";
 											}
 											echo "<option value='".(date("Y")-1)."'>".(date("Y")-1)."</option>";
@@ -449,10 +462,9 @@ if ( $st == "read" ){
 											}?>
 										</select> 日 
 										<select name="n11h" id="n11h">
-			  								<option value="">請選擇</option>
 											<?php
 											for ( $i=10;$i<=22;$i++ ){
-												echo "<optio value='".$i."'>".$i."</option>";
+												echo "<option value='".$i."'>".$i."</option>";
 											}
 											?>
               							</select> 時 
@@ -462,7 +474,7 @@ if ( $st == "read" ){
 											<option value="30">30</option>
 											<option value="45">45</option>
 										</select> 分
-									</td>			
+									</td>
           						</tr>
 								<tr>
 									<td bgcolor="#F0F0F0" colspan="2">
