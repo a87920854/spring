@@ -64,14 +64,16 @@ if(!$result){
                     </thead>
                     <tbody>
                         <?php 
-                            $SQL = "select * from system_sign where types='活動異動單' and num='".SqlFilter($_REQUEST["ac_auto"],"int")."'";
+                            $SQL = "select * from system_sign where types='活動異動單' and num='".SqlFilter($_REQUEST["ac_auto"],"int")."' order by times desc";
                             $rs = $SPConn->prepare($SQL);
                             $rs->execute();
                             $result = $rs->fetchAll(PDO::FETCH_ASSOC);
                             if(!$result){
                                 echo "<tr><td colspan=8>暫無資料</td></tr>";
                             }else{
-                                foreach($result as $re){ ?>
+                                foreach($result as $re){ 
+                                        $cancelbtn = 0;
+                                    ?>
                                     <tr> 
                                         <td class="center"><?php echo Date_EN($re["times"],9); ?></td>    	
                                         <td class="center"><?php echo $re["branch"]; ?>-<?php echo $re["singlename"]; ?></td>      

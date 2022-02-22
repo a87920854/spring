@@ -2951,13 +2951,14 @@ margin:0px;
 	display: table;
 	content: '';
 }
-.weekly_rank_col:nth-child(6), .weekly_rank_col:nth-child(7), .weekly_rank_col:nth-child(8), .weekly_rank_col:nth-child(9), .weekly_rank_col:nth-child(10){
-	display: none;
-}
 .weekly_rank_col{
 	width: 20%;
 	padding: 0 10px;
 	float: left;
+	display: none;
+}
+.weekly_rank_col:nth-child(1), .weekly_rank_col:nth-child(2), .weekly_rank_col:nth-child(3), .weekly_rank_col:nth-child(4), .weekly_rank_col:nth-child(5){
+	display: block;
 }
 .weekly_rank_box{	
 	position: relative;

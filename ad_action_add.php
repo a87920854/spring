@@ -399,43 +399,44 @@ if($_REQUEST["st"] == "add"){
         $ac_auto_time_unix = strtotime($ac_auto_time);
         if(chkDate($ac_time)){
             // 12/20 - 12/31 = next year 1/1-3/31
-            $time1 = strtotime(date("Y",strtotime($ac_auto_time))."/12/20 00:00");
-            $time2 = strtotime(date("Y",strtotime($ac_auto_time))."/12/31 23:59");
-            $time3 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/01/01 00:00");
-            $time4 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/03/31 23:59");
+            $time1 = strtotime(date("Y",$ac_auto_time_unix)."/12/20 00:00");
+            $time2 = strtotime(date("Y",$ac_auto_time_unix)."/12/31 23:59");
+            $time3 = strtotime((date("Y",$ac_auto_time_unix)+1)."/01/01 00:00");
+            $time4 = strtotime((date("Y",$ac_auto_time_unix)+1)."/03/31 23:59");
             if($ac_auto_time_unix > $time1 && $ac_auto_time_unix < $time2 && $ac_time_unix > $time3 && $ac_time_unix < $time4){
                 $noaddtag = 1;
             }
 
             // 3/20 - 3/31 = 4/1-6/30
-            $time1 = strtotime(date("Y",strtotime($ac_auto_time))."/03/20 00:00");
-            $time2 = strtotime(date("Y",strtotime($ac_auto_time))."/03/31 23:59");
-            $time3 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/04/01 00:00");
-            $time4 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/06/30 23:59");
+            $time1 = strtotime(date("Y",$ac_auto_time_unix)."/03/20 00:00");
+            $time2 = strtotime(date("Y",$ac_auto_time_unix)."/03/31 23:59");
+            $time3 = strtotime(date("Y",$ac_auto_time_unix)."/04/01 00:00");
+            $time4 = strtotime(date("Y",$ac_auto_time_unix)."/06/30 23:59");
             if($ac_auto_time_unix > $time1 && $ac_auto_time_unix < $time2 && $ac_time_unix > $time3 && $ac_time_unix < $time4){
                 $noaddtag = 1;
             }
 
             // 6/20 - 6/30 = 7/1-9/30
-            $time1 = strtotime(date("Y",strtotime($ac_auto_time))."/06/20 00:00");
-            $time2 = strtotime(date("Y",strtotime($ac_auto_time))."/06/30 23:59");
-            $time3 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/07/01 00:00");
-            $time4 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/09/30 23:59");
+            $time1 = strtotime(date("Y",$ac_auto_time_unix)."/06/20 00:00");
+            $time2 = strtotime(date("Y",$ac_auto_time_unix)."/06/30 23:59");
+            $time3 = strtotime(date("Y",$ac_auto_time_unix)."/07/01 00:00");
+            $time4 = strtotime(date("Y",$ac_auto_time_unix)."/09/30 23:59");
             if($ac_auto_time_unix > $time1 && $ac_auto_time_unix < $time2 && $ac_time_unix > $time3 && $ac_time_unix < $time4){
                 $noaddtag = 1;
             }
 
             // 9/20 - 9/30 = 10/1-12/31
-            $time1 = strtotime(date("Y",strtotime($ac_auto_time))."/09/20 00:00");
-            $time2 = strtotime(date("Y",strtotime($ac_auto_time))."/09/30 23:59");
-            $time3 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/10/01 00:00");
-            $time4 = strtotime((date("Y",strtotime($ac_auto_time))+1)."/12/31 23:59");
+            $time1 = strtotime(date("Y",$ac_auto_time_unix)."/09/20 00:00");
+            $time2 = strtotime(date("Y",$ac_auto_time_unix)."/09/30 23:59");
+            $time3 = strtotime(date("Y",$ac_auto_time_unix)."/10/01 00:00");
+            $time4 = strtotime(date("Y",$ac_auto_time_unix)."/12/31 23:59");
             if($ac_auto_time_unix > $time1 && $ac_auto_time_unix < $time2 && $ac_time_unix > $time3 && $ac_time_unix < $time4){
                 $noaddtag = 1;
             }
         }
     }
 
+    // 若不在上述日期內則新增活動異動單
     if($noaddtag == 0){
         $SQL =  "INSERT INTO system_sign (branch,singlename,single,types,types2,notes,num,statnote,stat) VALUES (
                 '".$_SESSION["branch"]."',
@@ -450,7 +451,7 @@ if($_REQUEST["st"] == "add"){
         $rs = $SPConn->prepare($SQL);
         $rs->execute();
 
-        $SQL = "update action_data set ac_stat=2, ac_stat_time=getdate() where ac_auto='".$ac_auto."'";
+        $SQL = "update action_data set ac_stat=2, ac_stat_time=getdate() wh++ere ac_auto='".$ac_auto."'";
         $rs = $SPConn->prepare($SQL);
         $rs->execute();
     }

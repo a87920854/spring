@@ -305,7 +305,7 @@
                                                     $mlabel = "<span class='label label-warning'>春天會館</span>";
                                                 }
                                                 if($re3["mem_branch"] == "約專"){
-                                                    $mlabel = "<span class='label' style='background:#c22c7d'>約專</span>";
+                                                    $mlabel = "<span class='label' style='background:#c22c7d'>約會專家</span>";
                                                 }
                                                 if($re3["mem_branch"] == "迷你約"){
                                                     $mlabel = "<span class='label' style='background:#fccfae'>迷你約</span>";
@@ -320,6 +320,10 @@
                                             $result3 = $rs->fetch(PDO::FETCH_ASSOC);
                                             if($result3){
                                                 $mlabel = $mlabel ."<span class='label' style='background:#c22c7d'>約會專家</span>";
+                                                if($result3["mem_level"] == "guest"){
+                                                    $mlabel = $mlabel."<br><span style='color:darkblue'>(非會員)</span>";
+                                                }
+                                                $mem_num = $result3["mem_num"];
                                             }
                                         }
 
@@ -331,13 +335,25 @@
                                         if($re2["all_branch"] == $_SESSION["branch"]){
                                             $qcansee = 1;
                                         }
+
+                                        $SQL = "select k_year from love_keyin where k_id=".$re2["k_id"]." and k_year is not null";
+                                        $rs = $SPConn->prepare($SQL);
+                                        $rs->execute();
+                                        $result3 = $rs->fetch(PDO::FETCH_ASSOC);
+                                        if($result3){
+                                           $mem_by = $result3["k_year"];
+                                        }
+                                        if($mem_by == 0){
+                                            $mem_by = "未填寫";
+                                        }
                                         ?>
                                         <tr>
                                             <td><?php echo $mlabel; ?></td>
                                             <?php 
                                                 if($cansee == 0 && $qcansee == 0){ ?>
                                                     <td align="center">
-                                                        <?php echo mb_substr ($re2["k_name"],0,1,"utf8")."○○"; ?>   
+                                                        <?php echo mb_substr ($re2["k_name"],0,1,"utf8")."○○"; ?>
+                                                        <br>(年次：<?php echo $mem_by; ?>)
                                                     </td>
                                                     <td align="center"><?php echo $re2["k_sex"]; ?></td>
                                                     <td align="center">**********</td>
@@ -349,7 +365,7 @@
                                                     <td class="center"></td>
                                                     <td class="center"></td>
                                                 <?php }else{ ?>                                                    
-                                                    <td align="center"><a href="#c" onclick="Mars_popup('ad_love_detail.php?k_id=<?php echo $re2["k_id"]; ?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re2["k_name"]; ?></a></td>  	
+                                                    <td align="center"><a href="#c" onclick="Mars_popup('ad_love_detail.php?k_id=<?php echo $re2["k_id"]; ?>','','status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=700,height=350,top=150,left=150');"><?php echo $re2["k_name"]; ?></a><br>(年次：<?php echo $mem_by; ?>)</td>  	
                                                     <td align="center"><?php echo $re2["k_sex"]; ?></td>
                                                     <td class="center"><?php echo $re2["k_mobile"]; ?></td>
                                                     <td class="center"><?php echo $re2["k_yn"]; ?></td>

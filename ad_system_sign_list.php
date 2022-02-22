@@ -378,7 +378,7 @@ require_once("./include/_sidebar.php")
                     <li><a href=/ad_system_sign_list.php?topage=5 class='text'>5</a></li>
                     <li><a href=/ad_system_sign_list.php?topage=6 class='text'>6</a></li>
                     <li><a href=/ad_system_sign_list.php?topage=7 class='text'>7</a></li>
-                    <li><a href=/ad_system_sign_list.php?topage=8 class='text'>8</a></li>
+                    <li>< a href=/ad_system_sign_list.php?topage=8 class='text'>8</></li>
                     <li><a href=/ad_system_sign_list.php?topage=9 class='text'>9</a></li>
                     <li><a href=/ad_system_sign_list.php?topage=10 class='text'>10</a></li>
                     <li><a href=/ad_system_sign_list.php?topage=2 class='text' title='Next'>下一頁</a></li>
