@@ -100,6 +100,7 @@ if ( count($result) == 0 ){
             <table width="660" border="0" align="center">
                 <tr>
                     <td>
+                        <br>
                         <fieldset>
                             <legend style="color:#fc3bf5;font-weight:bold;">春天會館資料</legend>
                             <table width="650" border="0" align="center" cellpadding="3">
@@ -111,185 +112,104 @@ if ( count($result) == 0 ){
                                         <td bgcolor="#F0F0F0">處理會館/秘書：<?php echo $re["mem_branch"];?> - <?php echo SingleName($re["mem_single"],"normal");?></td>
                                         <td bgcolor="#F0F0F0">講師：<?php echo $re["mem_wbranch"];?> - <?php echo SingleName($re["mem_who"],"normal");?></td>
                                     </tr>
-
-                            <tr>
-                                <td bgcolor="#F0F0F0" colspan=2>類型：<select name="types" id="types">
-                                        <option value="一對一諮詢">一對一諮詢</option>
-                                        <option value="一對一造型諮詢" selected>一對一造型諮詢</option>
-                                        <option value="一對一愛情諮詢">一對一愛情諮詢</option>
-                                        <option value="魅力解析">魅力解析</option>
-                                        <option value="新會員先修">新會員先修</option>
-                                        <option value="戀愛選修1">戀愛選修1</option>
-                                        <option value="戀愛選修2">戀愛選修2</option>
-                                        <option value="戀愛選修3">戀愛選修3</option>
-                                        <option value="戀愛選修4">戀愛選修4</option>
-                                        <option value="戀愛選修5">戀愛選修5</option>
-                                        <option value="戀愛選修6">戀愛選修6</option>
-
-                                    </select></td>
-                            </tr>
-                            <tr>
-                                <td bgcolor="#F0F0F0" width="50%">姓名： <input name="mem_name" type="text" id="mem_name" value="楊立為" size="20"></td>
-                                <td bgcolor="#F0F0F0">性別： <select name="mem_sex" id="mem_sex">
-                                        <option value="男" selected>男</option>
-                                        <option value="女">女</option>
-                                    </select></td>
-                            </tr>
-
-                            <tr>
-                                <td bgcolor="#F0F0F0">電話： <input name="mem_phone" type="text" id="mem_phone" value="" size="20"></td>
-                                <td bgcolor="#F0F0F0">手機： <input name="mem_mobile" type="text" id="mem_mobile" value="0910922022" size="20"></td>
-                            </tr>
-                            <tr>
-                                <td bgcolor="#F0F0F0" colspan=2>諮詢時間：
-                                    <select name="n11y" id="n11y">
-                                        <option value="2021" selected>2021</option>
-                                        <option value="2022">2022</option>
-                                        <option value="2023">2023</option>
-                                        <option value="2020">2020</option>
-                                    </select> 年
-                                    <select name="n11m" id="n11m">
-                                        <option value="10">10</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                        <option value="9" selected>9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                    </select> 月
-                                    <select name="n11d" id="n11d">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8" selected>8</option>
-                                        <option value="9">9</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                        <option value="13">13</option>
-                                        <option value="14">14</option>
-                                        <option value="15">15</option>
-                                        <option value="16">16</option>
-                                        <option value="17">17</option>
-                                        <option value="18">18</option>
-                                        <option value="19">19</option>
-                                        <option value="20">20</option>
-                                        <option value="21">21</option>
-                                        <option value="22">22</option>
-                                        <option value="23">23</option>
-                                        <option value="24">24</option>
-                                        <option value="25">25</option>
-                                        <option value="26">26</option>
-                                        <option value="27">27</option>
-                                        <option value="28">28</option>
-                                        <option value="29">29</option>
-                                        <option value="30">30</option>
-                                        <option value="31">31</option>
-                                    </select> 日 <select name="n11h" id="n11h">
-                                        <option value="">請選擇</option>
-                                        <option value="10">10</option>
-                                        <option value="11">11</option>
-                                        <option value="12">12</option>
-                                        <option value="13">13</option>
-                                        <option value="14">14</option>
-                                        <option value="15">15</option>
-                                        <option value="16">16</option>
-                                        <option value="17" selected>17</option>
-                                        <option value="18">18</option>
-                                        <option value="19">19</option>
-                                        <option value="20">20</option>
-                                        <option value="21">21</option>
-                                        <option value="22">22</option>
-                                    </select> 時
-                                    <select name="n11mm" id="n11mm">
-                                        <option value="00" selected>00</option>
-                                        <option value="15">15</option>
-                                        <option value="30">30</option>
-                                        <option value="45">45</option>
-                                    </select> 分2021/9/8 下午 05:00:00
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td bgcolor="#F0F0F0" colspan=2>備註：<br> <textarea name="notes" id="notes" style="width:95%" rows=3>
-
-            </textarea></td>
-                            </tr>
-
-
-                            <tr bgcolor="#FFF0E1">
-                                <td bgcolor="#336699" colspan=2 align="center">
-                                    <input name="an" type="hidden" id="an" value="11552">
-                                    <input name="Submit" type="submit" id="Submit2" value="確定送出">
-                                </td>
-                            </tr>
-                    </table>
-                </fieldset>
-            </td>
-        </tr>
-    </table>
-    </form>
-</body>
-
-</html>
-
-<script language="JavaScript">
-    function chk_form1() {
-        if (!$("#keyword").val()) {
-            alert("請輸入要讀取資料的諮詢對象編號或手機。");
-            $("#keyword").focus();
-            return false;
-        }
-        return true;
-    }
-
-    function chk_form() {
-        var $allc = {
-                "mem_name": "姓名",
-                "mem_mobile": "手機",
-                "n11h": "小時"
-            },
-            $allc2 = {
-                "mem_phone": "電話",
-                "mem_mobile": "手機",
-                "n11h": "小時"
-            },
-            $rr = 0;
-        $.each($allc, function(v, k) {
-            if (!$("#" + v).val()) {
-                alert("請輸入或選擇" + k + "。");
-                $("#" + v).focus();
-                $rr = 1;
-                return false;
-            }
-        });
-        $.each($allc2, function(v, k) {
-            var $re = /^\d+$/;
-            if ($("#" + v).val() && !$re.test($("#" + v).val())) {
-                alert(k + "只能輸入數字。");
-                $("#" + v).focus();
-                $rr = 1;
-                return false;
-            }
-        });
-
-
-        if ($rr) return false;
-        else return true;
-    }
-
-    $(function() {
-
-
-    });
-</script>
+                                    <?php $types = $re["types"];?>
+                                    <tr>
+                                        <td bgcolor="#F0F0F0" colspan=2>類型：
+                                            <select name="types" id="types">
+                                                <option value="一對一諮詢"<?php if ( $types == "一對一諮詢" ){ echo " selected";}?>>一對一諮詢</option>
+                                                <option value="一對一造型諮詢"<?php if ( $types == "一對一造型諮詢" ){ echo " selected";}?>>一對一造型諮詢</option>
+                                                <option value="一對一愛情諮詢"<?php if ( $types == "一對一愛情諮詢" ){ echo " selected";}?>>一對一愛情諮詢</option>
+                                                <option value="魅力解析"<?php if ( $types == "魅力解析" ){ echo " selected";}?>>魅力解析</option>      
+                                                <option value="新會員先修"<?php if ( $types == "新會員先修" ){ echo " selected";}?>>新會員先修</option>          	          	
+                                                <option value="戀愛選修1"<?php if ( $types == "戀愛選修1" ){ echo " selected";}?>>戀愛選修1</option>      
+                                                <option value="戀愛選修2"<?php if ( $types == "戀愛選修2" ){ echo " selected";}?>>戀愛選修2</option>      
+                                                <option value="戀愛選修3"<?php if ( $types == "戀愛選修3" ){ echo " selected";}?>>戀愛選修3</option>      
+                                                <option value="戀愛選修4"<?php if ( $types == "戀愛選修4" ){ echo " selected";}?>>戀愛選修4</option>      
+                                                <option value="戀愛選修5"<?php if ( $types == "戀愛選修5" ){ echo " selected";}?>>戀愛選修5</option>      
+                                                <option value="戀愛選修6"<?php if ( $types == "戀愛選修6" ){ echo " selected";}?>>戀愛選修6</option>      
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td bgcolor="#F0F0F0" width="50%">姓名： <input name="mem_name" type="text" id="mem_name" value="<?php echo $re["mem_name"];?>" size="20"></td>
+                                        <td bgcolor="#F0F0F0">性別： 
+                                            <select name="mem_sex" id="mem_sex">
+                                                <option value="男"<?php if ( $re["mem_sex"] == "男" ){ echo " selected";}?>>男</option>
+                                                <option value="女"<?php if ( $re["mem_sex"] == "女" ){ echo " selected";}?>>女</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td bgcolor="#F0F0F0">電話： <input name="mem_phone" type="text" id="mem_phone" value="<?php echo $re["mem_phone"];?>" size="20"></td>
+                                        <td bgcolor="#F0F0F0">手機： <input name="mem_mobile" type="text" id="mem_mobile" value="<?php echo $re["mem_mobile"];?>" size="20"></td>
+                                    </tr>
+                                    <tr>
+                                        <td bgcolor="#F0F0F0" colspan="2">諮詢時間：
+                                            <select name="n11y" id="n11y">
+                                                <?php
+                                                $n11 = $re["itimes"];
+                                                for ( $i=date("Y");$i<=(date("Y")+2);$i++ ){
+                                                    echo "<option value='".$i."'";
+                                                    if ( $i == date("Y",$n11) ){ echo " selected";}
+                                                    echo ">".$i."</option>";
+                                                }
+                                                echo "<option value='".(date("Y")-1)."'>".(date("Y")-1)."</option>";
+                                                ?>
+                                            </select> 年
+                                            <select name="n11m" id="n11m"> 
+                                                <?php
+                                                for ( $i=1;$i<=12;$i++ ){
+                                                    echo "<option value='".$i."'";
+                                                    if ( $i == date("m",$n11) ){ echo " selected"; }
+                                                    echo ">".$i."</option>";
+                                                }
+                                                ?>
+                                            </select> 月
+                                            <select name="n11d" id="n11d">
+                                                <?php
+                                                for ( $i=1;$i<=31;$i++ ){
+                                                    echo "<option value='".$i."'";
+                                                    if ( $i == date("d",$n11) ){ echo " selected"; }
+                                                    echo ">".$i."</option>";
+                                                }?>
+                                            </select> 日 
+                                            
+                                            <select name="n11h" id="n11h">
+                                                <option value="">請選擇</option>
+                                                <?php
+                                                for ( $i=10;$i<=22;$i++ ){
+                                                    echo "<option value='".$i."'";
+                                                    if ( $i == date("h",$n11 ) ){ echo " selected"; }
+                                                    echo ">".$i."</option>";
+                                                }?>
+                                            </select> 時 
+                                            <select name="n11mm" id="n11mm">
+                                                <option value="00"<?php if ( date("m",$n11) == 0 ){ echo " selected";}?>>00</option>
+                                                <option value="15"<?php if ( date("m",$n11) == 15 ){ echo " selected";}?>>15</option>
+                                                <option value="30"<?php if ( date("m",$n11) == 30 ){ echo " selected";}?>>30</option>
+                                                <option value="45"<?php if ( date("m",$n11) == 45 ){ echo " selected";}?>>45</option>
+                                            </select> 分<?php echo $n11;?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td bgcolor="#F0F0F0" colspan="2">備註：<br>
+                                            <textarea name="notes" id="notes" style="width:95%" rows="3">
+            	                                <?php $notes = $re["notes"];?>
+                                            </textarea><?php echo $notes;?>
+                                        </td>			
+                                    </tr>
+                                    <tr bgcolor="#FFF0E1">
+                                        <td bgcolor="#336699" colspan=2 align="center">
+                                            <input name="an" type="hidden" id="an" value="<?php echo $an;?>">
+                                            <input name="Submit" type="submit" id="Submit2" value="確定送出">
+                                        </td>
+                                    </tr>
+                                </form>
+                            </table>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+        </body>
+    </html>
+<?php }?>
