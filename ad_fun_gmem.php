@@ -15,6 +15,9 @@
     //程式開始 *****
 	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+
     // 發信(未完成)
     if($_REQUEST["st"] == "remail"){
 

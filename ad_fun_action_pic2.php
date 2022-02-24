@@ -2,8 +2,8 @@
 
     /*****************************************/
     //檔案名稱：ad_fun_action_pic.php
-    //後台對應位置：好好玩管理系統/好好玩國內團控/活動花絮
-    //改版日期：2021.12.2
+    //後台對應位置：好好玩管理系統/好好玩國外團控/活動花絮
+    //改版日期：2022.2.24
     //改版設計人員：Jack
     //改版程式人員：Jack
     /*****************************************/
@@ -22,11 +22,11 @@
     // 刪除照片
     if($_REQUEST["st"] == "del"){
         $ac_photo_auto = str_replace(" ","",$_REQUEST["ac_photo_auto"]);
-        $SQL = "SELECT * FROM action_photo where ac_photo_auto in(" .$ac_photo_auto . ")";
+        $SQL = "SELECT * FROM actionf_photo where ac_photo_auto in(" .$ac_photo_auto . ")";
         $rs = $FunConn->query($SQL);
         $result = $rs->fetch(PDO::FETCH_ASSOC);
         if($result){
-            $SQL = "DELETE FROM action_photo where ac_photo_auto in(" .$ac_photo_auto . ")";
+            $SQL = "DELETE FROM actionf_photo where ac_photo_auto in(" .$ac_photo_auto . ")";
             $rs = $FunConn->prepare($SQL);
             $rs->execute();
             if($rs){
@@ -38,7 +38,7 @@
     }
 
     // 總數量
-    $sqls2 = "SELECT count(ac_photo_auto) as total_size FROM action_photo Where ac_auto = ".$ac_auto;    
+    $sqls2 = "SELECT count(ac_photo_auto) as total_size FROM actionf_photo Where ac_auto = ".$ac_auto;    
     $sqls2 = $sqls2 . $sqlss;
     $rs = $FunConn->prepare($sqls2);
     $rs->execute();
@@ -60,7 +60,7 @@
     }
 
     // SQL
-    $sqls = "SELECT * FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM action_photo Where ac_auto = ".$ac_auto; 
+    $sqls = "SELECT * FROM (SELECT TOP " .$page2. " * FROM (SELECT TOP " .($tPageSize*$tPage). " * FROM actionf_photo Where ac_auto = ".$ac_auto; 
     $sqls = $sqls . $sqlss . " order by ac_photo_auto desc ) t1 order by ac_photo_auto ) t2 order by ac_photo_auto desc"; 
 ?>
 
@@ -70,7 +70,7 @@
     <header id="page-header">
         <ol class="breadcrumb">
             <li>好好玩管理系統</li>
-            <li><a href="ad_fun_action_list1.php">好好玩國內團控</a></li>
+            <li><a href="ad_fun_action_list1.php">好好玩國外團控</a></li>
             <li class="active">活動花絮</li>
         </ol>
     </header>
@@ -87,6 +87,19 @@
             </div>
 
             <div class="panel-body">
+                <?php 
+                    $SQL = "select * from travel_date where ac_auto=".$ac_auto." order by dates desc";
+                    $rs = $FunConn->prepare($SQL);
+                    $rs->execute();
+                    $result = $rs->fetchAll(PDO::FETCH_ASSOC);
+                    if($result){
+                        echo "<p>";
+                        foreach($result as $re){
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href='?ac_auto=".$ac_auto."&d=".Date_EN($re["dates"],1)."'>".Date_EN($re["dates"],1)."</a>";
+                        }
+                        echo "</p>";
+                    }
+                ?>
                 <table class="table table-striped table-bordered bootstrap-datatable">
                     <thead>
                         <tr>
@@ -154,7 +167,7 @@ require_once("./include/_bottom.php");
                 if ($(this).val() && $(this).prop("checked")) $dellist.push($(this).val());
             });
             if ($dellist.length <= 0) alert("請選擇要刪除的照片。");
-            else Mars_popup('ad_fun_action_pic.php?st=del&ac_auto=<?php echo $ac_auto; ?>&ac_photo_auto=' + $dellist, '', 'status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=400,height=200,top=150,left=150');
+            else Mars_popup('ad_fun_action_pic2.php?st=del&ac_auto=<?php echo $ac_auto; ?>&ac_photo_auto=' + $dellist, '', 'status=yes,menubar=yes,resizable=yes,scrollbars=yes,width=400,height=200,top=150,left=150');
         });
     });
 </script>

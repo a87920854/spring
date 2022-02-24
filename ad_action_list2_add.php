@@ -40,8 +40,11 @@
             $k_fid = SqlFilter($_REQUEST["k_fid"],"tab");
         }
         $k_bday = SqlFilter($_REQUEST["k_year1"],"int")."/".SqlFilter($_REQUEST["k_year2"],"int")."/".SqlFilter($_REQUEST["k_year3"],"int");
-        $k_2 =  $_REQUEST["k_2"];
-        $k_2 =  implode(",",$k_2);
+        // checkbox陣列
+        if($_REQUEST["k_2"] != ""){
+            $k_2 = $_REQUEST["k_2"];
+            $k_2 = implode(",",$k_2);
+        }        
         $k_mobile = chk_mobile(SqlFilter($_REQUEST["k_mobile"],"tab"));
         $mymem_num = SqlFilter($_REQUEST["mymem_num"],"tab");
         if($_REQUEST["ac_car"] != ""){

@@ -17,6 +17,9 @@
         call_alert("請重新登入。", "login.php", 0);
     }
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+    
     // 刪除
     if($_REQUEST["st"] == "del"){
         $SQL = "delete from love_keyin2 where k_id=".SqlFilter($_REQUEST["kid"],"int")."'";

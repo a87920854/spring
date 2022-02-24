@@ -17,6 +17,9 @@
         call_alert("請重新登入。", "login.php", 0);
     }
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+    
     // 修改
     if($_REQUEST["st"] == "fix"){
         $SQL = "update b2b_member set mem_fix=".SqlFilter($_REQUEST["v"],"tab")."'";

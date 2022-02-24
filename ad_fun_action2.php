@@ -20,6 +20,9 @@
     }
     check_page_power("ad_fun_action2");
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+
     if( $_REQUEST["a1"] != ""){ 
         $kt1 = SqlFilter($_REQUEST["a1"],"int") . "/" . SqlFilter($_REQUEST["a2"],"int") . "/1 00:01";
         if( !chkDate($kt1) ){

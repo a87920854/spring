@@ -17,6 +17,9 @@
         call_alert("請重新登入。", "login.php", 0);
     }
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+
     // 刪除國內活動並刪除圖檔(待測試刪除圖檔)
     if($_REQUEST["st"] == "del"){
         $SQL = "SELECT * FROM action_data WHERE ac_auto = ".SqlFilter($_REQUEST["ac"],"int");

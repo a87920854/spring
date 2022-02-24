@@ -383,14 +383,15 @@
                     $allmail = "";
                     foreach($result as $re){                        
                         $allmail = $allmail . $re["k_mobile"] . ", ";                          
-                    }
+                    }  
+                }
+                if($allmail != ""){
                     if(substr($allmail,-2) == ", "){
                         $allmail = substr($allmail,0,-2);
-                    }
-                }
-            ?>               
-            <div class="box-content">本場活動所有手機：<input type="text" style="width:80%;" value="<?php echo $allmail; ?>" onclick="this.select();"></div>
-
+                    } ?>
+                    <div class="box-content">本場活動所有手機：<input type="text" style="width:80%;" value="<?php echo $allmail; ?>" onclick="this.select();"></div>
+                <?php }
+            ?>   
         </div>
         <!--/span-->
 

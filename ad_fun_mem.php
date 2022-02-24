@@ -16,6 +16,9 @@
 	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
 	check_page_power("ad_fun_mem");
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+
     // 轉入未入會功能
     if( $_REQUEST["st"] == "trans" ){
         $mem_auto = $_REQUEST["mem_auto"];

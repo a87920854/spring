@@ -17,6 +17,8 @@
 	if ( $_SESSION["MM_Username"] == "" ){ call_alert("請重新登入。","login.php",0);}
     check_page_power("ad_fun_action1");    
     
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
 
     if( $_REQUEST["a1"] != ""){ 
         $kt1 = SqlFilter($_REQUEST["a1"],"int") . "/" . SqlFilter($_REQUEST["a2"],"int") . "/1 00:01";

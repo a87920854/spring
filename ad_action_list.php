@@ -18,6 +18,9 @@
     if($_SESSION["MM_UserAuthorization"] != "admin"){
         call_alert("您沒有查看此頁的權限。","login.php",0);
     }
+    
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
 
     // 刪除 (刪除圖檔待測試)
     if($_REQUEST["st"] == "del"){

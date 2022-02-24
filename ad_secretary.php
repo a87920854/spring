@@ -44,6 +44,9 @@
         call_alert("您沒有查看此頁的權限。","login.php",0);
     }
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+    
     // 設為離職
     if($_REQUEST["st"] == "del"){
         $SQL = "update personnel_data set p_work=0 WHERE p_auto=".SqlFilter($_REQUEST["p_auto"],"int");

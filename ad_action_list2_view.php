@@ -7,7 +7,7 @@
     //改版程式人員：Jack
     /*****************************************/
     require_once("_inc.php");
-    require_once("./include/_function.php");
+    require_once("./include/_function.php");     
 
     if($_REQUEST["st"] == "istell"){
         if($_REQUEST["v"] == "1"){
@@ -62,6 +62,9 @@
         call_alert("您沒有查看此頁的權限。","login.php",0);
     }
 
+    // 接收值
+    $vst = SqlFilter($_REQUEST["vst"],"tab");
+    
     // 刪除
     if($_REQUEST["st"] == "del"){
         $SQL = "delete from love_keyin where all_kind='活動' and k_id='".SqlFilter($_REQUEST["id"],"int")."'";
