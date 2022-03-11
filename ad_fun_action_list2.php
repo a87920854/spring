@@ -92,7 +92,7 @@
     }
     // 以標題搜尋
     if($_REQUEST["s3"]){
-        $sqlss = $sqlss . " and ac_title like '%" + str_replace("'", "''", $_REQUEST["s3"]) + "%'";
+        $sqlss = $sqlss . " and ac_title like '%" . str_replace("'", "''", $_REQUEST["s3"]) . "%'";
     }
 
     if( $_REQUEST["s21"] != "" && $_REQUEST["s22"] != "" ){
@@ -261,24 +261,26 @@
                                                 $SQL = "select top 3 * from travel_date where ac_auto=".$ac_auto." and datediff(d, dates, '".date("Y-m-d")."') <= 0 order by dates asc";
                                                 $rs2 = $FunConn->prepare($SQL);
                                                 $rs2->execute();
-                                                $result2 = $rs2->fetch(PDO::FETCH_ASSOC);
+                                                $result2 = $rs2->fetchAll(PDO::FETCH_ASSOC);
                                                 if($result2){
-                                                    $dates = date("Y-m-d",strtotime($result2["dates"]));
-                                                    $dates2 = $dates;
-                                                    $aa = 0;
-                                                    $SQL = "select count(k_id) as tt from love_keyin where ac_auto=".$ac_auto." and all_kind='國外旅遊' and datediff(d, action_time, '".$dates."') = 0";
-                                                    $rs3 = $FunConn->prepare($SQL);
-                                                    $rs3->execute();
-                                                    $result3 = $rs3->fetch(PDO::FETCH_ASSOC);
-                                                    if($result3){
-                                                        $aa = $result3["tt"];
-                                                    }
-                                                    if($result2["keep"] == "1"){
-                                                        $dates = "<s>".$dates."</s>";
-                                                    }
-                                                    echo "<div style=line-height:20px;'>";
-                                                    echo "<a href='ad_fun_action_list_singup2.php?ac=".$ac_auto."&da=".$dates2."'>報名 " .$aa. " 人</a>";
-                                                    echo "</div>";
+                                                    foreach($result2 as $re2){
+                                                        $dates = date("Y-m-d",strtotime($re2["dates"]));
+                                                        $dates2 = $dates;
+                                                        $aa = 0;
+                                                        $SQL = "select count(k_id) as tt from love_keyin where ac_auto=".$ac_auto." and all_kind='國外旅遊' and datediff(d, action_time, '".$dates."') = 0";
+                                                        $rs3 = $FunConn->prepare($SQL);
+                                                        $rs3->execute();
+                                                        $result3 = $rs3->fetch(PDO::FETCH_ASSOC);
+                                                        if($result3){
+                                                            $aa = $result3["tt"];
+                                                        }
+                                                        if($re2["keep"] == "1"){
+                                                            $dates = "<s>".$dates."</s>";
+                                                        }
+                                                        echo "<div style=line-height:20px;'>".$dates."　";
+                                                        echo "<a href='ad_fun_action_list_singup2.php?ac=".$ac_auto."&da=".$dates2."'>報名 " .$aa. " 人</a>";
+                                                        echo "</div>";
+                                                    }                                                    
                                                 }
                                                 echo $turl;
                                             ?>
@@ -289,7 +291,7 @@
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php 
                                                         if($ac_travel_size > 0){
-                                                            echo "<li><a href='http://funtour.com.tw/otravel.php?id=".$re["ac_auto"]."' target='_blank'><i class='icon-file'></i> 詳細</a></li>";
+                                                            echo "<li><a href='http://funtour.com.tw/otravel.asp?id=".$re["ac_auto"]."' target='_blank'><i class='icon-file'></i> 詳細</a></li>";
                                                         }
                                                     ?>
                                                         <li><a href="ad_fun_action_list2_date.php?ac=<?php echo $re["ac_auto"]; ?>"><i class="icon-file"></i> 報名/花絮</a></li>

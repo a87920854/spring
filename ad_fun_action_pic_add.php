@@ -16,6 +16,7 @@
 
     $ac_auto = SqlFilter($_REQUEST["ac_auto"],"int");
     
+    // 上傳圖片功能(待測)
     if($_REQUEST["st"] == "upload"){
         $urlpath = "webfile/funtour/upload_image/"; //儲存路徑
         // $urlpath = "Upload/"; //儲存路徑

@@ -114,7 +114,7 @@
                                 for($i=1;$i<=count($result);$i++){
                                     $imgurl = "webfile/funtour/upload_image/" . $result[$i-1]["ac_photo_name"];                                    
                                     if($line == 0){
-                                        echo "<tr>"; 
+                                        echo "<tr>";
                                     }
                                     echo "<td><input data-no-uniform='true' type='checkbox' name='nums' value='".$result[$i-1]["ac_photo_auto"]."'>".$result[$i-1]["ac_photo_auto"]."<br><a href='".$imgurl."' class='fancybox'><img src='".$imgurl."' width=200  border=0></a></td>"; 
                                     if($line == 3){                                        

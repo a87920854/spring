@@ -317,7 +317,7 @@
                                         }
 
                                         if($mlabel == ""){
-                                            $SQL = "select mem_level, mem_branch from member_data where mem_mobile='".$re2["k_mobile"]."' and si_account <> ''";
+                                            $SQL = "select mem_num, mem_level, mem_branch from member_data where mem_mobile='".$re2["k_mobile"]."' and si_account <> ''";
                                             $rs = $SPConn->prepare($SQL);
                                             $rs->execute();
                                             $result3 = $rs->fetch(PDO::FETCH_ASSOC);
@@ -326,10 +326,10 @@
                                                 if($result3["mem_level"] == "guest"){
                                                     $mlabel = $mlabel."<br><span style='color:darkblue'>(非會員)</span>";
                                                 }
-                                                $mem_num = $result3["mem_num"];
+                                                $mem_num = $result3["mem_num"];                                                
                                             }
                                         }
-
+                                        
                                         if($mlabel == ""){
                                             $mlabel = "<span class='label label-info'>非會員</span>";
                                         }
@@ -339,16 +339,19 @@
                                             $qcansee = 1;
                                         }
 
-                                        $SQL = "select k_year from love_keyin where k_id=".$re2["k_id"]." and k_year is not null";
-                                        $rs = $SPConn->prepare($SQL);
-                                        $rs->execute();
-                                        $result3 = $rs->fetch(PDO::FETCH_ASSOC);
-                                        if($result3){
-                                           $mem_by = $result3["k_year"];
+                                        if($mem_num != ""){
+                                            $SQL = "select mem_by from member_data where mem_num=".$mem_num."";                                            
+                                            $rs = $SPConn->prepare($SQL);
+                                            $rs->execute();
+                                            $result3 = $rs->fetch(PDO::FETCH_ASSOC);
+                                            if($result3){
+                                                $mem_by = $result3["mem_by"];
+                                            }
+                                            if($mem_by == 0){
+                                                $mem_by = $re2["k_year"];
+                                            }
                                         }
-                                        if($mem_by == 0){
-                                            $mem_by = "未填寫";
-                                        }
+                                        
                                         ?>
                                         <tr>
                                             <td><?php echo $mlabel; ?></td>
