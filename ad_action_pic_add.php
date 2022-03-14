@@ -1,7 +1,7 @@
 <?php
 
     /*****************************************/
-    //檔案名稱：ad_action_pic.php
+    //檔案名稱：ad_action_pic_add.php
     //後台對應位置：管理系統/網站活動上傳>活動花絮>新增照片
     //改版日期：2022.2.23
     //改版設計人員：Jack
@@ -16,6 +16,7 @@
 
     $ac_auto = SqlFilter($_REQUEST["ac_auto"],"int");
     
+    // 上傳圖檔功能(待測)
     if($_REQUEST["st"] == "upload"){
         $urlpath = "webfile/funtour/upload_image/"; //儲存路徑
         // $urlpath = "Upload/"; //儲存路徑

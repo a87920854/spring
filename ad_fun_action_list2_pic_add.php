@@ -2,14 +2,19 @@
 
 /*****************************************/
 //檔案名稱：ad_fun_action_list2_pic_add.php
-//後台對應位置：好好玩管理系統/好好玩國外團控/行程頁設計 > 新增(修改)行程內容
-//改版日期：2022.2.25
+//後台對應位置：好好玩管理系統/好好玩國外團控/行程頁設計 > 上傳圖片
+//改版日期：2022.3.10
 //改版設計人員：Jack
 //改版程式人員：Jack
 /*****************************************/
 
 require_once("_inc.php");
 require_once("./include/_function.php");
+
+//程式開始 *****
+if ($_SESSION["MM_Username"] == "") {
+    call_alert("請重新登入。", "login.php", 0);
+}
 
 if($_REQUEST["id"] == ""){
     call_alert("活動資料讀取錯誤。","ClOsE",0);
@@ -48,6 +53,9 @@ if($_REQUEST["st"] == "upload"){
                     }
             }
 
+            // 更新圖片尺寸
+            ResizeFile($urlpath, $fileName, $msize, $fileName);
+
             // 圖檔名稱存入資料庫
             $SQL = "INSERT INTO travel_photo (ac_auto,photo_name,times,types) VALUES ('".$ac_auto."', '".$fileName."', GetDate(), '".$types."')";
             $rs = $FunConn->prepare($SQL);
@@ -56,8 +64,6 @@ if($_REQUEST["st"] == "upload"){
     }
     exit();
 }
-
-
 
 ?>
 
@@ -99,7 +105,7 @@ if($_REQUEST["st"] == "upload"){
                         <tr>
                             <td bgcolor="#F0F0F0">請選擇要上傳的檔案：(可多選)　<input type="button" id="start_upload" value="確定上傳">
                                 <br>
-                                <div><span class="btn btn-danger fileinput-button"><span>選擇檔案</span><input data-no-uniform="true" id="file_uploads" type="file" class="fileupload" name="files[]" multiple></span>
+                                <div><span class="btn btn-danger fileinput-button"><span>選擇檔案</span><input data-no-uniform="true" id="file_uploads" type="file" class="fileupload" name="fileupload[]" multiple></span>
                                     <div id="progress" class="progress progress-striped" style="display:none">
                                         <div class="bar progress-bar progress-bar-lovepy"></div>
                                     </div>
@@ -131,7 +137,7 @@ if($_REQUEST["st"] == "upload"){
             var $imgs = $(this).closest("span").find("#cimg").val();
 
             $this.fileupload({
-                    url: "ad_fun_action_list2_pic_add.asp?st=upload&id=1983&t=top",
+                    url: "ad_fun_action_list2_pic_add.php?st=upload&id=<?php echo $SqlFilter($_REQUEST["id"],"int"); ?>&t=<?php echo $SqlFilter($_REQUEST["t"],"tab"); ?>",
                     type: "POST",
                     dropZone: $this,
                     dataType: 'html',

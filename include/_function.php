@@ -1031,4 +1031,79 @@
 		}
 		return $invite_stats;
 	}
+
+	// 圖片尺寸resize並存檔 (待測)
+	function ResizeFile($dir, $filename, $size, $tfilename) {
+		if(!file_exists($dir.$filename)) {
+			echo $dir.$filename . " is not exists !";
+			exit();
+		}
+		
+		$type=exif_imagetype($dir.$filename);
+		$support_type=array(IMAGETYPE_JPEG , IMAGETYPE_PNG , IMAGETYPE_GIF);
+		
+		if(!in_array($type, $support_type,true)) {
+			echo "this type of image does not support! only support jpg , gif or png";
+			exit();
+		}
+		
+		switch($type) {
+			case IMAGETYPE_JPEG :
+				$src_img=imagecreatefromjpeg($dir.$filename);
+				break;
+			case IMAGETYPE_PNG :
+				$src_img=imagecreatefrompng($dir.$filename);
+				break;
+			case IMAGETYPE_GIF :
+				$src_img=imagecreatefromgif($dir.$filename);
+				break;
+			default:
+				echo "Load image error!";
+				exit();
+		}
+
+		$src_w = imagesx($src_img);
+		$src_h = imagesy($src_img);    
+		if ($src_w > $src_h) {
+			$ratio = $size/$src_w;
+			$change_h = $ratio*$src_h;
+			$x = ($size-$src_w)/2;
+			$y = ($change_h-$src_h)/2;
+			$new_img=imagecreatetruecolor($size,$change_h);
+			imagecopy($new_img,$src_img,$x,$y,0,0,$size,$change_h);
+			switch($type) {
+				case IMAGETYPE_JPEG :
+					imagejpeg($new_img,$dir.$tfilename,100);
+					break;
+				case IMAGETYPE_PNG :
+					imagepng($new_img,$dir.$tfilename);
+					break;
+				case IMAGETYPE_GIF :
+					imagegif($new_img,$dir.$tfilename);
+					break;
+				default:
+					break;
+			}
+		}else{
+			$ratio = $size/$src_h;
+			$change_w = $ratio*$src_w;
+			$x = ($change_w-$src_w)/2;
+			$y = ($size-$src_h)/2;
+			$new_img=imagecreatetruecolor($change_w,$size);
+			imagecopy($new_img,$src_img,$x,$y,0,0,$change_w,$size);
+			switch($type) {
+				case IMAGETYPE_JPEG :
+					imagejpeg($new_img,$dir.$tfilename,100);
+					break;
+				case IMAGETYPE_PNG :
+					imagepng($new_img,$dir.$tfilename);
+					break;
+				case IMAGETYPE_GIF :
+					imagegif($new_img,$dir.$tfilename);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 ?>
